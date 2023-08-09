@@ -30,5 +30,5 @@ public class Persona {
     private Long idProfesion;
 
 
-
+    
 }
