@@ -21,7 +21,7 @@ public class ProfesionalControlador {
 
 	@GetMapping("/profesionales")
 	public List<Profesional> listarProfesionales() {
-		return repositorio.findAll();
+		return repositorio.getProfesionalById((long) 119);
 	}
 
 }
