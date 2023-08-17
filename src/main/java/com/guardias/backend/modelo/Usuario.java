@@ -38,6 +38,10 @@ public class Usuario {
      * = "id_tipo_usuario")
      * )
      */
+
+     /**
+      * cambiar 
+      */
     @Column(name = "id_tipo_usuario")
     private Long id_tipo_usuario;
 

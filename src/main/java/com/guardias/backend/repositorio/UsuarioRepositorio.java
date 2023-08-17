@@ -7,7 +7,11 @@ import com.guardias.backend.modelo.Usuario;
 
 @Repository
 public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
-
+    /**
+     * Busca un usuario por atributo usuario
+     * @param usuario
+     * @return
+     */
     Usuario findByUsuario(String usuario);
 
     // Usuario getById(Long id);
