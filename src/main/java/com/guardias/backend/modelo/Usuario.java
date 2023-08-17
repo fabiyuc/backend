@@ -8,15 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "usuario"))
+@Table(name = "usuario")
+// , uniqueConstraints = @UniqueConstraint(columnNames = "usuario"))
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idUsuario;
 
     @Column(name = "usuario")
     private String usuario;
@@ -27,8 +27,19 @@ public class Usuario {
     @Column(name = "estado")
     private boolean estado;
 
-    @Column(name = "idTipoUsuario")
-    private Long idTipoUsuario;
+    /*
+     * @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+     * 
+     * @JoinTable(
+     * name = "usuarios_tipoUsuario",
+     * joinColumns = @JoinColumn(name = "usuario_id",referencedColumnName =
+     * "idUsuario"),
+     * inverseJoinColumns = @JoinColumn(name = "tipoUsuario_id",referencedColumnName
+     * = "id_tipo_usuario")
+     * )
+     */
+    @Column(name = "id_tipo_usuario")
+    private Long id_tipo_usuario;
 
     @Column(name = "fechaAlta")
     private LocalDate fechaAlta;
@@ -39,16 +50,10 @@ public class Usuario {
     @Column(name = "intentosFallidos")
     private Long intentosFallidos;
 
-    @Column(name = "idPersona")
-    private Long idPersona;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    /*
+     * @Column(name = "id_persona")
+     * private Long id_persona;
+     */
 
     public String getUsuario() {
         return usuario;
@@ -74,12 +79,12 @@ public class Usuario {
         this.estado = estado;
     }
 
-    public Long getIdTipoUsuario() {
-        return idTipoUsuario;
+    public Long getId_tipo_usuario() {
+        return id_tipo_usuario;
     }
 
-    public void setIdTipoUsuario(Long idTipoUsuario) {
-        this.idTipoUsuario = idTipoUsuario;
+    public void setId_tipo_usuario(Long id_tipo_usuario) {
+        this.id_tipo_usuario = id_tipo_usuario;
     }
 
     public LocalDate getFechaAlta() {
@@ -106,40 +111,58 @@ public class Usuario {
         this.intentosFallidos = intentosFallidos;
     }
 
-    public Long getIdPersona() {
-        return idPersona;
-    }
+    /*
+     * public Long getId_persona() {
+     * return id_persona;
+     * }
+     */
 
-    public void setIdPersona(Long idPersona) {
-        this.idPersona = idPersona;
-    }
-
-    public Usuario(Long id, String usuario, String contrasena, boolean estado, Long idTipoUsuario, LocalDate fechaAlta,
-            LocalDate fechaUltimaSesion, Long intentosFallidos, Long idPersona) {
-        this.id = id;
-        this.usuario = usuario;
-        this.contrasena = contrasena;
-        this.estado = estado;
-        this.idTipoUsuario = idTipoUsuario;
-        this.fechaAlta = fechaAlta;
-        this.fechaUltimaSesion = fechaUltimaSesion;
-        this.intentosFallidos = intentosFallidos;
-        this.idPersona = idPersona;
-    }
-
-    public Usuario(String usuario, String contrasena, boolean estado, Long idTipoUsuario, LocalDate fechaAlta,
-            LocalDate fechaUltimaSesion, Long intentosFallidos, Long idPersona) {
-        this.usuario = usuario;
-        this.contrasena = contrasena;
-        this.estado = estado;
-        this.idTipoUsuario = idTipoUsuario;
-        this.fechaAlta = fechaAlta;
-        this.fechaUltimaSesion = fechaUltimaSesion;
-        this.intentosFallidos = intentosFallidos;
-        this.idPersona = idPersona;
-    }
+    /*
+     * public void setId_persona(Long id_persona) {
+     * this.id_persona = id_persona;
+     * }
+     */
 
     public Usuario() {
+        super();
+    }
+
+    public Usuario(Long idUsuario, String usuario, String contrasena, boolean estado, Long id_tipo_usuario,
+            LocalDate fechaAlta, LocalDate fechaUltimaSesion, Long intentosFallidos) {
+        this.idUsuario = idUsuario;
+        this.usuario = usuario;
+        this.contrasena = contrasena;
+        this.estado = estado;
+        this.id_tipo_usuario = id_tipo_usuario;
+        this.fechaAlta = fechaAlta;
+        this.fechaUltimaSesion = fechaUltimaSesion;
+        this.intentosFallidos = intentosFallidos;
+        // this.id_persona = id_persona;
+    }
+
+    public Usuario(String usuario, String contrasena, boolean estado, LocalDate fechaAlta, LocalDate fechaUltimaSesion,
+            Long intentosFallidos) {
+        this.usuario = usuario;
+        this.contrasena = contrasena;
+        this.estado = estado;
+        this.fechaAlta = fechaAlta;
+        this.fechaUltimaSesion = fechaUltimaSesion;
+        this.intentosFallidos = intentosFallidos;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario [idUsuario=" + idUsuario + ", usuario=" + usuario + ", contrasena=" + contrasena + ", estado="
+                + estado + ", id_tipo_usuario=" + id_tipo_usuario + ", fechaAlta=" + fechaAlta + ", fechaUltimaSesion="
+                + fechaUltimaSesion + ", intentosFallidos=" + intentosFallidos + "]";
+    }
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
 }
