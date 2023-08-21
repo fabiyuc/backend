@@ -25,11 +25,13 @@ public class UsuarioController {
     public ResponseEntity<?> loginUser(@RequestBody Usuario userData) {
         // Usuario usu = repo.getById(userData.getId_usuario());
         System.out.println("############");
-        // System.out.println(userData.getIdUsuario());
+         System.out.println(userData.getUsuario());
 
         // Usuario user = repo.findByIdUsuario(userData.getIdUsuario());
         // Usuario user = repo.findByIdUsuario(userData.g);
         Usuario user = repo.findByUsuario(userData.getUsuario());
+        System.out.println("despues de user");
+        System.out.println(user.getIdUsuario());
         System.out.println("el usuario userData es: " + userData.getUsuario());
         System.out.println("### El usuario es: " + user.getUsuario());
         if (user.getContrasena().equals(userData.getContrasena())) {
