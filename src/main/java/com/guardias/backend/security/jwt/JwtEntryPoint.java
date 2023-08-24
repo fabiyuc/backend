@@ -12,18 +12,20 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Component
 /**
  * comprueba si existe un token y devuelve una respuesta
  */
+@Component
 public class JwtEntryPoint implements AuthenticationEntryPoint {
 
-
     private final static Logger logger = LoggerFactory.getLogger(JwtEntryPoint.class);
+
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse res,
             AuthenticationException e) throws IOException, ServletException {
-        
+
+        logger.error("fail en el metodo commnece");
+        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "no autorizado");
     }
-    
+
 }

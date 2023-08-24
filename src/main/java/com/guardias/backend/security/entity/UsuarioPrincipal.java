@@ -1,9 +1,7 @@
 package com.guardias.backend.security.entity;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +32,6 @@ public class UsuarioPrincipal implements UserDetails{
 
         return new UsuarioPrincipal(usuario.getNombre(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getPassword(), authorities);
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -71,5 +68,4 @@ public class UsuarioPrincipal implements UserDetails{
         return email;
     }
 
-    
 }

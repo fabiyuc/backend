@@ -8,15 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.entity.UsuarioPrincipal;
+import com.guardias.backend.security.repository.UsuarioRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService{
 
     @Autowired
-    UsuarioService usuarioService;
+    UsuarioRepository usuarioRepository;
     @Override
-    public UserDetails loadUserByUsername(String nombreUsuario) throws UsernameNotFoundException {
-        Usuario usuario = usuarioService.getByNombreUsuario(nombreUsuario).get();
+    public UserDetails loadUserByUsername(String nombreOrEmail) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByNombreUsuarioOrEmail(nombreOrEmail,nombreOrEmail).get();
         return UsuarioPrincipal.build(usuario);
     }
     

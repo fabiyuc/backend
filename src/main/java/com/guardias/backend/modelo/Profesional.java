@@ -7,11 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "profesional")
+//@Entity
+//@Table(name = "profesional")
 public class Profesional {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	//@Id
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id_profesional;
 
 	public Long getIdProfesional() {
@@ -22,7 +22,7 @@ public class Profesional {
 		this.id_profesional = id_profesional;
 	}
 
-	@Column(name = "id_persona")
+//	@Column(name = "id_persona")
 	private Long idPersona;
 
 	public Long getIdPersona() {
@@ -33,7 +33,7 @@ public class Profesional {
 		this.idPersona = idPersona;
 	}
 
-	@Column(name = "matricula")
+	//@Column(name = "matricula")
 	private String matricula;
 
 	public String getMatricula() {
@@ -44,7 +44,7 @@ public class Profesional {
 		this.matricula = matricula;
 	}
 
-	@Column(name = "id_tipo_guardia")
+	//@Column(name = "id_tipo_guardia")
 	private Long idTipoguardia;
 
 	public Long getIdTipoguardia() {
@@ -55,7 +55,7 @@ public class Profesional {
 		this.idTipoguardia = idTipoguardia;
 	}
 
-	@Column(name = "id_distribucion_horaria")
+	//@Column(name = "id_distribucion_horaria")
 	private Long idDistribucionHoraria;
 
 	public Long getIdDistribucionHoraria() {
@@ -66,7 +66,7 @@ public class Profesional {
 		this.idDistribucionHoraria = idDistribucionHoraria;
 	}
 
-	@Column(name = "id_especialidad")
+//	@Column(name = "id_especialidad")
 	private Long idEspecialidad;
 
 	public Long getIdEspecialidad() {

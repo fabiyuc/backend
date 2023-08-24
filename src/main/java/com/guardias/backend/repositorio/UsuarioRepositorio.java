@@ -1,18 +1,18 @@
-package com.guardias.backend.repositorio;
+/* package com.guardias.backend.repositorio;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.guardias.backend.modelo.Usuario;
+import com.guardias.backend.modelo.Usuarios;
 
-@Repository
-public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
+//@Repository
+public interface UsuarioRepositorio extends JpaRepository<Usuarios, Long> {
     /**
      * Busca un usuario por atributo usuario
      * @param usuario
      * @return
      */
-    Usuario findByUsuario(String usuario);
+   // Usuarios findByUsuario(String usuario);
 
     // Usuario getById(Long id);
 
@@ -22,4 +22,5 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
 
     // public int loginValidation(String usuario, String contrasenia);
 
-}
+//}
+ 

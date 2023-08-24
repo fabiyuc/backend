@@ -7,8 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "cargo")
+//@Entity
+//@Table(name = "cargo")
 public class Cargo {
 
     @Id

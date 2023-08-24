@@ -3,28 +3,26 @@ package com.guardias.backend.modelo;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "usuario")
+//@Entity
+//@Table(name = "usuario")
 // , uniqueConstraints = @UniqueConstraint(columnNames = "usuario"))
-public class Usuario {
+public class Usuarios {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   // @Id
+   // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUsuario;
 
-    @Column(name = "usuario")
+    //@Column(name = "usuario")
     private String usuario;
 
-    @Column(name = "contrasena")
+   // @Column(name = "contrasena")
     private String contrasena;
 
-    @Column(name = "estado")
+   // @Column(name = "estado")
     private boolean estado;
 
     /*
@@ -39,19 +37,19 @@ public class Usuario {
      * )
      */
 
-     /**
-      * cambiar 
-      */
-    @Column(name = "id_tipo_usuario")
+    /**
+     * cambiar
+     */
+  //  @Column(name = "id_tipo_usuario")
     private Long id_tipo_usuario;
 
-    @Column(name = "fechaAlta")
+   // @Column(name = "fechaAlta")
     private LocalDate fechaAlta;
 
-    @Column(name = "fechaUltimaSesion")
+  //  @Column(name = "fechaUltimaSesion")
     private LocalDate fechaUltimaSesion;
 
-    @Column(name = "intentosFallidos")
+  //  @Column(name = "intentosFallidos")
     private Long intentosFallidos;
 
     /*
@@ -127,11 +125,11 @@ public class Usuario {
      * }
      */
 
-    public Usuario() {
+    public Usuarios() {
         super();
     }
 
-    public Usuario(Long idUsuario, String usuario, String contrasena, boolean estado, Long id_tipo_usuario,
+    public Usuarios(Long idUsuario, String usuario, String contrasena, boolean estado, Long id_tipo_usuario,
             LocalDate fechaAlta, LocalDate fechaUltimaSesion, Long intentosFallidos) {
         this.idUsuario = idUsuario;
         this.usuario = usuario;
@@ -144,7 +142,7 @@ public class Usuario {
         // this.id_persona = id_persona;
     }
 
-    public Usuario(String usuario, String contrasena, boolean estado, LocalDate fechaAlta, LocalDate fechaUltimaSesion,
+    public Usuarios(String usuario, String contrasena, boolean estado, LocalDate fechaAlta, LocalDate fechaUltimaSesion,
             Long intentosFallidos) {
         this.usuario = usuario;
         this.contrasena = contrasena;

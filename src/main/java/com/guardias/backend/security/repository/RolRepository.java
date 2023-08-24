@@ -10,5 +10,5 @@ import com.guardias.backend.security.enums.RolNombre;
 
 @Repository
 public interface RolRepository extends JpaRepository <Rol, Integer> {
-    Optional<Rol> findByRolNombre(RolNombre RolNombre);
+    Optional<Rol> findByRolNombre(RolNombre rolNombre);
 }

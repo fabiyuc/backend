@@ -9,27 +9,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.guardias.backend.modelo.Usuario;
+import com.guardias.backend.modelo.Usuarios;
 import com.guardias.backend.repositorio.UsuarioRepositorio;
 
-@RestController
-@RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:4200")
+//@RestController
+//@RequestMapping("/user")
+//@CrossOrigin(origins = "http://localhost:4200")
 
 public class UsuarioController {
 
-    @Autowired
+    //@Autowired
     private UsuarioRepositorio repo;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Usuario userData) {
+  //  @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody Usuarios userData) {
         // Usuario usu = repo.getById(userData.getId_usuario());
         System.out.println("############");
         // System.out.println(userData.getIdUsuario());
 
         // Usuario user = repo.findByIdUsuario(userData.getIdUsuario());
         // Usuario user = repo.findByIdUsuario(userData.g);
-        Usuario user = repo.findByUsuario(userData.getUsuario());
+        Usuarios user = repo.findByUsuario(userData.getUsuario());
         System.out.println("el usuario userData es: " + userData.getUsuario());
         System.out.println("### El usuario es: " + user.getUsuario());
         if (user.getContrasena().equals(userData.getContrasena())) {

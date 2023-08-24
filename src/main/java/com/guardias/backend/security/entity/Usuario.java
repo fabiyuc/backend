@@ -3,42 +3,56 @@ package com.guardias.backend.security.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.validation.constraints.NotNull;
-
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     @NotNull
+    // @Column(name = "nombre")
     private String nombre;
+
+    // @Column(unique = true)
     @NotNull
-    @Column(unique = true)
+    // @Column(name = "nombreUsuario")
     private String nombreUsuario;
+
     @NotNull
+    // @Column(name = "email")
     private String email;
+
     @NotNull
+    // @Column(name = "password")
     private String password;
+
     @NotNull
     @ManyToMany
-    @JoinTable(name = "usuario_rol", joinColumns =@JoinColumn (name="usuario_id"),
-    inverseJoinColumns = @JoinColumn(name="rol_id"))
+    @JoinTable(name = "usuario_role", joinColumns = @JoinColumn(name = "usuario_ide", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Rol> roles = new HashSet<>();
-    
+
+    /*
+     * @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name =
+     * "usuario_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
+     * private Set<Rol> roles = new HashSet<>();
+     */
     public Usuario() {
     }
 
+    /*
+     * public Usuario(String nombre, String nombreUsuario, String email,
+     * String password) {
+     */
     public Usuario(@NotNull String nombre, @NotNull String nombreUsuario, @NotNull String email,
             @NotNull String password) {
         this.nombre = nombre;
@@ -94,6 +108,4 @@ public class Usuario {
     public void setRoles(Set<Rol> roles) {
         this.roles = roles;
     }
-
-
 }

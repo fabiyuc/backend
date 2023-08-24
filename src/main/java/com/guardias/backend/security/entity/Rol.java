@@ -1,14 +1,8 @@
 package com.guardias.backend.security.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
-
 import com.guardias.backend.security.enums.RolNombre;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Rol {
@@ -16,10 +10,10 @@ public class Rol {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RolNombre rolNombre;
-   
+
     public Rol() {
     }
 

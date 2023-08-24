@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.modelo.Profesional;
 import com.guardias.backend.repositorio.ProfesionalRepositorio;
 
-@RestController
-@RequestMapping("/api/V1/")
+//@RestController
+//@RequestMapping("/api/V1/")
 public class ProfesionalControlador {
 
-	@Autowired
+	//@Autowired
 	private ProfesionalRepositorio repositorio;
 
-	@GetMapping("/profesionales")
+	//@GetMapping("/profesionales")
 	public List<Profesional> listarProfesionales() {
 		return repositorio.findAll();
 	}
