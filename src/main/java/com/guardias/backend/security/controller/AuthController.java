@@ -2,9 +2,6 @@ package com.guardias.backend.security.controller;
 
 import java.util.HashSet;
 import java.util.Set;
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.security.dto.JwtDto;
 import com.guardias.backend.security.dto.LoginUsuario;
@@ -31,7 +27,6 @@ import com.guardias.backend.security.enums.RolNombre;
 import com.guardias.backend.security.jwt.JwtProvider;
 import com.guardias.backend.security.service.RolService;
 import com.guardias.backend.security.service.UsuarioService;
-
 import jakarta.validation.Valid;
 
 @RestController
@@ -74,6 +69,7 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
+        System.out.println("######## Inicio login #############");
         if(bindingResult.hasErrors())
             return new ResponseEntity(new Mensaje("campos mal puestos"), HttpStatus.BAD_REQUEST);
         Authentication authentication = 
@@ -82,7 +78,8 @@ public class AuthController {
         String jwt = jwtProvider.generateToken(authentication);
         UserDetails userDetails = (UserDetails)authentication.getPrincipal();
         JwtDto jwtDto = new JwtDto(jwt, userDetails.getUsername(), userDetails.getAuthorities());
-        return new ResponseEntity(jwt,HttpStatus.OK);
+        System.out.println("######## Fin login #############");
+        return new ResponseEntity(userDetails,HttpStatus.OK);
 
     }
 }

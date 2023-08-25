@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.modelo.Profesional;
-import com.guardias.backend.repositorio.ProfesionalRepositorio;
+//import com.guardias.backend.repositorio.ProfesionalRepositorio;
 
 //@RestController
-//@RequestMapping("/api/V1/")
+@RequestMapping("/api/V1/")
 public class ProfesionalControlador {
 
 	//@Autowired
