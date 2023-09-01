@@ -31,7 +31,7 @@ public class ProductoController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<Producto> getById(@PathVariable("id") int id){
         if(!productoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe 1"), HttpStatus.NOT_FOUND);
         Producto producto = productoService.getOne(id).get();
         return new ResponseEntity(producto, HttpStatus.OK);
     }
@@ -39,7 +39,7 @@ public class ProductoController {
     @GetMapping("/detailname/{nombre}")
     public ResponseEntity<Producto> getByNombre(@PathVariable("nombre") String nombre){
         if(!productoService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe 3"), HttpStatus.NOT_FOUND);
         Producto producto = productoService.getByNombre(nombre).get();
         return new ResponseEntity(producto, HttpStatus.OK);
     }
@@ -60,7 +60,7 @@ public class ProductoController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id")int id, @RequestBody ProductoDto productoDto){
         if(!productoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe 4"), HttpStatus.NOT_FOUND);
         if(productoService.existsByNombre(productoDto.getNombre()) && productoService.getByNombre(productoDto.getNombre()).get().getId() != id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
         if(StringUtils.isBlank(productoDto.getNombre()))
@@ -78,7 +78,7 @@ public class ProductoController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id")int id){
         if(!productoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe 5"), HttpStatus.NOT_FOUND);
         productoService.delete(id);
         return new ResponseEntity(new Mensaje("producto eliminado"), HttpStatus.OK);
     }
