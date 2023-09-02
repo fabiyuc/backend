@@ -46,7 +46,7 @@ public class ServicioControlador {
     @GetMapping("/detaildescripcion/{descripcion}")
     public ResponseEntity<Servicio> getByDescripcion(@PathVariable("descripcion") String descripcion) {
         if (serviceServicio.existsByDescripcion(descripcion))
-            return new ResponseEntity(new Mensaje("no existe 2"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         Servicio servicio = serviceServicio.getByDescripcion(descripcion).get();
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
     }
@@ -69,7 +69,7 @@ public class ServicioControlador {
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody ServicioDto servicioDto) {
         if (!serviceServicio.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe up"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
 
         if (serviceServicio.existsByDescripcion(servicioDto.getDescripcion()) &&
                 serviceServicio.getByDescripcion(servicioDto.getDescripcion()).get().getId() != id)
@@ -86,9 +86,9 @@ public class ServicioControlador {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        System.out.println("############## entra borrar ############");
+        //System.out.println("############## entra borrar ############");
         if (!serviceServicio.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe 7"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         serviceServicio.delete(id);
         return new ResponseEntity(new Mensaje("servicio eliminado"), HttpStatus.OK);
     }
