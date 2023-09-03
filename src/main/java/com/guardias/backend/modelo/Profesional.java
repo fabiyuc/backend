@@ -6,13 +6,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-//@Entity
+@Entity
 //@Table(name = "profesional")
-public class Profesional {
-	//@Id
+@Data
+@RequiredArgsConstructor
+@AllArgsConstructor
+public class Profesional extends Persona {
+
+	private String matricula;
+	
 	//@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id_profesional;
+	/* private Long id_profesional;
 
 	public Long getIdProfesional() {
 		return id_profesional;
@@ -20,10 +28,10 @@ public class Profesional {
 
 	public void setIdProfesional(Long id_profesional) {
 		this.id_profesional = id_profesional;
-	}
+	} */
 
 //	@Column(name = "id_persona")
-	private Long idPersona;
+	/* private Long idPersona;
 
 	public Long getIdPersona() {
 		return idPersona;
@@ -31,10 +39,10 @@ public class Profesional {
 
 	public void setIdPersona(Long idPersona) {
 		this.idPersona = idPersona;
-	}
+	} */
 
 	//@Column(name = "matricula")
-	private String matricula;
+	/* private String matricula;
 
 	public String getMatricula() {
 		return matricula;
@@ -42,10 +50,10 @@ public class Profesional {
 
 	public void setMatricula(String matricula) {
 		this.matricula = matricula;
-	}
+	} */
 
 	//@Column(name = "id_tipo_guardia")
-	private Long idTipoguardia;
+	/* private Long idTipoguardia;
 
 	public Long getIdTipoguardia() {
 		return idTipoguardia;
@@ -54,9 +62,9 @@ public class Profesional {
 	public void setIdTipoguardia(Long idTipoguardia) {
 		this.idTipoguardia = idTipoguardia;
 	}
-
+ */
 	//@Column(name = "id_distribucion_horaria")
-	private Long idDistribucionHoraria;
+	/* private Long idDistribucionHoraria;
 
 	public Long getIdDistribucionHoraria() {
 		return idDistribucionHoraria;
@@ -64,10 +72,10 @@ public class Profesional {
 
 	public void setIdDistribucionHoraria(Long idDistribucionHoraria) {
 		this.idDistribucionHoraria = idDistribucionHoraria;
-	}
+	} */
 
 //	@Column(name = "id_especialidad")
-	private Long idEspecialidad;
+	/* private Long idEspecialidad;
 
 	public Long getIdEspecialidad() {
 		return idEspecialidad;
@@ -88,6 +96,6 @@ public class Profesional {
 		this.idTipoguardia = idTipoguardia;
 		this.idDistribucionHoraria = idDistribucionHoraria;
 		this.idEspecialidad = idEspecialidad;
-	}
+	} */
 
 }

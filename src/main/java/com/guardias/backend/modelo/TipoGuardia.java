@@ -4,18 +4,34 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Data
+@RequiredArgsConstructor
+@AllArgsConstructor
+
 public class TipoGuardia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idTipoGuardia;
     private String nombre;
     private String descripcion;
+
+    
+    public TipoGuardia(String nombre, String descripcion) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
     
     
     
-    public TipoGuardia() {
+    /* public TipoGuardia() {
     }
 
     public TipoGuardia(int idTipoGuardia, String nombre, String descripcion) {
@@ -24,14 +40,11 @@ public class TipoGuardia {
         this.descripcion = descripcion;
     }
 
-    public TipoGuardia(String nombre, String descripcion) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-    }
-
+    
+ */
     //getters y setters
 
-    public int getIdTipoGuardia() {
+   /*  public int getIdTipoGuardia() {
         return idTipoGuardia;
     }
 
@@ -53,7 +66,7 @@ public class TipoGuardia {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
+    } */
 
     
     

@@ -5,41 +5,51 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 //@Entity
+@Data
+@RequiredArgsConstructor
+@AllArgsConstructor
+
 //@Table(name = "persona")
+@MappedSuperclass
 public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_persona;
+    private Long idPersona;
 
-    @Column(name = "nombre")
+    //@Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "apellido")
+    //@Column(name = "apellido")
     private String apellido;
 
-    @Column(name = "dni")
+    //@Column(name = "dni")
     private int dni;
 
-    @Column(name = "cuil")
+    //@Column(name = "cuil")
     private String cuil;
 
-    @Column(name = "sexo")
+    //@Column(name = "sexo")
     private String sexo;
 
-    @Column(name = "direccion")
+    //@Column(name = "direccion")
     private String direccion;
 
-    @Column(name = "telefono")
+    //@Column(name = "telefono")
     private String telefono;
 
-    @Column(name = "email")
+    //@Column(name = "email")
     private String email;
 
-    @Column(name = "id_udo")
+
+   /*  @Column(name = "id_udo")
     private Long id_udo;
 
     @Column(name = "id_legajo")
@@ -52,15 +62,15 @@ public class Persona {
     private Long id_cargo;
 
     @Column(name = "id_profesion")
-    private Long id_profesion;
+    private Long id_profesion; */
 
   /*   @Column(name = "id_usuario")
     private Long id_usuario; */
 
-    @Column(name = "estado")
+   /*  @Column(name = "estado")
     private Long estado;
-
-    public Long getId_persona() {
+ */
+    /* public Long getId_persona() {
         return id_persona;
     }
 
@@ -180,7 +190,7 @@ public class Persona {
         this.id_usuario = id_usuario;
     } */
 
-    public Long getEstado() {
+    /* public Long getEstado() {
         return estado;
     }
 
@@ -189,7 +199,7 @@ public class Persona {
     }
 
     public Persona() {
-    }
+    } */ 
 /* 
     public Persona(Long id_persona, String nombre, String apellido, int dni, String cuil, String sexo, String direccion,
             String telefono, String email, Long id_udo, Long id_legajo, Long id_hospital, Long id_cargo,
@@ -212,7 +222,7 @@ public class Persona {
         this.estado = estado;
     } */
 
-    public Persona(Long id_persona, String nombre, String apellido, int dni, String cuil, String sexo, String direccion,
+    /* public Persona(Long id_persona, String nombre, String apellido, int dni, String cuil, String sexo, String direccion,
             String telefono, String email, Long id_udo, Long id_legajo, Long id_hospital, Long id_cargo,
             Long id_profesion, Long estado) {
         this.id_persona = id_persona;
@@ -230,7 +240,7 @@ public class Persona {
         this.id_cargo = id_cargo;
         this.id_profesion = id_profesion;
         this.estado = estado;
-    }
+    } */
 
 
 
