@@ -51,8 +51,6 @@ public class ServicioControlador {
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
     }
 
-    //pasamos un JSON por medio de un HTTP - es la varible q indicamos en el metodo create
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ServicioDto servicioDto) {
         if (StringUtils.isBlank(servicioDto.getDescripcion()))
@@ -86,7 +84,7 @@ public class ServicioControlador {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        //System.out.println("############## entra borrar ############");
+        
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         serviceServicio.delete(id);
