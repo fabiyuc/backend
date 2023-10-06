@@ -1,12 +1,14 @@
 package com.guardias.backend.dto;
 
+import java.sql.Date;
 import java.sql.Time;
-import java.time.LocalDate;
+
+import com.guardias.backend.modelo.TipoGuardia;
 
 import jakarta.validation.constraints.NotBlank;
 
 public class RegistroActividadDto {
-    
+
     @NotBlank
     private Long id;
 
@@ -17,23 +19,26 @@ public class RegistroActividadDto {
     private String servicio;
 
     @NotBlank
-    private LocalDate fechaIngreso;
+    private Date fechaIngreso;
 
     @NotBlank
-    private LocalDate fechaEgreso;
-    
+    private Date fechaEgreso;
+
     @NotBlank
     private Time horaIngreso;
-    
+
     @NotBlank
     private Time horaEgreso;
+
+    @NotBlank
+    private TipoGuardia tipoGuardia;
 
     public RegistroActividadDto() {
     }
 
     public RegistroActividadDto(@NotBlank String establecimiento, @NotBlank String servicio,
-            @NotBlank LocalDate fechaIngreso, @NotBlank LocalDate fechaEgreso, @NotBlank Time horaIngreso,
-            @NotBlank Time horaEgreso) {
+            @NotBlank Date fechaIngreso, @NotBlank Date fechaEgreso, @NotBlank Time horaIngreso,
+            @NotBlank Time horaEgreso, @NotBlank TipoGuardia tipoGuardia) {
         this.establecimiento = establecimiento;
         this.servicio = servicio;
         this.fechaIngreso = fechaIngreso;
@@ -66,19 +71,19 @@ public class RegistroActividadDto {
         this.servicio = servicio;
     }
 
-    public LocalDate getFechaIngreso() {
+    public Date getFechaIngreso() {
         return fechaIngreso;
     }
 
-    public void setFechaIngreso(LocalDate fechaIngreso) {
+    public void setFechaIngreso(Date fechaIngreso) {
         this.fechaIngreso = fechaIngreso;
     }
 
-    public LocalDate getFechaEgreso() {
+    public Date getFechaEgreso() {
         return fechaEgreso;
     }
 
-    public void setFechaEgreso(LocalDate fechaEgreso) {
+    public void setFechaEgreso(Date fechaEgreso) {
         this.fechaEgreso = fechaEgreso;
     }
 
@@ -98,7 +103,13 @@ public class RegistroActividadDto {
         this.horaEgreso = horaEgreso;
     }
 
-    
+    public TipoGuardia getTipoGuardia() {
+        return tipoGuardia;
+    }
+
+    public void setTipoGuardia(TipoGuardia tipoGuardia) {
+        this.tipoGuardia = tipoGuardia;
+    }
 
     
 }

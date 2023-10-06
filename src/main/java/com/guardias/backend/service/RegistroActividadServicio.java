@@ -21,7 +21,6 @@ public class RegistroActividadServicio {
         return registroActividadRepositorio.findAll();
     }
 
-    //profesionales está Long, porque aqui no reconoce?
     public Optional<RegistroActividad> getOne(Long id){
         return registroActividadRepositorio.findById(id);
     }
@@ -30,7 +29,6 @@ public class RegistroActividadServicio {
         registroActividadRepositorio.save(registroActividad);
     }
 
-      //profesionales está Long, porque aqui no reconoce?
     public void delete(Long id) {
         registroActividadRepositorio.deleteById(id);
     }
