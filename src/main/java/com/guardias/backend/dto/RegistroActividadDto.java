@@ -25,10 +25,10 @@ public class RegistroActividadDto {
     private Date fechaEgreso;
 
     @NotBlank
-    private Time horaIngreso;
+    private String horaIngreso;
 
     @NotBlank
-    private Time horaEgreso;
+    private String horaEgreso;
 
     @NotBlank
     private TipoGuardia tipoGuardia;
@@ -37,8 +37,8 @@ public class RegistroActividadDto {
     }
 
     public RegistroActividadDto(@NotBlank String establecimiento, @NotBlank String servicio,
-            @NotBlank Date fechaIngreso, @NotBlank Date fechaEgreso, @NotBlank Time horaIngreso,
-            @NotBlank Time horaEgreso, @NotBlank TipoGuardia tipoGuardia) {
+            @NotBlank Date fechaIngreso, @NotBlank Date fechaEgreso, @NotBlank String horaIngreso,
+            @NotBlank String horaEgreso, @NotBlank TipoGuardia tipoGuardia) {
         this.establecimiento = establecimiento;
         this.servicio = servicio;
         this.fechaIngreso = fechaIngreso;
@@ -87,19 +87,19 @@ public class RegistroActividadDto {
         this.fechaEgreso = fechaEgreso;
     }
 
-    public Time getHoraIngreso() {
+    public String getHoraIngreso() {
         return horaIngreso;
     }
 
-    public void setHoraIngreso(Time horaIngreso) {
+    public void setHoraIngreso(String horaIngreso) {
         this.horaIngreso = horaIngreso;
     }
 
-    public Time getHoraEgreso() {
+    public String getHoraEgreso() {
         return horaEgreso;
     }
 
-    public void setHoraEgreso(Time horaEgreso) {
+    public void setHoraEgreso(String horaEgreso) {
         this.horaEgreso = horaEgreso;
     }
 

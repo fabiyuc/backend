@@ -27,15 +27,15 @@ public class RegistroActividad {
     private String servicio;
     private Date fechaIngreso;
     private Date fechaEgreso;
-    private Time horaIngreso;
-    private Time horaEgreso;
+    private String horaIngreso;
+    private String horaEgreso;
     
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = true)
     @JoinColumn(name = "id_tipo_guardia")
     private TipoGuardia tipoGuardia;
     
     public RegistroActividad(String establecimiento, String servicio, Date fechaIngreso, Date fechaEgreso,
-            Time horaIngreso, Time horaEgreso, TipoGuardia tipoGuardia) {
+            String horaIngreso, String horaEgreso, TipoGuardia tipoGuardia) {
         this.establecimiento = establecimiento;
         this.servicio = servicio;
         this.fechaIngreso = fechaIngreso;
