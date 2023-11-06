@@ -6,23 +6,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Pais {
+public class Provincia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String nombre;
-    private String nacionalidad;
-    private String codigo;
+    private String gentilicio;
 
-    public Pais() {
+    public Provincia() {
     }
 
-    public Pais(int id, String nombre, String nacionalidad, String codigo) {
+    public Provincia(int id, String nombre, String gentilicio) {
         this.id = id;
         this.nombre = nombre;
-        this.nacionalidad = nacionalidad;
-        this.codigo = codigo;
+        this.gentilicio = gentilicio;
     }
 
     public int getId() {
@@ -41,20 +39,12 @@ public class Pais {
         this.nombre = nombre;
     }
 
-    public String getNacionalidad() {
-        return nacionalidad;
+    public String getGentilicio() {
+        return gentilicio;
     }
 
-    public void setNacionalidad(String nacionalidad) {
-        this.nacionalidad = nacionalidad;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    public void setGentilicio(String gentilicio) {
+        this.gentilicio = gentilicio;
     }
 
 }
