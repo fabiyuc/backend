@@ -43,6 +43,6 @@ public class ProvinciaService {
     }
 
     public boolean existByNombre(String nombre) {
-        return ProvinciaRepository.existByNombre(nombre);
+        return ProvinciaRepository.existsByNombre(nombre);
     }
 }
