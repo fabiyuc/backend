@@ -1,10 +1,7 @@
 package com.guardias.backend.dto;
 
 import java.sql.Date;
-import java.sql.Time;
-
 import com.guardias.backend.modelo.TipoGuardia;
-
 import jakarta.validation.constraints.NotBlank;
 
 public class RegistroActividadDto {

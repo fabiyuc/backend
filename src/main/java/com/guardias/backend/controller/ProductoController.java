@@ -61,7 +61,7 @@ public class ProductoController {
     public ResponseEntity<?> update(@PathVariable("id")int id, @RequestBody ProductoDto productoDto){
         if(!productoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe 4"), HttpStatus.NOT_FOUND);
-        if(productoService.existsByNombre(productoDto.getNombre()) && productoService.getByNombre(productoDto.getNombre()).get().getId() != id)
+        if(productoService.existsByNombre(productoDto.getNombre()) && productoService.getByNombre(productoDto.getNombre()).get().getId() == id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
         if(StringUtils.isBlank(productoDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
