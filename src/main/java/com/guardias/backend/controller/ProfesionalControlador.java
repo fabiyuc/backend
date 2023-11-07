@@ -39,7 +39,7 @@ public class ProfesionalControlador {
 
     @GetMapping("/detaildni/{dni}")
     public ResponseEntity<Profesional> getByDni(@PathVariable("dni") int dni) {
-        if (profesionalServicio.existsByDni(dni))
+        if (!profesionalServicio.existsByDni(dni))
             return new ResponseEntity(new Mensaje("no existe el profesional"), HttpStatus.NOT_FOUND);
         Profesional profesional = profesionalServicio.getByDni(dni).get();
         return new ResponseEntity<Profesional>(profesional, HttpStatus.OK);
