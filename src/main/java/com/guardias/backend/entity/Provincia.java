@@ -54,4 +54,12 @@ public class Provincia {
         this.gentilicio = gentilicio;
     }
 
+    public void setPais(Pais pais) {
+        this.pais = pais;
+    }
+    /*
+     * public Pais getPais() {
+     * return pais;
+     * }
+     */
 }
