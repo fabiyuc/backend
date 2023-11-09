@@ -17,14 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
-import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.Profesion;
-import com.guardias.backend.entity.TipoRevista;
 import com.guardias.backend.service.ProfesionService;
-import com.guardias.backend.service.TipoRevistaService;
 
 @RestController
-@RequestMapping("/tipoRevista")
+@RequestMapping("/profesion")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProfesionController {
     
