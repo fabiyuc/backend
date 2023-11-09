@@ -42,7 +42,9 @@ public class ProvinciaService {
         return ProvinciaRepository.existsById(id);
     }
 
-    /* public boolean existByNombre(String nombre) {
-        return ProvinciaRepository.existByNombre(nombre);
-    } */
+
+    public boolean existByNombre(String nombre) {
+        return ProvinciaRepository.existsByNombre(nombre);
+    }
+
 }

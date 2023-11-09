@@ -1,9 +1,12 @@
 package com.guardias.backend.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Provincia {
@@ -13,6 +16,10 @@ public class Provincia {
     private int id;
     private String nombre;
     private String gentilicio;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_pais")
+    Pais pais;
 
     public Provincia() {
     }
@@ -47,4 +54,12 @@ public class Provincia {
         this.gentilicio = gentilicio;
     }
 
+    public void setPais(Pais pais) {
+        this.pais = pais;
+    }
+    /*
+     * public Pais getPais() {
+     * return pais;
+     * }
+     */
 }

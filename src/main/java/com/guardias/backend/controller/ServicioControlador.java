@@ -45,7 +45,7 @@ public class ServicioControlador {
 
     @GetMapping("/detaildescripcion/{descripcion}")
     public ResponseEntity<Servicio> getByDescripcion(@PathVariable("descripcion") String descripcion) {
-        if (serviceServicio.existsByDescripcion(descripcion))
+        if (!serviceServicio.existsByDescripcion(descripcion))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         Servicio servicio = serviceServicio.getByDescripcion(descripcion).get();
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class ServicioControlador {
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
 
         if (serviceServicio.existsByDescripcion(servicioDto.getDescripcion()) &&
-                serviceServicio.getByDescripcion(servicioDto.getDescripcion()).get().getId() != id)
+                serviceServicio.getByDescripcion(servicioDto.getDescripcion()).get().getId() == id)
             return new ResponseEntity(new Mensaje("esa descripcion ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(servicioDto.getDescripcion()))

@@ -1,8 +1,6 @@
 package com.guardias.backend.modelo;
 
-
 import java.sql.Date;
-import java.sql.Time;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

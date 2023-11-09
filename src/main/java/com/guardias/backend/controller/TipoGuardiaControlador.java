@@ -32,7 +32,7 @@ public class TipoGuardiaControlador {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<TipoGuardia> getByNombre(@PathVariable("nombre") String nombre) {
-        if (tipoGuardiaServicio.existsByNombre(nombre))
+        if (!tipoGuardiaServicio.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getByNombre(nombre).get();
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
@@ -40,7 +40,7 @@ public class TipoGuardiaControlador {
 
     @GetMapping("/detaildescripcion/{descripcion}")
     public ResponseEntity<TipoGuardia> getByDescripcion(@PathVariable("descripcion") String descripcion) {
-        if (tipoGuardiaServicio.existsByDescripcion(descripcion))
+        if (!tipoGuardiaServicio.existsByDescripcion(descripcion))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getByDescripcion(descripcion).get();
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
@@ -85,7 +85,7 @@ public class TipoGuardiaControlador {
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
 
         if (tipoGuardiaServicio.existsByNombre(tipoGuardiaDto.getNombre()) &&
-                tipoGuardiaServicio.getByNombre(tipoGuardiaDto.getNombre()).get().getIdTipoGuardia() != id)
+                tipoGuardiaServicio.getByNombre(tipoGuardiaDto.getNombre()).get().getIdTipoGuardia() == id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
