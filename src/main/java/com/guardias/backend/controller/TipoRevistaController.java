@@ -43,7 +43,7 @@ public class TipoRevistaController {
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<TipoRevista> getByDescripcion(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<TipoRevista> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoRevistaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
         TipoRevista tipoRevista = tipoRevistaService.getByNombre(nombre).get();

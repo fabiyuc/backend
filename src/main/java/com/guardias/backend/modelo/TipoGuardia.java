@@ -9,10 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
 
 @Entity
 @Data

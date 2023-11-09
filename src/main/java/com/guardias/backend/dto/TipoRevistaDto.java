@@ -13,11 +13,6 @@ public class TipoRevistaDto {
     public TipoRevistaDto() {
     }
 
-    public TipoRevistaDto(@NotBlank Long id, @NotBlank String nombre) {
-        this.id = id;
-        this.nombre = nombre;
-    }
-
     public TipoRevistaDto(@NotBlank String nombre) {
         this.nombre = nombre;
     }
