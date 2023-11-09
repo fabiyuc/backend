@@ -20,7 +20,7 @@ public class RegistroActividad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String establecimiento;
     private String servicio;
     private Date fechaIngreso;

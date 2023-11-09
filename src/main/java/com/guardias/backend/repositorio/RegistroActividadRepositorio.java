@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.modelo.RegistroActividad;
 
 @Repository
-public interface RegistroActividadRepositorio extends JpaRepository<RegistroActividad,Integer>{
+public interface RegistroActividadRepositorio extends JpaRepository<RegistroActividad,Long>{
 
-    Optional<RegistroActividad> findById(int id);
-    boolean existsById(int id);
+    Optional<RegistroActividad> findById(Long id);
+    boolean existsById(Long id);
     
 }
