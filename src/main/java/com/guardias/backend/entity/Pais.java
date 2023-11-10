@@ -26,8 +26,7 @@ public class Pais {
     public Pais() {
     }
 
-    public Pais(int id, String nombre, String nacionalidad, String codigo) {
-        this.id = id;
+    public Pais(String nombre, String nacionalidad, String codigo) {
         this.nombre = nombre;
         this.nacionalidad = nacionalidad;
         this.codigo = codigo;

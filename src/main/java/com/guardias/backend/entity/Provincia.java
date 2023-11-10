@@ -1,5 +1,8 @@
 package com.guardias.backend.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Provincia {
@@ -21,11 +25,13 @@ public class Provincia {
     @JoinColumn(name = "id_pais")
     Pais pais;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "provincia", cascade = CascadeType.ALL)
+    List<Departamento> departamento;
+
     public Provincia() {
     }
 
-    public Provincia(int id, String nombre, String gentilicio) {
-        this.id = id;
+    public Provincia(String nombre, String gentilicio) {
         this.nombre = nombre;
         this.gentilicio = gentilicio;
     }
@@ -57,9 +63,17 @@ public class Provincia {
     public void setPais(Pais pais) {
         this.pais = pais;
     }
-    /*
-     * public Pais getPais() {
-     * return pais;
-     * }
-     */
+
+    public List<Departamento> getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(List<Departamento> departamento) {
+        this.departamento = departamento;
+    }
+
+    // public Pais getPais() {
+    // return pais;
+    // }
+
 }
