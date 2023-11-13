@@ -29,7 +29,7 @@ public class DepartamentoController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Departamento>> getById(@PathVariable("id") int id) {
+    public ResponseEntity<List<Departamento>> getById(@PathVariable("id") Long id) {
         if (!departamentoService.existById(id))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
         Departamento departamento = departamentoService.getById(id).get();

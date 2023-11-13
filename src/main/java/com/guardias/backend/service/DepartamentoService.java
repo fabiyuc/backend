@@ -22,7 +22,7 @@ public class DepartamentoService {
         return departamentoRepository.findAll();
     }
 
-    public Optional<Departamento> getById(int id) {
+    public Optional<Departamento> getById(Long id) {
         return departamentoRepository.findById(id);
     }
 
@@ -34,11 +34,11 @@ public class DepartamentoService {
         departamentoRepository.save(departamento);
     }
 
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         departamentoRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existById(Long id) {
         return departamentoRepository.existsById(id);
     }
 

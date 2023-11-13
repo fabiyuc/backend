@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.TipoRevista;
@@ -24,7 +25,7 @@ import com.guardias.backend.service.TipoRevistaService;
 @RequestMapping("/tipoRevista")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TipoRevistaController {
-    
+
     @Autowired
     TipoRevistaService tipoRevistaService;
 
@@ -35,7 +36,7 @@ public class TipoRevistaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<TipoRevista> getById(@PathVariable("id") int id) {
+    public ResponseEntity<TipoRevista> getById(@PathVariable("id") Long id) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de revista"), HttpStatus.NOT_FOUND);
         TipoRevista tipoRevista = tipoRevistaService.getOne(id).get();
@@ -64,7 +65,7 @@ public class TipoRevistaController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody TipoRevistaDto tipoRevistaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoRevistaDto tipoRevistaDto) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
 
@@ -82,8 +83,8 @@ public class TipoRevistaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
         tipoRevistaService.delete(id);

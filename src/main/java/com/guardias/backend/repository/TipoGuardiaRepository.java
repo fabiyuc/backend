@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.TipoGuardia;
 
 @Repository
-public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Integer> {
+public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Long> {
 
     Optional<TipoGuardia> findByNombre(String nombre);
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Servicio;
 
 @Repository
-public interface ServicioRepository extends JpaRepository<Servicio, Integer> {
+public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 
     Optional<Servicio> findByDescripcion(String descripcion);
 

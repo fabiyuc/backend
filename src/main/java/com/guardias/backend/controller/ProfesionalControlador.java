@@ -64,7 +64,7 @@ public class ProfesionalControlador {
 
     /*
      * @PutMapping(("/update/{id}"))
-     * public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody
+     * public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody
      * ServicioDto servicioDto) {
      * if (!profesionalServicio.existsById(id))
      * return new ResponseEntity(new Mensaje("no existe el servicio"),
@@ -90,7 +90,7 @@ public class ProfesionalControlador {
 
     /*
      * @DeleteMapping("/delete/{id}")
-     * public ResponseEntity<?> delete(@PathVariable("id") int id) {
+     * public ResponseEntity<?> delete(@PathVariable("id") Long id) {
      * 
      * if (!profesionalServicio.existsById(id))
      * return new ResponseEntity(new Mensaje("no existe el servicio"),

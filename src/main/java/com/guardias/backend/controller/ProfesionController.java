@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
 import com.guardias.backend.entity.Profesion;
@@ -24,10 +25,9 @@ import com.guardias.backend.service.ProfesionService;
 @RequestMapping("/profesion")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProfesionController {
-    
+
     @Autowired
     ProfesionService profesionService;
-
 
     @GetMapping("/lista")
     public ResponseEntity<List<Profesion>> list() {
@@ -36,7 +36,7 @@ public class ProfesionController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Profesion> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Profesion> getById(@PathVariable("id") Long id) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la profesion"), HttpStatus.NOT_FOUND);
         Profesion profesion = profesionService.getOne(id).get();
@@ -60,15 +60,15 @@ public class ProfesionController {
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
         Profesion profesion = new Profesion(profesionDto.getNombre(),
-        profesionDto.getEsAsistencial(),
-        profesionDto.getMatriculaNacional(),
-        profesionDto.getMatriculaProvincial());
+                profesionDto.getEsAsistencial(),
+                profesionDto.getMatriculaNacional(),
+                profesionDto.getMatriculaProvincial());
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody ProfesionDto profesionDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ProfesionDto profesionDto) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
 
@@ -79,7 +79,8 @@ public class ProfesionController {
         if (StringUtils.isBlank(profesionDto.getNombre()))
             return new ResponseEntity(new Mensaje("la profesion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-//********** ver de validar que las matriculas no sean nulas en el front? o completar aqui mejor**********
+        // ********** ver de validar que las matriculas no sean nulas en el front? o
+        // completar aqui mejor**********
 
         Profesion profesion = profesionService.getOne(id).get();
         profesion.setNombre(profesionDto.getNombre());
@@ -91,8 +92,8 @@ public class ProfesionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
         profesionService.delete(id);

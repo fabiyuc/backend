@@ -18,16 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CargaHorariaDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.CargaHoraria;
-import com.guardias.backend.entity.TipoRevista;
 import com.guardias.backend.service.CargaHorariaService;
 
 @RestController
 @RequestMapping("/cargaHoraria")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CargaHorariaController {
-    
+
     @Autowired
     CargaHorariaService cargaHorariaService;
 
@@ -38,7 +36,7 @@ public class CargaHorariaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<CargaHoraria> getById(@PathVariable("id") int id) {
+    public ResponseEntity<CargaHoraria> getById(@PathVariable("id") Long id) {
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         CargaHoraria cargaHoraria = cargaHorariaService.getOne(id).get();
@@ -55,7 +53,7 @@ public class CargaHorariaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
-        
+
         String cantidadStr = Integer.toString(cargaHorariaDto.getCantidad());
         if (StringUtils.isBlank(cantidadStr))
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
@@ -69,7 +67,7 @@ public class CargaHorariaController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody CargaHorariaDto cargaHorariaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargaHorariaDto cargaHorariaDto) {
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
 
@@ -88,8 +86,8 @@ public class CargaHorariaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
         cargaHorariaService.delete(id);

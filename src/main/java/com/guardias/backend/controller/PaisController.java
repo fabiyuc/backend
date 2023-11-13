@@ -30,7 +30,7 @@ public class PaisController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Pais>> getById(@PathVariable("id") int id) {
+    public ResponseEntity<List<Pais>> getById(@PathVariable("id") Long id) {
         if (!paisService.existById(id))
             return new ResponseEntity(new Mensaje("pais no existe"), HttpStatus.NOT_FOUND);
         Pais pais = paisService.getById(id).get();

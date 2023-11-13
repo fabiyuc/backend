@@ -3,9 +3,9 @@ package com.guardias.backend.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class ProfesionDto {
-    
+
     @NotBlank
-    private int id;
+    private Long id;
 
     @NotBlank
     private String nombre;
@@ -15,7 +15,7 @@ public class ProfesionDto {
 
     @NotBlank
     private String matriculaNacional;
-    
+
     @NotBlank
     private String matriculaProvincial;
 
@@ -30,11 +30,11 @@ public class ProfesionDto {
         this.matriculaProvincial = matriculaProvincial;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -70,5 +70,4 @@ public class ProfesionDto {
         this.matriculaProvincial = matriculaProvincial;
     }
 
-    
 }

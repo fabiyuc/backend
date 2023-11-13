@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Provincia;
 
 @Repository
-public interface ProvinciaRepository extends JpaRepository<Provincia, Integer> {
+public interface ProvinciaRepository extends JpaRepository<Provincia, Long> {
 
     Optional<Provincia> findByNombre(String nombre);
 

@@ -21,7 +21,7 @@ public class ServiceService {
         return servicioRepositorio.findAll();
     }
 
-    public Optional<Servicio> getOne(int id) {
+    public Optional<Servicio> getOne(Long id) {
         return servicioRepositorio.findById(id);
     }
 
@@ -33,11 +33,11 @@ public class ServiceService {
         servicioRepositorio.save(servicio);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         servicioRepositorio.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return servicioRepositorio.existsById(id);
     }
 

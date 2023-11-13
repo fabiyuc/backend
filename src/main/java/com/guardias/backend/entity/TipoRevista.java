@@ -16,7 +16,7 @@ public class TipoRevista {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String nombre;
 
     public TipoRevista(String nombre) {

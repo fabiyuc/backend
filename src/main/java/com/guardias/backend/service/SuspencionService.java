@@ -3,9 +3,11 @@ package com.guardias.backend.service;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.guardias.backend.entity.Suspencion;
 import com.guardias.backend.repository.SuspencionRepository;
 
@@ -20,7 +22,7 @@ public class SuspencionService {
         return suspencionRepository.findAll();
     }
 
-    public Optional<Suspencion> getOne(int id) {
+    public Optional<Suspencion> getOne(Long id) {
         return suspencionRepository.findById(id);
     }
 
@@ -36,20 +38,20 @@ public class SuspencionService {
         suspencionRepository.save(suspencion);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         suspencionRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return suspencionRepository.existsById(id);
     }
 
     public boolean existsByFechaInicio(Date fechaInicio) {
         return suspencionRepository.existsByFechaInicio(fechaInicio);
     }
-    
+
     public boolean existsByFechaFin(Date fechaFin) {
         return suspencionRepository.existsByFechaFin(fechaFin);
     }
-    
+
 }

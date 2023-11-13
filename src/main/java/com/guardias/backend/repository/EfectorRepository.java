@@ -4,10 +4,10 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.guardias.backend.entity.Region;
+import com.guardias.backend.entity.Efector;
 
-public interface RegionRepository extends JpaRepository<Region, Long> {
-    Optional<Region> findByNombre(String nombre);
+public interface EfectorRepository extends JpaRepository<Efector, Long> {
+    Optional<Efector> findByNombre(String nombre);
 
     boolean existsByNombre(String nombre);
 }

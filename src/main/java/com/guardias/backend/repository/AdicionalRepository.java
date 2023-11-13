@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Adicional;
 
 @Repository
-public interface AdicionalRepository extends JpaRepository<Adicional, Integer> {
+public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
     Optional<Adicional> findByNombre(String nombre);
 
     boolean existsByNombre(String nombre);

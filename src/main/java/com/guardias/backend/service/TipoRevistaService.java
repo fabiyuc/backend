@@ -16,12 +16,12 @@ public class TipoRevistaService {
 
     @Autowired
     TipoRevistaRepository tipoRevistaRepository;
-    
+
     public List<TipoRevista> list() {
         return tipoRevistaRepository.findAll();
     }
 
-    public Optional<TipoRevista> getOne(int id) {
+    public Optional<TipoRevista> getOne(Long id) {
         return tipoRevistaRepository.findById(id);
     }
 
@@ -33,11 +33,11 @@ public class TipoRevistaService {
         tipoRevistaRepository.save(tipoRevista);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         tipoRevistaRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return tipoRevistaRepository.existsById(id);
     }
 

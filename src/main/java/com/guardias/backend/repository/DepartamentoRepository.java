@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Departamento;
 
 @Repository
-public interface DepartamentoRepository extends JpaRepository<Departamento, Integer> {
+public interface DepartamentoRepository extends JpaRepository<Departamento, Long> {
     Optional<Departamento> findByNombre(String nombre);
 
     boolean existsByNombre(String nombre);

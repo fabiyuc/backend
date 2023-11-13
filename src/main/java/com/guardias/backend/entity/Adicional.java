@@ -10,22 +10,22 @@ public class Adicional {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private long id;
+    private Long id;
     private String nombre;
 
     public Adicional() {
     }
 
-    public Adicional(long id, String nombre) {
+    public Adicional(Long id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

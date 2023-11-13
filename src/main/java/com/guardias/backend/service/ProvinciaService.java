@@ -22,7 +22,7 @@ public class ProvinciaService {
         return ProvinciaRepository.findAll();
     }
 
-    public Optional<Provincia> getById(int id) {
+    public Optional<Provincia> getById(Long id) {
         return ProvinciaRepository.findById(id);
     }
 
@@ -34,14 +34,13 @@ public class ProvinciaService {
         ProvinciaRepository.save(provincia);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         ProvinciaRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existById(Long id) {
         return ProvinciaRepository.existsById(id);
     }
-
 
     public boolean existByNombre(String nombre) {
         return ProvinciaRepository.existsByNombre(nombre);

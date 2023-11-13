@@ -21,7 +21,7 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
-    public Optional<Categoria> getOne(int id) {
+    public Optional<Categoria> getOne(Long id) {
         return categoriaRepository.findById(id);
     }
 
@@ -33,11 +33,11 @@ public class CategoriaService {
         categoriaRepository.save(adicional);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         categoriaRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return categoriaRepository.existsById(id);
     }
 

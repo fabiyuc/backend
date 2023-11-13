@@ -36,7 +36,7 @@ public class ServicioControlador {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Servicio> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Servicio> getById(@PathVariable("id") Long id) {
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el servicio"), HttpStatus.NOT_FOUND);
         Servicio servicio = serviceServicio.getOne(id).get();
@@ -65,7 +65,7 @@ public class ServicioControlador {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody ServicioDto servicioDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ServicioDto servicioDto) {
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
 
@@ -83,7 +83,7 @@ public class ServicioControlador {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
 
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);

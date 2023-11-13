@@ -41,7 +41,7 @@ public class TipoGuardiaService {
         return tipoGuardiaRepositorio.findAll();
     }
 
-    public Optional<TipoGuardia> getOne(int id) {
+    public Optional<TipoGuardia> getOne(Long id) {
         return tipoGuardiaRepositorio.findById(id);
     }
 
@@ -49,11 +49,11 @@ public class TipoGuardiaService {
         tipoGuardiaRepositorio.save(tipoGuardia);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         tipoGuardiaRepositorio.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return tipoGuardiaRepositorio.existsById(id);
     }
 

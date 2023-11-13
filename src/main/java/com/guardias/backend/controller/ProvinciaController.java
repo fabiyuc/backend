@@ -30,7 +30,7 @@ public class ProvinciaController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Provincia>> getById(@PathVariable("id") int id) {
+    public ResponseEntity<List<Provincia>> getById(@PathVariable("id") Long id) {
         if (!provinciaService.existById(id))
             return new ResponseEntity(new Mensaje("provincia no existe"), HttpStatus.NOT_FOUND);
         Provincia provincia = provinciaService.getById(id).get();

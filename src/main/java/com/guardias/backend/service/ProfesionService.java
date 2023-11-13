@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
-
 
 @Service
 @Transactional
@@ -21,23 +21,23 @@ public class ProfesionService {
         return profesionRepository.findAll();
     }
 
-    public Optional<Profesion> getOne(int id) {
+    public Optional<Profesion> getOne(Long id) {
         return profesionRepository.findById(id);
     }
 
-    public Optional<Profesion> getByNombre(String nombre){
-        return profesionRepository.findByNombre(nombre) ;
+    public Optional<Profesion> getByNombre(String nombre) {
+        return profesionRepository.findByNombre(nombre);
     }
 
     public void save(Profesion profesion) {
         profesionRepository.save(profesion);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         profesionRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return profesionRepository.existsById(id);
     }
 
@@ -45,6 +45,4 @@ public class ProfesionService {
         return profesionRepository.existsByNombre(nombre);
     }
 
-
-    
 }

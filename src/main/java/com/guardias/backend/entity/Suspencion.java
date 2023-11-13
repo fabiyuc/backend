@@ -18,7 +18,7 @@ public class Suspencion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String descripcion;
     private Date fechaInicio;
     private Date fechaFin;

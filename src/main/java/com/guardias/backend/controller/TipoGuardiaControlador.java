@@ -51,7 +51,7 @@ public class TipoGuardiaControlador {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<TipoGuardia> getById(@PathVariable("id") int id) {
+    public ResponseEntity<TipoGuardia> getById(@PathVariable("id") Long id) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de guardia"), HttpStatus.NOT_FOUND);
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
@@ -79,7 +79,7 @@ public class TipoGuardiaControlador {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody TipoGuardiaDto tipoGuardiaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoGuardiaDto tipoGuardiaDto) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
 
@@ -101,7 +101,7 @@ public class TipoGuardiaControlador {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
         tipoGuardiaServicio.delete(id);

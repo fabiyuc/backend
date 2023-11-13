@@ -12,14 +12,14 @@ import com.guardias.backend.repository.CargaHorariaRepository;
 @Service
 @Transactional
 public class CargaHorariaService {
-    
+
     CargaHorariaRepository cargaHorariaRepository;
 
     public List<CargaHoraria> list() {
         return cargaHorariaRepository.findAll();
     }
 
-    public Optional<CargaHoraria> getOne(int id) {
+    public Optional<CargaHoraria> getOne(Long id) {
         return cargaHorariaRepository.findById(id);
     }
 
@@ -31,11 +31,11 @@ public class CargaHorariaService {
         cargaHorariaRepository.save(cargaHoraria);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         cargaHorariaRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return cargaHorariaRepository.existsById(id);
     }
 

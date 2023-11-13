@@ -10,22 +10,22 @@ public class Especialidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String nombre;
 
     public Especialidad() {
     }
 
-    public Especialidad(long id, String nombre) {
+    public Especialidad(Long id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -21,7 +21,7 @@ public class EspecialidadService {
         return especialidadRepository.findAll();
     }
 
-    public Optional<Especialidad> getById(int id) {
+    public Optional<Especialidad> getById(Long id) {
         return especialidadRepository.findById(id);
     }
 
@@ -33,11 +33,11 @@ public class EspecialidadService {
         especialidadRepository.save(especialidad);
     }
 
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         especialidadRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existById(Long id) {
         return especialidadRepository.existsById(id);
     }
 
