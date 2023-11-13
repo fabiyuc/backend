@@ -2,6 +2,8 @@ package com.guardias.backend.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +26,7 @@ public class Departamento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_provincia")
+    @JsonIgnore
     Provincia provincia;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
@@ -61,10 +64,6 @@ public class Departamento {
         this.codigoPostal = codigoPostal;
     }
 
-    // public Provincia getProvincia() {
-    // return provincia;
-    // }
-
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
     }
@@ -75,6 +74,10 @@ public class Departamento {
 
     public void setLocalidad(List<Localidad> localidad) {
         this.localidad = localidad;
+    }
+
+    public Provincia getProvincia() {
+        return provincia;
     }
 
 }

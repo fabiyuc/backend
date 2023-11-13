@@ -1,5 +1,7 @@
 package com.guardias.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +21,7 @@ public class Localidad {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_departamento")
+    @JsonIgnore
     Departamento departamento;
 
     public Localidad() {
@@ -49,8 +52,8 @@ public class Localidad {
         this.departamento = departamento;
     }
 
-    // public Departamento getDepartamento() {
-    // return departamento;
-    // }
+    public Departamento getDepartamento() {
+        return departamento;
+    }
 
 }
