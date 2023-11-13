@@ -6,16 +6,16 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.modelo.Profesional;
-import com.guardias.backend.repositorio.ProfesionalRepositorio;
+import com.guardias.backend.entity.Profesional;
+import com.guardias.backend.repository.ProfesionalRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class ProfesionalServicio {
-   @Autowired
-    ProfesionalRepositorio profesionalRepositorio;
+public class ProfesionalService {
+    @Autowired
+    ProfesionalRepository profesionalRepositorio;
 
     public List<Profesional> list() {
         return profesionalRepositorio.findAll();
@@ -43,5 +43,5 @@ public class ProfesionalServicio {
 
     public boolean existsByDni(int dni) {
         return profesionalRepositorio.existsByDni(dni);
-    } 
+    }
 }

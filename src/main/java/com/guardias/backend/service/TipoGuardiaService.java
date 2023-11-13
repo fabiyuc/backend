@@ -7,18 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.guardias.backend.modelo.TipoGuardia;
-import com.guardias.backend.repositorio.TipoGuardiaRepositorio;
+import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.repository.TipoGuardiaRepository;
 
 @Service
 @Transactional
-public class TipoGuardiaServicio {
-    
-    @Autowired
-    TipoGuardiaRepositorio tipoGuardiaRepositorio;
+public class TipoGuardiaService {
 
-    
-    //metodos por descripcion
+    @Autowired
+    TipoGuardiaRepository tipoGuardiaRepositorio;
+
+    // metodos por descripcion
     public Optional<TipoGuardia> getByDescripcion(String descripcion) {
         return tipoGuardiaRepositorio.findByDescripcion(descripcion);
     }
@@ -26,9 +25,9 @@ public class TipoGuardiaServicio {
     public boolean existsByDescripcion(String descripcion) {
         return tipoGuardiaRepositorio.existsByDescripcion(descripcion);
     }
-    //fin descripcion
+    // fin descripcion
 
-    //metodos por nombre
+    // metodos por nombre
     public Optional<TipoGuardia> getByNombre(String nombre) {
         return tipoGuardiaRepositorio.findByNombre(nombre);
     }
@@ -36,7 +35,7 @@ public class TipoGuardiaServicio {
     public boolean existsByNombre(String nombre) {
         return tipoGuardiaRepositorio.existsByNombre(nombre);
     }
-    //fin nombre
+    // fin nombre
 
     public List<TipoGuardia> list() {
         return tipoGuardiaRepositorio.findAll();
@@ -58,5 +57,4 @@ public class TipoGuardiaServicio {
         return tipoGuardiaRepositorio.existsById(id);
     }
 
-    
 }

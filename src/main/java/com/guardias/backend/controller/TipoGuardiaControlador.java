@@ -18,17 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
-import com.guardias.backend.modelo.TipoGuardia;
-import com.guardias.backend.service.TipoGuardiaServicio;
+import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
 @RequestMapping("/tipoGuardia")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TipoGuardiaControlador {
     @Autowired
-    TipoGuardiaServicio tipoGuardiaServicio;
-
-
+    TipoGuardiaService tipoGuardiaServicio;
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<TipoGuardia> getByNombre(@PathVariable("nombre") String nombre) {
@@ -59,12 +57,13 @@ public class TipoGuardiaControlador {
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
     }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoGuardiaDto tipoGuardiaDto) {
         if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
-                    
+
         if (StringUtils.isBlank(tipoGuardiaDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),
                     HttpStatus.BAD_REQUEST);
@@ -74,7 +73,7 @@ public class TipoGuardiaControlador {
         if (tipoGuardiaServicio.existsByDescripcion(tipoGuardiaDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("esa descripcion ya existe"),
                     HttpStatus.BAD_REQUEST);
-        TipoGuardia tipoGuardia = new TipoGuardia(tipoGuardiaDto.getNombre(),tipoGuardiaDto.getDescripcion());
+        TipoGuardia tipoGuardia = new TipoGuardia(tipoGuardiaDto.getNombre(), tipoGuardiaDto.getDescripcion());
         tipoGuardiaServicio.save(tipoGuardia);
         return new ResponseEntity(new Mensaje("tipo de guardia creado"), HttpStatus.OK);
     }

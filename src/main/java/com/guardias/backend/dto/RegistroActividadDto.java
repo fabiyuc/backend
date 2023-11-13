@@ -1,7 +1,9 @@
 package com.guardias.backend.dto;
 
 import java.sql.Date;
-import com.guardias.backend.modelo.TipoGuardia;
+
+import com.guardias.backend.entity.TipoGuardia;
+
 import jakarta.validation.constraints.NotBlank;
 
 public class RegistroActividadDto {
@@ -108,5 +110,4 @@ public class RegistroActividadDto {
         this.tipoGuardia = tipoGuardia;
     }
 
-    
 }

@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.modelo.Profesional;
-import com.guardias.backend.service.ProfesionalServicio;
+import com.guardias.backend.entity.Profesional;
+import com.guardias.backend.service.ProfesionalService;
 
 @RestController
 @RequestMapping("/profesional")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProfesionalControlador {
-    
+
     @Autowired
-    ProfesionalServicio profesionalServicio;
+    ProfesionalService profesionalServicio;
 
     @GetMapping("/lista")
     public ResponseEntity<List<Profesional>> list() {
@@ -45,45 +45,59 @@ public class ProfesionalControlador {
         return new ResponseEntity<Profesional>(profesional, HttpStatus.OK);
     }
 
-   /* FALTA ADAPTAR EL METODO A LO QUE SE NECESITA
-     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody ProfesionalDto profesionalDto) {
-        if (StringUtils.isBlank(profesionalDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (profesionalServicio.existsByNombre(profesionalDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        Profesional servicio = new Profesional(profesionalDto.getDescripcion());
-        profesionalServicio.save(profesional);
-        return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
-    } */
+    /*
+     * FALTA ADAPTAR EL METODO A LO QUE SE NECESITA
+     * 
+     * @PostMapping("/create")
+     * public ResponseEntity<?> create(@RequestBody ProfesionalDto profesionalDto) {
+     * if (StringUtils.isBlank(profesionalDto.getNombre()))
+     * return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+     * HttpStatus.BAD_REQUEST);
+     * if (profesionalServicio.existsByNombre(profesionalDto.getNombre()))
+     * return new ResponseEntity(new Mensaje("ese nombre ya existe"),
+     * HttpStatus.BAD_REQUEST);
+     * Profesional servicio = new Profesional(profesionalDto.getDescripcion());
+     * profesionalServicio.save(profesional);
+     * return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
+     * }
+     */
 
-    /* @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody ServicioDto servicioDto) {
-        if (!profesionalServicio.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
+    /*
+     * @PutMapping(("/update/{id}"))
+     * public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody
+     * ServicioDto servicioDto) {
+     * if (!profesionalServicio.existsById(id))
+     * return new ResponseEntity(new Mensaje("no existe el servicio"),
+     * HttpStatus.NOT_FOUND);
+     * 
+     * if (profesionalServicio.existsByDescripcion(servicioDto.getDescripcion()) &&
+     * profesionalServicio.getByDescripcion(servicioDto.getDescripcion()).get().
+     * getId() != id)
+     * return new ResponseEntity(new Mensaje("esa descripcion ya existe"),
+     * HttpStatus.BAD_REQUEST);
+     * 
+     * if (StringUtils.isBlank(servicioDto.getDescripcion()))
+     * return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),
+     * HttpStatus.BAD_REQUEST);
+     * 
+     * Profesional profesional = profesionalServicio.getOne(id).get();
+     * profesional.setDescripcion(servicioDto.getDescripcion());
+     * profesionalServicio.save(profesional);
+     * return new ResponseEntity(new Mensaje("servicio actualizado"),
+     * HttpStatus.OK);
+     * }
+     */
 
-        if (profesionalServicio.existsByDescripcion(servicioDto.getDescripcion()) &&
-                profesionalServicio.getByDescripcion(servicioDto.getDescripcion()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("esa descripcion ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(servicioDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        Profesional profesional = profesionalServicio.getOne(id).get();
-        profesional.setDescripcion(servicioDto.getDescripcion());
-        profesionalServicio.save(profesional);
-        return new ResponseEntity(new Mensaje("servicio actualizado"), HttpStatus.OK);
-    } */
-
-   /*  @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        
-        if (!profesionalServicio.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
-        profesionalServicio.delete(id);
-        return new ResponseEntity(new Mensaje("servicio eliminado"), HttpStatus.OK);
-    } */
+    /*
+     * @DeleteMapping("/delete/{id}")
+     * public ResponseEntity<?> delete(@PathVariable("id") int id) {
+     * 
+     * if (!profesionalServicio.existsById(id))
+     * return new ResponseEntity(new Mensaje("no existe el servicio"),
+     * HttpStatus.NOT_FOUND);
+     * profesionalServicio.delete(id);
+     * return new ResponseEntity(new Mensaje("servicio eliminado"), HttpStatus.OK);
+     * }
+     */
 
 }

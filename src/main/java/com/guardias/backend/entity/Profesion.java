@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "profesiones")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -28,5 +28,5 @@ public class Profesion {
         this.matriculaNacional = matriculaNacional;
         this.matriculaProvincial = matriculaProvincial;
     }
-    
+
 }

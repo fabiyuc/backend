@@ -1,17 +1,17 @@
-package com.guardias.backend.repositorio;
+package com.guardias.backend.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.guardias.backend.modelo.Servicio;
-
+import com.guardias.backend.entity.Servicio;
 
 @Repository
-public interface ServicioRepositorio extends JpaRepository<Servicio, Integer> {
+public interface ServicioRepository extends JpaRepository<Servicio, Integer> {
 
     Optional<Servicio> findByDescripcion(String descripcion);
+
     boolean existsByDescripcion(String descripcion);
 
 }

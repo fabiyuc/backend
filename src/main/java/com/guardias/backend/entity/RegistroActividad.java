@@ -1,21 +1,17 @@
-package com.guardias.backend.modelo;
+package com.guardias.backend.entity;
 
 import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-
-@Entity
-@Data
+@Entity(name = "registrosActividades")
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class RegistroActividad {
 
     @Id
@@ -27,11 +23,11 @@ public class RegistroActividad {
     private Date fechaEgreso;
     private String horaIngreso;
     private String horaEgreso;
-    
-	@ManyToOne(optional = true)
+
+    @ManyToOne(optional = true)
     @JoinColumn(name = "id_tipo_guardia")
     private TipoGuardia tipoGuardia;
-    
+
     public RegistroActividad(String establecimiento, String servicio, Date fechaIngreso, Date fechaEgreso,
             String horaIngreso, String horaEgreso, TipoGuardia tipoGuardia) {
         this.establecimiento = establecimiento;
@@ -42,6 +38,5 @@ public class RegistroActividad {
         this.horaEgreso = horaEgreso;
         this.tipoGuardia = tipoGuardia;
     }
-
 
 }

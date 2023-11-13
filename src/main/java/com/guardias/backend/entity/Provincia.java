@@ -12,7 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity
+@Entity(name = "provincias")
 public class Provincia {
 
     @Id
@@ -71,9 +71,5 @@ public class Provincia {
     public void setDepartamento(List<Departamento> departamento) {
         this.departamento = departamento;
     }
-
-    // public Pais getPais() {
-    // return pais;
-    // }
 
 }

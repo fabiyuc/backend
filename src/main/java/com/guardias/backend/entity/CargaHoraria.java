@@ -8,20 +8,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "CargasHorarias")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class CargaHoraria {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int cantidad;
-    
+
     public CargaHoraria(int cantidad) {
         this.cantidad = cantidad;
     }
-    
-    
+
 }

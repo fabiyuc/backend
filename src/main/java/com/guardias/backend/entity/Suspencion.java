@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.sql.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "suspenciones")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -27,6 +28,5 @@ public class Suspencion {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
     }
-    
-    
+
 }

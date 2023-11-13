@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.guardias.backend.modelo.Servicio;
-import com.guardias.backend.repositorio.ServicioRepositorio;
+import com.guardias.backend.entity.Servicio;
+import com.guardias.backend.repository.ServicioRepository;
 
 @Service
 @Transactional
-public class ServiceServicio {
+public class ServiceService {
 
     @Autowired
-    ServicioRepositorio servicioRepositorio;
+    ServicioRepository servicioRepositorio;
 
     public List<Servicio> list() {
         return servicioRepositorio.findAll();

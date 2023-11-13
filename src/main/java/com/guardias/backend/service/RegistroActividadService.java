@@ -6,26 +6,26 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.modelo.RegistroActividad;
-import com.guardias.backend.repositorio.RegistroActividadRepositorio;
+import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.repository.RegistroActividadRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class RegistroActividadServicio {
+public class RegistroActividadService {
     @Autowired
-    RegistroActividadRepositorio registroActividadRepositorio;
+    RegistroActividadRepository registroActividadRepositorio;
 
-    public List<RegistroActividad> list(){
+    public List<RegistroActividad> list() {
         return registroActividadRepositorio.findAll();
     }
 
-    public Optional<RegistroActividad> getOne(Long id){
+    public Optional<RegistroActividad> getOne(Long id) {
         return registroActividadRepositorio.findById(id);
     }
 
-     public void save(RegistroActividad registroActividad) {
+    public void save(RegistroActividad registroActividad) {
         registroActividadRepositorio.save(registroActividad);
     }
 

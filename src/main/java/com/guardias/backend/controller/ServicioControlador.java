@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
-import com.guardias.backend.modelo.Servicio;
-import com.guardias.backend.service.ServiceServicio;
+import com.guardias.backend.entity.Servicio;
+import com.guardias.backend.service.ServiceService;
 
 @RestController
 @RequestMapping("/servicio")
@@ -27,7 +27,7 @@ import com.guardias.backend.service.ServiceServicio;
 public class ServicioControlador {
 
     @Autowired
-    ServiceServicio serviceServicio;
+    ServiceService serviceServicio;
 
     @GetMapping("/lista")
     public ResponseEntity<List<Servicio>> list() {
@@ -84,7 +84,7 @@ public class ServicioControlador {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        
+
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         serviceServicio.delete(id);

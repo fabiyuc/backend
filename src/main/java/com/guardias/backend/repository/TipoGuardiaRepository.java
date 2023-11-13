@@ -1,18 +1,20 @@
-package com.guardias.backend.repositorio;
+package com.guardias.backend.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.guardias.backend.modelo.TipoGuardia;
+import com.guardias.backend.entity.TipoGuardia;
 
 @Repository
-public interface TipoGuardiaRepositorio extends JpaRepository<TipoGuardia, Integer> {
+public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Integer> {
 
     Optional<TipoGuardia> findByNombre(String nombre);
+
     boolean existsByNombre(String nombre);
-    
+
     Optional<TipoGuardia> findByDescripcion(String descripcion);
+
     boolean existsByDescripcion(String descripcion);
 }

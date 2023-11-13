@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "tiposDeRevistas")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -18,10 +18,9 @@ public class TipoRevista {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String nombre;
-    
+
     public TipoRevista(String nombre) {
         this.nombre = nombre;
     }
-    
-    
+
 }

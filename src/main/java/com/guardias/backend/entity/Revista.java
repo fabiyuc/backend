@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "revistas")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -17,6 +17,5 @@ public class Revista {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
-    
+
 }
