@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class TipoGuardia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idTipoGuardia;
+    private long idTipoGuardia;
     private String nombre;
     private String descripcion;
 

@@ -16,7 +16,7 @@ public class CargaHoraria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     private int cantidad;
 
     public CargaHoraria(int cantidad) {

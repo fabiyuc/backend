@@ -16,7 +16,7 @@ public class Profesion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     private String nombre;
     private Boolean esAsistencial;
     private String matriculaNacional;

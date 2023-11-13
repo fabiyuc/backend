@@ -10,11 +10,11 @@ public class Servicio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String descripcion;
 
-    public Servicio(int id, String descripcion) {
+    public Servicio(long id, String descripcion) {
         this.id = id;
         this.descripcion = descripcion;
     }
@@ -26,11 +26,11 @@ public class Servicio {
     public Servicio() {
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -19,7 +19,7 @@ public class Departamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String nombre;
     private String codigoPostal;
@@ -40,11 +40,11 @@ public class Departamento {
         this.codigoPostal = codigoPostal;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

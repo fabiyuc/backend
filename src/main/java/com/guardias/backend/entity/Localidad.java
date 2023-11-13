@@ -15,7 +15,7 @@ public class Localidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
 
     private String nombre;
 
@@ -27,16 +27,16 @@ public class Localidad {
     public Localidad() {
     }
 
-    public Localidad(int id, String nombre, int idDepartamento) {
+    public Localidad(long id, String nombre, long idDepartamento) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
