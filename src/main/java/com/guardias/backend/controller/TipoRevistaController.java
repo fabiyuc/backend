@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,7 @@ public class TipoRevistaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<TipoRevista> getById(@PathVariable("id") int id) {
+    public ResponseEntity<TipoRevista> getById(@PathVariable("id") Long id) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de revista"), HttpStatus.NOT_FOUND);
         TipoRevista tipoRevista = tipoRevistaService.getOne(id).get();
@@ -64,7 +63,7 @@ public class TipoRevistaController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody TipoRevistaDto tipoRevistaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoRevistaDto tipoRevistaDto) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
 
@@ -82,7 +81,7 @@ public class TipoRevistaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);

@@ -20,7 +20,7 @@ public class SuspencionService {
         return suspencionRepository.findAll();
     }
 
-    public Optional<Suspencion> getOne(int id) {
+    public Optional<Suspencion> getOne(Long id) {
         return suspencionRepository.findById(id);
     }
 
@@ -36,11 +36,11 @@ public class SuspencionService {
         suspencionRepository.save(suspencion);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         suspencionRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return suspencionRepository.existsById(id);
     }
 

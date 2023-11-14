@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import java.sql.Date;
-
 import jakarta.validation.constraints.NotBlank;
 
 public class SuspencionDto {

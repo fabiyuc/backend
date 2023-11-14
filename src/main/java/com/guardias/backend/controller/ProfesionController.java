@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,7 @@ public class ProfesionController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Profesion> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Profesion> getById(@PathVariable("id") Long id) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la profesion"), HttpStatus.NOT_FOUND);
         Profesion profesion = profesionService.getOne(id).get();
@@ -68,7 +67,7 @@ public class ProfesionController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody ProfesionDto profesionDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ProfesionDto profesionDto) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
 
@@ -91,7 +90,7 @@ public class ProfesionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);

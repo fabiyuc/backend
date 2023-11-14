@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.TipoRevista;
 import com.guardias.backend.repository.TipoRevistaRepository;
 
@@ -21,7 +19,7 @@ public class TipoRevistaService {
         return tipoRevistaRepository.findAll();
     }
 
-    public Optional<TipoRevista> getOne(int id) {
+    public Optional<TipoRevista> getOne(Long id) {
         return tipoRevistaRepository.findById(id);
     }
 
@@ -33,11 +31,11 @@ public class TipoRevistaService {
         tipoRevistaRepository.save(tipoRevista);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         tipoRevistaRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return tipoRevistaRepository.existsById(id);
     }
 

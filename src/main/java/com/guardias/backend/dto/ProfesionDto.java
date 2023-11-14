@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 public class ProfesionDto {
     
     @NotBlank
-    private int id;
+    private Long id;
 
     @NotBlank
     private String nombre;
@@ -30,11 +30,11 @@ public class ProfesionDto {
         this.matriculaProvincial = matriculaProvincial;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

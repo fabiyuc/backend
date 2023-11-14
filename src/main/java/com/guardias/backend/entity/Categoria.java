@@ -10,9 +10,12 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private int id;
     private String nombre;
+
+    /* @OneToMany(mappedBy = "categoria")
+    private Set<Revista> revistas; */
+
 
     public Categoria() {
     }
@@ -38,4 +41,13 @@ public class Categoria {
         this.nombre = nombre;
     }
 
+    /* public Set<Revista> getRevistas() {
+        return revistas;
+    }
+
+    public void setRevistas(Set<Revista> revistas) {
+        this.revistas = revistas;
+    } */
+
+    
 }

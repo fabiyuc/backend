@@ -5,7 +5,7 @@ import com.guardias.backend.entity.CargaHoraria;
 import java.util.Optional;
 
 
-public interface CargaHorariaRepository extends JpaRepository<CargaHoraria, Integer> {
+public interface CargaHorariaRepository extends JpaRepository<CargaHoraria, Long> {
     Optional<CargaHoraria> findByCantidad(int cantidad);
     boolean existsByCantidad(int cantidad);
 }
