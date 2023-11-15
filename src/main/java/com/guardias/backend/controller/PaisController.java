@@ -23,7 +23,7 @@ public class PaisController {
     @Autowired
     PaisService paisService;
 
-/*     @GetMapping("/lista")
+    @GetMapping("/lista")
     public ResponseEntity<List<Pais>> list() {
         List<Pais> list = paisService.list();
         return new ResponseEntity(list, HttpStatus.OK);
@@ -35,5 +35,5 @@ public class PaisController {
             return new ResponseEntity(new Mensaje("pais no existe"), HttpStatus.NOT_FOUND);
         Pais pais = paisService.getById(id).get();
         return new ResponseEntity(pais, HttpStatus.OK);
-    } */
+    } 
 }
