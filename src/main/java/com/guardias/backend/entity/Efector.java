@@ -13,7 +13,8 @@ public class Efector {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private Long idEfector;
     private String nombre;
     private String domicilio;
     private String telefono;
@@ -21,17 +22,17 @@ public class Efector {
     private String observacion;
 
     @Column(name = "id_region")
-    private long idRegion;
+    private Long idRegion;
 
     @Column(name = "id_localidad")
-    private long idLocalidad;
+    private Long idLocalidad;
 
     public Efector() {
     }
 
-    public Efector(long id, String nombre, String domicilio, String telefono, boolean estado, String observacion,
+    public Efector(long idEfector, String nombre, String domicilio, String telefono, boolean estado, String observacion,
             long idRegion, long idLocalidad) {
-        this.id = id;
+        this.idEfector = idEfector;
         this.nombre = nombre;
         this.domicilio = domicilio;
         this.telefono = telefono;
@@ -41,12 +42,12 @@ public class Efector {
         this.idLocalidad = idLocalidad;
     }
 
-    public long getId() {
-        return id;
+    public Long getIdEfector() {
+        return idEfector;
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.idEfector = id;
     }
 
     public String getNombre() {

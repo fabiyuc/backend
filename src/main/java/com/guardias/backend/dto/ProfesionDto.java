@@ -13,21 +13,13 @@ public class ProfesionDto {
     @NotBlank
     private Boolean esAsistencial;
 
-    @NotBlank
-    private String matriculaNacional;
-
-    @NotBlank
-    private String matriculaProvincial;
-
     public ProfesionDto() {
     }
 
-    public ProfesionDto(@NotBlank String nombre, @NotBlank Boolean esAsistencial, @NotBlank String matriculaNacional,
-            @NotBlank String matriculaProvincial) {
+    public ProfesionDto(@NotBlank String nombre, @NotBlank Boolean esAsistencial) {
         this.nombre = nombre;
         this.esAsistencial = esAsistencial;
-        this.matriculaNacional = matriculaNacional;
-        this.matriculaProvincial = matriculaProvincial;
+
     }
 
     public Long getId() {
@@ -52,22 +44,6 @@ public class ProfesionDto {
 
     public void setEsAsistencial(Boolean esAsistencial) {
         this.esAsistencial = esAsistencial;
-    }
-
-    public String getMatriculaNacional() {
-        return matriculaNacional;
-    }
-
-    public void setMatriculaNacional(String matriculaNacional) {
-        this.matriculaNacional = matriculaNacional;
-    }
-
-    public String getMatriculaProvincial() {
-        return matriculaProvincial;
-    }
-
-    public void setMatriculaProvincial(String matriculaProvincial) {
-        this.matriculaProvincial = matriculaProvincial;
     }
 
 }

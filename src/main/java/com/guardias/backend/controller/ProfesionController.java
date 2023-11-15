@@ -60,9 +60,7 @@ public class ProfesionController {
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
         Profesion profesion = new Profesion(profesionDto.getNombre(),
-                profesionDto.getEsAsistencial(),
-                profesionDto.getMatriculaNacional(),
-                profesionDto.getMatriculaProvincial());
+                profesionDto.getEsAsistencial());
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);
     }
@@ -85,8 +83,6 @@ public class ProfesionController {
         Profesion profesion = profesionService.getOne(id).get();
         profesion.setNombre(profesionDto.getNombre());
         profesion.setEsAsistencial(profesionDto.getEsAsistencial());
-        profesion.setMatriculaNacional(profesionDto.getMatriculaNacional());
-        profesion.setMatriculaProvincial(profesionDto.getMatriculaProvincial());
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion actualizada"), HttpStatus.OK);
     }

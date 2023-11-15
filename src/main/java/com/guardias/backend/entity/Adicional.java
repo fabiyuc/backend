@@ -16,8 +16,7 @@ public class Adicional {
     public Adicional() {
     }
 
-    public Adicional(Long id, String nombre) {
-        this.id = id;
+    public Adicional(String nombre) {
         this.nombre = nombre;
     }
 
