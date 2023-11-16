@@ -46,4 +46,19 @@ public class PaisService {
         return paisRepository.existsByNombre(nombre);
     }
 
+    public boolean existsById(int id) {
+        return false;
+    }
+
+    public Object getOne(int id) {
+        return null;
+    }
+
+    public Object getByNombre(String nombre) {
+        return null;
+    }
+
+    public void delete(int id) {
+    }
+
 }
