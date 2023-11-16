@@ -19,7 +19,16 @@ public class Hospital extends Efector {
     public Hospital() {
     }
 
-    public Hospital(boolean esCabecera, int nivelComplejidad) {
+    public Hospital(Long id, boolean esCabecera, int nivelComplejidad) {
+        this.id = id;
+        this.esCabecera = esCabecera;
+        this.nivelComplejidad = nivelComplejidad;
+    }
+
+    public Hospital(long idEfector, String nombre, String domicilio, String telefono, boolean estado,
+            String observacion, long idRegion, long idLocalidad, Long id, boolean esCabecera, int nivelComplejidad) {
+        super(idEfector, nombre, domicilio, telefono, estado, observacion, idRegion, idLocalidad);
+        this.id = id;
         this.esCabecera = esCabecera;
         this.nivelComplejidad = nivelComplejidad;
     }

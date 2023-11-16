@@ -68,21 +68,25 @@ public class HospitalController {
         hospital.setDomicilio(hospitalDto.getDomicilio());
         hospital.setTelefono(hospitalDto.getTelefono());
         hospital.setEstado(hospitalDto.isEstado());
+        hospital.setIdRegion(hospitalDto.getIdRegion());
+        hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
         hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
 
         hospitalService.save(hospital);
-        return new ResponseEntity(new Mensaje("Hospital creado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
     }
 
-    @PutMapping(("/update/{id}"))
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody HospitalDto hospitalDto) {
         if (!hospitalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
 
-        if (hospitalService.existsByNombre(hospitalDto.getNombre()) &&
-                hospitalService.getHospitalByNombre(hospitalDto.getNombre()).get().getId() == id)
-            return new ResponseEntity(new Mensaje("ese hospital ya existe"), HttpStatus.BAD_REQUEST);
+        // if (hospitalService.existsByNombre(hospitalDto.getNombre()) &&
+        // hospitalService.getHospitalByNombre(hospitalDto.getNombre()).get().getId() ==
+        // id)
+        // return new ResponseEntity(new Mensaje("ese hospital ya existe"),
+        // HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(hospitalDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -92,6 +96,8 @@ public class HospitalController {
         hospital.setDomicilio(hospitalDto.getDomicilio());
         hospital.setTelefono(hospitalDto.getTelefono());
         hospital.setEstado(hospitalDto.isEstado());
+        hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
+        hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
 

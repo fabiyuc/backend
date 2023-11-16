@@ -13,14 +13,14 @@ public class HospitalDto extends EfectorDto {
     @Column(columnDefinition = "INT DEFAULT 1")
     private int nivelComplejidad;
 
-    public HospitalDto(@NotBlank boolean esCabecera, @NotBlank int nivelComplejidad) {
+    public HospitalDto(boolean esCabecera, @Min(1) int nivelComplejidad) {
         this.esCabecera = esCabecera;
         this.nivelComplejidad = nivelComplejidad;
     }
 
     public HospitalDto(@NotBlank String nombre, @NotBlank String domicilio, String telefono, @NotBlank boolean estado,
-            String observacion, @NotBlank boolean esCabecera, @NotBlank int nivelComplejidad) {
-        super(nombre, domicilio, telefono, estado, observacion);
+            String observacion, Long idRegion, Long idLocalidad, boolean esCabecera, @Min(1) int nivelComplejidad) {
+        super(nombre, domicilio, telefono, estado, observacion, idRegion, idLocalidad);
         this.esCabecera = esCabecera;
         this.nivelComplejidad = nivelComplejidad;
     }
