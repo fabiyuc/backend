@@ -1,5 +1,6 @@
 package com.guardias.backend.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,27 +23,34 @@ public class Persona {
     private Long idPersona;
 
     // @Column(name = "nombre")
+    @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
 
     // @Column(name = "apellido")
+    @Column(columnDefinition = "VARCHAR(25)")
     private String apellido;
 
     // @Column(name = "dni")
     private int dni;
 
     // @Column(name = "cuil")
+    @Column(columnDefinition = "VARCHAR(10)")
     private String cuil;
 
     // @Column(name = "sexo")
+    @Column(columnDefinition = "VARCHAR(15)")
     private String sexo;
 
     // @Column(name = "direccion")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String direccion;
 
     // @Column(name = "telefono")
+    @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
 
     // @Column(name = "email")
+    @Column(columnDefinition = "VARCHAR(20)")
     private String email;
 
     /*

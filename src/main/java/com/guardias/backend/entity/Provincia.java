@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +21,9 @@ public class Provincia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
+    @Column(columnDefinition = "VARCHAR(25)")
     private String gentilicio;
 
     @ManyToOne(fetch = FetchType.LAZY)

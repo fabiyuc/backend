@@ -1,6 +1,10 @@
 package com.guardias.backend.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +16,15 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class Profesional extends Persona {
 
-    private String matricula;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "matricula_provincial", columnDefinition = "VARCHAR(10)")
+    private String matriculaProvincial;
+
+    @Column(name = "matricula_nacional", columnDefinition = "VARCHAR(10)")
+    private String matriculaNacional;
 
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
     /*

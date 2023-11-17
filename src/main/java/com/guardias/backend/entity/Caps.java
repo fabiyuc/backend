@@ -15,22 +15,22 @@ public class Caps extends Efector {
     private Long id;
 
     @Column(name = "id_udo")
-    private int idUdo;
+    private Long idUdo;
 
-    @Column(name = "tipo_caps")
+    @Column(name = "tipo_caps", columnDefinition = "VARCHAR(25)")
     private String tipoCaps;
 
     public Caps() {
     }
 
-    public Caps(Long id, int idUdo, String tipoCaps) {
+    public Caps(Long id, Long idUdo, String tipoCaps) {
         this.id = id;
         this.idUdo = idUdo;
         this.tipoCaps = tipoCaps;
     }
 
     public Caps(long idEfector, String nombre, String domicilio, String telefono, boolean estado, String observacion,
-            long idRegion, long idLocalidad, Long id, int idUdo, String tipoCaps) {
+            long idRegion, long idLocalidad, Long id, Long idUdo, String tipoCaps) {
         super(idEfector, nombre, domicilio, telefono, estado, observacion, idRegion, idLocalidad);
         this.id = id;
         this.idUdo = idUdo;
@@ -45,11 +45,11 @@ public class Caps extends Efector {
         this.id = id;
     }
 
-    public int getIdUdo() {
+    public Long getIdUdo() {
         return idUdo;
     }
 
-    public void setIdUdo(int idUdo) {
+    public void setIdUdo(Long idUdo) {
         this.idUdo = idUdo;
     }
 

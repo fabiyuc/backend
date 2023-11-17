@@ -22,10 +22,14 @@ public class Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
+    @Column(columnDefinition = "VARCHAR(50)")
     private String domicilio;
+    @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
     private boolean estado;
+
     private String observacion;
 
     @Column(name = "id_region")
