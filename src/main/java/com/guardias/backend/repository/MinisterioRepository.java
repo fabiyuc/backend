@@ -5,12 +5,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.guardias.backend.entity.Hospital;
+import com.guardias.backend.entity.Ministerio;
 
 @Repository
-public interface HospitalRepository extends JpaRepository<Hospital, Long> {
+public interface MinisterioRepository extends JpaRepository<Ministerio, Long> {
 
-    Optional<Hospital> findByNombre(String nombre);
+    Optional<Ministerio> findByNombre(String nombre);
 
     boolean existsByNombre(String nombre);
 }

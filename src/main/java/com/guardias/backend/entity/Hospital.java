@@ -1,12 +1,14 @@
 package com.guardias.backend.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity(name = "hospitales")
+@DiscriminatorValue("HOSPITAL")
 public class Hospital extends Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

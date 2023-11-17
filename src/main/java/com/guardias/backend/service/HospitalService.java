@@ -34,7 +34,7 @@ public class HospitalService {
         hospitalRepository.save(hospital);
     }
 
-    public void deleteById(long id) {
+    public void deleteById(Long id) {
         hospitalRepository.deleteById(id);
     }
 

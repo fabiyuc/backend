@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,23 +37,15 @@ public class EfectorController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Efector>> getEfectorById(@PathVariable("id") Long id){
-        if(!efectorService.existById(id))
-        return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND)
-        Efector efector = efectorService.getById(id).get();
-        return new ResponseEntity(efector, HttpStatus.OK);
-    }
-
-    @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Efector>> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<List<Efector>> getEfectorById(@PathVariable("id") Long id) {
         if (!efectorService.existById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Efector efector = efectorService.getById(id).get();
         return new ResponseEntity(efector, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{nombre}")
-    public ResponseEntity<List<Efector>> getById(@PathVariable("nomrbre") String nombre) {
+    @GetMapping("/detalle-nombre/{nombre}")
+    public ResponseEntity<List<Efector>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!efectorService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Efector efector = efectorService.getEfectorByNombre(nombre).get();
@@ -64,11 +57,9 @@ public class EfectorController {
         if (StringUtils.isBlank(efectorDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(efectorDto.getDomicilio()))
-            return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el domicilio es obligatorio"), HttpStatus.BAD_REQUEST);
         if (efectorService.existsByNombre(efectorDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         Efector efector = new Efector();
         efector.setNombre(efectorDto.getNombre());
@@ -87,11 +78,6 @@ public class EfectorController {
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody EfectorDto efectorDto) {
         if (!efectorService.existById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
-        // if (efectorService.existsByNombre(efectorDto.getNombre()) &&
-        // efectorService.getEfectorByNombre(efectorDto.getNombre()).get().getIdEfector()
-        // == id)
-        // return new ResponseEntity(new Mensaje("ese efector ya existe"),
-        // HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(efectorDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -109,4 +95,11 @@ public class EfectorController {
         return new ResponseEntity(new Mensaje("Hospital actualizado"), HttpStatus.OK);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity <?> delete(@PathVariable("id") Long id){
+        if(!efectorService.existById(id))
+        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND)
+        efectorService.deleteById(id);
+        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK)
+    }
 }
