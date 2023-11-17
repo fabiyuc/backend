@@ -25,6 +25,18 @@ public class Pais {
         this.codigo = codigo;
     }
 
+    
+
+    public Pais(String nombre, String nacionalidad, String codigo) {
+        this.nombre = nombre;
+        this.nacionalidad = nacionalidad;
+        this.codigo = codigo;
+    }
+
+    public Pais(String nombre) {
+        this.nombre = nombre;
+    }
+
     public int getId() {
         return id;
     }

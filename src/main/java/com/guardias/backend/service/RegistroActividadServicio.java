@@ -21,7 +21,7 @@ public class RegistroActividadServicio {
         return registroActividadRepositorio.findAll();
     }
 
-    public Optional<RegistroActividad> getOne(Long id){
+    public Optional<RegistroActividad> getOne(int id){
         return registroActividadRepositorio.findById(id);
     }
 
@@ -29,11 +29,11 @@ public class RegistroActividadServicio {
         registroActividadRepositorio.save(registroActividad);
     }
 
-    public void delete(Long id) {
+    public void delete(int id) {
         registroActividadRepositorio.deleteById(id);
     }
 
-    public boolean existsById(Long id) {
+    public boolean existsById(int id) {
         return registroActividadRepositorio.existsById(id);
     }
 }

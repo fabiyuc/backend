@@ -9,6 +9,9 @@ public class PaisDto {
 
     @NotBlank
     private String nombre;
+    
+    @NotBlank
+    private String nacionalidad;
 
     @NotBlank
     private String codigo;
@@ -16,8 +19,10 @@ public class PaisDto {
     public PaisDto() {
     }
 
-    public PaisDto(@NotBlank String nombre) {
+    public PaisDto(@NotBlank String nombre, @NotBlank String nacionalidad, @NotBlank String codigo) {
         this.nombre = nombre;
+        this.nacionalidad = nacionalidad;
+        this.codigo = codigo;
     }
 
     public Long getId() {
@@ -34,6 +39,22 @@ public class PaisDto {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getNacionalidad() {
+        return nacionalidad;
+    }
+
+    public void setNacionalidad(String nacionalidad) {
+        this.nacionalidad = nacionalidad;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     

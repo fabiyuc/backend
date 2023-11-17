@@ -37,15 +37,15 @@ public class PaisController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<Pais> getById(@PathVariable("id") int id) {
         if (!paisService.existsById(id))
-            return new ResponseEntity(new Mensaje("No existe el tipo de revista"), HttpStatus.NOT_FOUND);
-        Pais tipoRevista = paisService.getOne(id).get();
+            return new ResponseEntity(new Mensaje("No existe el pais"), HttpStatus.NOT_FOUND);
+        Pais pais = paisService.getOne(id).get();
         return new ResponseEntity<Pais>(pais, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Pais> getByNombre(@PathVariable("nombre") String nombre) {
         if (!paisService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el nombre del pais"), HttpStatus.NOT_FOUND);
         Pais pais = paisService.getByNombre(nombre).get();
         return new ResponseEntity<Pais>(pais, HttpStatus.OK);
     }
@@ -58,7 +58,9 @@ public class PaisController {
         if (paisService.existsByNombre(PaisDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-        Pais tipoRevista = new Pais(PaisDto.getNombre());
+        Pais pais = new Pais(PaisDto.getNombre(),
+        PaisDto.getCodigo(),
+        PaisDto.getNacionalidad());
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("tipo de revista creado"), HttpStatus.OK);
     }
@@ -66,7 +68,7 @@ public class PaisController {
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody PaisDto PaisDto) {
         if (!paisService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
 
         if (paisService.existsByNombre(PaisDto.getNombre()) &&
                 paisService.getByNombre(PaisDto.getNombre()).get().getId() == id)
@@ -77,17 +79,19 @@ public class PaisController {
 
         Pais pais = paisService.getOne(id).get();
         pais.setNombre(PaisDto.getNombre());
+        pais.setCodigo(PaisDto.getCodigo());
+        pais.setNacionalidad(PaisDto.getNacionalidad());
         paisService.save(pais);
-        return new ResponseEntity(new Mensaje("Tipo de servicio actualizado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("pais actualizado"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") int id) {
         
         if (!paisService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
         paisService.delete(id);
-        return new ResponseEntity(new Mensaje("tipo de revista eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("pais eliminado"), HttpStatus.OK);
     }
 
 }

@@ -22,43 +22,55 @@ public class PaisService {
         return paisRepository.findAll();
     }
 
-    public Optional<Pais> getById(int id) {
+    public Optional<Pais> getOne(int id) {
         return paisRepository.findById(id);
-    }
-
-    public Optional<Pais> getPaisByNombre(String nombre) {
-        return paisRepository.findByNombre(nombre);
     }
 
     public void save(Pais pais) {
         paisRepository.save(pais);
     }
 
-    public void deleteById(int id) {
+    public void delete(int id) {
         paisRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existsById(int id) {
         return paisRepository.existsById(id);
+    }
+
+    public Optional<Pais> getById(int id) {
+        return paisRepository.findById(id);
     }
 
     public boolean existsByNombre(String nombre) {
         return paisRepository.existsByNombre(nombre);
     }
 
-    public boolean existsById(int id) {
+     public Optional<Pais> getByNombre(String nombre) {
+        return paisRepository.findByNombre(nombre);
+    }
+
+    
+
+    
+   
+
+   
+
+    
+
+    
+
+    
+
+   /*  public boolean existsById(int id) {
         return false;
-    }
+    } */
 
-    public Object getOne(int id) {
+    
+
+    /* public Object getByNombre(String nombre) {
         return null;
-    }
-
-    public Object getByNombre(String nombre) {
-        return null;
-    }
-
-    public void delete(int id) {
-    }
+    } */
 
 }

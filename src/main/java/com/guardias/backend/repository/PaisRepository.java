@@ -10,7 +10,8 @@ import com.guardias.backend.entity.Pais;
 @Repository
 public interface PaisRepository extends JpaRepository<Pais, Integer> {
     Optional<Pais> findByNombre(String nombre);
-
     boolean existsByNombre(String nombre);
+
+    
 
 }
