@@ -41,8 +41,8 @@ public class LegajoController {
     }
 
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
+  /*   @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) { */
        
 /* ############  validar campos en front o ver como hacerlo aqui con bool y date */
 
@@ -53,13 +53,13 @@ public class LegajoController {
             return new ResponseEntity(new Mensaje("el servicio es obligatorio"),HttpStatus.BAD_REQUEST); */
 
         
-        Legajo legajo = new Legajo(legajoDto.getFechaInicio(),
+    /*     Legajo legajo = new Legajo(legajoDto.getFechaInicio(),
                 legajoDto.getFechaFinal(), 
                 legajoDto.isEsActual(),
                 legajoDto.isEsLegal());
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
-    } 
+    }  */
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {

@@ -24,8 +24,8 @@ public class Profesion {
     private String matriculaNacional;
     private String matriculaProvincial;
 
-    @OneToMany(mappedBy = "legajo")
-    private Set<Legajo> legajos;
+   /*  @OneToMany(mappedBy = "legajo")
+    private Set<Legajo> legajos; */
 
     public Profesion(String nombre, Boolean esAsistencial, String matriculaNacional, String matriculaProvincial) {
         this.nombre = nombre;

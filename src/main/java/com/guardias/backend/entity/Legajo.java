@@ -24,23 +24,29 @@ public class Legajo {
     private Date fechaFinal;
     private boolean esActual;
     private boolean esLegal;
+    private String matriculaNacional;
+    private String matriculaProvincial;
 
-    @ManyToOne(optional = true)
+  /*   @ManyToOne(optional = true)
     @JoinColumn(name = "id_profesion")
-    private Profesion profesion;
+    private Profesion profesion; */
 
-    @ManyToOne(optional = true)
+    /* @ManyToOne(optional = true)
     @JoinColumn(name = "id_suspencion")
-    private Suspencion suspenciones;
+    private Suspencion suspenciones; */
 
-    public Legajo(Date fechaInicio, Date fechaFinal, boolean esActual, boolean esLegal, Profesion profesion,
-            Suspencion suspenciones) {
+    public Legajo(Date fechaInicio, Date fechaFinal, boolean esActual, boolean esLegal, String matriculaNacional,
+            String matriculaProvincial) {
         this.fechaInicio = fechaInicio;
         this.fechaFinal = fechaFinal;
         this.esActual = esActual;
         this.esLegal = esLegal;
-        this.profesion = profesion;
-        this.suspenciones = suspenciones;
-    } 
+        this.matriculaNacional = matriculaNacional;
+        this.matriculaProvincial = matriculaProvincial;
+       // this.profesion = profesion;
+       // this.suspenciones = suspenciones;
+    }
+
+    
     
 }

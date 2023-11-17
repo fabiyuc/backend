@@ -35,7 +35,7 @@ public class SuspencionController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Suspencion> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Suspencion> getById(@PathVariable("id") Long id) {
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la suspención"), HttpStatus.NOT_FOUND);
         Suspencion suspencion = suspencionService.getOne(id).get();
@@ -75,7 +75,7 @@ public class SuspencionController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody SuspencionDto suspencionDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody SuspencionDto suspencionDto) {
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la suspención"), HttpStatus.NOT_FOUND);
 
@@ -93,7 +93,7 @@ public class SuspencionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la suspención"), HttpStatus.NOT_FOUND);
