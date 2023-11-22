@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 public class CapsDto extends EfectorDto {
 
     @Min(value = 1)
-    private int idUdo;
+    private Long idUdo;
 
     @NotBlank
     private String tipoCaps;
@@ -14,23 +14,23 @@ public class CapsDto extends EfectorDto {
     public CapsDto() {
     }
 
-    public CapsDto(@Min(1) int idUdo, @NotBlank String tipoCaps) {
+    public CapsDto(@Min(1) Long idUdo, @NotBlank String tipoCaps) {
         this.idUdo = idUdo;
         this.tipoCaps = tipoCaps;
     }
 
     public CapsDto(@NotBlank String nombre, @NotBlank String domicilio, String telefono, @NotBlank boolean estado,
-            String observacion, Long idRegion, Long idLocalidad, @Min(1) int idUdo, @NotBlank String tipoCaps) {
+            String observacion, Long idRegion, Long idLocalidad, @Min(1) Long idUdo, @NotBlank String tipoCaps) {
         super(nombre, domicilio, telefono, estado, observacion, idRegion, idLocalidad);
         this.idUdo = idUdo;
         this.tipoCaps = tipoCaps;
     }
 
-    public int getIdUdo() {
+    public Long getIdUdo() {
         return idUdo;
     }
 
-    public void setIdUdo(int idUdo) {
+    public void setIdUdo(Long idUdo) {
         this.idUdo = idUdo;
     }
 

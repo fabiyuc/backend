@@ -1,22 +1,14 @@
 package com.guardias.backend.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
 
-@Entity
-
-@Table(name = "efectores")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo_efector")
-@DiscriminatorValue("EFECTOR")
+@MappedSuperclass
+@Table(name = "Efectores")
 public class Efector {
 
     @Id

@@ -6,9 +6,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 
-@Entity(name = "hospitales")
+@Entity
+@Table(name = "hospitales")
 @DiscriminatorValue("HOSPITAL")
+@PrimaryKeyJoinColumn(name = "id_efector")
 public class Hospital extends Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
