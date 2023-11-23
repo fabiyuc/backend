@@ -1,6 +1,6 @@
 package com.guardias.backend.entity;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,8 +16,8 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime fecha;
 
     private String seccion;
     private String accion;
@@ -25,9 +25,9 @@ public class Log {
     public Log() {
     }
 
-    public Log(Long id, Date fecha, String seccion, String accion) {
+    public Log(Long id, LocalDateTime fecha, String seccion, String accion) {
         this.id = id;
-        this.fecha = fecha;
+        this.fecha = LocalDateTime.now();
         this.seccion = seccion;
         this.accion = accion;
     }
@@ -40,11 +40,11 @@ public class Log {
         this.id = id;
     }
 
-    public Date getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 

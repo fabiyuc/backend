@@ -44,24 +44,11 @@ public class LogController {
         return new ResponseEntity<Log>(log, HttpStatus.OK);
     }
 
-    @GetMapping("/detaille/{nombre}")
-    public ResponseEntity<Log> getByDni(@PathVariable("nombre") String nombre) {
-        if (!logService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("no existe el log"), HttpStatus.NOT_FOUND);
-        Log log = logService.getByNombre(nombre).get();
-        return new ResponseEntity<Log>(log, HttpStatus.OK);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LogDto logDto) {
         if (StringUtils.isBlank(logDto.getFecha().toString()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (logService.existsByNombre(logDto.getSeccion()))
-            return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (logService.existsByNombre(logDto.getAccion()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
         Log log = new Log();
         log.setFecha(logDto.getFecha());
         log.setSeccion(logDto.getSeccion());

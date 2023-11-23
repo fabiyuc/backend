@@ -1,13 +1,13 @@
 package com.guardias.backend.dto;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 
 public class LogDto {
 
     @NotBlank
-    private Date fecha;
+    private LocalDateTime fecha;
     @NotBlank
     private String seccion;
     @NotBlank
@@ -16,17 +16,17 @@ public class LogDto {
     public LogDto() {
     }
 
-    public LogDto(@NotBlank Date fecha, @NotBlank String seccion, @NotBlank String accion) {
-        this.fecha = fecha;
+    public LogDto(@NotBlank String seccion, @NotBlank String accion) {
+        this.fecha = LocalDateTime.now();
         this.seccion = seccion;
         this.accion = accion;
     }
 
-    public Date getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 

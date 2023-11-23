@@ -26,10 +26,6 @@ public class LogService {
         return logRepository.findById(id);
     }
 
-    public Optional<Log> getByNombre(String nombre) {
-        return logRepository.findByNombre(nombre);
-    }
-
     public void save(Log log) {
         logRepository.save(log);
     }
@@ -40,10 +36,6 @@ public class LogService {
 
     public boolean existsById(long id) {
         return logRepository.existsById(id);
-    }
-
-    public boolean existsByNombre(String nombre) {
-        return logRepository.existsByNombre(nombre);
     }
 
 }
