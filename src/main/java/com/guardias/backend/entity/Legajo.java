@@ -27,25 +27,34 @@ public class Legajo {
     private String matriculaNacional;
     private String matriculaProvincial;
 
-  /*   @ManyToOne(optional = true)
+    @ManyToOne(optional = true)
     @JoinColumn(name = "id_profesion")
-    private Profesion profesion; */
+    private Profesion profesion;
 
-    /* @ManyToOne(optional = true)
+    @ManyToOne(optional = true)
     @JoinColumn(name = "id_suspencion")
-    private Suspencion suspenciones; */
+    private Suspencion suspencion;
+    
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_revista")
+    private Revista revista;
 
     public Legajo(Date fechaInicio, Date fechaFinal, boolean esActual, boolean esLegal, String matriculaNacional,
-            String matriculaProvincial) {
-        this.fechaInicio = fechaInicio;
-        this.fechaFinal = fechaFinal;
-        this.esActual = esActual;
-        this.esLegal = esLegal;
-        this.matriculaNacional = matriculaNacional;
-        this.matriculaProvincial = matriculaProvincial;
-       // this.profesion = profesion;
-       // this.suspenciones = suspenciones;
+        String matriculaProvincial, Profesion profesion, Suspencion suspencion, Revista revista) {
+      this.fechaInicio = fechaInicio;
+      this.fechaFinal = fechaFinal;
+      this.esActual = esActual;
+      this.esLegal = esLegal;
+      this.matriculaNacional = matriculaNacional;
+      this.matriculaProvincial = matriculaProvincial;
+      this.profesion = profesion;
+      this.suspencion = suspencion;
+      this.revista = revista;
     }
+
+
+    
+    
 
     
     

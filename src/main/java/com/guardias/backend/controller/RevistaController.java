@@ -21,7 +21,6 @@ public class RevistaController {
 
     @GetMapping("/lista")
     public ResponseEntity<List<Revista>> list() {
-        System.out.println("entra######################");
         List<Revista> list = revistaService.list();
         return new ResponseEntity<List<Revista>>(list, HttpStatus.OK);
     }

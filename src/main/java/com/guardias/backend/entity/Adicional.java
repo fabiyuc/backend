@@ -14,9 +14,9 @@ public class Adicional {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String nombre;
-
+/* 
     @OneToMany(mappedBy = "adicional")
-    private Set<Revista> revistas;
+    private Set<Revista> revistas; */
 
     public Adicional() {
     }
@@ -42,14 +42,14 @@ public class Adicional {
         this.nombre = nombre;
     }
 
-    public Set<Revista> getRevistas() {
+   /*  public Set<Revista> getRevistas() {
         return revistas;
     }
 
     public void setRevistas(Set<Revista> revistas) {
         this.revistas = revistas;
     }
-
+ */
     
 
 }

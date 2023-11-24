@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AutoridadDto;
-import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
-import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.LegajoService;
 

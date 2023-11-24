@@ -2,6 +2,8 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.guardias.backend.entity.CargaHoraria;
@@ -11,6 +13,7 @@ import com.guardias.backend.repository.CargaHorariaRepository;
 @Transactional
 public class CargaHorariaService {
     
+    @Autowired
     CargaHorariaRepository cargaHorariaRepository;
 
     public List<CargaHoraria> list() {
@@ -19,10 +22,6 @@ public class CargaHorariaService {
 
     public Optional<CargaHoraria> getOne(Long id) {
         return cargaHorariaRepository.findById(id);
-    }
-
-    public Optional<CargaHoraria> getByCantidad(int cantidad) {
-        return cargaHorariaRepository.findByCantidad(cantidad);
     }
 
     public void save(CargaHoraria cargaHoraria) {
@@ -37,7 +36,12 @@ public class CargaHorariaService {
         return cargaHorariaRepository.existsById(id);
     }
 
+    public Optional<CargaHoraria> getByCantidad(int cantidad) {
+        return cargaHorariaRepository.findByCantidad(cantidad);
+    }
+
     public boolean existsByCantidad(int cantidad) {
         return cargaHorariaRepository.existsByCantidad(cantidad);
     }
+
 }

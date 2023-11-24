@@ -25,8 +25,8 @@ public class Suspencion {
     private Date fechaInicio;
     private Date fechaFin;
 
-   /*  @OneToMany(mappedBy = "legajo")
-    private Set<Legajo> legajos; */
+    @OneToMany(mappedBy = "suspencion")
+    private Set<Legajo> legajos;
 
     public Suspencion(String descripcion, Date fechaInicio, Date fechaFin) {
         this.descripcion = descripcion;
