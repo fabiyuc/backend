@@ -84,25 +84,41 @@ public class CapsController {
         if (!capsService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
-        // if (capsService.existsByNombre(capsDto.getNombre()) &&
-        // capsService.getCapsByNombre(capsDto.getNombre()).get().getId() ==
-        // id)
-        // return new ResponseEntity(new Mensaje("ese caps ya existe"),
-        // HttpStatus.BAD_REQUEST);
-
         if (StringUtils.isBlank(capsDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         Caps caps = capsService.getById(id).get();
-        caps.setNombre(capsDto.getNombre());
-        caps.setDomicilio(capsDto.getDomicilio());
-        caps.setTelefono(capsDto.getTelefono());
-        caps.setEstado(capsDto.isEstado());
-        caps.setIdRegion(capsDto.getIdRegion());
-        caps.setIdLocalidad(capsDto.getIdLocalidad());
-        caps.setObservacion(capsDto.getObservacion());
-        caps.setIdUdo(capsDto.getIdUdo());
-        caps.setTipoCaps(capsDto.getTipoCaps());
+
+        if (caps.getNombre() != capsDto.getNombre()) {
+            caps.setNombre(capsDto.getNombre());
+        }
+        if (caps.getDomicilio() != capsDto.getDomicilio()) {
+            caps.setDomicilio(capsDto.getDomicilio());
+        }
+        if (caps.getTelefono() != capsDto.getTelefono()) {
+            caps.setTelefono(capsDto.getTelefono());
+        }
+        if (caps.isEstado() != capsDto.isEstado()) {
+            caps.setEstado(capsDto.isEstado());
+        }
+        if (caps.getIdRegion() != capsDto.getIdRegion()) {
+            caps.setIdRegion(capsDto.getIdRegion());
+        }
+        if (caps.getIdLocalidad() != capsDto.getIdLocalidad()) {
+            caps.setIdLocalidad(capsDto.getIdLocalidad());
+        }
+        if (caps.getObservacion() != capsDto.getObservacion()) {
+            caps.setObservacion(capsDto.getObservacion());
+        }
+        if (caps.getIdLocalidad() != capsDto.getIdLocalidad()) {
+            caps.setIdLocalidad(capsDto.getIdLocalidad());
+        }
+        if (caps.getIdUdo() != capsDto.getIdUdo()) {
+            caps.setIdUdo(capsDto.getIdUdo());
+        }
+        if (caps.getTipoCaps() != capsDto.getTipoCaps()) {
+            caps.setTipoCaps(capsDto.getTipoCaps());
+        }
 
         capsService.save(caps);
         return new ResponseEntity(new Mensaje("Caps actualizado"), HttpStatus.OK);
