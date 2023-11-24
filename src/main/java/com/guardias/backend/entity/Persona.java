@@ -20,7 +20,7 @@ public class Persona {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPersona;
+    private Long id;
 
     // @Column(name = "nombre")
     @Column(columnDefinition = "VARCHAR(25)")
