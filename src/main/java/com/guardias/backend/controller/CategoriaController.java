@@ -29,7 +29,7 @@ public class CategoriaController {
     @Autowired
     CategoriaService categoriaService;
 
-    @GetMapping("/lista ")
+    @GetMapping("/lista")
     public ResponseEntity<List<Categoria>> list() {
         List<Categoria> list = categoriaService.list();
         return new ResponseEntity<List<Categoria>>(list, HttpStatus.OK);
@@ -49,7 +49,6 @@ public class CategoriaController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         Categoria categoria = categoriaService.getByNombre(nombre).get();
         return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
-
     }
 
     @PostMapping("/create")

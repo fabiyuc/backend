@@ -36,7 +36,7 @@ public class AdicionalController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Adicional> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Adicional> getById(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         Adicional adicional = adicionalService.getOne(id).get();
@@ -69,7 +69,7 @@ public class AdicionalController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody AdicionalDto adicionalDto) {
+    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody AdicionalDto adicionalDto) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
@@ -80,7 +80,7 @@ public class AdicionalController {
         if (StringUtils.isBlank(adicionalDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (adicionalService.existsById(adicionalDto.getId()))
+        if (adicionalService.existsById(adicionalDto.getId()) && adicionalDto.getId() != id)
             return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
 
         Adicional adicional = adicionalService.getOne(id).get();
@@ -91,7 +91,7 @@ public class AdicionalController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         adicionalService.delete(id);
