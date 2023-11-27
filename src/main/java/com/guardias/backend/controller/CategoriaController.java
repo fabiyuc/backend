@@ -82,10 +82,10 @@ public class CategoriaController {
         if (categoriaService.existsById(categoriaDto.getId()))
             return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
 
-        // TODO verificar los categoriaServiceDto vacios o nulos
         Categoria categoria = categoriaService.getOne(id).get();
+
+        if (categoria.getNombre() != categoriaDto.getNombre() && categoriaDto.getNombre() != null && !categoriaDto.getNombre().isEmpty()) {
         categoria.setNombre(categoriaDto.getNombre());
-        categoria.setId(categoriaDto.getId());
         categoriaService.save(categoria);
 
         return new ResponseEntity<>(new Mensaje("Categoria Actualizada"), HttpStatus.OK);

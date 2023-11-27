@@ -95,16 +95,35 @@ public class MinisterioController {
         if (StringUtils.isBlank(ministerioDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        // TODO verificar los valores de ministerioDto para el update
         Ministerio ministerio = ministerioService.getById(id).get();
-        ministerio.setNombre(ministerioDto.getNombre());
-        ministerio.setDomicilio(ministerioDto.getDomicilio());
-        ministerio.setTelefono(ministerioDto.getTelefono());
-        ministerio.setEstado(ministerioDto.isEstado());
-        ministerio.setIdRegion(ministerioDto.getIdRegion());
-        ministerio.setIdLocalidad(ministerioDto.getIdLocalidad());
-        ministerio.setObservacion(ministerioDto.getObservacion());
-        ministerio.setIdCabecera(ministerioDto.getIdCabecera());
+
+        if (ministerio.getNombre() != ministerioDto.getNombre() && ministerioDto.getNombre() != null
+                && !ministerioDto.getNombre().isEmpty())
+            ministerio.setNombre(ministerioDto.getNombre());
+
+        if (ministerio.getDomicilio() != ministerioDto.getDomicilio() && ministerioDto.getDomicilio() != null
+                && !ministerioDto.getDomicilio().isEmpty())
+            ministerio.setDomicilio(ministerioDto.getDomicilio());
+
+        if (ministerio.getTelefono() != ministerioDto.getTelefono() && ministerioDto.getTelefono() != null
+                && !ministerioDto.getTelefono().isEmpty())
+            ministerio.setTelefono(ministerioDto.getTelefono());
+
+        if (ministerio.isEstado() != ministerioDto.isEstado())
+            ministerio.setEstado(ministerioDto.isEstado());
+
+        if (ministerio.getIdRegion() != ministerioDto.getIdRegion() && ministerioDto.getIdRegion() != null)
+            ministerio.setIdRegion(ministerioDto.getIdRegion());
+
+        if (ministerio.getIdLocalidad() != ministerioDto.getIdLocalidad() && ministerioDto.getIdLocalidad() != null)
+            ministerio.setIdLocalidad(ministerioDto.getIdLocalidad());
+
+        if (ministerio.getObservacion() != ministerioDto.getObservacion() && ministerioDto.getObservacion() != null
+                && !ministerioDto.getObservacion().isEmpty())
+            ministerio.setObservacion(ministerioDto.getObservacion());
+
+        if (ministerio.getIdCabecera() != ministerioDto.getIdCabecera() && ministerioDto.getIdCabecera() != null)
+            ministerio.setIdCabecera(ministerioDto.getIdCabecera());
 
         ministerioService.save(ministerio);
         return new ResponseEntity(new Mensaje("Ministerio actualizado"), HttpStatus.OK);

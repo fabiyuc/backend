@@ -88,11 +88,15 @@ public class SuspencionController {
         // validar las fechas en front que no sea campo vacio hasta poder validar en
         // back
 
-        // TODO verificar suspencionDto para update
         Suspencion suspencion = suspencionService.getOne(id).get();
-        suspencion.setDescripcion(suspencionDto.getDescripcion());
-        suspencion.setFechaInicio(suspencionDto.getFechaInicio());
-        suspencion.setFechaFin(suspencionDto.getFechaFin());
+
+        if (suspencion.getDescripcion() != suspencionDto.getDescripcion() && suspencionDto.getDescripcion() != null
+                && !suspencionDto.getDescripcion().isEmpty())
+            suspencion.setDescripcion(suspencionDto.getDescripcion());
+        if (suspencion.getFechaInicio() != suspencionDto.getFechaInicio() && suspencionDto.getFechaInicio() != null)
+            suspencion.setFechaInicio(suspencionDto.getFechaInicio());
+        if (suspencion.getFechaFin() != suspencionDto.getFechaFin() && suspencionDto.getFechaFin() != null)
+            suspencion.setFechaFin(suspencionDto.getFechaFin());
         suspencionService.save(suspencion);
         return new ResponseEntity(new Mensaje("La suspensión ha sido actualizada"), HttpStatus.OK);
     }

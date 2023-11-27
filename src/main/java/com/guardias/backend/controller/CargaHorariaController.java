@@ -79,9 +79,9 @@ public class CargaHorariaController {
         if (StringUtils.isBlank(cantidadStr))
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // TODO verificar los cargaHorariaDto vacios o nulos
         CargaHoraria cargaHoraria = cargaHorariaService.getOne(id).get();
-        cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
+        if (cargaHoraria.getCantidad() != cargaHorariaDto.getCantidad() && cargaHorariaDto.getCantidad() != 0)
+            cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
         cargaHorariaService.save(cargaHoraria);
         return new ResponseEntity(new Mensaje("Carga horaria actualizada"), HttpStatus.OK);
     }

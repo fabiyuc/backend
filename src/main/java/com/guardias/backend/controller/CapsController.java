@@ -79,7 +79,6 @@ public class CapsController {
         return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
     }
 
-    // TODO verificar los capsDto vacios o nulos
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CapsDto capsDto) {
         if (!capsService.existsById(id))
@@ -90,34 +89,35 @@ public class CapsController {
 
         Caps caps = capsService.getById(id).get();
 
-        if (caps.getNombre() != capsDto.getNombre()) {
+        if (caps.getNombre() != capsDto.getNombre() && capsDto.getNombre() != null && !capsDto.getNombre().isEmpty()) {
             caps.setNombre(capsDto.getNombre());
         }
-        if (caps.getDomicilio() != capsDto.getDomicilio()) {
+        if (caps.getDomicilio() != capsDto.getDomicilio() && capsDto.getDomicilio() != null
+                && !capsDto.getDomicilio().isEmpty()) {
             caps.setDomicilio(capsDto.getDomicilio());
         }
-        if (caps.getTelefono() != capsDto.getTelefono()) {
+        if (caps.getTelefono() != capsDto.getTelefono() && capsDto.getTelefono() != null
+                && !capsDto.getTelefono().isEmpty()) {
             caps.setTelefono(capsDto.getTelefono());
         }
         if (caps.isEstado() != capsDto.isEstado()) {
             caps.setEstado(capsDto.isEstado());
         }
-        if (caps.getIdRegion() != capsDto.getIdRegion()) {
+        if (caps.getIdRegion() != capsDto.getIdRegion() && capsDto.getIdRegion() != null) {
             caps.setIdRegion(capsDto.getIdRegion());
         }
-        if (caps.getIdLocalidad() != capsDto.getIdLocalidad()) {
+        if (caps.getIdLocalidad() != capsDto.getIdLocalidad() && capsDto.getIdLocalidad() != null) {
             caps.setIdLocalidad(capsDto.getIdLocalidad());
         }
-        if (caps.getObservacion() != capsDto.getObservacion()) {
+        if (caps.getObservacion() != capsDto.getObservacion() && capsDto.getObservacion() != null
+                && !capsDto.getObservacion().isEmpty()) {
             caps.setObservacion(capsDto.getObservacion());
         }
-        if (caps.getIdLocalidad() != capsDto.getIdLocalidad()) {
-            caps.setIdLocalidad(capsDto.getIdLocalidad());
-        }
-        if (caps.getIdUdo() != capsDto.getIdUdo()) {
+        if (caps.getIdUdo() != capsDto.getIdUdo() && capsDto.getIdUdo() != null) {
             caps.setIdUdo(capsDto.getIdUdo());
         }
-        if (caps.getTipoCaps() != capsDto.getTipoCaps()) {
+        if (caps.getTipoCaps() != capsDto.getTipoCaps() && capsDto.getTipoCaps() != null
+                && !capsDto.getTipoCaps().isEmpty()) {
             caps.setTipoCaps(capsDto.getTipoCaps());
         }
 

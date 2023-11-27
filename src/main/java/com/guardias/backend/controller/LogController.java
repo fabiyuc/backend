@@ -71,11 +71,18 @@ public class LogController {
         if (StringUtils.isBlank(logDto.getAccion()))
             return new ResponseEntity<>(new Mensaje("la accion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // TODO verificar los valores de logDto para el update
         Log log = logService.getById(id).get();
-        log.setFecha(logDto.getFecha());
-        log.setSeccion(logDto.getSeccion());
-        log.setAccion(logDto.getAccion());
+
+        if (log.getFecha() != logDto.getFecha())
+            log.setFecha(logDto.getFecha());
+
+        if (log.getSeccion() != logDto.getSeccion() && logDto.getSeccion() != null
+                && !logDto.getSeccion().isEmpty())
+            log.setSeccion(logDto.getSeccion());
+
+        if (log.getAccion() != logDto.getAccion() && logDto.getAccion() != null
+                && !logDto.getAccion().isEmpty())
+            log.setAccion(logDto.getAccion());
         logService.save(log);
         return new ResponseEntity<>(new Mensaje("Log Actualizado"), HttpStatus.OK);
     }

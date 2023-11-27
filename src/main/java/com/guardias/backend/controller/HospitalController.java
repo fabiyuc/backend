@@ -92,15 +92,32 @@ public class HospitalController {
         if (StringUtils.isBlank(hospitalDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        // TODO (HospitalController verificar los valores de hosptalDto para el update)
         Hospital hospital = hospitalService.getById(id).get();
-        hospital.setNombre(hospitalDto.getNombre());
-        hospital.setDomicilio(hospitalDto.getDomicilio());
-        hospital.setTelefono(hospitalDto.getTelefono());
-        hospital.setEstado(hospitalDto.isEstado());
-        hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
-        hospital.setObservacion(hospitalDto.getObservacion());
-        hospital.setEsCabecera(hospitalDto.isEsCabecera());
+
+        if (hospital.getNombre() != hospitalDto.getNombre() && hospitalDto.getNombre() != null
+                && !hospitalDto.getNombre().isEmpty())
+            hospital.setNombre(hospitalDto.getNombre());
+
+        if (hospital.getDomicilio() != hospitalDto.getDomicilio() && hospitalDto.getDomicilio() != null
+                && !hospitalDto.getDomicilio().isEmpty())
+            hospital.setDomicilio(hospitalDto.getDomicilio());
+
+        if (hospital.getTelefono() != hospitalDto.getTelefono() && hospitalDto.getTelefono() != null
+                && !hospitalDto.getTelefono().isEmpty())
+            hospital.setTelefono(hospitalDto.getTelefono());
+
+        if (hospital.isEstado() != hospitalDto.isEstado())
+            hospital.setEstado(hospitalDto.isEstado());
+
+        if (hospital.getIdLocalidad() != hospitalDto.getIdLocalidad())
+            hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
+
+        if (hospital.getObservacion() != hospitalDto.getObservacion() && hospitalDto.getObservacion() != null
+                && !hospitalDto.getObservacion().isEmpty())
+            hospital.setObservacion(hospitalDto.getObservacion());
+
+        if (hospital.isEsCabecera() != hospitalDto.isEsCabecera())
+            hospital.setEsCabecera(hospitalDto.isEsCabecera());
 
         hospitalService.save(hospital);
         return new ResponseEntity(new Mensaje("Hospital actualizado"), HttpStatus.OK);

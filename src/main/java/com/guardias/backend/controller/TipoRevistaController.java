@@ -76,8 +76,8 @@ public class TipoRevistaController {
         if (StringUtils.isBlank(tipoRevistaDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        // TODO verificar tipoRevistaDto para update
         TipoRevista tipoRevista = tipoRevistaService.getOne(id).get();
+        if (tipoRevista.getNombre() != tipoRevistaDto.getNombre() && tipoRevistaDto.getNombre() != null && !tipoRevistaDto.getNombre().isEmpty()) {
         tipoRevista.setNombre(tipoRevistaDto.getNombre());
         tipoRevistaService.save(tipoRevista);
         return new ResponseEntity(new Mensaje("Tipo de servicio actualizado"), HttpStatus.OK);
