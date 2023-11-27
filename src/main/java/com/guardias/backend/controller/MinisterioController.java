@@ -45,7 +45,7 @@ public class MinisterioController {
     }
 
     @GetMapping("/detalle/{nombre}")
-    public ResponseEntity<List<Ministerio>> getById(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<List<Ministerio>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!ministerioService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Ministerio ministerio = ministerioService.getMinisterioByNombre(nombre).get();
@@ -64,6 +64,7 @@ public class MinisterioController {
         if (ministerioService.existsByNombre(ministerioDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
+
         Ministerio ministerio = new Ministerio();
         ministerio.setNombre(ministerioDto.getNombre());
         ministerio.setDomicilio(ministerioDto.getDomicilio());
@@ -72,6 +73,7 @@ public class MinisterioController {
         ministerio.setIdRegion(ministerioDto.getIdRegion());
         ministerio.setIdLocalidad(ministerioDto.getIdLocalidad());
         ministerio.setObservacion(ministerioDto.getObservacion());
+
         ministerio.setIdCabecera(ministerioDto.getIdCabecera());
 
         ministerioService.save(ministerio);

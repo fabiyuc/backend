@@ -84,7 +84,11 @@ public class AdicionalController {
             return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
 
         Adicional adicional = adicionalService.getOne(id).get();
-        adicional.setNombre(adicionalDto.getNombre());
+
+        if (adicional.getNombre() != adicionalDto.getNombre() && adicionalDto.getNombre() != null
+                && !adicionalDto.getNombre().isEmpty())
+            adicional.setNombre(adicionalDto.getNombre());
+
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional Actualizado"), HttpStatus.OK);
     }

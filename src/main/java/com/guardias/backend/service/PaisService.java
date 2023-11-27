@@ -38,7 +38,7 @@ public class PaisService {
         paisRepository.deleteById(id);
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return paisRepository.existsById(id);
     }
 

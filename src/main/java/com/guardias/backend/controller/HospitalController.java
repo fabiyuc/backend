@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.service.HospitalService;
 
@@ -63,7 +64,7 @@ public class HospitalController {
         if (hospitalService.existsByNombre(hospitalDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-        Hospital hospital = new Hospital();
+        Efector hospital = new Hospital();
         hospital.setNombre(hospitalDto.getNombre());
         hospital.setDomicilio(hospitalDto.getDomicilio());
         hospital.setTelefono(hospitalDto.getTelefono());
@@ -71,9 +72,9 @@ public class HospitalController {
         hospital.setIdRegion(hospitalDto.getIdRegion());
         hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
         hospital.setObservacion(hospitalDto.getObservacion());
-        hospital.setEsCabecera(hospitalDto.isEsCabecera());
+        ((Hospital) hospital).setEsCabecera(hospitalDto.isEsCabecera());
 
-        hospitalService.save(hospital);
+        hospitalService.save((Hospital) hospital);
         return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
     }
 
@@ -97,7 +98,6 @@ public class HospitalController {
         hospital.setTelefono(hospitalDto.getTelefono());
         hospital.setEstado(hospitalDto.isEstado());
         hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
-        hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
 

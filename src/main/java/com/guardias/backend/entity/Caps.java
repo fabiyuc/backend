@@ -10,8 +10,8 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ministerios")
-@DiscriminatorValue("MINISTERIO")
+@Table(name = "caps")
+@DiscriminatorValue("CAPS")
 @PrimaryKeyJoinColumn(name = "id_efector")
 public class Caps extends Efector {
     @Id
@@ -41,7 +41,7 @@ public class Caps extends Efector {
         this.tipoCaps = tipoCaps;
     }
 
-    public Long getId() {
+    public Long getIdEfector() {
         return id;
     }
 
