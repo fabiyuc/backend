@@ -36,4 +36,9 @@ public class RegionController {
         Region region = regionService.getById(id).get();
         return new ResponseEntity(region, HttpStatus.OK);
     }
+
+    // TODO (RegionController create)
+    // TODO (RegionController update)
+    // TODO (RegionController delete)
+    // TODO (RegionController detalle por nombre)
 }

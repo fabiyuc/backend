@@ -58,6 +58,8 @@ public class TipoGuardiaControlador {
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
     }
 
+    // TODO TipoGuardiaController detalle por nombre
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoGuardiaDto tipoGuardiaDto) {
         if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
@@ -93,6 +95,7 @@ public class TipoGuardiaControlador {
         if (StringUtils.isBlank(tipoGuardiaDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
+        // TODO verificar tipoGuardiaDto para update
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
         tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
         tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());

@@ -88,6 +88,7 @@ public class SuspencionController {
         // validar las fechas en front que no sea campo vacio hasta poder validar en
         // back
 
+        // TODO verificar suspencionDto para update
         Suspencion suspencion = suspencionService.getOne(id).get();
         suspencion.setDescripcion(suspencionDto.getDescripcion());
         suspencion.setFechaInicio(suspencionDto.getFechaInicio());

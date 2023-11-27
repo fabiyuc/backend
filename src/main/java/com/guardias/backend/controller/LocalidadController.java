@@ -37,4 +37,8 @@ public class LocalidadController {
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
+    // TODO LocalidadController detalle por nombre
+    // TODO LocalidadController create
+    // TODO LocalidadController update
+    // TODO LocalidadController delete
 }

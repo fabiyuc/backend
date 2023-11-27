@@ -76,6 +76,7 @@ public class ServicioControlador {
         if (StringUtils.isBlank(servicioDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
+        // TODO verificar servicioDto para el update
         Servicio servicio = serviceServicio.getOne(id).get();
         servicio.setDescripcion(servicioDto.getDescripcion());
         serviceServicio.save(servicio);

@@ -79,6 +79,7 @@ public class CapsController {
         return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
     }
 
+    // TODO verificar los capsDto vacios o nulos
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CapsDto capsDto) {
         if (!capsService.existsById(id))

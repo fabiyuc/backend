@@ -80,6 +80,7 @@ public class ProfesionController {
         // ********** ver de validar que las matriculas no sean nulas en el front? o
         // completar aqui mejor**********
 
+        // TODO verificar los profesionalDto para el update
         Profesion profesion = profesionService.getOne(id).get();
         profesion.setNombre(profesionDto.getNombre());
         profesion.setEsAsistencial(profesionDto.getEsAsistencial());

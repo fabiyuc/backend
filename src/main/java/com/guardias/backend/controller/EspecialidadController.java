@@ -37,4 +37,9 @@ public class EspecialidadController {
         return new ResponseEntity(especialidad, HttpStatus.OK);
     }
 
+    // TODO (EspecialidadController create)
+    // TODO (EspecialidadController update)
+    // TODO (EspecialidadController delete)
+    // TODO (EspecialidadController detalle por nombre)
+
 }

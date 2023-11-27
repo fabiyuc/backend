@@ -92,6 +92,7 @@ public class HospitalController {
         if (StringUtils.isBlank(hospitalDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
+        // TODO (HospitalController verificar los valores de hosptalDto para el update)
         Hospital hospital = hospitalService.getById(id).get();
         hospital.setNombre(hospitalDto.getNombre());
         hospital.setDomicilio(hospitalDto.getDomicilio());

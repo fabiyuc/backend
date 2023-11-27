@@ -95,6 +95,7 @@ public class MinisterioController {
         if (StringUtils.isBlank(ministerioDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
+        // TODO verificar los valores de ministerioDto para el update
         Ministerio ministerio = ministerioService.getById(id).get();
         ministerio.setNombre(ministerioDto.getNombre());
         ministerio.setDomicilio(ministerioDto.getDomicilio());

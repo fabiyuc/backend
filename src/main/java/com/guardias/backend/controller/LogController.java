@@ -71,6 +71,7 @@ public class LogController {
         if (StringUtils.isBlank(logDto.getAccion()))
             return new ResponseEntity<>(new Mensaje("la accion es obligatoria"), HttpStatus.BAD_REQUEST);
 
+        // TODO verificar los valores de logDto para el update
         Log log = logService.getById(id).get();
         log.setFecha(logDto.getFecha());
         log.setSeccion(logDto.getSeccion());
