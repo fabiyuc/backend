@@ -1,13 +1,10 @@
 package com.guardias.backend.entity;
 
 import java.sql.Date;
-import java.util.Set;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -16,22 +13,23 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Suspencion {
-
+public class Autoridad {
+  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String descripcion;
+    private String nombre;
     private Date fechaInicio;
-    private Date fechaFin;
-
-    @OneToMany(mappedBy = "suspencion")
-    private Set<Legajo> legajos;
-
-    public Suspencion(String descripcion, Date fechaInicio, Date fechaFin) {
-        this.descripcion = descripcion;
+    private Date fechaFinal;
+    private boolean esActual;
+    private boolean esRegional;
+    
+    public Autoridad(String nombre, Date fechaInicio, Date fechaFinal, boolean esActual, boolean esRegional) {
+        this.nombre = nombre;
         this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
+        this.fechaFinal = fechaFinal;
+        this.esActual = esActual;
+        this.esRegional = esRegional;
     }
     
     

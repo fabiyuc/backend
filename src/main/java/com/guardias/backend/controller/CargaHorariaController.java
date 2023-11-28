@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.CargaHorariaDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.CargaHoraria;
-import com.guardias.backend.entity.TipoRevista;
 import com.guardias.backend.service.CargaHorariaService;
 
 @RestController
@@ -38,7 +34,7 @@ public class CargaHorariaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<CargaHoraria> getById(@PathVariable("id") int id) {
+    public ResponseEntity<CargaHoraria> getById(@PathVariable("id") Long id) {
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         CargaHoraria cargaHoraria = cargaHorariaService.getOne(id).get();
@@ -69,7 +65,7 @@ public class CargaHorariaController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody CargaHorariaDto cargaHorariaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargaHorariaDto cargaHorariaDto) {
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
 
@@ -88,7 +84,7 @@ public class CargaHorariaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);

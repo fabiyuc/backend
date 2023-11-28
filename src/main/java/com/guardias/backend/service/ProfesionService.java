@@ -2,7 +2,6 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ public class ProfesionService {
         return profesionRepository.findAll();
     }
 
-    public Optional<Profesion> getOne(int id) {
+    public Optional<Profesion> getOne(Long id) {
         return profesionRepository.findById(id);
     }
 
@@ -33,11 +32,11 @@ public class ProfesionService {
         profesionRepository.save(profesion);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         profesionRepository.deleteById(id);
     }
 
-    public boolean existsById(int id) {
+    public boolean existsById(Long id) {
         return profesionRepository.existsById(id);
     }
 

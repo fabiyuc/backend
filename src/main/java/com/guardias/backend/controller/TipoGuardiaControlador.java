@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
 import com.guardias.backend.modelo.TipoGuardia;
@@ -27,7 +25,6 @@ import com.guardias.backend.service.TipoGuardiaServicio;
 public class TipoGuardiaControlador {
     @Autowired
     TipoGuardiaServicio tipoGuardiaServicio;
-
 
 
     @GetMapping("/detailnombre/{nombre}")
@@ -53,7 +50,7 @@ public class TipoGuardiaControlador {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<TipoGuardia> getById(@PathVariable("id") int id) {
+    public ResponseEntity<TipoGuardia> getById(@PathVariable("id") Long id) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de guardia"), HttpStatus.NOT_FOUND);
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
@@ -80,7 +77,7 @@ public class TipoGuardiaControlador {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody TipoGuardiaDto tipoGuardiaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoGuardiaDto tipoGuardiaDto) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
 
@@ -102,7 +99,7 @@ public class TipoGuardiaControlador {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
         tipoGuardiaServicio.delete(id);

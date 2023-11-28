@@ -20,8 +20,20 @@ public class SuspencionService {
         return suspencionRepository.findAll();
     }
 
-    public Optional<Suspencion> getOne(int id) {
+    public Optional<Suspencion> getOne(Long id) {
         return suspencionRepository.findById(id);
+    }
+
+    public void save(Suspencion suspencion) {
+        suspencionRepository.save(suspencion);
+    }
+
+    public void delete(Long id) {
+        suspencionRepository.deleteById(id);
+    }
+
+    public boolean existsById(Long id) {
+        return suspencionRepository.existsById(id);
     }
 
     public Optional<Suspencion> getByFechaInicio(Date fechaInicio) {
@@ -30,18 +42,6 @@ public class SuspencionService {
 
     public Optional<Suspencion> getByFechaFin(Date fechaFin) {
         return suspencionRepository.findByFechaFin(fechaFin);
-    }
-
-    public void save(Suspencion suspencion) {
-        suspencionRepository.save(suspencion);
-    }
-
-    public void delete(int id) {
-        suspencionRepository.deleteById(id);
-    }
-
-    public boolean existsById(int id) {
-        return suspencionRepository.existsById(id);
     }
 
     public boolean existsByFechaInicio(Date fechaInicio) {

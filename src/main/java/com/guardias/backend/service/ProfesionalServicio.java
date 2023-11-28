@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ProfesionalServicio {
+    
    @Autowired
     ProfesionalRepositorio profesionalRepositorio;
 

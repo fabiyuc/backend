@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.modelo.TipoGuardia;
 import com.guardias.backend.repositorio.TipoGuardiaRepositorio;
 
@@ -17,16 +15,25 @@ public class TipoGuardiaServicio {
     @Autowired
     TipoGuardiaRepositorio tipoGuardiaRepositorio;
 
-    
-    //metodos por descripcion
-    public Optional<TipoGuardia> getByDescripcion(String descripcion) {
-        return tipoGuardiaRepositorio.findByDescripcion(descripcion);
+    public List<TipoGuardia> list() {
+        return tipoGuardiaRepositorio.findAll();
     }
 
-    public boolean existsByDescripcion(String descripcion) {
-        return tipoGuardiaRepositorio.existsByDescripcion(descripcion);
+    public Optional<TipoGuardia> getOne(Long id) {
+        return tipoGuardiaRepositorio.findById(id);
     }
-    //fin descripcion
+
+    public void save(TipoGuardia tipoGuardia) {
+        tipoGuardiaRepositorio.save(tipoGuardia);
+    }
+
+    public void delete(Long id) {
+        tipoGuardiaRepositorio.deleteById(id);
+    }
+
+    public boolean existsById(Long id) {
+        return tipoGuardiaRepositorio.existsById(id);
+    }
 
     //metodos por nombre
     public Optional<TipoGuardia> getByNombre(String nombre) {
@@ -36,27 +43,14 @@ public class TipoGuardiaServicio {
     public boolean existsByNombre(String nombre) {
         return tipoGuardiaRepositorio.existsByNombre(nombre);
     }
-    //fin nombre
 
-    public List<TipoGuardia> list() {
-        return tipoGuardiaRepositorio.findAll();
+    //metodos por descripcion
+    public Optional<TipoGuardia> getByDescripcion(String descripcion) {
+        return tipoGuardiaRepositorio.findByDescripcion(descripcion);
     }
 
-    public Optional<TipoGuardia> getOne(int id) {
-        return tipoGuardiaRepositorio.findById(id);
+    public boolean existsByDescripcion(String descripcion) {
+        return tipoGuardiaRepositorio.existsByDescripcion(descripcion);
     }
-
-    public void save(TipoGuardia tipoGuardia) {
-        tipoGuardiaRepositorio.save(tipoGuardia);
-    }
-
-    public void delete(int id) {
-        tipoGuardiaRepositorio.deleteById(id);
-    }
-
-    public boolean existsById(int id) {
-        return tipoGuardiaRepositorio.existsById(id);
-    }
-
-    
+   
 }

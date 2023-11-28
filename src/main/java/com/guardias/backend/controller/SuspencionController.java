@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.sql.Date;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,11 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.SuspencionDto;
-import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.Suspencion;
-import com.guardias.backend.entity.TipoRevista;
 import com.guardias.backend.service.SuspencionService;
-import com.guardias.backend.service.TipoRevistaService;
 
 @RestController
 @RequestMapping("/suspencion")
@@ -39,7 +35,7 @@ public class SuspencionController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Suspencion> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Suspencion> getById(@PathVariable("id") Long id) {
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la suspención"), HttpStatus.NOT_FOUND);
         Suspencion suspencion = suspencionService.getOne(id).get();
@@ -79,7 +75,7 @@ public class SuspencionController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody SuspencionDto suspencionDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody SuspencionDto suspencionDto) {
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la suspención"), HttpStatus.NOT_FOUND);
 
@@ -97,7 +93,7 @@ public class SuspencionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la suspención"), HttpStatus.NOT_FOUND);

@@ -1,33 +1,34 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
-import jakarta.persistence.Entity;
+import java.sql.Date;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class Profesion {
 
+@MappedSuperclass
+public class Person {
+   
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private Boolean esAsistencial;
-
-    @OneToMany(mappedBy = "profesion")
-    private Set<Legajo> legajos;
-
-    public Profesion(String nombre, Boolean esAsistencial) {
-        this.nombre = nombre;
-        this.esAsistencial = esAsistencial;
-    }
+    private String apellido;
+    private int dni;
+    private String cuil;
+    private Date fechaNacimiento;
+    private String sexo;
+    private String numCelular;
+    private String email;
+    private String domicilio;
+    private boolean estado;
+    
     
 }

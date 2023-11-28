@@ -33,6 +33,8 @@ public class RegistroActividadDto {
     public RegistroActividadDto() {
     }
 
+    
+
     public RegistroActividadDto(@NotBlank String establecimiento, @NotBlank String servicio,
             @NotBlank Date fechaIngreso, @NotBlank Date fechaEgreso, @NotBlank String horaIngreso,
             @NotBlank String horaEgreso, @NotBlank TipoGuardia tipoGuardia) {
@@ -42,6 +44,7 @@ public class RegistroActividadDto {
         this.fechaEgreso = fechaEgreso;
         this.horaIngreso = horaIngreso;
         this.horaEgreso = horaEgreso;
+        this.tipoGuardia = tipoGuardia;
     }
 
     public Long getId() {
