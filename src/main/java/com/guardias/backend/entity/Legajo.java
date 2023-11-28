@@ -38,6 +38,14 @@ public class Legajo {
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_revista")
     private Revista revista;
+    
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_asistencial")
+    private Asistencial asistencial;
+    
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_noAsistencial")
+    private NoAsistencial noAsistencial;
 
     public Legajo(Date fechaInicio, Date fechaFinal, boolean esActual, boolean esLegal, String matriculaNacional,
         String matriculaProvincial, Profesion profesion, Suspencion suspencion, Revista revista) {
@@ -51,10 +59,6 @@ public class Legajo {
       this.suspencion = suspencion;
       this.revista = revista;
     }
-
-
-    
-    
 
     
     

@@ -1,22 +1,22 @@
 package com.guardias.backend.entity;
 
 import java.sql.Date;
-
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-/* @Entity
 @Data
 @RequiredArgsConstructor
-@AllArgsConstructor */
+@AllArgsConstructor
+
+@MappedSuperclass
 public class Person {
    
-  /*   @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
@@ -29,5 +29,6 @@ public class Person {
     private String email;
     private String domicilio;
     private boolean estado;
-     */
+    
+    
 }
