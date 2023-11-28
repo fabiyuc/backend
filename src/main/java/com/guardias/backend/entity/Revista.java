@@ -19,4 +19,5 @@ public class Revista {
     private int id;
     
     
+    
 }
