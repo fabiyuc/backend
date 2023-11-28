@@ -58,7 +58,13 @@ public class TipoGuardiaControlador {
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
     }
 
-    // TODO TipoGuardiaController detalle por nombre
+    @GetMapping("/detail/{nombre}")
+    public ResponseEntity<TipoGuardia> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!tipoGuardiaServicio.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("No existe el tipo de guardia"), HttpStatus.NOT_FOUND);
+        TipoGuardia tipoGuardia = tipoGuardiaServicio.getByNombre(nombre).get();
+        return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
+    }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoGuardiaDto tipoGuardiaDto) {
@@ -95,10 +101,14 @@ public class TipoGuardiaControlador {
         if (StringUtils.isBlank(tipoGuardiaDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // TODO verificar tipoGuardiaDto para update
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
-        tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
-        tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
+
+        if (tipoGuardia.getNombre() != tipoGuardiaDto.getNombre() && tipoGuardiaDto.getNombre() != null
+                && !tipoGuardiaDto.getNombre().isEmpty())
+            tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
+        if (tipoGuardia.getDescripcion() != tipoGuardiaDto.getDescripcion() && tipoGuardiaDto.getDescripcion() != null
+                && !tipoGuardiaDto.getDescripcion().isEmpty())
+            tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
         tipoGuardiaServicio.save(tipoGuardia);
         return new ResponseEntity(new Mensaje("servicio actualizado"), HttpStatus.OK);
     }

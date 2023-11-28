@@ -73,7 +73,7 @@ public class FeriadoController {
             return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
 
         Feriado feriado = new Feriado();
-        feriado.setDia(feriadoDto.getDia());
+        feriado.setFecha(feriadoDto.getDia());
         feriado.setMotivo(feriadoDto.getMotivo());
         feriado.setTipoFeriado(feriadoDto.getTipoFeriado());
         feriado.setDescripcion(feriadoDto.getDescripcion());
@@ -100,8 +100,8 @@ public class FeriadoController {
 
         Feriado feriado = feriadoService.getById(id).get();
 
-        if (feriado.getDia() != feriadoDto.getDia() && feriadoDto.getDia() != null)
-            feriado.setDia(feriadoDto.getDia());
+        if (feriado.getFecha() != feriadoDto.getDia() && feriadoDto.getDia() != null)
+            feriado.setFecha(feriadoDto.getDia());
         if (feriado.getMotivo() != feriadoDto.getMotivo() && feriadoDto.getMotivo() != null
                 && !feriadoDto.getMotivo().isEmpty())
             feriado.setMotivo(feriadoDto.getMotivo());
