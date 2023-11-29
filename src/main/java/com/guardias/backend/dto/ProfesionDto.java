@@ -6,7 +6,6 @@ public class ProfesionDto {
 
     @NotBlank
     private Long id;
-    private Long id;
 
     @NotBlank
     private String nombre;

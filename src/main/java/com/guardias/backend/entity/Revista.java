@@ -1,9 +1,6 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-
-import com.guardias.backend.modelo.RegistroActividad;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity(name = "revistas")
+@Entity
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -53,6 +50,5 @@ public class Revista {
       this.cargaHoraria = cargaHoraria;
       this.legajos = legajos;
     }
-    
     
 }

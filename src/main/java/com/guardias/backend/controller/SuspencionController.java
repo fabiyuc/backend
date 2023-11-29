@@ -37,7 +37,6 @@ public class SuspencionController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Suspencion> getById(@PathVariable("id") Long id) {
-    public ResponseEntity<Suspencion> getById(@PathVariable("id") Long id) {
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la suspención"), HttpStatus.NOT_FOUND);
         Suspencion suspencion = suspencionService.getOne(id).get();
@@ -64,14 +63,13 @@ public class SuspencionController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody SuspencionDto suspencionDto) {
         if (StringUtils.isBlank(suspencionDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),HttpStatus.BAD_REQUEST);
 
-        // agregar validacion de campo no nulo para fechas en front hasta encontrar la
-        // manera de validar en el back
+        //agregar validacion de campo no nulo para fechas en front hasta encontrar la manera de validar en el back
 
         Suspencion suspencion = new Suspencion(suspencionDto.getDescripcion(),
-                suspencionDto.getFechaInicio(),
-                suspencionDto.getFechaFin());
+        suspencionDto.getFechaInicio(),
+        suspencionDto.getFechaFin());
 
         suspencionService.save(suspencion);
         return new ResponseEntity(new Mensaje("la suspención fué creada"), HttpStatus.OK);
@@ -79,25 +77,18 @@ public class SuspencionController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody SuspencionDto suspencionDto) {
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody SuspencionDto suspencionDto) {
         if (!suspencionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la suspención"), HttpStatus.NOT_FOUND);
 
         if (StringUtils.isBlank(suspencionDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        // validar las fechas en front que no sea campo vacio hasta poder validar en
-        // back
+        
+        //validar las fechas en front que no sea campo vacio hasta poder validar en back
 
         Suspencion suspencion = suspencionService.getOne(id).get();
-
-        if (suspencion.getDescripcion() != suspencionDto.getDescripcion() && suspencionDto.getDescripcion() != null
-                && !suspencionDto.getDescripcion().isEmpty())
-            suspencion.setDescripcion(suspencionDto.getDescripcion());
-        if (suspencion.getFechaInicio() != suspencionDto.getFechaInicio() && suspencionDto.getFechaInicio() != null)
-            suspencion.setFechaInicio(suspencionDto.getFechaInicio());
-        if (suspencion.getFechaFin() != suspencionDto.getFechaFin() && suspencionDto.getFechaFin() != null)
-            suspencion.setFechaFin(suspencionDto.getFechaFin());
+        suspencion.setDescripcion(suspencionDto.getDescripcion());
+        suspencion.setFechaInicio(suspencionDto.getFechaInicio());
+        suspencion.setFechaFin(suspencionDto.getFechaFin());
         suspencionService.save(suspencion);
         return new ResponseEntity(new Mensaje("La suspensión ha sido actualizada"), HttpStatus.OK);
     }
@@ -111,4 +102,8 @@ public class SuspencionController {
         return new ResponseEntity(new Mensaje("suspención eliminada"), HttpStatus.OK);
     }
 
+
+
+
+    
 }

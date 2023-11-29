@@ -128,9 +128,9 @@ public class CapsController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity <?> delete(@PathVariable("id") Long id){
         if(!capsService.existsById(id))
-        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND)
+        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND);
         capsService.deleteById(id);
-        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK)
+        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK);
     }
 
 }

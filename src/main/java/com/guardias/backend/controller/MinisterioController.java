@@ -132,9 +132,9 @@ public class MinisterioController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity <?> delete(@PathVariable("id") Long id){
         if(!ministerioService.existsById(id))
-        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND)
+        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND);
         ministerioService.deleteById(id);
-        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK)
+        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK);
     }
 
 }

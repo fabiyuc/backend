@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
-import com.guardias.backend.modelo.TipoGuardia;
-import com.guardias.backend.service.TipoGuardiaServicio;
+import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
 @RequestMapping("/tipoGuardia")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TipoGuardiaControlador {
     @Autowired
-    TipoGuardiaServicio tipoGuardiaServicio;
+    TipoGuardiaService  tipoGuardiaServicio;
 
 
     @GetMapping("/detailnombre/{nombre}")
