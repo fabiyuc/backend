@@ -9,7 +9,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Entity(name = "CargasHorarias")
+@Entity(name = "cargasHorarias")
 @Data
 public class CargaHoraria {
 

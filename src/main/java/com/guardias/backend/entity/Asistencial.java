@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "asistenciales")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -15,6 +15,7 @@ public class Asistencial extends Person {
     
     @OneToMany(mappedBy = "asistencial")
     private Set<Legajo> legajos;
+
 
    
 }

@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "legajos")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor

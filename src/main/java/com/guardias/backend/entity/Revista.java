@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "revistas")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -32,10 +32,10 @@ public class Revista {
     @JoinColumn(name = "id_categoria")
     private Categoria categoria; */
  
-    /* @ManyToOne(optional = true)
+    @ManyToOne(optional = true)
     @JoinColumn(name = "id_adicional")
     private Adicional adicional;
-*/
+
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_carga_horaria")
@@ -45,10 +45,11 @@ public class Revista {
     @OneToMany(mappedBy = "revista")
     private Set<Legajo> legajos;
 
-    public Revista(TipoRevista tipoRevista, CargaHoraria cargaHoraria, Set<Legajo> legajos) {
+    public Revista(TipoRevista tipoRevista, Adicional adicional, CargaHoraria cargaHoraria, Set<Legajo> legajos) {
       this.tipoRevista = tipoRevista;
+      this.adicional = adicional;
       this.cargaHoraria = cargaHoraria;
       this.legajos = legajos;
     }
-    
+
 }

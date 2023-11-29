@@ -5,10 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "adicionales")
 @Data
 @RequiredArgsConstructor
 
@@ -18,9 +19,9 @@ public class Adicional {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombre;
-/* 
+
     @OneToMany(mappedBy = "adicional")
-    private Set<Revista> revistas; */
+    private Set<Revista> revistas;
 
     public Adicional(long id, String nombre) {
         this.id = id;

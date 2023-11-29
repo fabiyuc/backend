@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "suspenciones")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
