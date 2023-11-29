@@ -59,7 +59,7 @@ public class Hospital extends Efector {
         this.id = id;
     }
 
-    public Long getIdEfector() {
+    public Long getId() {
         return id;
     }
 

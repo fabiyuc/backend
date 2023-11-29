@@ -14,9 +14,9 @@ public class Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(25)")
-    private String nombre;
     @Column(columnDefinition = "VARCHAR(50)")
+    private String nombre;
+    @Column(columnDefinition = "VARCHAR(80)")
     private String domicilio;
     @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
