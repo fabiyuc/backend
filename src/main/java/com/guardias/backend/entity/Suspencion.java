@@ -33,6 +33,5 @@ public class Suspencion {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
     }
-    
-    
+
 }

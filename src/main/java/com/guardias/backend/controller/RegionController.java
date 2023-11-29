@@ -30,10 +30,15 @@ public class RegionController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Region>> getById(@PathVariable("id") int id) {
+    public ResponseEntity<List<Region>> getById(@PathVariable("id") Long id) {
         if (!regionService.existById(id))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
         Region region = regionService.getById(id).get();
         return new ResponseEntity(region, HttpStatus.OK);
     }
+
+    // TODO (RegionController create)
+    // TODO (RegionController update)
+    // TODO (RegionController delete)
+    // TODO (RegionController detalle por nombre)
 }

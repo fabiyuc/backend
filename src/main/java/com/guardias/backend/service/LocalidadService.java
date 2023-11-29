@@ -22,7 +22,7 @@ public class LocalidadService {
         return localidadRepository.findAll();
     }
 
-    public Optional<Localidad> getById(int id) {
+    public Optional<Localidad> getById(Long id) {
         return localidadRepository.findById(id);
     }
 
@@ -34,11 +34,11 @@ public class LocalidadService {
         localidadRepository.save(localidad);
     }
 
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         localidadRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existsById(Long id) {
         return localidadRepository.existsById(id);
     }
 

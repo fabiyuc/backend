@@ -30,11 +30,15 @@ public class LocalidadController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Localidad>> getById(@PathVariable("id") int id) {
-        if (!localidadService.existById(id))
+    public ResponseEntity<List<Localidad>> getById(@PathVariable("id") Long id) {
+        if (!localidadService.existsById(id))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
         Localidad localidad = localidadService.getById(id).get();
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
+    // TODO LocalidadController detalle por nombre
+    // TODO LocalidadController create
+    // TODO LocalidadController update
+    // TODO LocalidadController delete
 }

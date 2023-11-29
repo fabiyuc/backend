@@ -3,8 +3,9 @@ package com.guardias.backend.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class ProfesionDto {
-    
+
     @NotBlank
+    private Long id;
     private Long id;
 
     @NotBlank

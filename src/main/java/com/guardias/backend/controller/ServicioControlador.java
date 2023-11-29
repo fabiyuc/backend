@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
-import com.guardias.backend.modelo.Servicio;
-import com.guardias.backend.service.ServiceServicio;
+import com.guardias.backend.entity.Servicio;
+import com.guardias.backend.service.ServiceService;
 
 @RestController
 @RequestMapping("/servicio")
@@ -27,7 +27,7 @@ import com.guardias.backend.service.ServiceServicio;
 public class ServicioControlador {
 
     @Autowired
-    ServiceServicio serviceServicio;
+    ServiceService serviceServicio;
 
     @GetMapping("/lista")
     public ResponseEntity<List<Servicio>> list() {
@@ -36,7 +36,7 @@ public class ServicioControlador {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Servicio> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Servicio> getById(@PathVariable("id") Long id) {
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el servicio"), HttpStatus.NOT_FOUND);
         Servicio servicio = serviceServicio.getOne(id).get();
@@ -65,7 +65,7 @@ public class ServicioControlador {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody ServicioDto servicioDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ServicioDto servicioDto) {
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
 
@@ -77,14 +77,16 @@ public class ServicioControlador {
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
         Servicio servicio = serviceServicio.getOne(id).get();
-        servicio.setDescripcion(servicioDto.getDescripcion());
+        if (servicio.getDescripcion() != servicioDto.getDescripcion() && servicioDto.getDescripcion() != null
+                && !servicioDto.getDescripcion().isEmpty())
+            servicio.setDescripcion(servicioDto.getDescripcion());
         serviceServicio.save(servicio);
         return new ResponseEntity(new Mensaje("servicio actualizado"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
-        
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         serviceServicio.delete(id);

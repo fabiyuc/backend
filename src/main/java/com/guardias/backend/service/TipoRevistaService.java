@@ -14,7 +14,7 @@ public class TipoRevistaService {
 
     @Autowired
     TipoRevistaRepository tipoRevistaRepository;
-    
+
     public List<TipoRevista> list() {
         return tipoRevistaRepository.findAll();
     }

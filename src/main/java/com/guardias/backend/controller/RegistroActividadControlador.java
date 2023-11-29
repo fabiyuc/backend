@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
-import com.guardias.backend.modelo.RegistroActividad;
-import com.guardias.backend.service.RegistroActividadServicio;
+import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.service.RegistroActividadService;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -24,7 +24,7 @@ import io.micrometer.common.util.StringUtils;
 public class RegistroActividadControlador {
 
     @Autowired
-    RegistroActividadServicio registroActividadServicio;
+    RegistroActividadService registroActividadServicio;
 
     @GetMapping("/lista")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -35,24 +35,24 @@ public class RegistroActividadControlador {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
-       
+
         if (StringUtils.isBlank(registroActividadDto.getEstablecimiento()))
-            return new ResponseEntity(new Mensaje("el establecimiento es obligatorio"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el establecimiento es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(registroActividadDto.getServicio()))
-            return new ResponseEntity(new Mensaje("el servicio es obligatorio"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el servicio es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (registroActividadDto.getFechaIngreso() == null)
-        return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"),HttpStatus.BAD_REQUEST);
-        
+            return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
+
         if (registroActividadDto.getFechaEgreso() == null)
-        return new ResponseEntity(new Mensaje("la fecha de egreso es obligatoria"),HttpStatus.BAD_REQUEST);
-       
+            return new ResponseEntity(new Mensaje("la fecha de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
+
         if (registroActividadDto.getHoraIngreso() == null)
-        return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),HttpStatus.BAD_REQUEST);
-       
+            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
+
         if (registroActividadDto.getHoraEgreso() == null)
-        return new ResponseEntity(new Mensaje("la hora de egreso es obligatoria"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("la hora de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
         /*
          * if (registroActividadServicio.existsByNombre(profesionalDto.getNombre()))
@@ -68,6 +68,6 @@ public class RegistroActividadControlador {
                 registroActividadDto.getTipoGuardia());
         registroActividadServicio.save(registroActividad);
         return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
-    } 
+    }
 
 }

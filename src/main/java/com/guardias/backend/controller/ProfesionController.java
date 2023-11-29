@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
 import com.guardias.backend.entity.Profesion;
@@ -23,10 +24,9 @@ import com.guardias.backend.service.ProfesionService;
 @RequestMapping("/profesion")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProfesionController {
-    
+
     @Autowired
     ProfesionService profesionService;
-
 
     @GetMapping("/lista")
     public ResponseEntity<List<Profesion>> list() {
@@ -76,7 +76,8 @@ public class ProfesionController {
         if (StringUtils.isBlank(profesionDto.getNombre()))
             return new ResponseEntity(new Mensaje("la profesion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-//********** ver de validar que las matriculas no sean nulas en el front? o completar aqui mejor**********
+        // ********** ver de validar que las matriculas no sean nulas en el front? o
+        // completar aqui mejor**********
 
         Profesion profesion = profesionService.getOne(id).get();
         profesion.setNombre(profesionDto.getNombre());

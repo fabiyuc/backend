@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "tiposDeRevistas")
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor

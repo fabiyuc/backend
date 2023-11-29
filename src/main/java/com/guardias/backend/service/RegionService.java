@@ -21,7 +21,7 @@ public class RegionService {
         return regionRepository.findAll();
     }
 
-    public Optional<Region> getById(int id) {
+    public Optional<Region> getById(Long id) {
         return regionRepository.findById(id);
     }
 
@@ -33,11 +33,11 @@ public class RegionService {
         regionRepository.save(region);
     }
 
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         regionRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existById(Long id) {
         return regionRepository.existsById(id);
     }
 

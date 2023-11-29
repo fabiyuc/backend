@@ -1,5 +1,6 @@
 package com.guardias.backend.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,11 +15,11 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private int id;
     private String nombre;
 
-    public Categoria(int id, String nombre) {
+    public Categoria(Long id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }

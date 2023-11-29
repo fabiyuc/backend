@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.TipoRevista;
@@ -23,7 +24,7 @@ import com.guardias.backend.service.TipoRevistaService;
 @RequestMapping("/tipoRevista")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TipoRevistaController {
-    
+
     @Autowired
     TipoRevistaService tipoRevistaService;
 
@@ -34,6 +35,7 @@ public class TipoRevistaController {
     }
 
     @GetMapping("/detail/{id}")
+    public ResponseEntity<TipoRevista> getById(@PathVariable("id") Long id) {
     public ResponseEntity<TipoRevista> getById(@PathVariable("id") Long id) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de revista"), HttpStatus.NOT_FOUND);
@@ -64,6 +66,7 @@ public class TipoRevistaController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoRevistaDto tipoRevistaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoRevistaDto tipoRevistaDto) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
 
@@ -75,6 +78,7 @@ public class TipoRevistaController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         TipoRevista tipoRevista = tipoRevistaService.getOne(id).get();
+        if (tipoRevista.getNombre() != tipoRevistaDto.getNombre() && tipoRevistaDto.getNombre() != null && !tipoRevistaDto.getNombre().isEmpty()) {
         tipoRevista.setNombre(tipoRevistaDto.getNombre());
         tipoRevistaService.save(tipoRevista);
         return new ResponseEntity(new Mensaje("Tipo de servicio actualizado"), HttpStatus.OK);

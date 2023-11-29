@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Pais;
 
 @Repository
-public interface PaisRepository extends JpaRepository<Pais, Integer> {
+public interface PaisRepository extends JpaRepository<Pais, Long> {
     Optional<Pais> findByNombre(String nombre);
 
     boolean existsByNombre(String nombre);

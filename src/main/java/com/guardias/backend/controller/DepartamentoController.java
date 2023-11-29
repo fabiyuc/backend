@@ -29,10 +29,22 @@ public class DepartamentoController {
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Departamento>> getById(@PathVariable("id") int id) {
+    public ResponseEntity<List<Departamento>> getById(@PathVariable("id") Long id) {
         if (!departamentoService.existById(id))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
         Departamento departamento = departamentoService.getById(id).get();
         return new ResponseEntity(departamento, HttpStatus.OK);
     }
+
+    @GetMapping("/detalle/{nombre}")
+    public ResponseEntity<List<Departamento>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!departamentoService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
+        Departamento departamento = departamentoService.getByNombre(nombre).get();
+        return new ResponseEntity(departamento, HttpStatus.OK);
+    }
+
+    // TODO (DepartamentoController create)
+    // TODO (DepartamentoController update)
+    // TODO (DepartamentoController delete)
 }

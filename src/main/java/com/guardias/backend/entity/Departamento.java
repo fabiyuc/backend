@@ -2,7 +2,10 @@ package com.guardias.backend.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,18 +15,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity
+@Entity(name = "departamentos")
 public class Departamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
+
+    @Column(columnDefinition = "VARCHAR(10)")
     private String codigoPostal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_provincia")
+    @JsonIgnore
     Provincia provincia;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
@@ -37,11 +44,11 @@ public class Departamento {
         this.codigoPostal = codigoPostal;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -61,10 +68,6 @@ public class Departamento {
         this.codigoPostal = codigoPostal;
     }
 
-    // public Provincia getProvincia() {
-    // return provincia;
-    // }
-
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
     }
@@ -75,6 +78,10 @@ public class Departamento {
 
     public void setLocalidad(List<Localidad> localidad) {
         this.localidad = localidad;
+    }
+
+    public Provincia getProvincia() {
+        return provincia;
     }
 
 }

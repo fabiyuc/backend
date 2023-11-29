@@ -22,7 +22,7 @@ public class PaisService {
         return paisRepository.findAll();
     }
 
-    public Optional<Pais> getById(int id) {
+    public Optional<Pais> getById(Long id) {
         return paisRepository.findById(id);
     }
 
@@ -34,11 +34,11 @@ public class PaisService {
         paisRepository.save(pais);
     }
 
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         paisRepository.deleteById(id);
     }
 
-    public boolean existById(int id) {
+    public boolean existsById(Long id) {
         return paisRepository.existsById(id);
     }
 

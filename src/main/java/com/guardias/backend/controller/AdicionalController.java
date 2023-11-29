@@ -58,12 +58,12 @@ public class AdicionalController {
         if (StringUtils.isBlank(adicionalDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (adicionalService.existsById(adicionalDto.getId()))
+        if (adicionalService.existsByNombre(adicionalDto.getNombre()))
             return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
 
         if (adicionalService.existsByNombre(adicionalDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-        Adicional adicional = new Adicional(adicionalDto.getId(), adicionalDto.getNombre());
+        Adicional adicional = new Adicional(adicionalDto.getNombre());
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
     }
@@ -84,8 +84,11 @@ public class AdicionalController {
             return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
 
         Adicional adicional = adicionalService.getOne(id).get();
-        adicional.setNombre(adicionalDto.getNombre());
-        adicional.setId(adicionalDto.getId());
+
+        if (adicional.getNombre() != adicionalDto.getNombre() && adicionalDto.getNombre() != null
+                && !adicionalDto.getNombre().isEmpty())
+            adicional.setNombre(adicionalDto.getNombre());
+
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional Actualizado"), HttpStatus.OK);
     }

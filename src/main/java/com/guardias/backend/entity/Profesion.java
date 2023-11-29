@@ -10,10 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "profesiones")
 @Data
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class Profesion {
 
     @Id
@@ -29,5 +28,5 @@ public class Profesion {
         this.nombre = nombre;
         this.esAsistencial = esAsistencial;
     }
-    
+
 }
