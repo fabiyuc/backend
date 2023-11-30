@@ -13,10 +13,12 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "suspenciones")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Suspencion {
 
     @Id

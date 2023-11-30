@@ -58,9 +58,6 @@ public class CargoController {
         if (StringUtils.isBlank(cargoDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (cargoService.existsById(cargoDto.getId()))
-            return new ResponseEntity(new Mensaje("El ID ya existe"), HttpStatus.BAD_REQUEST);
-
         if (cargoService.existsByNombre(cargoDto.getNombre()))
             return new ResponseEntity(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
@@ -83,7 +80,6 @@ public class CargoController {
             return new ResponseEntity(new Mensaje("Fecha final obligatoria"), HttpStatus.BAD_REQUEST);
 
         Cargo cargo = new Cargo();
-        cargo.setId(cargoDto.getId());
         cargo.setNombre(cargoDto.getNombre());
         cargo.setDescripcion(cargoDto.getDescripcion());
         cargo.setNroresolucion(cargoDto.getNroresolucion());
@@ -109,9 +105,6 @@ public class CargoController {
         if (StringUtils.isBlank(cargoDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (cargoService.existsById(cargoDto.getId()) && cargoDto.getId() != id)
-            return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
-
         if (cargoDto.getDescripcion() == null)
             return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
 
@@ -132,7 +125,6 @@ public class CargoController {
 
         Cargo cargo = cargoService.getone(id).get();
         cargo.setNombre(cargoDto.getNombre());
-        cargo.setId(cargoDto.getId());
         cargo.setDescripcion(cargoDto.getDescripcion());
         cargo.setNroresolucion(cargoDto.getNroresolucion());
         cargo.setNrodecreto(cargoDto.getNrodecreto());

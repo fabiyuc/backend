@@ -9,6 +9,7 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "ministerios")
@@ -16,6 +17,7 @@ import lombok.Data;
 @PrimaryKeyJoinColumn(name = "id_efector")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Ministerio extends Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

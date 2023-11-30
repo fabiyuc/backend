@@ -1,6 +1,7 @@
 package com.guardias.backend.dto;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.guardias.backend.entity.TipoGuardia;
 
@@ -19,14 +20,14 @@ public class RegistroActividadDto {
     private String servicio;
 
     @NotBlank
-    private Date fechaIngreso;
+    private LocalDate fechaIngreso;
 
-    private Date fechaEgreso;
+    private LocalDate fechaEgreso;
 
     @NotBlank
-    private String horaIngreso;
+    private LocalTime horaIngreso;
 
-    private String horaEgreso;
+    private LocalTime horaEgreso;
 
     @NotBlank
     private TipoGuardia tipoGuardia;

@@ -10,10 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "tiposGuardias")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TipoGuardia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

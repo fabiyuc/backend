@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,13 +60,15 @@ public class RegistroActividadControlador {
          * return new ResponseEntity(new Mensaje("ese nombre ya existe"),
          * HttpStatus.BAD_REQUEST);
          */
-        RegistroActividad registroActividad = new RegistroActividad(registroActividadDto.getEstablecimiento(),
-                registroActividadDto.getServicio(), 
-                registroActividadDto.getFechaIngreso(),
-                registroActividadDto.getFechaEgreso(), 
-                registroActividadDto.getHoraIngreso(),
-                registroActividadDto.getHoraEgreso(), 
-                registroActividadDto.getTipoGuardia());
+        RegistroActividad registroActividad = new RegistroActividad();
+
+        registroActividad.setEstablecimiento(registroActividadDto.getEstablecimiento());
+        registroActividad.setServicio(registroActividadDto.getServicio());
+        registroActividad.setFechaIngreso(registroActividadDto.getFechaIngreso());
+        registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
+        registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
+        registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+        registroActividad.setTipoGuardia(registroActividadDto.getTipoGuardia());
         registroActividadServicio.save(registroActividad);
         return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
     }

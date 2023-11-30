@@ -1,6 +1,6 @@
 package com.guardias.backend.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,10 +11,12 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "autoridades")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Autoridad {
 
     @Id
@@ -24,10 +26,10 @@ public class Autoridad {
     private String nombre;
 
     @Temporal(TemporalType.DATE)
-    private Date fechaInicio;
+    private LocalDate fechaInicio;
 
     @Temporal(TemporalType.DATE)
-    private Date fechaFinal;
+    private LocalDate fechaFinal;
     private boolean esActual;
     private boolean esRegional;
 

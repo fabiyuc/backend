@@ -10,10 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "tiposRevistas")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TipoRevista {
 
     @Id

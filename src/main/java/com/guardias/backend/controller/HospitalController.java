@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.service.HospitalService;
 
@@ -64,7 +63,7 @@ public class HospitalController {
         if (hospitalService.existsByNombre(hospitalDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-        Efector hospital = new Hospital();
+        Hospital hospital = new Hospital();
         hospital.setNombre(hospitalDto.getNombre());
         hospital.setDomicilio(hospitalDto.getDomicilio());
         hospital.setTelefono(hospitalDto.getTelefono());
@@ -72,9 +71,9 @@ public class HospitalController {
         hospital.setIdRegion(hospitalDto.getIdRegion());
         hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
         hospital.setObservacion(hospitalDto.getObservacion());
-        ((Hospital) hospital).setEsCabecera(hospitalDto.isEsCabecera());
+        hospital.setEsCabecera(hospitalDto.isEsCabecera());
 
-        hospitalService.save((Hospital) hospital);
+        hospitalService.save(hospital);
         return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
     }
 

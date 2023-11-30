@@ -59,7 +59,8 @@ public class ServicioControlador {
         if (serviceServicio.existsByDescripcion(servicioDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("esa descripcion ya existe"),
                     HttpStatus.BAD_REQUEST);
-        Servicio servicio = new Servicio(servicioDto.getDescripcion());
+        Servicio servicio = new Servicio();
+        servicio.setDescripcion(servicioDto.getDescripcion());
         serviceServicio.save(servicio);
         return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
     }

@@ -12,10 +12,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "paises")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Pais {
 
     @Id
