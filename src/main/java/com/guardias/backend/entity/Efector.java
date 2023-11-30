@@ -11,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @MappedSuperclass
-@Table(name = "Efectores")
+@Table(name = "efectores")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
