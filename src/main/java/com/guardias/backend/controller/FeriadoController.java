@@ -66,14 +66,14 @@ public class FeriadoController {
             return new ResponseEntity(new Mensaje("El motivo es obligatorio"), HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(feriadoDto.getTipoFeriado()))
             return new ResponseEntity(new Mensaje("El tipo de feriado es obligatorio"), HttpStatus.BAD_REQUEST);
-        if (feriadoDto.getDia() == null)
+        if (feriadoDto.getFecha() == null)
             return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (feriadoService.existsByMotivo(feriadoDto.getMotivo()))
             return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
 
         Feriado feriado = new Feriado();
-        feriado.setFecha(feriadoDto.getDia());
+        feriado.setFecha(feriadoDto.getFecha());
         feriado.setMotivo(feriadoDto.getMotivo());
         feriado.setTipoFeriado(feriadoDto.getTipoFeriado());
         feriado.setDescripcion(feriadoDto.getDescripcion());
@@ -92,7 +92,7 @@ public class FeriadoController {
             return new ResponseEntity(new Mensaje("El motivo es obligatorio"), HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(feriadoDto.getTipoFeriado()))
             return new ResponseEntity(new Mensaje("El tipo de feriado es obligatorio"), HttpStatus.BAD_REQUEST);
-        if (feriadoDto.getDia() == null)
+        if (feriadoDto.getFecha() == null)
             return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (feriadoService.existsByMotivo(feriadoDto.getMotivo()))
@@ -100,8 +100,8 @@ public class FeriadoController {
 
         Feriado feriado = feriadoService.getById(id).get();
 
-        if (feriado.getFecha() != feriadoDto.getDia() && feriadoDto.getDia() != null)
-            feriado.setFecha(feriadoDto.getDia());
+        if (feriado.getFecha() != feriadoDto.getFecha() && feriadoDto.getFecha() != null)
+            feriado.setFecha(feriadoDto.getFecha());
         if (feriado.getMotivo() != feriadoDto.getMotivo() && feriadoDto.getMotivo() != null
                 && !feriadoDto.getMotivo().isEmpty())
             feriado.setMotivo(feriadoDto.getMotivo());
