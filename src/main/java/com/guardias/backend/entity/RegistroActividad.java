@@ -28,7 +28,7 @@ public class RegistroActividad {
     @Column(columnDefinition = "VARCHAR(50)")
     private String servicio; // VER CONVENDRIA HACER UNA TABLA SERVICIOS?????????????
     @Temporal(TemporalType.DATE)
-    private LocalDate fechaIngreso;
+    private LocalDate fechaIngreso; // ! Date ya no se usa....
     @Temporal(TemporalType.DATE)
     private LocalDate fechaEgreso;
     @Temporal(TemporalType.TIME)
