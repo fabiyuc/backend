@@ -8,9 +8,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Entity(name = "registrosActividades")
+@Data
 @RequiredArgsConstructor
 public class RegistroActividad {
 
