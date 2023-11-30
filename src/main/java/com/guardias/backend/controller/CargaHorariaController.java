@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.CargaHorariaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.CargaHoraria;
@@ -25,7 +23,7 @@ import com.guardias.backend.service.CargaHorariaService;
 @RequestMapping("/cargaHoraria")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CargaHorariaController {
-
+    
     @Autowired
     CargaHorariaService cargaHorariaService;
 
@@ -53,7 +51,7 @@ public class CargaHorariaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
-
+        
         String cantidadStr = Integer.toString(cargaHorariaDto.getCantidad());
         if (StringUtils.isBlank(cantidadStr))
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
@@ -80,15 +78,14 @@ public class CargaHorariaController {
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
 
         CargaHoraria cargaHoraria = cargaHorariaService.getOne(id).get();
-        if (cargaHoraria.getCantidad() != cargaHorariaDto.getCantidad() && cargaHorariaDto.getCantidad() != 0)
-            cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
+        cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
         cargaHorariaService.save(cargaHoraria);
         return new ResponseEntity(new Mensaje("Carga horaria actualizada"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-
+        
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
         cargaHorariaService.delete(id);

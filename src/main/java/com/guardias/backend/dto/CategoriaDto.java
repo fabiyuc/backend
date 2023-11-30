@@ -5,23 +5,23 @@ import jakarta.validation.constraints.NotBlank;
 public class CategoriaDto {
 
     @NotBlank
-    private Long id;
+    private long id;
     @NotBlank
     private String nombre;
 
     public CategoriaDto() {
     }
 
-    public CategoriaDto(@NotBlank Long id, @NotBlank String nombre) {
+    public CategoriaDto(@NotBlank long id, @NotBlank String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

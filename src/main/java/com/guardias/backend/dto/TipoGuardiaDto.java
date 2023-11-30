@@ -3,6 +3,9 @@ package com.guardias.backend.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class TipoGuardiaDto {
+
+    @NotBlank
+    private Long id;
     @NotBlank
     private String nombre;
     @NotBlank
@@ -10,12 +13,26 @@ public class TipoGuardiaDto {
 
     public TipoGuardiaDto() {
     }
-    
+
+    public TipoGuardiaDto(@NotBlank Long id, @NotBlank String nombre, @NotBlank String descripcion) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
+
     public TipoGuardiaDto(@NotBlank String nombre, @NotBlank String descripcion) {
         this.nombre = nombre;
         this.descripcion = descripcion;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getNombre() {
         return nombre;
     }

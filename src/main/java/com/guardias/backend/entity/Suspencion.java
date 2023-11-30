@@ -1,11 +1,13 @@
 package com.guardias.backend.entity;
 
 import java.sql.Date;
+import java.util.Set;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,9 @@ public class Suspencion {
     private String descripcion;
     private Date fechaInicio;
     private Date fechaFin;
+
+    @OneToMany(mappedBy = "suspencion")
+    private Set<Legajo> legajos;
 
     public Suspencion(String descripcion, Date fechaInicio, Date fechaFin) {
         this.descripcion = descripcion;

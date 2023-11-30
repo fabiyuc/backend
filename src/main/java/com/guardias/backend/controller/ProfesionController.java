@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,7 +59,7 @@ public class ProfesionController {
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
         Profesion profesion = new Profesion(profesionDto.getNombre(),
-                profesionDto.getEsAsistencial());
+        profesionDto.getEsAsistencial());
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);
     }
@@ -81,18 +80,15 @@ public class ProfesionController {
         // completar aqui mejor**********
 
         Profesion profesion = profesionService.getOne(id).get();
-        if (profesion.getNombre() != profesionDto.getNombre() && profesionDto.getNombre() != null
-                && !profesionDto.getNombre().isEmpty())
-            profesion.setNombre(profesionDto.getNombre());
-        if (profesion.getEsAsistencial() != profesionDto.getEsAsistencial())
-            profesion.setEsAsistencial(profesionDto.getEsAsistencial());
+        profesion.setNombre(profesionDto.getNombre());
+        profesion.setEsAsistencial(profesionDto.getEsAsistencial());
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion actualizada"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-
+        
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
         profesionService.delete(id);

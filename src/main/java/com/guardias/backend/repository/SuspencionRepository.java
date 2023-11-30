@@ -9,11 +9,10 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Suspencion;
 
 @Repository
-public interface SuspencionRepository extends JpaRepository<Suspencion, Long> {
+public interface SuspencionRepository extends JpaRepository<Suspencion,Long> {
 
-    Optional<Suspencion> findById(int id);
-
-    boolean existsById(int id);
+    Optional<Suspencion> findById(Long id); 
+    boolean existsById(Long id);
 
     Optional<Suspencion> findByFechaInicio(Date fechaInicio);
 

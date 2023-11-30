@@ -5,13 +5,24 @@ import jakarta.validation.constraints.NotBlank;
 public class AdicionalDto {
 
     @NotBlank
+    private long id;
+    @NotBlank
     private String nombre;
 
     public AdicionalDto() {
     }
 
-    public AdicionalDto(@NotBlank String nombre) {
+    public AdicionalDto(long id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getNombre() {

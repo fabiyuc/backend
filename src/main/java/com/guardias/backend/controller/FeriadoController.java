@@ -31,7 +31,7 @@ public class FeriadoController {
     FeriadoService feriadoService;
 
     @GetMapping("/lista")
-    public ResponseEntity<Lista<Feriado>> list() {
+    public ResponseEntity<List<Feriado>> list() {
         List<Feriado> list = feriadoService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }

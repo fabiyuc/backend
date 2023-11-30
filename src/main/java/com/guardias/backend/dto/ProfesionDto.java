@@ -19,7 +19,6 @@ public class ProfesionDto {
     public ProfesionDto(@NotBlank String nombre, @NotBlank Boolean esAsistencial) {
         this.nombre = nombre;
         this.esAsistencial = esAsistencial;
-
     }
 
     public Long getId() {
@@ -45,5 +44,5 @@ public class ProfesionDto {
     public void setEsAsistencial(Boolean esAsistencial) {
         this.esAsistencial = esAsistencial;
     }
-
+    
 }

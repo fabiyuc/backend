@@ -1,10 +1,12 @@
 package com.guardias.backend.entity;
 
-import jakarta.persistence.Column;
+import java.util.Set;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -16,10 +18,11 @@ public class Profesion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
     private Boolean esAsistencial;
+
+    @OneToMany(mappedBy = "profesion")
+    private Set<Legajo> legajos;
 
     public Profesion(String nombre, Boolean esAsistencial) {
         this.nombre = nombre;

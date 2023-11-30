@@ -9,10 +9,9 @@ import com.guardias.backend.entity.Profesion;
 
 @Repository
 public interface ProfesionRepository extends JpaRepository<Profesion, Long> {
-
-    Optional<Profesion> findById(int id);
-
-    boolean existsById(int id);
+    
+    Optional<Profesion> findById(Long id);
+    boolean existsById(Long id);
 
     Optional<Profesion> findByNombre(String nombre);
 

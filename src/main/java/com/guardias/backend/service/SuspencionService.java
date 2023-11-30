@@ -26,14 +26,6 @@ public class SuspencionService {
         return suspencionRepository.findById(id);
     }
 
-    public Optional<Suspencion> getByFechaInicio(Date fechaInicio) {
-        return suspencionRepository.findByFechaInicio(fechaInicio);
-    }
-
-    public Optional<Suspencion> getByFechaFin(Date fechaFin) {
-        return suspencionRepository.findByFechaFin(fechaFin);
-    }
-
     public void save(Suspencion suspencion) {
         suspencionRepository.save(suspencion);
     }
@@ -44,6 +36,14 @@ public class SuspencionService {
 
     public boolean existsById(Long id) {
         return suspencionRepository.existsById(id);
+    }
+
+    public Optional<Suspencion> getByFechaInicio(Date fechaInicio) {
+        return suspencionRepository.findByFechaInicio(fechaInicio);
+    }
+
+    public Optional<Suspencion> getByFechaFin(Date fechaFin) {
+        return suspencionRepository.findByFechaFin(fechaFin);
     }
 
     public boolean existsByFechaInicio(Date fechaInicio) {
