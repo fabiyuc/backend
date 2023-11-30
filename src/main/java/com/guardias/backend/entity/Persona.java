@@ -8,12 +8,9 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
-
 @MappedSuperclass
 @Table(name = "personas")
 public class Persona {

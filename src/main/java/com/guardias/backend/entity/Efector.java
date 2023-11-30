@@ -6,9 +6,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @MappedSuperclass
 @Table(name = "Efectores")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Efector {
 
     @Id
@@ -29,84 +35,4 @@ public class Efector {
 
     @Column(name = "id_localidad")
     private Long idLocalidad;
-
-    public Efector() {
-    }
-
-    public Efector(long idEfector, String nombre, String domicilio, String telefono, boolean estado, String observacion,
-            long idRegion, long idLocalidad) {
-        this.id = idEfector;
-        this.nombre = nombre;
-        this.domicilio = domicilio;
-        this.telefono = telefono;
-        this.estado = estado;
-        this.observacion = observacion;
-        this.idRegion = idRegion;
-        this.idLocalidad = idLocalidad;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDomicilio() {
-        return domicilio;
-    }
-
-    public void setDomicilio(String domicilio) {
-        this.domicilio = domicilio;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public boolean isEstado() {
-        return estado;
-    }
-
-    public void setEstado(boolean estado) {
-        this.estado = estado;
-    }
-
-    public String getObservacion() {
-        return observacion;
-    }
-
-    public void setObservacion(String observacion) {
-        this.observacion = observacion;
-    }
-
-    public long getIdRegion() {
-        return idRegion;
-    }
-
-    public void setIdRegion(long idRegion) {
-        this.idRegion = idRegion;
-    }
-
-    public long getIdLocalidad() {
-        return idLocalidad;
-    }
-
-    public void setIdLocalidad(long idLocalidad) {
-        this.idLocalidad = idLocalidad;
-    }
-
 }

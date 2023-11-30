@@ -1,36 +1,34 @@
 package com.guardias.backend.entity;
 
 import java.sql.Date;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "autoridades")
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class Autoridad {
-  
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
+
+    @Temporal(TemporalType.DATE)
     private Date fechaInicio;
+
+    @Temporal(TemporalType.DATE)
     private Date fechaFinal;
     private boolean esActual;
     private boolean esRegional;
-    
-    public Autoridad(String nombre, Date fechaInicio, Date fechaFinal, boolean esActual, boolean esRegional) {
-        this.nombre = nombre;
-        this.fechaInicio = fechaInicio;
-        this.fechaFinal = fechaFinal;
-        this.esActual = esActual;
-        this.esRegional = esRegional;
-    }
-    
-    
+
 }

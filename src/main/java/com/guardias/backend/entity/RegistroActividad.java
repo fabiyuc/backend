@@ -1,42 +1,43 @@
 package com.guardias.backend.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Entity(name = "registrosActividades")
-@RequiredArgsConstructor
+@Data
+@AllArgsConstructor
 public class RegistroActividad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String establecimiento;
-    private String servicio;
-    private Date fechaIngreso;
-    private Date fechaEgreso;
-    private String horaIngreso;
-    private String horaEgreso;
+    @Column(columnDefinition = "VARCHAR(50)")
+    private String establecimiento; // VER NO DEBERIA SER EL ID DEL EFECTOR??????????????????
+    @Column(columnDefinition = "VARCHAR(50)")
+    private String servicio; // VER CONVENDRIA HACER UNA TABLA SERVICIOS?????????????
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaIngreso;
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaEgreso;
+    @Temporal(TemporalType.TIME)
+    private LocalTime horaIngreso;
+    @Temporal(TemporalType.TIME)
+    private LocalTime horaEgreso;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_tipo_guardia")
     private TipoGuardia tipoGuardia;
-
-    public RegistroActividad(String establecimiento, String servicio, Date fechaIngreso, Date fechaEgreso,
-            String horaIngreso, String horaEgreso, TipoGuardia tipoGuardia) {
-        this.establecimiento = establecimiento;
-        this.servicio = servicio;
-        this.fechaIngreso = fechaIngreso;
-        this.fechaEgreso = fechaEgreso;
-        this.horaIngreso = horaIngreso;
-        this.horaEgreso = horaEgreso;
-        this.tipoGuardia = tipoGuardia;
-    }
 
 }
