@@ -16,10 +16,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "provincias")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Provincia {
 
     @Id

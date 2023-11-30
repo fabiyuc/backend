@@ -12,10 +12,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "localidades")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Localidad {
 
     @Id
