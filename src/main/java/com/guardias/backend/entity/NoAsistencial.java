@@ -10,7 +10,7 @@ import lombok.Data;
 @Entity(name = "noAsistenciales")
 @Data
 @AllArgsConstructor
-public class NoAsistencial extends Person {
+public class NoAsistencial extends Person { // !! extiende de PERSON o de PERSONA??
 
     private String descripcion;
     private String nombreUsuario;
