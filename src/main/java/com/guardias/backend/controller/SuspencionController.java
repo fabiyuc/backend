@@ -86,14 +86,15 @@ public class SuspencionController {
         if (StringUtils.isBlank(suspencionDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // validar las fechas en front que no sea campo vacio hasta poder validar en
-        // back
-
-        // TODO faltan las validaciones
         Suspencion suspencion = suspencionService.getOne(id).get();
-        suspencion.setDescripcion(suspencionDto.getDescripcion());
-        suspencion.setFechaInicio(suspencionDto.getFechaInicio());
-        suspencion.setFechaFin(suspencionDto.getFechaFin());
+
+        if (!suspencionDto.getDescripcion().equals(suspencion.getDescripcion()))
+            suspencion.setDescripcion(suspencionDto.getDescripcion());
+        if (!suspencionDto.getFechaInicio().equals(suspencion.getFechaInicio()))
+            suspencion.setFechaInicio(suspencionDto.getFechaInicio());
+        if (!suspencionDto.getFechaFin().equals(suspencion.getFechaFin()))
+            suspencion.setFechaFin(suspencionDto.getFechaFin());
+
         suspencionService.save(suspencion);
         return new ResponseEntity(new Mensaje("La suspensión ha sido actualizada"), HttpStatus.OK);
     }
