@@ -21,7 +21,7 @@ public class AdicionalService {
         return adicionalRepository.findAll();
     }
 
-    public Optional<Adicional> getOne(long id) {
+    public Optional<Adicional> getById(long id) {
         return adicionalRepository.findById((Long) id);
     }
 

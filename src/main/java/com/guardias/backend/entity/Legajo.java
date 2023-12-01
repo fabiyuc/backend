@@ -1,65 +1,58 @@
 package com.guardias.backend.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Data
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Entity(name = "legajos")
 public class Legajo {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private Date fechaInicio;
-    private Date fechaFinal;
-    private boolean esActual;
-    private boolean esLegal;
-    private String matriculaNacional;
-    private String matriculaProvincial;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_profesion")
-    private Profesion profesion;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @Temporal(TemporalType.DATE)
+  private LocalDate fechaInicio;
+  @Temporal(TemporalType.DATE)
+  private LocalDate fechaFinal;
+  private boolean esActual;
+  private boolean esLegal;
+  @Column(columnDefinition = "VARCHAR(10)")
+  private String matriculaNacional;
+  @Column(columnDefinition = "VARCHAR(10)")
+  private String matriculaProvincial;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_suspencion")
-    private Suspencion suspencion;
-    
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_revista")
-    private Revista revista;
-    
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_asistencial")
-    private Asistencial asistencial;
-    
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_noAsistencial")
-    private NoAsistencial noAsistencial;
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "id_profesion")
+  private Profesion profesion;
 
-    public Legajo(Date fechaInicio, Date fechaFinal, boolean esActual, boolean esLegal, String matriculaNacional,
-        String matriculaProvincial, Profesion profesion, Suspencion suspencion, Revista revista) {
-      this.fechaInicio = fechaInicio;
-      this.fechaFinal = fechaFinal;
-      this.esActual = esActual;
-      this.esLegal = esLegal;
-      this.matriculaNacional = matriculaNacional;
-      this.matriculaProvincial = matriculaProvincial;
-      this.profesion = profesion;
-      this.suspencion = suspencion;
-      this.revista = revista;
-    }
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "id_suspencion")
+  private Suspencion suspencion;
 
-    
-    
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "id_revista")
+  private Revista revista;
+
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "id_asistencial")
+  private Asistencial asistencial;
+
+  @ManyToOne(optional = true)
+  @JoinColumn(name = "id_noAsistencial")
+  private NoAsistencial noAsistencial;
+
 }

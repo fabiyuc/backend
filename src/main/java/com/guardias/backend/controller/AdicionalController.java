@@ -39,7 +39,7 @@ public class AdicionalController {
     public ResponseEntity<Adicional> getById(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Adicional adicional = adicionalService.getOne(id).get();
+        Adicional adicional = adicionalService.getById(id).get();
         return new ResponseEntity<Adicional>(adicional, HttpStatus.OK);
 
     }
@@ -58,12 +58,10 @@ public class AdicionalController {
         if (StringUtils.isBlank(adicionalDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (adicionalService.existsById(adicionalDto.getId()))
-            return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
-
         if (adicionalService.existsByNombre(adicionalDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-        Adicional adicional = new Adicional(adicionalDto.getId(), adicionalDto.getNombre());
+        Adicional adicional = new Adicional();
+        adicional.setNombre(adicionalDto.getNombre());
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
     }
@@ -80,12 +78,8 @@ public class AdicionalController {
         if (StringUtils.isBlank(adicionalDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (adicionalService.existsById(adicionalDto.getId()) && adicionalDto.getId() != id)
-            return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
-
-        Adicional adicional = adicionalService.getOne(id).get();
+        Adicional adicional = adicionalService.getById(id).get();
         adicional.setNombre(adicionalDto.getNombre());
-        adicional.setId(adicionalDto.getId());
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional Actualizado"), HttpStatus.OK);
     }

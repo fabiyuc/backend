@@ -1,18 +1,17 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-@Entity
+@Entity(name = "noAsistenciales")
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
-public class NoAsistencial extends Person {
-    
+public class NoAsistencial extends Person { // !! extiende de PERSON o de PERSONA??
+
     private String descripcion;
     private String nombreUsuario;
     private String contraseña;

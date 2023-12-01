@@ -1,30 +1,30 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "adicionales")
 @Data
-@RequiredArgsConstructor
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class Adicional {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+    @Column(columnDefinition = "VARCHAR(20)")
     private String nombre;
-/* 
-    @OneToMany(mappedBy = "adicional")
-    private Set<Revista> revistas; */
 
-    public Adicional(long id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
-    }
+    @OneToMany(mappedBy = "adicional")
+    private Set<Revista> revistas;
 
 }

@@ -45,16 +45,17 @@ public class PaisController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody PaisDto PaisDto) {
-        if (StringUtils.isBlank(PaisDto.getNombre()))
+    public ResponseEntity<?> create(@RequestBody PaisDto paisDto) {
+        if (StringUtils.isBlank(paisDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
-        if (paisService.existsByNombre(PaisDto.getNombre()))
+        if (paisService.existsByNombre(paisDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-        Pais pais = new Pais(PaisDto.getNombre(),
-                PaisDto.getCodigo(),
-                PaisDto.getNacionalidad());
+        Pais pais = new Pais();
+        pais.setCodigo(paisDto.getCodigo());
+        pais.setNacionalidad(paisDto.getNacionalidad());
+        pais.setNombre(paisDto.getNacionalidad());
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("tipo de revista creado"), HttpStatus.OK);
     }

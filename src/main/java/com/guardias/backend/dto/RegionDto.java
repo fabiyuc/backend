@@ -1,17 +1,14 @@
 package com.guardias.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+@Data
+@AllArgsConstructor
 public class RegionDto {
 
     @NotBlank
     private String nombre;
-
-    public RegionDto() {
-    }
-
-    public RegionDto(String nombre) {
-        this.nombre = nombre;
-    }
 
 }

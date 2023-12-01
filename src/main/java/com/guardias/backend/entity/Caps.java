@@ -8,61 +8,25 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "caps")
 @DiscriminatorValue("CAPS")
 @PrimaryKeyJoinColumn(name = "id_efector")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Caps extends Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "id_udo")
     private Long idUdo;
 
     @Column(name = "tipo_caps", columnDefinition = "VARCHAR(25)")
     private String tipoCaps;
-
-    public Caps() {
-    }
-
-    public Caps(Long id, Long idUdo, String tipoCaps) {
-        this.id = id;
-        this.idUdo = idUdo;
-        this.tipoCaps = tipoCaps;
-    }
-
-    public Caps(long idEfector, String nombre, String domicilio, String telefono, boolean estado, String observacion,
-            long idRegion, long idLocalidad, Long id, Long idUdo, String tipoCaps) {
-        super(idEfector, nombre, domicilio, telefono, estado, observacion, idRegion, idLocalidad);
-        this.id = id;
-        this.idUdo = idUdo;
-        this.tipoCaps = tipoCaps;
-    }
-
-    public Long getIdEfector() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getIdUdo() {
-        return idUdo;
-    }
-
-    public void setIdUdo(Long idUdo) {
-        this.idUdo = idUdo;
-    }
-
-    public String getTipoCaps() {
-        return tipoCaps;
-    }
-
-    public void setTipoCaps(String tipoCaps) {
-        this.tipoCaps = tipoCaps;
-    }
 
 }

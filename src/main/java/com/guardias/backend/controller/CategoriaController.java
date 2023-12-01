@@ -56,12 +56,10 @@ public class CategoriaController {
         if (StringUtils.isBlank(categoriaDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (categoriaService.existsById(categoriaDto.getId()))
-            return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
-
         if (categoriaService.existsByNombre(categoriaDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-        Categoria categoria = new Categoria(categoriaDto.getId(), categoriaDto.getNombre());
+        Categoria categoria = new Categoria();
+        categoria.setNombre(categoriaDto.getNombre());
         categoriaService.save(categoria);
         return new ResponseEntity<>(new Mensaje("Categoria creada"), HttpStatus.OK);
     }
@@ -78,12 +76,8 @@ public class CategoriaController {
         if (StringUtils.isBlank(categoriaDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (categoriaService.existsById(categoriaDto.getId()))
-            return new ResponseEntity(new Mensaje("El id ya existe"), HttpStatus.BAD_REQUEST);
-
         Categoria categoria = categoriaService.getOne(id).get();
         categoria.setNombre(categoriaDto.getNombre());
-        categoria.setId(categoriaDto.getId());
         categoriaService.save(categoria);
 
         return new ResponseEntity<>(new Mensaje("Categoria Actualizada"), HttpStatus.OK);
