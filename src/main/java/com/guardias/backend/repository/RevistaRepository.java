@@ -10,6 +10,7 @@ import com.guardias.backend.entity.Revista;
 public interface RevistaRepository extends JpaRepository<Revista,Long>{
     
     Optional<Revista> findById(Long id);
+    
     boolean existsById(Long id);
 
 }
