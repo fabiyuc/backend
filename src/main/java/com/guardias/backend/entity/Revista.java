@@ -11,10 +11,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity(name = "revistas")
 @Data
 @AllArgsConstructor
+//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class Revista {
 
   @Id

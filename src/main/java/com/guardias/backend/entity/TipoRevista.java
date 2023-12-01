@@ -11,9 +11,11 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity(name = "tiposRevistas")
 @Data
+//@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class TipoRevista {

@@ -14,11 +14,15 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
+@Entity(name = "legajos")
+@Data
+//@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Entity(name = "legajos")
+
+
 public class Legajo {
 
   @Id

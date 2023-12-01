@@ -8,11 +8,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity(name = "profesiones")
 @Data
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class Profesion {
 
     @Id
