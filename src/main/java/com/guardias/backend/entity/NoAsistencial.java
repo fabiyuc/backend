@@ -6,10 +6,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "noAsistenciales")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class NoAsistencial extends Person { // !! extiende de PERSON o de PERSONA??
 
     private String descripcion;
