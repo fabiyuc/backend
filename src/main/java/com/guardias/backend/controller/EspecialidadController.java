@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class EspecialidadController {
 
     @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Especialidad>> getById(@PathVariable("id") Long id) {
-        if (!especialidadService.existById(id))
+        if (!especialidadService.existsById(id))
             return new ResponseEntity(new Mensaje("especialidad no existe"), HttpStatus.NOT_FOUND);
         Especialidad especialidad = especialidadService.getById(id).get();
         return new ResponseEntity(especialidad, HttpStatus.OK);
@@ -39,7 +40,15 @@ public class EspecialidadController {
 
     // TODO (EspecialidadController create)
     // TODO (EspecialidadController update)
-    // TODO (EspecialidadController delete)
     // TODO (EspecialidadController detalle por nombre)
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+        if (!especialidadService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el especialidad"), HttpStatus.NOT_FOUND);
+        especialidadService.deleteById(id);
+        return new ResponseEntity(new Mensaje("especialidad eliminado"), HttpStatus.OK);
+    }
 
 }

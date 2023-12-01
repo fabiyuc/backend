@@ -34,15 +34,15 @@ public class ProvinciaService {
         ProvinciaRepository.save(provincia);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         ProvinciaRepository.deleteById(id);
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return ProvinciaRepository.existsById(id);
     }
 
-    public boolean existByNombre(String nombre) {
+    public boolean existsByNombre(String nombre) {
         return ProvinciaRepository.existsByNombre(nombre);
     }
 

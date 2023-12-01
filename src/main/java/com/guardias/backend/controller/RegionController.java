@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class RegionController {
 
     @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Region>> getById(@PathVariable("id") Long id) {
-        if (!regionService.existById(id))
+        if (!regionService.existsById(id))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
         Region region = regionService.getById(id).get();
         return new ResponseEntity(region, HttpStatus.OK);
@@ -39,6 +40,14 @@ public class RegionController {
 
     // TODO (RegionController create)
     // TODO (RegionController update)
-    // TODO (RegionController delete)
     // TODO (RegionController detalle por nombre)
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+        if (!regionService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el region"), HttpStatus.NOT_FOUND);
+        regionService.deleteById(id);
+        return new ResponseEntity(new Mensaje("region eliminado"), HttpStatus.OK);
+    }
 }

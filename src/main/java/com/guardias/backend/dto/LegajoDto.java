@@ -16,22 +16,12 @@ public class LegajoDto {
 
     @NotBlank
     private LocalDate fechaInicio;
-
     private LocalDate fechaFinal;
-
-    @NotBlank
     private boolean esActual;
-
-    @NotBlank
     private boolean esLegal;
-
     private String matriculaNacional;
-
     private String matriculaProvincial;
-
     private Profesion profesion;
-
     private Suspencion suspencion;
-
     private Revista revista;
 }

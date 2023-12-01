@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class DepartamentoController {
 
     @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Departamento>> getById(@PathVariable("id") Long id) {
-        if (!departamentoService.existById(id))
+        if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
         Departamento departamento = departamentoService.getById(id).get();
         return new ResponseEntity(departamento, HttpStatus.OK);
@@ -46,5 +47,13 @@ public class DepartamentoController {
 
     // TODO (DepartamentoController create)
     // TODO (DepartamentoController update)
-    // TODO (DepartamentoController delete)
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+        if (!departamentoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el departamento"), HttpStatus.NOT_FOUND);
+        departamentoService.deleteById(id);
+        return new ResponseEntity(new Mensaje("departamento eliminado"), HttpStatus.OK);
+    }
 }

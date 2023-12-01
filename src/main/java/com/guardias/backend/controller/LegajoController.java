@@ -45,20 +45,6 @@ public class LegajoController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
 
-        /*
-         * ############ validar campos en front o ver como hacerlo aqui con bool y date
-         */
-
-        /*
-         * if (StringUtils.isBlank(legajoDto.isEsActual()))
-         * return new ResponseEntity(new
-         * Mensaje("el establecimiento es obligatorio"),HttpStatus.BAD_REQUEST);
-         * 
-         * if (StringUtils.isBlank(legajoDto.isEsLegal()))
-         * return new ResponseEntity(new
-         * Mensaje("el servicio es obligatorio"),HttpStatus.BAD_REQUEST);
-         */
-
         Legajo legajo = new Legajo();
         legajo.setFechaInicio(legajoDto.getFechaInicio());
         legajo.setFechaFinal(legajoDto.getFechaFinal());
@@ -82,17 +68,23 @@ public class LegajoController {
         // validar las fechas y los datos booleanos en front que no sea campo vacio
         // hasta poder validar en back
 
-        // TODO faltan las validaciones para ver que se reemplaza
         Legajo legajo = legajoService.getOne(id).get();
-        legajo.setFechaInicio(legajoDto.getFechaInicio());
+
+        if (!legajoDto.getFechaInicio().equals(legajoDto.getFechaInicio()))
+            legajo.setFechaInicio(legajoDto.getFechaInicio());
         legajo.setFechaFinal(legajoDto.getFechaFinal());
         legajo.setEsActual(legajoDto.isEsActual());
         legajo.setEsLegal(legajoDto.isEsLegal());
-        legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
-        legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
-        legajo.setProfesion(legajoDto.getProfesion());
-        legajo.setSuspencion(legajoDto.getSuspencion());
-        legajo.setRevista(legajoDto.getRevista());
+        if (!legajoDto.getMatriculaNacional().equals(legajoDto.getMatriculaNacional()))
+            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
+        if (!legajoDto.getMatriculaProvincial().equals(legajoDto.getMatriculaProvincial()))
+            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
+        if (!legajoDto.getProfesion().equals(legajoDto.getProfesion()))
+            legajo.setProfesion(legajoDto.getProfesion());
+        if (!legajoDto.getSuspencion().equals(legajoDto.getSuspencion()))
+            legajo.setSuspencion(legajoDto.getSuspencion());
+        if (!legajoDto.getRevista().equals(legajoDto.getRevista()))
+            legajo.setRevista(legajoDto.getRevista());
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("El legajo ha sido actualizada"), HttpStatus.OK);
     }

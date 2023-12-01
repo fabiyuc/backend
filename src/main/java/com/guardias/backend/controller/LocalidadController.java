@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,5 +41,13 @@ public class LocalidadController {
     // TODO LocalidadController detalle por nombre
     // TODO LocalidadController create
     // TODO LocalidadController update
-    // TODO LocalidadController delete
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+        if (!localidadService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el localidad"), HttpStatus.NOT_FOUND);
+        localidadService.deleteById(id);
+        return new ResponseEntity(new Mensaje("localidad eliminado"), HttpStatus.OK);
+    }
 }

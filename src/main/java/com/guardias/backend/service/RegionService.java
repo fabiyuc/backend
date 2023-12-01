@@ -37,7 +37,7 @@ public class RegionService {
         regionRepository.deleteById(id);
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return regionRepository.existsById(id);
     }
 
