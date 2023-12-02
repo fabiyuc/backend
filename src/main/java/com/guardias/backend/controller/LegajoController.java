@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +9,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Legajo;
@@ -44,12 +41,8 @@ public class LegajoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
+        /* ############ validar campos en front o ver como hacerlo aqui con bool y date
 
-        /*
-         * ############ validar campos en front o ver como hacerlo aqui con bool y date
-         */
-
-        /*
          * if (StringUtils.isBlank(legajoDto.isEsActual()))
          * return new ResponseEntity(new
          * Mensaje("el establecimiento es obligatorio"),HttpStatus.BAD_REQUEST);
@@ -62,19 +55,21 @@ public class LegajoController {
         Legajo legajo = new Legajo();
         legajo.setFechaInicio(legajoDto.getFechaInicio());
         legajo.setFechaFinal(legajoDto.getFechaFinal());
-        legajo.setEsActual(legajoDto.isEsActual());
-        legajo.setEsLegal(legajoDto.isEsLegal());
+        legajo.setActual(legajoDto.getActual());
+        legajo.setLegal(legajoDto.getActual());
         legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
         legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajoService.save(legajo);
+        legajo.setAsistencial(legajoDto.getAsistencial());
+        legajo.setNoAsistencial(legajoDto.getNoAsistencial());
+
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
     }
 
-    @PutMapping(("/update/{id}"))
+   /*  @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
@@ -95,7 +90,7 @@ public class LegajoController {
         legajo.setRevista(legajoDto.getRevista());
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("El legajo ha sido actualizada"), HttpStatus.OK);
-    }
+    } */
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {

@@ -10,5 +10,6 @@ import com.guardias.backend.entity.Asistencial;
 public interface AsistencialRepository extends JpaRepository<Asistencial, Long>{
     
     Optional<Asistencial> findByDni(int dni);
+    
     boolean existsByDni(int dni);
 }

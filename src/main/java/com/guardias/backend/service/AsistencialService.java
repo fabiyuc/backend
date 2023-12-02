@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.guardias.backend.entity.Asistencial;
@@ -17,4 +18,21 @@ public class AsistencialService {
     public List<Asistencial> list() {
         return asistencialRepository.findAll();
     }
+
+    public Optional<Asistencial> getOne(Long id) {
+        return asistencialRepository.findById(id);
+    }
+
+    public void save(Asistencial asistencial) {
+        asistencialRepository.save(asistencial);
+    }
+
+    public void delete(Long id) {
+        asistencialRepository.deleteById(id);
+    }
+
+    public boolean existsById(Long id) {
+        return asistencialRepository.existsById(id);
+    }
+
 }

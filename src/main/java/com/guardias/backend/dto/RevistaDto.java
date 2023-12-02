@@ -22,11 +22,9 @@ public class RevistaDto {
      * private Categoria categoria;
      */
 
-    
     @NotBlank
     private Adicional adicional;
     
-
     @NotBlank
     private CargaHoraria cargaHoraria;
 
