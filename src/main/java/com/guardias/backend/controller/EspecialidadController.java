@@ -73,7 +73,6 @@ public class EspecialidadController {
 
         Especialidad especialidad = especialidadService.getById(id).get();
         especialidad.setNombre(especialidadDto.getNombre());
-
         especialidadService.save(especialidad);
         return new ResponseEntity(new Mensaje("Especialidad modificada"), HttpStatus.OK);
     }

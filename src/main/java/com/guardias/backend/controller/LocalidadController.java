@@ -9,12 +9,18 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardias.backend.dto.LocalidadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.service.LocalidadService;
+
+import io.micrometer.common.util.StringUtils;
 
 @RestController
 @RequestMapping("/localidad")
@@ -46,8 +52,35 @@ public class LocalidadController {
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
-    // TODO LocalidadController create
-    // TODO LocalidadController update
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody LocalidadDto localidadDto) {
+        if (StringUtils.isBlank(localidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        Localidad localidad = new Localidad();
+        localidad.setNombre(localidadDto.getNombre());
+        localidad.setDepartamento(localidadDto.getDepartamento());
+
+        localidadService.save(localidad);
+        return new ResponseEntity(new Mensaje("Localidad creada"), HttpStatus.OK);
+    }
+
+    @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LocalidadDto localidadDto) {
+        if (StringUtils.isBlank(localidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        Localidad localidad = localidadService.getById(id).get();
+        if (!localidadDto.getNombre().equals(localidad.getNombre()))
+            localidad.setNombre(localidadDto.getNombre());
+        if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
+            localidad.setDepartamento(localidadDto.getDepartamento());
+
+        localidadService.save(localidad);
+        return new ResponseEntity(new Mensaje("Localidad modificada"), HttpStatus.OK);
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {

@@ -1,19 +1,24 @@
 package com.guardias.backend.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 
+import com.guardias.backend.entity.Departamento;
+import com.guardias.backend.entity.Pais;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProvinciaDTO {
 
     @NotBlank
     private String nombre;
     private String gentilicio;
-
-    public ProvinciaDTO() {
-    }
-
-    public ProvinciaDTO(@NotBlank String nombre, String gentilicio) {
-        this.nombre = nombre;
-        this.gentilicio = gentilicio;
-    }
+    Pais pais;
+    List<Departamento> departamento;
 
 }
