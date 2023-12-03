@@ -52,11 +52,11 @@ public class RevistaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RevistaDto revistaDto) {
-        if (revistaDto.getTipoRevista()==null) {
+        if (revistaDto.getTipoRevista() == null)
             return new ResponseEntity(new Mensaje("el tipo de revista es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-                    if (revistaDto.getCargaHoraria()==null) {
+        if (revistaDto.getCargaHoraria() == null)
             return new ResponseEntity(new Mensaje("la carga horaria es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
@@ -72,28 +72,24 @@ public class RevistaController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody RevistaDto revistaDto) {
-        if (revistaDto.getTipoRevista()==null) {
+        if (revistaDto.getTipoRevista() == null)
             return new ResponseEntity(new Mensaje("el tipo de revista es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-                    if (revistaDto.getCargaHoraria()==null) {
+        if (revistaDto.getCargaHoraria() == null)
             return new ResponseEntity(new Mensaje("la carga horaria es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
         Revista revista = revistaService.getOne(id).get();
 
         if (!revistaDto.getTipoRevista().equals(revista.getTipoRevista()))
-        revista.setTipoRevista(revistaDto.getTipoRevista());
-
+            revista.setTipoRevista(revistaDto.getTipoRevista());
         if (!revistaDto.getCargaHoraria().equals(revista.getCargaHoraria()))
-        revista.setCargaHoraria(revistaDto.getCargaHoraria());
-
+            revista.setCargaHoraria(revistaDto.getCargaHoraria());
         if (!revistaDto.getAdicional().equals(revista.getAdicional()))
-        revista.setAdicional(revistaDto.getAdicional());
-
+            revista.setAdicional(revistaDto.getAdicional());
         if (!revistaDto.getLegajos().equals(revista.getLegajos()))
-        revista.setLegajos(revistaDto.getLegajos());
-
+            revista.setLegajos(revistaDto.getLegajos());
         revistaService.save(revista);
         return new ResponseEntity(new Mensaje("Revista modificada"), HttpStatus.OK);
     }
