@@ -30,9 +30,24 @@ public class RevistaController {
         return new ResponseEntity<List<Revista>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<Revista> getById(@PathVariable("id") Long id) {
+        if (!revistaService.existsById(id))
+            return new ResponseEntity(new Mensaje("No existe la situacion de revista"), HttpStatus.NOT_FOUND);
+        Revista revista = revistaService.getOne(id).get();
+        return new ResponseEntity<Revista>(revista, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{nombre}")
+    public ResponseEntity<Revista> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!revistaService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("No existe la situacion de revista"), HttpStatus.NOT_FOUND);
+        Revista revista = revistaService.getByNombre(nombre).get();
+        return new ResponseEntity<Revista>(revista, HttpStatus.OK);
+    }
+
     // TODO (RevistaController create)
     // TODO (RevistaController update)
-    // TODO (RevistaController detalle por nombre)
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {

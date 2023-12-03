@@ -9,12 +9,18 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardias.backend.dto.EspecialidadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.service.EspecialidadService;
+
+import io.micrometer.common.util.StringUtils;
 
 @RestController
 @RequestMapping("/especialidad")
@@ -38,9 +44,39 @@ public class EspecialidadController {
         return new ResponseEntity(especialidad, HttpStatus.OK);
     }
 
-    // TODO (EspecialidadController create)
-    // TODO (EspecialidadController update)
-    // TODO (EspecialidadController detalle por nombre)
+    @GetMapping("/detalle/{nombre}")
+    public ResponseEntity<List<Especialidad>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!especialidadService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("especialidad no existe"), HttpStatus.NOT_FOUND);
+        Especialidad especialidad = especialidadService.getEspecialidadByNombre(nombre).get();
+        return new ResponseEntity(especialidad, HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody EspecialidadDto especialidadDto) {
+        if (StringUtils.isBlank(especialidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        Especialidad especialidad = new Especialidad();
+        especialidad.setNombre(especialidadDto.getNombre());
+
+        especialidadService.save(especialidad);
+        return new ResponseEntity(new Mensaje("Especialidad creada"), HttpStatus.OK);
+    }
+
+    @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody EspecialidadDto especialidadDto) {
+        if (StringUtils.isBlank(especialidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        Especialidad especialidad = especialidadService.getById(id).get();
+        especialidad.setNombre(especialidadDto.getNombre());
+
+        especialidadService.save(especialidad);
+        return new ResponseEntity(new Mensaje("Especialidad modificada"), HttpStatus.OK);
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {

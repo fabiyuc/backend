@@ -26,6 +26,10 @@ public class RevistaService {
         return revistaRepository.findById(id);
     }
 
+    public Optional<Revista> getByNombre(String nombre) {
+        return revistaRepository.findByNombre(nombre);
+    }
+
     public void save(Revista revista) {
         revistaRepository.save(revista);
     }
@@ -37,4 +41,9 @@ public class RevistaService {
     public boolean existsById(Long id) {
         return revistaRepository.existsById(id);
     }
+
+    public boolean existsByNombre(String nombre) {
+        return revistaRepository.existsByNombre(nombre);
+    }
+
 }

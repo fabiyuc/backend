@@ -25,6 +25,10 @@ public class RegionService {
         return regionRepository.findById(id);
     }
 
+    public Optional<Region> getByNombre(String nombre) {
+        return regionRepository.findByNombre(nombre);
+    }
+
     public Optional<Region> getRegionByNombre(String nombre) {
         return regionRepository.findByNombre(nombre);
     }

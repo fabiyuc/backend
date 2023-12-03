@@ -78,7 +78,7 @@ public class DepartamentoController {
         if (StringUtils.isBlank(departamentoDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Departamento departamento = new Departamento();
+        Departamento departamento = departamentoService.getById(id).get();
 
         if (!departamentoDto.getNombre().equals(departamento.getNombre()))
             departamento.setNombre(departamentoDto.getNombre());

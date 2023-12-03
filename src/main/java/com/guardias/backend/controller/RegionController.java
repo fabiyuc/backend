@@ -38,9 +38,16 @@ public class RegionController {
         return new ResponseEntity(region, HttpStatus.OK);
     }
 
+    @GetMapping("/detalle/{nombre}")
+    public ResponseEntity<List<Region>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!regionService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
+        Region region = regionService.getByNombre(nombre).get();
+        return new ResponseEntity(region, HttpStatus.OK);
+    }
+
     // TODO (RegionController create)
     // TODO (RegionController update)
-    // TODO (RegionController detalle por nombre)
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
@@ -50,4 +57,5 @@ public class RegionController {
         regionService.deleteById(id);
         return new ResponseEntity(new Mensaje("region eliminado"), HttpStatus.OK);
     }
+
 }

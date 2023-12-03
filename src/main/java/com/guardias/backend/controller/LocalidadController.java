@@ -38,7 +38,14 @@ public class LocalidadController {
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
-    // TODO LocalidadController detalle por nombre
+    @GetMapping("/detalle/{nombre}")
+    public ResponseEntity<List<Localidad>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!localidadService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
+        Localidad localidad = localidadService.getByNombre(nombre).get();
+        return new ResponseEntity(localidad, HttpStatus.OK);
+    }
+
     // TODO LocalidadController create
     // TODO LocalidadController update
 
