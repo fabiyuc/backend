@@ -42,14 +42,6 @@ public class RevistaController {
         return new ResponseEntity<Revista>(revista, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{nombre}")
-    public ResponseEntity<Revista> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!revistaService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("No existe la situacion de revista"), HttpStatus.NOT_FOUND);
-        Revista revista = revistaService.getByNombre(nombre).get();
-        return new ResponseEntity<Revista>(revista, HttpStatus.OK);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RevistaDto revistaDto) {
         if (revistaDto.getTipoRevista() == null)
