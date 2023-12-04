@@ -35,7 +35,7 @@ public class TipoRevistaController {
         return new ResponseEntity<List<TipoRevista>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<TipoRevista> getById(@PathVariable("id") Long id) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de revista"), HttpStatus.NOT_FOUND);
@@ -43,7 +43,7 @@ public class TipoRevistaController {
         return new ResponseEntity<TipoRevista>(tipoRevista, HttpStatus.OK);
     }
 
-    @GetMapping("/detailnombre/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<TipoRevista> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoRevistaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
