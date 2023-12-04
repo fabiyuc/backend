@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "servicios")
 @Data
 @AllArgsConstructor
+//@RequiredArgsConstructor
 @NoArgsConstructor
 public class Servicio {
 

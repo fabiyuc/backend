@@ -1,6 +1,6 @@
 package com.guardias.backend.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,11 +23,11 @@ public class Person {
     private String apellido;
     private int dni;
     private String cuil;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String sexo;
     private String numCelular;
     private String email;
     private String domicilio;
-    private boolean estado;
+    private Boolean estado;
 
 }

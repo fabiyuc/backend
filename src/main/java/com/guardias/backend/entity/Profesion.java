@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "profesiones")
 @Data
+// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Profesion {
@@ -21,14 +22,9 @@ public class Profesion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private Boolean esAsistencial;
+    private Boolean asistencial;
 
     @OneToMany(mappedBy = "profesion")
     private Set<Legajo> legajos;
-
-    public Profesion(String nombre, Boolean esAsistencial) {
-        this.nombre = nombre;
-        this.esAsistencial = esAsistencial;
-    }
 
 }

@@ -3,11 +3,9 @@ package com.guardias.backend.service;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Suspencion;
 import com.guardias.backend.repository.SuspencionRepository;
 

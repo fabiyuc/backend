@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "asistenciales")
 @Data
+//@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Asistencial extends Person {

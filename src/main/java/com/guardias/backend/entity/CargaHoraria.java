@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "cargasHorarias")
 @Data
 @AllArgsConstructor
+//@RequiredArgsConstructor
 @NoArgsConstructor
 public class CargaHoraria {
 

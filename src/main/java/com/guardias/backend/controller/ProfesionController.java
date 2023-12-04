@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
 import com.guardias.backend.entity.Profesion;
@@ -58,13 +57,16 @@ public class ProfesionController {
         if (profesionService.existsByNombre(profesionDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-        Profesion profesion = new Profesion(profesionDto.getNombre(),
-        profesionDto.getEsAsistencial());
+        Profesion profesion = new Profesion();
+        profesion.setNombre(profesionDto.getNombre());
+        profesion.setAsistencial(profesionDto.getAsistencial());
+        profesion.setLegajos(profesionDto.getLegajos());
+        
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);
     }
 
-    @PutMapping(("/update/{id}"))
+    /* @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ProfesionDto profesionDto) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
@@ -84,7 +86,7 @@ public class ProfesionController {
         profesion.setEsAsistencial(profesionDto.getEsAsistencial());
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion actualizada"), HttpStatus.OK);
-    }
+    } */
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
