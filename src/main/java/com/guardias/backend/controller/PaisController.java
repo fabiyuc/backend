@@ -44,6 +44,14 @@ public class PaisController {
         return new ResponseEntity(pais, HttpStatus.OK);
     }
 
+    @GetMapping("/detallenombre/{nombre}")
+    public ResponseEntity<Pais> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!paisService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("no existe el nombre del pais"), HttpStatus.NOT_FOUND);
+        Pais pais = paisService.getPaisByNombre(nombre).get();
+        return new ResponseEntity<Pais>(pais, HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody PaisDto paisDto) {
         if (StringUtils.isBlank(paisDto.getNombre()))
@@ -55,7 +63,7 @@ public class PaisController {
         Pais pais = new Pais();
         pais.setCodigo(paisDto.getCodigo());
         pais.setNacionalidad(paisDto.getNacionalidad());
-        pais.setNombre(paisDto.getNacionalidad());
+        pais.setNombre(paisDto.getNombre());
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("tipo de revista creado"), HttpStatus.OK);
     }
