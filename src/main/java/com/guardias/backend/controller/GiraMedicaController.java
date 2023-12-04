@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,6 +90,14 @@ public class GiraMedicaController {
 
         giraMedicaService.save(giraMedica);
         return new ResponseEntity(new Mensaje("Gira medica actualizada"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        if (!giraMedicaService.existsById(id))
+            return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
+        giraMedicaService.deleteById(id);
+        return new ResponseEntity(new Mensaje("gira medica eliminada"), HttpStatus.OK);
     }
 
 }

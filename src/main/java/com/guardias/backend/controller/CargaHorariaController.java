@@ -39,11 +39,11 @@ public class CargaHorariaController {
     public ResponseEntity<CargaHoraria> getById(@PathVariable("id") Long id) {
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
-        CargaHoraria cargaHoraria = cargaHorariaService.getOne(id).get();
+        CargaHoraria cargaHoraria = cargaHorariaService.findById(id).get();
         return new ResponseEntity<CargaHoraria>(cargaHoraria, HttpStatus.OK);
     }
 
-    @GetMapping("/detailnombre/{cantidad}")
+    @GetMapping("/detail/{cantidad}")
     public ResponseEntity<CargaHoraria> getByCantidad(@PathVariable("cantidad") int cantidad) {
         if (!cargaHorariaService.existsByCantidad(cantidad))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
@@ -54,8 +54,7 @@ public class CargaHorariaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
 
-        String cantidadStr = Integer.toString(cargaHorariaDto.getCantidad());
-        if (StringUtils.isBlank(cantidadStr))
+        if (cargaHorariaDto.getCantidad() < 1)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
                     HttpStatus.BAD_REQUEST);
         if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad()))
@@ -80,7 +79,7 @@ public class CargaHorariaController {
         if (StringUtils.isBlank(cantidadStr))
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        CargaHoraria cargaHoraria = cargaHorariaService.getOne(id).get();
+        CargaHoraria cargaHoraria = cargaHorariaService.findById(id).get();
         cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
         cargaHorariaService.save(cargaHoraria);
         return new ResponseEntity(new Mensaje("Carga horaria actualizada"), HttpStatus.OK);
