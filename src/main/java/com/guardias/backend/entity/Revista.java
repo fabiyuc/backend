@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Entity(name = "revistas")
 @Data
 @AllArgsConstructor
-// @RequiredArgsConstructor
 @NoArgsConstructor
 public class Revista {
 
