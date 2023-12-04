@@ -16,7 +16,7 @@ public class TipoCargo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String nombre;
     private String descripcion;
     private boolean eshospitalario;

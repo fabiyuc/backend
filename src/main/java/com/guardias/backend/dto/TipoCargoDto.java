@@ -9,7 +9,7 @@ public class TipoCargoDto {
     @NotBlank
     private String descripcion;
     @NotBlank
-    private boolean eshospitalario;
+    private Boolean eshospitalario;
 
     public TipoCargoDto() {
     }
@@ -36,11 +36,11 @@ public class TipoCargoDto {
         this.descripcion = descripcion;
     }
 
-    public boolean isEshospitalario() {
+    public Boolean isEshospitalario() {
         return eshospitalario;
     }
 
-    public void setEshospitalario(boolean eshospitalario) {
+    public void setEshospitalario(Boolean eshospitalario) {
         this.eshospitalario = eshospitalario;
     }
 

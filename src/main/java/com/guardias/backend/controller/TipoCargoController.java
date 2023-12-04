@@ -60,20 +60,16 @@ public class TipoCargoController {
             return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (tipoCargoService.existsByNombre(tipoCargoDto.getNombre()))
-            return new ResponseEntity(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (tipoCargoDto.getDescripcion() == null)
             return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (!tipoCargoDto.isEshospitalario())
-            return new ResponseEntity(new Mensaje("si es hospitalario"), HttpStatus.BAD_REQUEST);
-
-        if (tipoCargoService.existsById(tipoCargoDto.getId())) {
-            return new ResponseEntity(new Mensaje("El ID ya existe"), HttpStatus.BAD_REQUEST);
-        }
+        if (tipoCargoDto.isEshospitalario() == null)
+            return new ResponseEntity<>(new Mensaje("El campo eshospitalario es obligatorio"), HttpStatus.BAD_REQUEST);
 
         TipoCargo tipoCargo = new TipoCargo();
-        tipoCargo.setId(tipoCargoDto.getId());
+
         tipoCargo.setNombre(tipoCargoDto.getNombre());
         tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
         tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
@@ -95,19 +91,16 @@ public class TipoCargoController {
             }
         }
 
-        // Validaciones adicionales (puedes ajustar según tus requisitos)
         if (StringUtils.isBlank(tipoCargoDto.getNombre())) {
             return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
         }
 
-        if (tipoCargoDto.getDescripcion() == null) {
+        if (StringUtils.isBlank(tipoCargoDto.getDescripcion())) {
             return new ResponseEntity<>(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
         }
 
-        if (tipoCargoDto.isEshospitalario()) {
-            return new ResponseEntity<>(new Mensaje("El campo eshospitalario no puede ser verdadero"),
-                    HttpStatus.BAD_REQUEST);
-        }
+        if (tipoCargoDto.isEshospitalario() == null)
+            return new ResponseEntity<>(new Mensaje("El campo eshospitalario es obligatorio"), HttpStatus.BAD_REQUEST);
 
         // Obtén el TipoCargo actual
         TipoCargo tipoCargo = tipoCargoService.getone(id).orElse(null);
