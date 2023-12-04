@@ -36,14 +36,14 @@ public class CategoriaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Categoria> getById(@PathVariable("id") int id) {
+    public ResponseEntity<Categoria> getById(@PathVariable("id") Long id) {
         if (!categoriaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Categoria categoria = categoriaService.getOne(id).get();
+        Categoria categoria = categoriaService.getById(id).get();
         return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detail/{nombre}")
     public ResponseEntity<Categoria> getByNombre(@PathVariable("nombre") String nombre) {
         if (!categoriaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
@@ -65,7 +65,7 @@ public class CategoriaController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody CategoriaDto categoriaDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CategoriaDto categoriaDto) {
         if (!categoriaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
@@ -76,7 +76,7 @@ public class CategoriaController {
         if (StringUtils.isBlank(categoriaDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Categoria categoria = categoriaService.getOne(id).get();
+        Categoria categoria = categoriaService.getById(id).get();
         categoria.setNombre(categoriaDto.getNombre());
         categoriaService.save(categoria);
 
@@ -84,7 +84,7 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") int id) {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         if (!categoriaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         categoriaService.delete(id);

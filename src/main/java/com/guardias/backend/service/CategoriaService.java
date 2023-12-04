@@ -21,7 +21,7 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
-    public Optional<Categoria> getOne(long id) {
+    public Optional<Categoria> getById(long id) {
         return categoriaRepository.findById((Long) id);
     }
 

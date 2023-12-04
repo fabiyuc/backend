@@ -86,7 +86,7 @@ public class TipoGuardiaControlador {
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
 
         if (tipoGuardiaServicio.existsByNombre(tipoGuardiaDto.getNombre()) &&
-                tipoGuardiaServicio.getByNombre(tipoGuardiaDto.getNombre()).get().getIdTipoGuardia() == id)
+                tipoGuardiaServicio.getByNombre(tipoGuardiaDto.getNombre()).get().getId() == id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
