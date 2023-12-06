@@ -28,11 +28,15 @@ public class NovedadPersonalService {
         return novedadPersonalRepository.findAll();
     }
 
+    public Optional<NovedadPersonal> getById(Long id) {
+        return novedadPersonalRepository.findById(id);
+    }
+
     public Optional<NovedadPersonal> findById(Long id) {
         return novedadPersonalRepository.findById(id);
     }
 
-    public Optional<NovedadPersonal> findByPersona(Long idPersona) {
+    public List<NovedadPersonal> findByPersona(Long idPersona) {
         return novedadPersonalRepository.findByPersona(idPersona);
     }
 
