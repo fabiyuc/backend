@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,4 +43,8 @@ public class Cargo {
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(columnDefinition = "DATE")
     private LocalDate fechafinal;
+
+    @OneToOne
+    @JoinColumn(name = "tipo_cargo_id")
+    private TipoCargo tipoCargo;
 }
