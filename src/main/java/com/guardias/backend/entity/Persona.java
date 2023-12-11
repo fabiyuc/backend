@@ -1,20 +1,24 @@
 package com.guardias.backend.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@MappedSuperclass
+@Table(name = "personas")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@MappedSuperclass
-@Table(name = "personas")
 public class Persona {
 
     @Id
@@ -40,9 +44,14 @@ public class Persona {
     @Column(columnDefinition = "VARCHAR(15)")
     private String sexo;
 
-    // @Column(name = "direccion")
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaNac;
+
+    private Boolean estado;
+
+    // @Column(name = "domicilio")
     @Column(columnDefinition = "VARCHAR(50)")
-    private String direccion;
+    private String domicilio;
 
     // @Column(name = "telefono")
     @Column(columnDefinition = "VARCHAR(15)")
@@ -51,214 +60,4 @@ public class Persona {
     // @Column(name = "email")
     @Column(columnDefinition = "VARCHAR(20)")
     private String email;
-
-    /*
-     * @Column(name = "id_udo")
-     * private Long id_udo;
-     * 
-     * @Column(name = "id_legajo")
-     * private Long id_legajo;
-     * 
-     * @Column(name = "id_hospital")
-     * private Long id_hospital;
-     * 
-     * @Column(name = "id_cargo")
-     * private Long id_cargo;
-     * 
-     * @Column(name = "id_profesion")
-     * private Long id_profesion;
-     */
-
-    /*
-     * @Column(name = "id_usuario")
-     * private Long id_usuario;
-     */
-
-    /*
-     * @Column(name = "estado")
-     * private Long estado;
-     */
-    /*
-     * public Long getId_persona() {
-     * return id_persona;
-     * }
-     * 
-     * public void setId_persona(Long id_persona) {
-     * this.id_persona = id_persona;
-     * }
-     * 
-     * public String getNombre() {
-     * return nombre;
-     * }
-     * 
-     * public void setNombre(String nombre) {
-     * this.nombre = nombre;
-     * }
-     * 
-     * public String getApellido() {
-     * return apellido;
-     * }
-     * 
-     * public void setApellido(String apellido) {
-     * this.apellido = apellido;
-     * }
-     * 
-     * public int getDni() {
-     * return dni;
-     * }
-     * 
-     * public void setDni(int dni) {
-     * this.dni = dni;
-     * }
-     * 
-     * public String getCuil() {
-     * return cuil;
-     * }
-     * 
-     * public void setCuil(String cuil) {
-     * this.cuil = cuil;
-     * }
-     * 
-     * public String getSexo() {
-     * return sexo;
-     * }
-     * 
-     * public void setSexo(String sexo) {
-     * this.sexo = sexo;
-     * }
-     * 
-     * public String getDireccion() {
-     * return direccion;
-     * }
-     * 
-     * public void setDireccion(String direccion) {
-     * this.direccion = direccion;
-     * }
-     * 
-     * public String getTelefono() {
-     * return telefono;
-     * }
-     * 
-     * public void setTelefono(String telefono) {
-     * this.telefono = telefono;
-     * }
-     * 
-     * public String getEmail() {
-     * return email;
-     * }
-     * 
-     * public void setEmail(String email) {
-     * this.email = email;
-     * }
-     * 
-     * public Long getId_udo() {
-     * return id_udo;
-     * }
-     * 
-     * public void setId_udo(Long id_udo) {
-     * this.id_udo = id_udo;
-     * }
-     * 
-     * public Long getId_legajo() {
-     * return id_legajo;
-     * }
-     * 
-     * public void setId_legajo(Long id_legajo) {
-     * this.id_legajo = id_legajo;
-     * }
-     * 
-     * public Long getId_hospital() {
-     * return id_hospital;
-     * }
-     * 
-     * public void setId_hospital(Long id_hospital) {
-     * this.id_hospital = id_hospital;
-     * }
-     * 
-     * public Long getId_cargo() {
-     * return id_cargo;
-     * }
-     * 
-     * public void setId_cargo(Long id_cargo) {
-     * this.id_cargo = id_cargo;
-     * }
-     * 
-     * public Long getId_profesion() {
-     * return id_profesion;
-     * }
-     * 
-     * public void setId_profesion(Long id_profesion) {
-     * this.id_profesion = id_profesion;
-     * }
-     * 
-     * /* public Long getId_usuario() {
-     * return id_usuario;
-     * }
-     * 
-     * public void setId_usuario(Long id_usuario) {
-     * this.id_usuario = id_usuario;
-     * }
-     */
-
-    /*
-     * public Long getEstado() {
-     * return estado;
-     * }
-     * 
-     * public void setEstado(Long estado) {
-     * this.estado = estado;
-     * }
-     * 
-     * public Persona() {
-     * }
-     */
-    /*
-     * public Persona(Long id_persona, String nombre, String apellido, int dni,
-     * String cuil, String sexo, String direccion,
-     * String telefono, String email, Long id_udo, Long id_legajo, Long id_hospital,
-     * Long id_cargo,
-     * Long id_profesion, Long id_usuario, Long estado) {
-     * this.id_persona = id_persona;
-     * this.nombre = nombre;
-     * this.apellido = apellido;
-     * this.dni = dni;
-     * this.cuil = cuil;
-     * this.sexo = sexo;
-     * this.direccion = direccion;
-     * this.telefono = telefono;
-     * this.email = email;
-     * this.id_udo = id_udo;
-     * this.id_legajo = id_legajo;
-     * this.id_hospital = id_hospital;
-     * this.id_cargo = id_cargo;
-     * this.id_profesion = id_profesion;
-     * this.id_usuario = id_usuario;
-     * this.estado = estado;
-     * }
-     */
-
-    /*
-     * public Persona(Long id_persona, String nombre, String apellido, int dni,
-     * String cuil, String sexo, String direccion,
-     * String telefono, String email, Long id_udo, Long id_legajo, Long id_hospital,
-     * Long id_cargo,
-     * Long id_profesion, Long estado) {
-     * this.id_persona = id_persona;
-     * this.nombre = nombre;
-     * this.apellido = apellido;
-     * this.dni = dni;
-     * this.cuil = cuil;
-     * this.sexo = sexo;
-     * this.direccion = direccion;
-     * this.telefono = telefono;
-     * this.email = email;
-     * this.id_udo = id_udo;
-     * this.id_legajo = id_legajo;
-     * this.id_hospital = id_hospital;
-     * this.id_cargo = id_cargo;
-     * this.id_profesion = id_profesion;
-     * this.estado = estado;
-     * }
-     */
-
 }

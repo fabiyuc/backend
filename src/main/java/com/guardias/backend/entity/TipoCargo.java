@@ -1,13 +1,10 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +26,6 @@ public class TipoCargo {
     private String descripcion;
     private boolean eshospitalario;
 
-    @OneToMany(mappedBy = "tipoCargo")
-    private Set<Cargo> cargos;
+    // @OneToMany(mappedBy = "tipoCargo")
+    // private Set<Cargo> cargos;
 }

@@ -34,6 +34,6 @@ public class Pais {
     private String codigo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pais", cascade = CascadeType.ALL)
-    List<Provincia> provincia;
+    List<Provincia> provincias;
 
 }

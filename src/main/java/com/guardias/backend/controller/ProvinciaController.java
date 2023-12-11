@@ -33,23 +33,23 @@ public class ProvinciaController {
     @GetMapping("/lista")
     public ResponseEntity<List<Provincia>> list() {
         List<Provincia> list = provinciaService.list();
-        return new ResponseEntity(list, HttpStatus.OK);
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<List<Provincia>> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Provincia> getById(@PathVariable("id") Long id) {
         if (!provinciaService.existsById(id))
-            return new ResponseEntity(new Mensaje("provincia no existe"), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         Provincia provincia = provinciaService.getById(id).get();
-        return new ResponseEntity(provincia, HttpStatus.OK);
+        return ResponseEntity.ok(provincia);
     }
 
     @GetMapping("/detalle/{nombre}")
-    public ResponseEntity<List<Provincia>> getByNombre(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<Provincia> getByNombre(@PathVariable("nombre") String nombre) {
         if (!provinciaService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("provincia no existe"), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         Provincia provincia = provinciaService.getByNombre(nombre).get();
-        return new ResponseEntity(provincia, HttpStatus.OK);
+        return ResponseEntity.ok(provincia);
     }
 
     @PostMapping("/create")
@@ -66,7 +66,7 @@ public class ProvinciaController {
         provincia.setDepartamento(provinciaDto.getDepartamento());
 
         provinciaService.save(provincia);
-        return new ResponseEntity(new Mensaje("Provincia creada"), HttpStatus.OK);
+        return ResponseEntity.ok(new Mensaje("Provincia creada"));
     }
 
     @PutMapping(("/update/{id}"))
@@ -91,7 +91,7 @@ public class ProvinciaController {
             provincia.setDepartamento(provinciaDto.getDepartamento());
 
         provinciaService.save(provincia);
-        return new ResponseEntity(new Mensaje("Provincia modificada"), HttpStatus.OK);
+        return ResponseEntity.ok(new Mensaje("Provincia modificada"));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -100,6 +100,6 @@ public class ProvinciaController {
         if (!provinciaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el provincia"), HttpStatus.NOT_FOUND);
         provinciaService.deleteById(id);
-        return new ResponseEntity(new Mensaje("provincia eliminado"), HttpStatus.OK);
+        return ResponseEntity.ok(new Mensaje("Provincia eliminada"));
     }
 }

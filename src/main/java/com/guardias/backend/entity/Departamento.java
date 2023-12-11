@@ -2,7 +2,7 @@ package com.guardias.backend.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,10 +36,10 @@ public class Departamento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_provincia")
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamentos" })
     Provincia provincia;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
-    List<Localidad> localidad;
+    List<Localidad> localidades;
 
 }
