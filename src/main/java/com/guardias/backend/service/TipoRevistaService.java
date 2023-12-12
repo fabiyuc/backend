@@ -27,6 +27,10 @@ public class TipoRevistaService {
         return tipoRevistaRepository.findByNombre(nombre);
     }
 
+    public boolean existsByNombre(String nombre) {
+        return tipoRevistaRepository.existsByNombre(nombre);
+    }
+
     public void save(TipoRevista tipoRevista) {
         tipoRevistaRepository.save(tipoRevista);
     }
@@ -39,7 +43,5 @@ public class TipoRevistaService {
         return tipoRevistaRepository.existsById(id);
     }
 
-    public boolean existsByNombre(String nombre) {
-        return tipoRevistaRepository.existsByNombre(nombre);
-    }
+    
 }

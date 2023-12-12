@@ -22,14 +22,19 @@ public class Legajo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  
   //@Temporal(TemporalType.DATE)
   private LocalDate fechaInicio;
+  
   //@Temporal(TemporalType.DATE)
   private LocalDate fechaFinal;
+ 
   private Boolean actual;
   private Boolean legal;
+ 
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaNacional;
+  
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaProvincial;
 
