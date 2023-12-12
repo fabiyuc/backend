@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
-import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.service.AsistencialService;
 
 @RestController
