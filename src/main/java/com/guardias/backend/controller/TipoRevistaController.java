@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.TipoRevista;
@@ -46,7 +44,7 @@ public class TipoRevistaController {
     @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<TipoRevista> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoRevistaService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el tipo de revista con ese nombre"), HttpStatus.NOT_FOUND);
         TipoRevista tipoRevista = tipoRevistaService.getByNombre(nombre).get();
         return new ResponseEntity<TipoRevista>(tipoRevista, HttpStatus.OK);
     }
@@ -67,13 +65,17 @@ public class TipoRevistaController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoRevistaDto tipoRevistaDto) {
+        
+        //Busca por ID
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
 
+        //Verifica que el nombre no exista para el mismo ID
         if (tipoRevistaService.existsByNombre(tipoRevistaDto.getNombre()) &&
                 tipoRevistaService.getByNombre(tipoRevistaDto.getNombre()).get().getId() == id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
+        //Verifica que el nombre no esté en blanco
         if (StringUtils.isBlank(tipoRevistaDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 

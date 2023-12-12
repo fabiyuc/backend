@@ -23,7 +23,7 @@ public class Person {
     private Long id;
     private String nombre;
     private String apellido;
-    private int dni;
+    private String dni;
     private String cuil;
     private LocalDate fechaNacimiento;
     private String sexo;

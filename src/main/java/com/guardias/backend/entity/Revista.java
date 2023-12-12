@@ -1,7 +1,6 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,12 +27,11 @@ public class Revista {
   @JoinColumn(name = "id_tipo_revista")
   private TipoRevista tipoRevista;
 
-  /*
-   * @ManyToOne(optional = true)
-   * 
-   * @JoinColumn(name = "id_categoria")
-   * private Categoria categoria;
-   */
+  
+  @ManyToOne(optional = true) 
+  @JoinColumn(name = "id_categoria")
+  private Categoria categoria;
+  
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_adicional")

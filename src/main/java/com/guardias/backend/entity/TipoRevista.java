@@ -21,6 +21,7 @@ public class TipoRevista {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column(columnDefinition = "VARCHAR(20)")
     private String nombre;
 

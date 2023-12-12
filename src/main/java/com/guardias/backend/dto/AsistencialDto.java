@@ -22,7 +22,7 @@ public class AsistencialDto {
     private String apellido;
 
     @NotBlank
-    private int dni;
+    private String dni;
 
     @NotBlank
     private String cuil;

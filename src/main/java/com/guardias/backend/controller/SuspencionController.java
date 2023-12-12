@@ -1,6 +1,6 @@
 package com.guardias.backend.controller;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,47 +34,49 @@ public class SuspencionController {
         return new ResponseEntity<List<Suspencion>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<Suspencion> getById(@PathVariable("id") Long id) {
         if (!suspencionService.existsById(id))
-            return new ResponseEntity(new Mensaje("No existe la suspención"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("No existe la suspención con ese ID"), HttpStatus.NOT_FOUND);
         Suspencion suspencion = suspencionService.getOne(id).get();
         return new ResponseEntity<Suspencion>(suspencion, HttpStatus.OK);
     }
 
-    @GetMapping("/detailFechaInicio/{fechaInicio}")
-    public ResponseEntity<Suspencion> getByFechaInicio(@PathVariable("fechaInicio") Date fechaInicio) {
+    //**** ESTO DEBERIA SER UN LISTA CON LAS SUSPENCIONES DE LAS FEC DE INICIO? */
+    @GetMapping("/detalleFechaInicio/{fechaInicio}")
+    public ResponseEntity<Suspencion> getByFechaInicio(@PathVariable("fechaInicio") LocalDate fechaInicio) {
         if (!suspencionService.existsByFechaInicio(fechaInicio))
             return new ResponseEntity(new Mensaje("no existe con esta fecha de inicio"), HttpStatus.NOT_FOUND);
         Suspencion suspencion = suspencionService.getByFechaInicio(fechaInicio).get();
         return new ResponseEntity<Suspencion>(suspencion, HttpStatus.OK);
     }
 
-    @GetMapping("/detailFechaFin/{fechaFin}")
-    public ResponseEntity<Suspencion> getByFechaFin(@PathVariable("fechaFin") Date fechaFin) {
+    @GetMapping("/detalleFechaFin/{fechaFin}")
+    public ResponseEntity<Suspencion> getByFechaFin(@PathVariable("fechaFin") LocalDate fechaFin) {
         if (!suspencionService.existsByFechaFin(fechaFin))
             return new ResponseEntity(new Mensaje("no existe con esta fecha de fin"), HttpStatus.NOT_FOUND);
         Suspencion suspencion = suspencionService.getByFechaFin(fechaFin).get();
         return new ResponseEntity<Suspencion>(suspencion, HttpStatus.OK);
     }
 
-    // está creando con fecha anterior a la indicada
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody SuspencionDto suspencionDto) {
         if (StringUtils.isBlank(suspencionDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        // agregar validacion de campo no nulo para fechas en front hasta encontrar la
-        // manera de validar en el back
-
+            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+        if (suspencionDto.getFechaInicio() == null) {
+                return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+            }    
+        if (suspencionDto.getFechaFin() == null) {
+                return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
+            }   
         Suspencion suspencion = new Suspencion();
         suspencion.setDescripcion(suspencionDto.getDescripcion());
         suspencion.setFechaInicio(suspencionDto.getFechaInicio());
         suspencion.setFechaFin(suspencionDto.getFechaFin());
         suspencion.setLegajos(suspencionDto.getLegajos());
-
         suspencionService.save(suspencion);
-        return new ResponseEntity(new Mensaje("la suspención fué creada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
     }
 
     @PutMapping(("/update/{id}"))
@@ -85,10 +87,12 @@ public class SuspencionController {
         if (StringUtils.isBlank(suspencionDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // validar las fechas en front que no sea campo vacio hasta poder validar en
-        // back
-
-        // TODO faltan las validaciones
+        if (suspencionDto.getFechaInicio() == null) {
+                return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+            }    
+        if (suspencionDto.getFechaFin() == null) {
+                return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
+            }    
         Suspencion suspencion = suspencionService.getOne(id).get();
         suspencion.setDescripcion(suspencionDto.getDescripcion());
         suspencion.setFechaInicio(suspencionDto.getFechaInicio());

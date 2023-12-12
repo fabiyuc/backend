@@ -8,7 +8,7 @@ import com.guardias.backend.entity.NoAsistencial;
 @Repository
 public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Long> {
     
-    Optional<NoAsistencial> findByDni(int dni);
+    Optional<NoAsistencial> findByDni(String dni);
     
-    boolean existsByDni(int dni);
+    boolean existsByDni(String dni);
 }

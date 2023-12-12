@@ -24,9 +24,12 @@ public class Suspencion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "VARCHAR(80)")
+
     private String descripcion;
+
     //@Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
+    
     //@Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
 

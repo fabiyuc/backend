@@ -9,6 +9,7 @@ import com.guardias.backend.entity.CargaHoraria;
 
 @Repository
 public interface CargaHorariaRepository extends JpaRepository<CargaHoraria, Long> {
+    
     Optional<CargaHoraria> findByCantidad(int cantidad);
 
     boolean existsByCantidad(int cantidad);
