@@ -60,7 +60,7 @@ public class DepartamentoController {
         Departamento departamento = new Departamento();
         departamento.setNombre(departamentoDto.getNombre());
         departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
-        departamento.setLocalidades(departamentoDto.getLocalidad());
+        departamento.setLocalidades(departamentoDto.getLocalidades());
         departamento.setProvincia(departamentoDto.getProvincia());
 
         departamentoService.save(departamento);
@@ -86,8 +86,8 @@ public class DepartamentoController {
             departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
         if (!departamentoDto.getProvincia().equals(departamento.getProvincia()))
             departamento.setProvincia(departamento.getProvincia());
-        if (!departamentoDto.getLocalidad().equals(departamento.getLocalidades()))
-            departamento.setLocalidades(departamentoDto.getLocalidad());
+        if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
+            departamento.setLocalidades(departamentoDto.getLocalidades());
 
         departamentoService.save(departamento);
         return new ResponseEntity(new Mensaje("Departamento modificado correctamente"), HttpStatus.OK);

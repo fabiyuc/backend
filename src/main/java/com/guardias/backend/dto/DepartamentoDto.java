@@ -17,6 +17,6 @@ public class DepartamentoDto {
     private String nombre;
     private String codigoPostal;
     Provincia provincia;
-    List<Localidad> localidad;
+    List<Localidad> localidades;
 
 }

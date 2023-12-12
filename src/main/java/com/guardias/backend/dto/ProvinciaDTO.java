@@ -19,6 +19,6 @@ public class ProvinciaDTO {
     private String nombre;
     private String gentilicio;
     Pais pais;
-    List<Departamento> departamento;
+    List<Departamento> departamentos;
 
 }

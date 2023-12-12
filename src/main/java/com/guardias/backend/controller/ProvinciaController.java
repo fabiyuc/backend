@@ -63,7 +63,7 @@ public class ProvinciaController {
 
         provincia.setGentilicio(provinciaDto.getGentilicio());
         provincia.setPais(provinciaDto.getPais());
-        provincia.setDepartamentos(provinciaDto.getDepartamento());
+        provincia.setDepartamentos(provinciaDto.getDepartamentos());
 
         provinciaService.save(provincia);
         return ResponseEntity.ok(new Mensaje("Provincia creada"));
@@ -87,8 +87,8 @@ public class ProvinciaController {
         if (!provinciaDto.getPais().equals(provincia.getPais()))
             provincia.setPais(provinciaDto.getPais());
 
-        if (!provinciaDto.getDepartamento().equals(provincia.getDepartamentos()))
-            provincia.setDepartamentos(provinciaDto.getDepartamento());
+        if (!provinciaDto.getDepartamentos().equals(provincia.getDepartamentos()))
+            provincia.setDepartamentos(provinciaDto.getDepartamentos());
 
         provinciaService.save(provincia);
         return ResponseEntity.ok(new Mensaje("Provincia modificada"));

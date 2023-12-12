@@ -64,6 +64,7 @@ public class PaisController {
         pais.setCodigo(paisDto.getCodigo());
         pais.setNacionalidad(paisDto.getNacionalidad());
         pais.setNombre(paisDto.getNombre());
+        pais.setProvincias(paisDto.getProvincias());
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("tipo de revista creado"), HttpStatus.OK);
     }
@@ -90,6 +91,9 @@ public class PaisController {
         if (pais.getNacionalidad() != paisDto.getNacionalidad() && paisDto.getNacionalidad() != null
                 && !paisDto.getNacionalidad().isEmpty())
             pais.setNacionalidad(paisDto.getNacionalidad());
+
+        if (!pais.getProvincias().equals(paisDto.getProvincias()))
+            pais.setProvincias(paisDto.getProvincias());
 
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("pais actualizado"), HttpStatus.OK);
