@@ -48,9 +48,9 @@ public class NoAsistencialController {
         noAsistencial.setNombre(noAsistencialDto.getNombre());
         noAsistencial.setDni(noAsistencialDto.getDni());
         noAsistencial.setCuil(noAsistencialDto.getCuil());
-        noAsistencial.setFechaNac(noAsistencialDto.getFechaNac());
+        noAsistencial.setFechaNacimiento(noAsistencialDto.getFechaNacimiento());
         noAsistencial.setSexo(noAsistencialDto.getSexo());
-        noAsistencial.setTelefono(noAsistencialDto.getTelefono());
+        noAsistencial.setNumCelular(noAsistencialDto.getNumCelular());
         noAsistencial.setEmail(noAsistencialDto.getEmail());
         noAsistencial.setDomicilio(noAsistencialDto.getDomicilio());
         noAsistencial.setEstado(noAsistencialDto.getEstado());

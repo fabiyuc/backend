@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Asistencial extends Persona {
+public class Asistencial extends Person {
 
     @OneToMany(mappedBy = "asistencial")
     private Set<Legajo> legajos;

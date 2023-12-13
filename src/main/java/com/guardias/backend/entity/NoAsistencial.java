@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoAsistencial extends Persona {
+public class NoAsistencial extends Person {
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
