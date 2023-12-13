@@ -76,7 +76,7 @@ public class CategoriaController {
         if (StringUtils.isBlank(categoriaDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Categoria categoria = categoriaService.getById(id).get();
+        Categoria categoria = categoriaService.getOne(id).get();
         categoria.setNombre(categoriaDto.getNombre());
         categoriaService.save(categoria);
 

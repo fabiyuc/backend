@@ -29,7 +29,6 @@ public class RevistaDto {
 
     @NotBlank
     private CargaHoraria cargaHoraria;
-    private Adicional adicional;
     private Set<Legajo> legajos;
 
 }

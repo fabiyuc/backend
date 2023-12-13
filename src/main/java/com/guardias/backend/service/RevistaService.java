@@ -30,7 +30,7 @@ public class RevistaService {
         revistaRepository.save(revista);
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
         revistaRepository.deleteById(id);
     }
 
