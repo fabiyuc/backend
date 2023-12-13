@@ -36,7 +36,7 @@ public class FeriadoController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/dedtail/{id}")
     public ResponseEntity<List<Feriado>> getById(@PathVariable("id") Long id) {
         if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{motivo}")
+    @GetMapping("/detailmotivo/{motivo}")
     public ResponseEntity<List<Feriado>> getById(@PathVariable("motivo") String motivo) {
         if (!feriadoService.existsByMotivo(motivo))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);

@@ -36,7 +36,7 @@ public class MinisterioController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Ministerio>> getById(@PathVariable("id") Long id) {
         if (!ministerioService.existsById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class MinisterioController {
         return new ResponseEntity(ministerio, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{nombre}")
+    @GetMapping("/detailname/{nombre}")
     public ResponseEntity<List<Ministerio>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!ministerioService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -130,9 +130,9 @@ public class MinisterioController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity <?> delete(@PathVariable("id") Long id){
-        if(!ministerioService.existsById(id))
-        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        if (!ministerioService.existsById(id))
+            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
         ministerioService.deleteById(id);
         return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK);
     }

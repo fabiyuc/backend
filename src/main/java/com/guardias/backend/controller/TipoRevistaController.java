@@ -43,7 +43,7 @@ public class TipoRevistaController {
         return new ResponseEntity<TipoRevista>(tipoRevista, HttpStatus.OK);
     }
 
-    @GetMapping("/detailnombre/{nombre}")
+    @GetMapping("/detailname/{nombre}")
     public ResponseEntity<TipoRevista> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoRevistaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);

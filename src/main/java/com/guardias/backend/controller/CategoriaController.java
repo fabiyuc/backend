@@ -43,7 +43,7 @@ public class CategoriaController {
         return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{nombre}")
+    @GetMapping("/detailname/{nombre}")
     public ResponseEntity<Categoria> getByNombre(@PathVariable("nombre") String nombre) {
         if (!categoriaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);

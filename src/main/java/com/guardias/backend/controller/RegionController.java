@@ -36,7 +36,7 @@ public class RegionController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Region>> getById(@PathVariable("id") Long id) {
         if (!regionService.existsById(id))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class RegionController {
         return new ResponseEntity(region, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{nombre}")
+    @GetMapping("/detailname/{nombre}")
     public ResponseEntity<List<Region>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!regionService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);

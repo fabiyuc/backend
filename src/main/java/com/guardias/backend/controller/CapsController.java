@@ -36,7 +36,7 @@ public class CapsController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("id") Long id) {
         if (!capsService.existsById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class CapsController {
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{nombre}")
+    @GetMapping("/detailname/{nombre}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("nombre") String nombre) {
         if (!capsService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -126,9 +126,9 @@ public class CapsController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity <?> delete(@PathVariable("id") Long id){
-        if(!capsService.existsById(id))
-        return new ResponseEntity(new Mensaje("efector no encontrado"),HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        if (!capsService.existsById(id))
+            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
         capsService.deleteById(id);
         return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK);
     }

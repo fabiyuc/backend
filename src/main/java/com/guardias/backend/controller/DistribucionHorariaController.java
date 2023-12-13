@@ -41,7 +41,7 @@ public class DistribucionHorariaController {
         return new ResponseEntity<DistribucionHoraria>(distribucionHoraria, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{cantidad}")
+    @GetMapping("/detailcantidad/{cantidad}")
     public ResponseEntity<DistribucionHoraria> getByCantidad(@PathVariable("cantidad") int cantidad) {
         if (!distribucionHorariaService.existsByCantidad(cantidad))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);

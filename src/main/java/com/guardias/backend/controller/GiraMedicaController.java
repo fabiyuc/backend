@@ -36,7 +36,7 @@ public class GiraMedicaController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<GiraMedica>> getById(@PathVariable("id") Long id) {
         if (!giraMedicaService.existsById(id))
             return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class GiraMedicaController {
         return new ResponseEntity(giraMedica, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{fecha}")
+    @GetMapping("/detailfecha/{fecha}")
     public ResponseEntity<List<GiraMedica>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
         if (!giraMedicaService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
