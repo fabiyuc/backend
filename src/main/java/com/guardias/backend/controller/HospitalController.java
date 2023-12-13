@@ -35,7 +35,7 @@ public class HospitalController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Hospital>> getById(@PathVariable("id") Long id) {
         if (!hospitalService.existsById(id))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
@@ -43,7 +43,7 @@ public class HospitalController {
         return new ResponseEntity(hospital, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<Hospital>> getById(@PathVariable("nombre") String nombre) {
         if (!hospitalService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);

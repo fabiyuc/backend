@@ -36,7 +36,7 @@ public class LocalidadController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Localidad>> getById(@PathVariable("id") Long id) {
         if (!localidadService.existsById(id))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class LocalidadController {
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<Localidad>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!localidadService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);

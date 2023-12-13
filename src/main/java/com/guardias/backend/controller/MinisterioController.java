@@ -36,7 +36,7 @@ public class MinisterioController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Ministerio>> getById(@PathVariable("id") Long id) {
         if (!ministerioService.existsById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class MinisterioController {
         return new ResponseEntity(ministerio, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<Ministerio>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!ministerioService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);

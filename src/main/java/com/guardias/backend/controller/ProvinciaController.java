@@ -44,7 +44,7 @@ public class ProvinciaController {
         return ResponseEntity.ok(provincia);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<Provincia> getByNombre(@PathVariable("nombre") String nombre) {
         if (!provinciaService.existsByNombre(nombre))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

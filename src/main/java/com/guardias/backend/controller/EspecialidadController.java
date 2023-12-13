@@ -36,7 +36,7 @@ public class EspecialidadController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Especialidad>> getById(@PathVariable("id") Long id) {
         if (!especialidadService.existsById(id))
             return new ResponseEntity(new Mensaje("especialidad no existe"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class EspecialidadController {
         return new ResponseEntity(especialidad, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<Especialidad>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!especialidadService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("especialidad no existe"), HttpStatus.NOT_FOUND);

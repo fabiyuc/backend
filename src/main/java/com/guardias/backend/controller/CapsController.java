@@ -36,7 +36,7 @@ public class CapsController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("id") Long id) {
         if (!capsService.existsById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class CapsController {
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("nombre") String nombre) {
         if (!capsService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);

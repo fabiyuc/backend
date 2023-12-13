@@ -43,7 +43,7 @@ public class DepartamentoController {
         return new ResponseEntity(departamento, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<Departamento>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!departamentoService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
