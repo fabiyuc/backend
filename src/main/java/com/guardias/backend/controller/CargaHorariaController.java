@@ -35,7 +35,7 @@ public class CargaHorariaController {
         return new ResponseEntity<List<CargaHoraria>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<CargaHoraria> getById(@PathVariable("id") Long id) {
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
@@ -43,10 +43,10 @@ public class CargaHorariaController {
         return new ResponseEntity<CargaHoraria>(cargaHoraria, HttpStatus.OK);
     }
 
-    @GetMapping("/detailcantidad/{cantidad}")
+    @GetMapping("/detallecantidad/{cantidad}")
     public ResponseEntity<CargaHoraria> getByCantidad(@PathVariable("cantidad") int cantidad) {
         if (!cargaHorariaService.existsByCantidad(cantidad))
-            return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe esa carga horaria"), HttpStatus.NOT_FOUND);
         CargaHoraria cargaHoraria = cargaHorariaService.getByCantidad(cantidad).get();
         return new ResponseEntity<CargaHoraria>(cargaHoraria, HttpStatus.OK);
     }
@@ -68,13 +68,17 @@ public class CargaHorariaController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargaHorariaDto cargaHorariaDto) {
+
+        // Busca por ID
         if (!cargaHorariaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
 
+        // Verifica que la cantidad no exista para el mismo ID
         if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad()) &&
                 cargaHorariaService.getByCantidad(cargaHorariaDto.getCantidad()).get().getId() == id)
             return new ResponseEntity(new Mensaje("esa carga horaria ya existe"), HttpStatus.BAD_REQUEST);
 
+        // ***********Verificar que no permita indicar vacio o 0*********************
         String cantidadStr = Integer.toString(cargaHorariaDto.getCantidad());
         if (StringUtils.isBlank(cantidadStr))
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);

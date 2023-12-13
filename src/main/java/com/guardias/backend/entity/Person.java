@@ -26,8 +26,7 @@ public class Person {
     private String nombre;
     @Column(columnDefinition = "VARCHAR(30)")
     private String apellido;
-    private int dni;
-    @Column(columnDefinition = "VARCHAR(15)")
+    private String dni;
     private String cuil;
     @Temporal(TemporalType.DATE)
     private LocalDate fechaNacimiento;

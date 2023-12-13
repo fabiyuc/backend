@@ -1,6 +1,6 @@
 package com.guardias.backend.repository;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,12 +12,12 @@ public interface SuspencionRepository extends JpaRepository<Suspencion,Long> {
     Optional<Suspencion> findById(Long id); 
     boolean existsById(Long id);
 
-    Optional<Suspencion> findByFechaInicio(Date fechaInicio);
+    Boolean existsByFechaInicio(LocalDate fechaInicio);
+    Boolean existsByFechaFin(LocalDate fechaFin);
 
-    boolean existsByFechaInicio(Date fechaInicio);
+    Optional<Suspencion> findByFechaInicio(LocalDate fechaInicio);
+    Optional<Suspencion> findByFechaFin(LocalDate fechaFin);
 
-    Optional<Suspencion> findByFechaFin(Date fechaFin);
-
-    boolean existsByFechaFin(Date fechaFin);
+    
 
 }

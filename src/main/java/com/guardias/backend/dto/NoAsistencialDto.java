@@ -1,8 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
-
-import com.guardias.backend.entity.Legajo;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +9,39 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoAsistencialDto extends PersonaDto {
+public class NoAsistencialDto {
 
-    private Set<Legajo> legajos;
+    @NotBlank
+    private String nombre;
 
+    @NotBlank
+    private String apellido;
+
+    @NotBlank
+    private String dni;
+
+    @NotBlank
+    private String cuil;
+
+    @NotBlank
+    private LocalDate fechaNacimiento;
+
+    @NotBlank
+    private String sexo;
+
+    @NotBlank
+    private String numCelular;
+
+    @NotBlank
+    private String email;
+
+    @NotBlank
+    private String domicilio;
+
+    @NotBlank
+    private Boolean estado;
+
+    @NotBlank
     private String descripcion;
 
 }
