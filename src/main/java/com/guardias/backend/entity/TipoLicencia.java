@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,7 @@ public class TipoLicencia {
     private String articulo;
     @Column(columnDefinition = "VARCHAR(10)")
     private String inciso;
+
+    @OneToOne(mappedBy = "tipoLicencia")
+    private NovedadPersonal novedadPersonal;
 }
