@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "Tipos_licencias")
+@Entity(name = "tiposLicencias")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
