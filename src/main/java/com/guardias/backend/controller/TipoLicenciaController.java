@@ -22,7 +22,7 @@ import com.guardias.backend.service.TipoLicenciaService;
 import io.micrometer.common.util.StringUtils;
 
 @Controller
-@RequestMapping("/TipoLicencia")
+@RequestMapping("/tipoLicencia")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TipoLicenciaController {
 
@@ -38,7 +38,7 @@ public class TipoLicenciaController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("id") Long id) {
         if (!tipoLicenciaService.existsById(id))
-            return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
         TipoLicencia tipoLicencia = tipoLicenciaService.getById(id).get();
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);
     }
@@ -46,7 +46,7 @@ public class TipoLicenciaController {
     @GetMapping("/detailname/{nombre}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("nombre") String nombre) {
         if (!tipoLicenciaService.existsByNombre(nombre))
-            return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
         TipoLicencia tipoLicencia = tipoLicenciaService.getByNombre(nombre).get();
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);
     }

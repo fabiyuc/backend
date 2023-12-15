@@ -13,12 +13,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "novedadesPersonales")
 @Data
-// @AllArgsConstructor
-// @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class NovedadPersonal {
 
     @Id
@@ -34,6 +36,9 @@ public class NovedadPersonal {
     private boolean necesitaReemplazo;
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+
+    private Long idExtensionLicencia; // en caso que se extienda la licecncia, crea una nueva y se la asocia a la
+                                      // anterior mediante este id
 
     @OneToOne
     @JoinColumn(name = "persona_id")

@@ -21,6 +21,7 @@ public class NovedadPersonalDto {
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
     private String descripcion;
+    private Long idExtensionLicencia;
 
     @NotEmpty
     private Person persona;
