@@ -6,14 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardias.backend.dto.LocalidadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.service.LocalidadService;
+
+import io.micrometer.common.util.StringUtils;
 
 @RestController
 @RequestMapping("/localidad")
@@ -37,8 +44,50 @@ public class LocalidadController {
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
-    // TODO LocalidadController detalle por nombre
-    // TODO LocalidadController create
-    // TODO LocalidadController update
-    // TODO LocalidadController delete
+    @GetMapping("/detallenombre/{nombre}")
+    public ResponseEntity<List<Localidad>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!localidadService.existsByNombre(nombre))
+            return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
+        Localidad localidad = localidadService.getByNombre(nombre).get();
+        return new ResponseEntity(localidad, HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody LocalidadDto localidadDto) {
+        if (StringUtils.isBlank(localidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        Localidad localidad = new Localidad();
+        localidad.setNombre(localidadDto.getNombre());
+        localidad.setDepartamento(localidadDto.getDepartamento());
+
+        localidadService.save(localidad);
+        return new ResponseEntity(new Mensaje("Localidad creada"), HttpStatus.OK);
+    }
+
+    @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LocalidadDto localidadDto) {
+        if (StringUtils.isBlank(localidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        Localidad localidad = localidadService.getById(id).get();
+        if (!localidadDto.getNombre().equals(localidad.getNombre()))
+            localidad.setNombre(localidadDto.getNombre());
+        if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
+            localidad.setDepartamento(localidadDto.getDepartamento());
+
+        localidadService.save(localidad);
+        return new ResponseEntity(new Mensaje("Localidad modificada"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+
+        if (!localidadService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el localidad"), HttpStatus.NOT_FOUND);
+        localidadService.deleteById(id);
+        return new ResponseEntity(new Mensaje("localidad eliminado"), HttpStatus.OK);
+    }
 }
