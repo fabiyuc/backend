@@ -17,4 +17,8 @@ public class NoAsistencialService {
     public List<NoAsistencial> list() {
         return noAsistencialRepository.findAll();
     }
+
+    public void save(NoAsistencial noAsistencial) {
+        noAsistencialRepository.save(noAsistencial);
+    }
 }

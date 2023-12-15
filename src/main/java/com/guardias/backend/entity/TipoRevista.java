@@ -1,7 +1,6 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "tiposRevistas")
 @Data
+//@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class TipoRevista {
@@ -21,6 +21,7 @@ public class TipoRevista {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column(columnDefinition = "VARCHAR(20)")
     private String nombre;
 

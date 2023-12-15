@@ -44,8 +44,4 @@ public class Cargo {
     @Column(columnDefinition = "DATE")
     private LocalDate fechafinal;
 
-    @OneToOne
-    @JoinColumn(name = "tipo_cargo_id")
-    private TipoCargo tipoCargo;
-
 }

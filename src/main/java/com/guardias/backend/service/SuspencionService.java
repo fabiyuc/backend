@@ -1,13 +1,11 @@
 package com.guardias.backend.service;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Suspencion;
 import com.guardias.backend.repository.SuspencionRepository;
 
@@ -34,23 +32,23 @@ public class SuspencionService {
         suspencionRepository.deleteById(id);
     }
 
-    public boolean existsById(Long id) {
+    public Boolean existsById(Long id) {
         return suspencionRepository.existsById(id);
     }
 
-    public Optional<Suspencion> getByFechaInicio(Date fechaInicio) {
+    public Optional<Suspencion> getByFechaInicio(LocalDate fechaInicio) {
         return suspencionRepository.findByFechaInicio(fechaInicio);
     }
 
-    public Optional<Suspencion> getByFechaFin(Date fechaFin) {
+    public Optional<Suspencion> getByFechaFin(LocalDate fechaFin) {
         return suspencionRepository.findByFechaFin(fechaFin);
     }
 
-    public boolean existsByFechaInicio(Date fechaInicio) {
+    public Boolean existsByFechaInicio(LocalDate fechaInicio) {
         return suspencionRepository.existsByFechaInicio(fechaInicio);
     }
 
-    public boolean existsByFechaFin(Date fechaFin) {
+    public Boolean existsByFechaFin(LocalDate fechaFin) {
         return suspencionRepository.existsByFechaFin(fechaFin);
     }
 

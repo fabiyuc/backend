@@ -8,25 +8,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "profesiones")
 @Data
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class Profesion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private Boolean esAsistencial;
+    private Boolean asistencial;
 
     @OneToMany(mappedBy = "profesion")
     private Set<Legajo> legajos;
-
-    public Profesion(String nombre, Boolean esAsistencial) {
-        this.nombre = nombre;
-        this.esAsistencial = esAsistencial;
-    }
 
 }

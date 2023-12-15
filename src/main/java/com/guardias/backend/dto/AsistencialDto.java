@@ -1,13 +1,18 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.Set;
+
+import com.guardias.backend.entity.Legajo;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class AsistencialDto {
 
     @NotBlank
@@ -17,7 +22,7 @@ public class AsistencialDto {
     private String apellido;
 
     @NotBlank
-    private int dni;
+    private String dni;
 
     @NotBlank
     private String cuil;
@@ -38,6 +43,9 @@ public class AsistencialDto {
     private String domicilio;
 
     @NotBlank
-    private boolean estado;
+    private Boolean estado;
+
+    @NotBlank
+    private Set<Legajo> legajos;
 
 }

@@ -3,9 +3,10 @@ package com.guardias.backend.service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
 
@@ -18,6 +19,14 @@ public class ProfesionService {
 
     public List<Profesion> list() {
         return profesionRepository.findAll();
+    }
+
+    public List<Profesion> listAsistenciales() {
+        return profesionRepository.findByAsistencialTrue();
+    }
+
+    public List<Profesion> listNoAsistenciales() {
+        return profesionRepository.findByAsistencialFalse();
     }
 
     public Optional<Profesion> getOne(Long id) {
@@ -36,11 +45,11 @@ public class ProfesionService {
         profesionRepository.deleteById(id);
     }
 
-    public boolean existsById(Long id) {
+    public Boolean existsById(Long id) {
         return profesionRepository.existsById(id);
     }
 
-    public boolean existsByNombre(String nombre) {
+    public Boolean existsByNombre(String nombre) {
         return profesionRepository.existsByNombre(nombre);
     }
 

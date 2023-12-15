@@ -1,14 +1,18 @@
 package com.guardias.backend.dto;
 
-import java.sql.Date;
-
+//import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Set;
+import com.guardias.backend.entity.Legajo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class NoAsistencialDto { // !! VER DE DONDE HEREDA!!!!!!!!!!!!!!
+@NoArgsConstructor
+public class NoAsistencialDto {
 
     @NotBlank
     private String nombre;
@@ -17,13 +21,13 @@ public class NoAsistencialDto { // !! VER DE DONDE HEREDA!!!!!!!!!!!!!!
     private String apellido;
 
     @NotBlank
-    private int dni;
+    private String dni;
 
     @NotBlank
     private String cuil;
 
     @NotBlank
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     @NotBlank
     private String sexo;
@@ -38,6 +42,12 @@ public class NoAsistencialDto { // !! VER DE DONDE HEREDA!!!!!!!!!!!!!!
     private String domicilio;
 
     @NotBlank
-    private boolean estado;
+    private Boolean estado;
+
+    @NotBlank
+    private String descripcion;
+
+    @NotBlank
+    private Set<Legajo> legajos;
 
 }
