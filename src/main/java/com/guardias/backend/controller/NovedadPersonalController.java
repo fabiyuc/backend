@@ -38,7 +38,7 @@ public class NovedadPersonalController {
         if (!novedadPersonalService.existsById(id))
             return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
         NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
-        return new ResponseEntity(novedadPersonal, HttpStatus.Status.OK);
+        return new ResponseEntity(novedadPersonal, HttpStatus.OK);
     }
 
     @GetMapping("/detailpersona/{id}")
@@ -46,7 +46,7 @@ public class NovedadPersonalController {
         if (!novedadPersonalService.existsByPersona(id))
             return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
         List<NovedadPersonal> novedadesList = novedadPersonalService.getByPersona(id).get();
-        return new ResponseEntity(novedadesList, HttpStatus.Status.OK);
+        return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
     @GetMapping("/detailfecha/{fecha}")
@@ -54,7 +54,7 @@ public class NovedadPersonalController {
         if (!novedadPersonalService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
         List<NovedadPersonal> novedadesList = novedadPersonalService.getByFecha(fecha).get();
-        return new ResponseEntity(novedadesList, HttpStatus.Status.OK);
+        return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
     @PostMapping("/create")
