@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoCargoDto;
 import com.guardias.backend.entity.TipoCargo;
@@ -63,14 +65,14 @@ public class TipoCargoController {
         if (tipoCargoDto.getDescripcion() == null)
             return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (tipoCargoDto.isEshospitalario() == null)
+        if (tipoCargoDto.getEshospitalario() == null)
             return new ResponseEntity<>(new Mensaje("El campo eshospitalario es obligatorio"), HttpStatus.BAD_REQUEST);
 
         TipoCargo tipoCargo = new TipoCargo();
 
         tipoCargo.setNombre(tipoCargoDto.getNombre());
         tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
-        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
+        tipoCargo.setEshospitalario(tipoCargoDto.getEshospitalario());
 
         tipoCargoService.save(tipoCargo);
 
@@ -97,7 +99,7 @@ public class TipoCargoController {
             return new ResponseEntity<>(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
         }
 
-        if (tipoCargoDto.isEshospitalario() == null)
+        if (tipoCargoDto.getEshospitalario() == null)
             return new ResponseEntity<>(new Mensaje("El campo eshospitalario es obligatorio"), HttpStatus.BAD_REQUEST);
 
         // Obtén el TipoCargo actual
@@ -111,7 +113,7 @@ public class TipoCargoController {
         // Actualiza los campos
         tipoCargo.setNombre(tipoCargoDto.getNombre());
         tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
-        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
+        tipoCargo.setEshospitalario(tipoCargoDto.getEshospitalario());
 
         // Guarda la actualización
         tipoCargoService.save(tipoCargo);

@@ -24,8 +24,6 @@ public class Notificacion {
     private Long id;
     @Column(columnDefinition = "VARCHAR(30)")
     private String tipo;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private Long posicion;
     @Column(columnDefinition = "VARCHAR(50)")
     private String categoria;
 

@@ -3,6 +3,7 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,5 +44,10 @@ public class Cargo {
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(columnDefinition = "DATE")
     private LocalDate fechafinal;
+
+    @OneToOne
+    @JoinColumn(name = "tipo_cargo_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cargo" })
+    private TipoCargo tipoCargo;
 
 }

@@ -9,7 +9,7 @@ import com.guardias.backend.entity.Notificacion;
 
 @Repository
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
-    Optional<Notificacion> findByNombre(String nombre);
+    Optional<Notificacion> findByTipo(String tipo);
 
-    Boolean existsByNombre(String nombre);
+    Boolean existsByTipo(String tipo);
 }

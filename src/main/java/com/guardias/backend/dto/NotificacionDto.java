@@ -1,6 +1,9 @@
 package com.guardias.backend.dto;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,11 +14,9 @@ public class NotificacionDto {
     @NotBlank
     private String tipo;
     @NotBlank
-    private Long posicion;
-    @NotBlank
     private String categoria;
-    @NotBlank
-    private String fechanotificacion;
+    @NotNull
+    private LocalDate fechaNotificacion;
     @NotBlank
     private String detalle;
     @NotBlank

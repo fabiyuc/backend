@@ -26,8 +26,8 @@ public class NotificacionService {
         return notificacionRepository.findById((Long) id);
     }
 
-    public Optional<Notificacion> getByNombre(String nombre) {
-        return notificacionRepository.findByNombre(nombre);
+    public Optional<Notificacion> getByTipo(String tipo) {
+        return notificacionRepository.findByTipo(tipo);
     }
 
     public void save(Notificacion notificacion) {
@@ -42,8 +42,8 @@ public class NotificacionService {
         return notificacionRepository.existsById((Long) id);
     }
 
-    public boolean existsByNombre(String nombre) {
-        return notificacionRepository.existsByNombre(nombre);
+    public boolean existsByTipo(String tipo) {
+        return notificacionRepository.existsByTipo(tipo);
     }
 
 }
