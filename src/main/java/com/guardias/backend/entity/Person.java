@@ -2,14 +2,11 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -42,13 +39,5 @@ public class Person {
     @Column(columnDefinition = "VARCHAR(25)")
     private String domicilio;
     private Boolean estado;
-
-    @OneToOne(mappedBy = "persona")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
-    private NovedadPersonal novedadPersonal;
-
-    @OneToOne(mappedBy = "reemplazante")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "reemplazante" })
-    private NovedadPersonal novedadPersonalReemplazante;
 
 }

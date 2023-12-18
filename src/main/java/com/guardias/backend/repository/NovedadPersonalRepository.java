@@ -12,11 +12,11 @@ import com.guardias.backend.entity.NovedadPersonal;
 @Repository
 public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal, Long> {
 
-    Optional<List<NovedadPersonal>> findByPersona(Long idPersona);
+    // Optional<List<NovedadPersonal>> findByPersona(Long idPersona);
 
-    Optional<List<NovedadPersonal>> findByFecha(LocalDate fecha);
+    Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fechaInicio);
 
-    boolean existsByPersona(Long idPersona);
+    // boolean existsByPersona(Long idPersona);
 
-    boolean existsByFecha(LocalDate fecha);
+    boolean existsByFechaInicio(LocalDate fechaInicio);
 }

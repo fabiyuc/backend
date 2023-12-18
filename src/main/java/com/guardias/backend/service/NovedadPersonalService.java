@@ -27,20 +27,20 @@ public class NovedadPersonalService {
         return novedadPersonalRepository.findById(id);
     }
 
-    public Optional<List<NovedadPersonal>> getByPersona(Long idPersona) {
-        return novedadPersonalRepository.findByPersona(idPersona);
+    // public Optional<List<NovedadPersonal>> getByPersona(Long idPersona) {
+    // return novedadPersonalRepository.findByPersona(idPersona);
+    // }
+
+    public Optional<List<NovedadPersonal>> getByFechaInicio(LocalDate fecha) {
+        return novedadPersonalRepository.findByFechaInicio(fecha);
     }
 
-    public Optional<List<NovedadPersonal>> getByFecha(LocalDate fecha) {
-        return novedadPersonalRepository.findByFecha(fecha);
-    }
+    // public boolean existsByPersona(Long idPersona) {
+    // return novedadPersonalRepository.existsByPersona(idPersona);
+    // }
 
-    public boolean existsByPersona(Long idPersona) {
-        return novedadPersonalRepository.existsByPersona(idPersona);
-    }
-
-    public boolean existsByFecha(LocalDate fecha) {
-        return novedadPersonalRepository.existsByFecha(fecha);
+    public boolean existsByFechaInicio(LocalDate fechaInicio) {
+        return novedadPersonalRepository.existsByFechaInicio(fechaInicio);
     }
 
     public void save(NovedadPersonal novedadPersonal) {

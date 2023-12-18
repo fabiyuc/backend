@@ -41,19 +41,23 @@ public class NovedadPersonalController {
         return new ResponseEntity(novedadPersonal, HttpStatus.OK);
     }
 
-    @GetMapping("/detailpersona/{id}")
-    public ResponseEntity<List<NovedadPersonal>> getByPersona(@PathVariable("id") Long id) {
-        if (!novedadPersonalService.existsByPersona(id))
-            return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
-        List<NovedadPersonal> novedadesList = novedadPersonalService.getByPersona(id).get();
-        return new ResponseEntity(novedadesList, HttpStatus.OK);
-    }
+    // @GetMapping("/detailpersona/{id}")
+    // public ResponseEntity<List<NovedadPersonal>> getByPersona(@PathVariable("id")
+    // Long id) {
+    // if (!novedadPersonalService.existsByPersona(id))
+    // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
+    // HttpStatus.NOT_FOUND);
+    // List<NovedadPersonal> novedadesList =
+    // novedadPersonalService.getByPersona(id).get();
+    // return new ResponseEntity(novedadesList, HttpStatus.OK);
+    // }
 
     @GetMapping("/detailfecha/{fecha}")
     public ResponseEntity<List<NovedadPersonal>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
-        if (!novedadPersonalService.existsByFecha(fecha))
-            return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
-        List<NovedadPersonal> novedadesList = novedadPersonalService.getByFecha(fecha).get();
+        // if (!novedadPersonalService.existsByFechaIniciofecha))
+        // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
+        // HttpStatus.NOT_FOUND);
+        List<NovedadPersonal> novedadesList = novedadPersonalService.getByFechaInicio(fecha).get();
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
@@ -61,9 +65,6 @@ public class NovedadPersonalController {
     public ResponseEntity<?> create(@RequestBody NovedadPersonalDto novedadPersonalDto) {
         if (novedadPersonalDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (novedadPersonalDto.getPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
                     HttpStatus.BAD_REQUEST);
         if (novedadPersonalDto.getTipoLicencia() == null)
             return new ResponseEntity(new Mensaje("el tipo de licencia es obligatorio"),
@@ -78,9 +79,10 @@ public class NovedadPersonalController {
         novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
         novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
         novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
-        novedadPersonal.setPersona(novedadPersonalDto.getPersona());
-        novedadPersonal.setReemplazante(novedadPersonalDto.getReemplazante());
-        novedadPersonal.setTipoLicencia(novedadPersonalDto.getTipoLicencia());
+        novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
+        novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
+        novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
+        novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
 
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
@@ -92,9 +94,6 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
         if (novedadPersonalDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (novedadPersonalDto.getPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
                     HttpStatus.BAD_REQUEST);
         if (novedadPersonalDto.getTipoLicencia() == null)
             return new ResponseEntity(new Mensaje("el tipo de licencia es obligatorio"),
@@ -119,12 +118,17 @@ public class NovedadPersonalController {
         if (novedadPersonalDto.getIdExtensionLicencia() != novedadPersonal.getIdExtensionLicencia())
             novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
 
-        if (novedadPersonalDto.getPersona() != novedadPersonal.getPersona() && novedadPersonalDto.getPersona() != null)
-            novedadPersonal.setPersona(novedadPersonalDto.getPersona());
+        if (!novedadPersonalDto.getNovedadesAsistencial().equals(novedadPersonal.getNovedadesAsistencial()))
+            novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
 
-        if (novedadPersonalDto.getReemplazante() != novedadPersonal.getReemplazante()
-                && novedadPersonalDto.getReemplazante() != null)
-            novedadPersonal.setReemplazante(novedadPersonalDto.getReemplazante());
+        if (!novedadPersonalDto.getAsistencialReemplazante().equals(novedadPersonal.getAsistencialReemplazante()))
+            novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
+
+        if (!novedadPersonalDto.getNovedadesNoAsistencial().equals(novedadPersonal.getNovedadesNoAsistencial()))
+            novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
+
+        if (!novedadPersonalDto.getReemplazantesNoAsistencial().equals(novedadPersonal.getReemplazantesNoAsistencial()))
+            novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
 
         if (novedadPersonalDto.getTipoLicencia() != novedadPersonal.getTipoLicencia()
                 && novedadPersonalDto.getTipoLicencia() != null)

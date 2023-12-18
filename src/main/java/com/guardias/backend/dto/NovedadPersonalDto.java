@@ -2,7 +2,8 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
-import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.TipoLicencia;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -24,9 +25,11 @@ public class NovedadPersonalDto {
     private Long idExtensionLicencia;
 
     @NotEmpty
-    private Person persona;
+    private Asistencial novedadesAsistencial;
+    private Asistencial asistencialReemplazante;
+    private NoAsistencial novedadesNoAsistencial;
+    private NoAsistencial reemplazantesNoAsistencial;
 
-    private Person reemplazante;
     @NotEmpty
     private TipoLicencia tipoLicencia;
 }

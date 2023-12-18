@@ -19,4 +19,10 @@ public class Asistencial extends Person {
     @OneToMany(mappedBy = "asistencial")
     private Set<Legajo> legajos;
 
+    @OneToMany(mappedBy = "novedadesAsistencial")
+    private Set<NovedadPersonal> novedadesAsistencial;
+
+    @OneToMany(mappedBy = "asistencialReemplazante")
+    private Set<NovedadPersonal> asistencialReemplazante;
+
 }
