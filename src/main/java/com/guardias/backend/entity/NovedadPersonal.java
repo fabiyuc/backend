@@ -41,19 +41,23 @@ public class NovedadPersonal {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_novedadesAsistencial")
-    private Asistencial novedadesAsistencial;
+    private Person novedadesAsistencial;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_asistencialReemplazante")
-    private Asistencial asistencialReemplazante;
+    // VER!!!
+    // Person novedad = new Asistencial();
+    // Person suplente = new NoAsistencial();
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_novedadesNoAistencial")
-    private NoAsistencial novedadesNoAsistencial;
+    // @ManyToOne(optional = true)
+    // @JoinColumn(name = "id_asistencialReemplazante")
+    // private Asistencial asistencialReemplazante;
+
+    // @ManyToOne(optional = true)
+    // @JoinColumn(name = "id_novedadesNoAistencial")
+    // private NoAsistencial novedadesNoAsistencial;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_reemplazantesNoAsistencial")
-    private NoAsistencial reemplazantesNoAsistencial;
+    private Person reemplazantesNoAsistencial;
 
     @OneToOne(mappedBy = "novedadPersonal")
     private TipoLicencia tipoLicencia;
