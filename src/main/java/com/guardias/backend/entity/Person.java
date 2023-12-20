@@ -31,18 +31,19 @@ public abstract class Person {
     private String nombre;
     @Column(columnDefinition = "VARCHAR(30)")
     private String apellido;
-    private String dni;
+    private int dni;
     private String cuil;
     @Temporal(TemporalType.DATE)
     private LocalDate fechaNacimiento;
     @Column(columnDefinition = "VARCHAR(15)")
     private String sexo;
     @Column(columnDefinition = "VARCHAR(15)")
-    private String numCelular;
+    private String telefono;
     @Column(columnDefinition = "VARCHAR(15)")
     private String email;
     @Column(columnDefinition = "VARCHAR(25)")
     private String domicilio;
+    @Column(columnDefinition = "BOOLEAN DEFAULT true")
     private Boolean estado;
 
     @OneToMany(mappedBy = "novedadesPersonales")

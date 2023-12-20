@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.guardias.backend.entity.NovedadPersonal;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +16,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PersonDto {
 
+    @NotBlank
     private String nombre;
+    @NotBlank
     private String apellido;
-    private String dni;
+    @Min(value = 1000000)
+    private int dni;
+    @NotBlank
     private String cuil;
     private LocalDate fechaNacimiento;
     private String sexo;
-    private String numCelular;
+    private String telefono;
     private String email;
     private String domicilio;
     private Boolean estado;

@@ -1,5 +1,6 @@
 package com.guardias.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +11,13 @@ import com.guardias.backend.entity.NoAsistencial;
 @Repository
 public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Long> {
 
-    Optional<NoAsistencial> findByDni(String dni);
+    Optional<NoAsistencial> findById(Long id);
 
-    boolean existsByDni(String dni);
+    Optional<NoAsistencial> findByDni(int dni);
+
+    boolean existsById(Long id);
+
+    boolean existsByDni(int dni);
+
+    List<NoAsistencial> findByEstado(Boolean estado);
 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NoAsistencialDto extends PersonDto {
 
+    private String descripcion;
     private Set<Legajo> legajos;
 
 }
