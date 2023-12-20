@@ -6,6 +6,7 @@ import java.util.Set;
 import com.guardias.backend.entity.Legajo;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,7 @@ public class AsistencialDto {
     @NotBlank
     private String cuil;
 
-    @NotBlank
+    @NotNull
     private LocalDate fechaNacimiento;
 
     @NotBlank
@@ -44,6 +45,9 @@ public class AsistencialDto {
 
     @NotBlank
     private Boolean estado;
+
+    // @NotBlank
+    // private String legajo;
 
     @NotBlank
     private Set<Legajo> legajos;
