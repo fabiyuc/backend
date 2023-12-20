@@ -90,8 +90,9 @@ public class NovedadPersonalController {
 
     @PostMapping("/update")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody NovedadPersonalDto novedadPersonalDto) {
-        if (!novedadPersonalService.existsByPersona(id))
-            return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
+        // if (!novedadPersonalService.existsByPersona(id))
+        // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
+        // HttpStatus.NOT_FOUND);
         if (novedadPersonalDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
                     HttpStatus.BAD_REQUEST);
