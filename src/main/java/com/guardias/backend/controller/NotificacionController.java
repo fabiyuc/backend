@@ -51,8 +51,6 @@ public class NotificacionController {
         return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
     }
 
-    // por q no me deja crear la fechaNotificacion
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto) {
         // Validaciones

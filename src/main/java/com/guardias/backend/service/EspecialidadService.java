@@ -14,7 +14,7 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class EspecialidadService {
-    
+
     @Autowired
     EspecialidadRepository especialidadRepository;
 
@@ -38,7 +38,7 @@ public class EspecialidadService {
         especialidadRepository.deleteById(id);
     }
 
-    public boolean existById(Long id) {
+    public boolean existsById(Long id) {
         return especialidadRepository.existsById(id);
     }
 
