@@ -2,6 +2,8 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,10 +44,12 @@ public class NovedadPersonal {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_persona")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "personas" })
     private Person persona;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_suplente")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suplentes" })
     private Person suplente;
 
     // VER!!!

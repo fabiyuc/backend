@@ -50,9 +50,9 @@ public abstract class Person {
     private Boolean estado;
 
     @OneToMany(mappedBy = "persona")
-    private Set<NovedadPersonal> persona;
+    private Set<NovedadPersonal> personas;
 
     @OneToMany(mappedBy = "suplente")
-    private Set<NovedadPersonal> suplente;
+    private Set<NovedadPersonal> suplentes;
 
 }
