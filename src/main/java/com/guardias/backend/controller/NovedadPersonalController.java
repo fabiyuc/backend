@@ -78,11 +78,11 @@ public class NovedadPersonalController {
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
         novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
         novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
-        novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
-        novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
-        novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
-        novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
-        novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
+        // novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
+        // novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
+        // novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
+        // novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
+        // novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
 
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
@@ -116,24 +116,29 @@ public class NovedadPersonalController {
                 && novedadPersonalDto.getDescripcion() != null && !novedadPersonalDto.getDescripcion().isEmpty())
             novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
 
-        if (novedadPersonalDto.getIdExtensionLicencia() != novedadPersonal.getIdExtensionLicencia())
-            novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
+        // if (novedadPersonalDto.getIdExtensionLicencia() !=
+        // novedadPersonal.getIdExtensionLicencia())
+        // novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
 
-        if (!novedadPersonalDto.getNovedadesAsistencial().equals(novedadPersonal.getNovedadesAsistencial()))
-            novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
+        // if
+        // (!novedadPersonalDto.getNovedadesAsistencial().equals(novedadPersonal.getNovedadesAsistencial()))
+        // novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
 
-        if (!novedadPersonalDto.getAsistencialReemplazante().equals(novedadPersonal.getAsistencialReemplazante()))
-            novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
+        // if
+        // (!novedadPersonalDto.getAsistencialReemplazante().equals(novedadPersonal.getAsistencialReemplazante()))
+        // novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
 
-        if (!novedadPersonalDto.getNovedadesNoAsistencial().equals(novedadPersonal.getNovedadesNoAsistencial()))
-            novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
+        // if
+        // (!novedadPersonalDto.getNovedadesNoAsistencial().equals(novedadPersonal.getNovedadesNoAsistencial()))
+        // novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
 
-        if (!novedadPersonalDto.getReemplazantesNoAsistencial().equals(novedadPersonal.getReemplazantesNoAsistencial()))
-            novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
+        // if
+        // (!novedadPersonalDto.getReemplazantesNoAsistencial().equals(novedadPersonal.getReemplazantesNoAsistencial()))
+        // novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
 
-        if (novedadPersonalDto.getTipoLicencia() != novedadPersonal.getTipoLicencia()
-                && novedadPersonalDto.getTipoLicencia() != null)
-            novedadPersonal.setTipoLicencia(novedadPersonalDto.getTipoLicencia());
+        // if (novedadPersonalDto.getTipoLicencia() != novedadPersonal.getTipoLicencia()
+        // && novedadPersonalDto.getTipoLicencia() != null)
+        // novedadPersonal.setTipoLicencia(novedadPersonalDto.getTipoLicencia());
 
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
