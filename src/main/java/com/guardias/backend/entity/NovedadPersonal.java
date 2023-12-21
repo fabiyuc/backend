@@ -36,12 +36,17 @@ public class NovedadPersonal {
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 
-    private Long idExtensionLicencia; // en caso que se extienda la licecncia, crea una nueva y se la asocia a la
-                                      // anterior mediante este id
+    // private Long idExtensionLicencia; en caso que se extienda la licecncia, crea
+    // una nueva y se la asocia a la
+    // anterior mediante este id
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "id_novedadesAsistencial")
-    private Person novedadesAsistencial;
+    @JoinColumn(name = "id_novedadesPersonales")
+    private Person novedadesPersonales;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_suplente")
+    private Person suplente;
 
     // VER!!!
     // Person novedad = new Asistencial();
@@ -54,10 +59,6 @@ public class NovedadPersonal {
     // @ManyToOne(optional = true)
     // @JoinColumn(name = "id_novedadesNoAistencial")
     // private NoAsistencial novedadesNoAsistencial;
-
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_reemplazantesNoAsistencial")
-    private Person reemplazantesNoAsistencial;
 
     @OneToOne(mappedBy = "novedadPersonal")
     private TipoLicencia tipoLicencia;

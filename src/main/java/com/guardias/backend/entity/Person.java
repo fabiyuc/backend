@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -22,10 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@SequenceGenerator(name = "person_sequence", sequenceName = "person_sequence", allocationSize = 1)
 public abstract class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_sequence")
     private Long id;
     @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
@@ -43,7 +45,7 @@ public abstract class Person {
     private String email;
     @Column(columnDefinition = "VARCHAR(25)")
     private String domicilio;
-    @Column(columnDefinition = "BOOLEAN DEFAULT true")
+    @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
 
     @OneToMany(mappedBy = "novedadesPersonales")

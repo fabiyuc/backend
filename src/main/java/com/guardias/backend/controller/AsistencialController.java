@@ -76,7 +76,7 @@ public class AsistencialController {
         asistencial.setCuil(asistencialDto.getCuil());
         asistencial.setFechaNacimiento(asistencialDto.getFechaNacimiento());
         asistencial.setSexo(asistencialDto.getSexo());
-        asistencial.setNumCelular(asistencialDto.getNumCelular());
+        asistencial.setTelefono(asistencialDto.getTelefono());
         asistencial.setEmail(asistencialDto.getEmail());
         asistencial.setDomicilio(asistencialDto.getDomicilio());
         asistencial.setEstado(asistencialDto.getEstado());
