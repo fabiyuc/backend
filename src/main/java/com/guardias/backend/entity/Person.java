@@ -3,6 +3,9 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,9 +53,11 @@ public abstract class Person {
     private Boolean estado;
 
     @OneToMany(mappedBy = "persona")
-    private Set<NovedadPersonal> personas;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    private Set<NovedadPersonal> novedades;
 
     @OneToMany(mappedBy = "suplente")
+    @JsonIgnore
     private Set<NovedadPersonal> suplentes;
 
 }
