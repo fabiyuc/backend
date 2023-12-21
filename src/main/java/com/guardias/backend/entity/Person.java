@@ -34,6 +34,7 @@ public abstract class Person {
     @Column(columnDefinition = "VARCHAR(30)")
     private String apellido;
     private int dni;
+    @Column(columnDefinition = "VARCHAR(15)")
     private String cuil;
     @Temporal(TemporalType.DATE)
     private LocalDate fechaNacimiento;
@@ -41,15 +42,15 @@ public abstract class Person {
     private String sexo;
     @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
-    @Column(columnDefinition = "VARCHAR(15)")
-    private String email;
     @Column(columnDefinition = "VARCHAR(25)")
+    private String email;
+    @Column(columnDefinition = "VARCHAR(50)")
     private String domicilio;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
 
-    @OneToMany(mappedBy = "novedadesPersonales")
-    private Set<NovedadPersonal> novedadesPersonales;
+    @OneToMany(mappedBy = "persona")
+    private Set<NovedadPersonal> persona;
 
     @OneToMany(mappedBy = "suplente")
     private Set<NovedadPersonal> suplente;

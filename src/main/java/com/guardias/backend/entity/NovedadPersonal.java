@@ -41,8 +41,8 @@ public class NovedadPersonal {
     // anterior mediante este id
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "id_novedadesPersonales")
-    private Person novedadesPersonales;
+    @JoinColumn(name = "id_persona")
+    private Person persona;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_suplente")
