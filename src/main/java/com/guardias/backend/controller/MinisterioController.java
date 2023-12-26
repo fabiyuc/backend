@@ -70,8 +70,8 @@ public class MinisterioController {
         ministerio.setDomicilio(ministerioDto.getDomicilio());
         ministerio.setTelefono(ministerioDto.getTelefono());
         ministerio.setEstado(ministerioDto.isEstado());
-        ministerio.setIdRegion(ministerioDto.getIdRegion());
-        ministerio.setIdLocalidad(ministerioDto.getIdLocalidad());
+        ministerio.setRegion(ministerioDto.getRegion());
+        ministerio.setLocalidad(ministerioDto.getLocalidad());
         ministerio.setObservacion(ministerioDto.getObservacion());
 
         ministerio.setIdCabecera(ministerioDto.getIdCabecera());
@@ -112,11 +112,12 @@ public class MinisterioController {
         if (ministerio.isEstado() != ministerioDto.isEstado())
             ministerio.setEstado(ministerioDto.isEstado());
 
-        if (ministerio.getIdRegion() != ministerioDto.getIdRegion() && ministerioDto.getIdRegion() != null)
-            ministerio.setIdRegion(ministerioDto.getIdRegion());
-
-        if (ministerio.getIdLocalidad() != ministerioDto.getIdLocalidad() && ministerioDto.getIdLocalidad() != null)
-            ministerio.setIdLocalidad(ministerioDto.getIdLocalidad());
+        if (!ministerioDto.getRegion().equals(ministerio.getRegion())) {
+            ministerio.setRegion(ministerioDto.getRegion());
+        }
+        if (!ministerioDto.getLocalidad().equals(ministerio.getLocalidad())) {
+            ministerio.setLocalidad(ministerioDto.getLocalidad());
+        }
 
         if (ministerio.getObservacion() != ministerioDto.getObservacion() && ministerioDto.getObservacion() != null
                 && !ministerioDto.getObservacion().isEmpty())
