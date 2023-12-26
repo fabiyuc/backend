@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,5 +32,8 @@ public class Localidad {
     @JoinColumn(name = "id_departamento")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades" })
     Departamento departamento;
+
+    @OneToOne(mappedBy = "localidad")
+    private Efector efector;
 
 }

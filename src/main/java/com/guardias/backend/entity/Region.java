@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,5 +21,8 @@ public class Region {
     private Long id;
     @Column(columnDefinition = "VARCHAR(15)")
     private String nombre;
+
+    @OneToOne(mappedBy = "region")
+    private Efector efector;
 
 }
