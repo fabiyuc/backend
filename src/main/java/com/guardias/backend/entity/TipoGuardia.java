@@ -2,6 +2,8 @@ package com.guardias.backend.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +29,11 @@ public class TipoGuardia {
     private String descripcion;
 
     @OneToMany(mappedBy = "tipoGuardia")
+    @JsonIgnore // Añade esta anotación para evitar la recursión infinita
     private Set<RegistroActividad> registroActividades;
+
+    @OneToMany(mappedBy = "tipoGuardia")
+    private Set<Asistencial> asistenciales;
 
     /*
      * public TipoGuardia() {
