@@ -1,7 +1,11 @@
 package com.guardias.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,7 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,9 +27,11 @@ public class Localidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonInclude
     private Long id;
 
     @Column(columnDefinition = "VARCHAR(50)")
+    @JsonInclude
     private String nombre;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,8 +39,8 @@ public class Localidad {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades" })
     Departamento departamento;
 
-    @OneToOne(mappedBy = "localidad")
-    private Efector efector;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "localidad", cascade = CascadeType.ALL)
+    private Set<Efector> efectores;
 
     @Override
     public boolean equals(Object obj) {
@@ -72,5 +78,4 @@ public class Localidad {
         result = prime * result + ((departamento == null) ? 0 : departamento.hashCode());
         return result;
     }
-
 }

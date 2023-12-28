@@ -24,10 +24,10 @@ public class Pais {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
 
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nacionalidad;
 
     @Column(columnDefinition = "VARCHAR(5)")

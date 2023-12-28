@@ -27,9 +27,9 @@ public class Provincia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String gentilicio;
 
     @ManyToOne(fetch = FetchType.LAZY)

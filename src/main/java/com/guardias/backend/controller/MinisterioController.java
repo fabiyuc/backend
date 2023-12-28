@@ -55,14 +55,14 @@ public class MinisterioController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody MinisterioDto ministerioDto) {
         if (StringUtils.isBlank(ministerioDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+            return new ResponseEntity<Mensaje>(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(ministerioDto.getDomicilio()))
-            return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
+            return new ResponseEntity<Mensaje>(new Mensaje("el domicilio es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
         if (ministerioService.existsByNombre(ministerioDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
+            return new ResponseEntity<Mensaje>(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         Ministerio ministerio = new Ministerio();
@@ -77,23 +77,23 @@ public class MinisterioController {
         ministerio.setIdCabecera(ministerioDto.getIdCabecera());
 
         ministerioService.save(ministerio);
-        return new ResponseEntity(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody MinisterioDto ministerioDto) {
         if (!ministerioService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Mensaje>(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
         // if (ministerioService.existsByNombre(ministerioDto.getNombre()) &&
         // ministerioService.getMinisterioByNombre(ministerioDto.getNombre()).get().getId()
         // ==
         // id)
-        // return new ResponseEntity(new Mensaje("ese ministerio ya existe"),
+        // return new ResponseEntity<Mensaje>(new Mensaje("ese ministerio ya existe"),
         // HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(ministerioDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Mensaje>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         Ministerio ministerio = ministerioService.getById(id).get();
 
@@ -127,15 +127,15 @@ public class MinisterioController {
             ministerio.setIdCabecera(ministerioDto.getIdCabecera());
 
         ministerioService.save(ministerio);
-        return new ResponseEntity(new Mensaje("Ministerio actualizado"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Ministerio actualizado"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         if (!ministerioService.existsById(id))
-            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Mensaje>(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
         ministerioService.deleteById(id);
-        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado"), HttpStatus.OK);
     }
 
 }

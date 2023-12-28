@@ -1,14 +1,17 @@
 package com.guardias.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class Efector {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "efector_sequence")
     private Long id;
     @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
@@ -35,12 +38,14 @@ public class Efector {
 
     private String observacion;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_region")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private Region region;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_localidad")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "departamento" })
     private Localidad localidad;
 
     @Override

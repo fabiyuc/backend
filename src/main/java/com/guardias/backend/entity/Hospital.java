@@ -1,6 +1,11 @@
 package com.guardias.backend.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +14,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "hospitales")
-// @DiscriminatorValue("HOSPITAL")
-// @PrimaryKeyJoinColumn(name = "id_efector")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +22,8 @@ public class Hospital extends Efector {
 
     private boolean esCabecera;
     private int nivelComplejidad;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
+    List<Caps> caps;
 
 }
