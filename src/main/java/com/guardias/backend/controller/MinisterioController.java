@@ -74,7 +74,7 @@ public class MinisterioController {
         ministerio.setLocalidad(ministerioDto.getLocalidad());
         ministerio.setObservacion(ministerioDto.getObservacion());
 
-        ministerio.setIdCabecera(ministerioDto.getIdCabecera());
+        ministerio.setCabecera(ministerioDto.getCabecera());
 
         ministerioService.save(ministerio);
         return new ResponseEntity<Mensaje>(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
@@ -123,8 +123,8 @@ public class MinisterioController {
                 && !ministerioDto.getObservacion().isEmpty())
             ministerio.setObservacion(ministerioDto.getObservacion());
 
-        if (ministerio.getIdCabecera() != ministerioDto.getIdCabecera() && ministerioDto.getIdCabecera() != null)
-            ministerio.setIdCabecera(ministerioDto.getIdCabecera());
+        if (ministerio.getCabecera() != ministerioDto.getCabecera() && ministerioDto.getCabecera() != null)
+            ministerio.setCabecera(ministerioDto.getCabecera());
 
         ministerioService.save(ministerio);
         return new ResponseEntity<Mensaje>(new Mensaje("Ministerio actualizado"), HttpStatus.OK);

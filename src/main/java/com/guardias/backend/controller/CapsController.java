@@ -72,8 +72,9 @@ public class CapsController {
         caps.setRegion(capsDto.getRegion());
         caps.setLocalidad(capsDto.getLocalidad());
         caps.setObservacion(capsDto.getObservacion());
-        caps.setIdUdo(capsDto.getIdUdo());
+        caps.setCabecera(capsDto.getCabecera());
         caps.setTipoCaps(capsDto.getTipoCaps());
+        caps.setAreaProgramatica(capsDto.getAreaProgramatica());
 
         capsService.save(caps);
         return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
@@ -113,12 +114,16 @@ public class CapsController {
                 && !capsDto.getObservacion().isEmpty()) {
             caps.setObservacion(capsDto.getObservacion());
         }
-        if (caps.getIdUdo() != capsDto.getIdUdo() && capsDto.getIdUdo() != null) {
-            caps.setIdUdo(capsDto.getIdUdo());
+        if (caps.getCabecera() != capsDto.getCabecera() && capsDto.getCabecera() != null) {
+            caps.setCabecera(capsDto.getCabecera());
         }
         if (caps.getTipoCaps() != capsDto.getTipoCaps() && capsDto.getTipoCaps() != null
                 && !capsDto.getTipoCaps().isEmpty()) {
             caps.setTipoCaps(capsDto.getTipoCaps());
+        }
+
+        if (capsDto.getAreaProgramatica() != caps.getAreaProgramatica()) {
+            caps.setAreaProgramatica(capsDto.getAreaProgramatica());
         }
 
         capsService.save(caps);

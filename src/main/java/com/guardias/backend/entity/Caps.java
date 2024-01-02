@@ -23,8 +23,11 @@ public class Caps extends Efector {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cabecera")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "caps" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera", "caps" })
     Hospital cabecera;
+
+    @Column(columnDefinition = "int default 1")
+    int areaProgramatica;
 
     @Column(name = "tipo_caps", columnDefinition = "VARCHAR(25)")
     private String tipoCaps;
