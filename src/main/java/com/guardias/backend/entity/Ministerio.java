@@ -26,10 +26,11 @@ public class Ministerio extends Efector {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cabecera")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ministerios" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ministerios", "localidad", "cabecera" })
     Ministerio cabecera;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ministerios", "localidad", "cabecera" })
     List<Ministerio> ministerios;
 
 }
