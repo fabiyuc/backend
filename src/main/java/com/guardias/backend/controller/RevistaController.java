@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RevistaDto;
 import com.guardias.backend.entity.Revista;
@@ -42,29 +44,29 @@ public class RevistaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RevistaDto revistaDto) {
-        
-        if (revistaDto.getTipoRevista()==null)
-        return new ResponseEntity(new Mensaje("indicar el tipo de revista"),
-                HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getCategoria()==null)
-        return new ResponseEntity(new Mensaje("indicar la categoria"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getTipoRevista() == null)
+            return new ResponseEntity(new Mensaje("indicar el tipo de revista"),
+                    HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getAdicional()==null)
-        return new ResponseEntity(new Mensaje("indicar el adicional"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getCategoria() == null)
+            return new ResponseEntity(new Mensaje("indicar la categoria"),
+                    HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getCargaHoraria()==null)
-        return new ResponseEntity(new Mensaje("indicar la carga horaria"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getAdicional() == null)
+            return new ResponseEntity(new Mensaje("indicar el adicional"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (revistaDto.getCargaHoraria() == null)
+            return new ResponseEntity(new Mensaje("indicar la carga horaria"),
+                    HttpStatus.BAD_REQUEST);
 
         Revista revista = new Revista();
         revista.setCargaHoraria(revistaDto.getCargaHoraria());
         revista.setCategoria(revistaDto.getCategoria());
         revista.setAdicional(revistaDto.getAdicional());
         revista.setTipoRevista(revistaDto.getTipoRevista());
-        
+
         revistaService.save(revista);
         return new ResponseEntity(new Mensaje("revista creada"), HttpStatus.OK);
     }
@@ -74,21 +76,21 @@ public class RevistaController {
         if (!revistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
 
-         if (revistaDto.getTipoRevista()==null)
-        return new ResponseEntity(new Mensaje("indicar el tipo de revista"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getTipoRevista() == null)
+            return new ResponseEntity(new Mensaje("indicar el tipo de revista"),
+                    HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getCategoria()==null)
-        return new ResponseEntity(new Mensaje("indicar la categoria"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getCategoria() == null)
+            return new ResponseEntity(new Mensaje("indicar la categoria"),
+                    HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getAdicional()==null)
-        return new ResponseEntity(new Mensaje("indicar el adicional"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getAdicional() == null)
+            return new ResponseEntity(new Mensaje("indicar el adicional"),
+                    HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getCargaHoraria()==null)
-        return new ResponseEntity(new Mensaje("indicar la carga horaria"),
-                HttpStatus.BAD_REQUEST);
+        if (revistaDto.getCargaHoraria() == null)
+            return new ResponseEntity(new Mensaje("indicar la carga horaria"),
+                    HttpStatus.BAD_REQUEST);
 
         Revista revista = revistaService.getOne(id).get();
         revista.setCargaHoraria(revistaDto.getCargaHoraria());

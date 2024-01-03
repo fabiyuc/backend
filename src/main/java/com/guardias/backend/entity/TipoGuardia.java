@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class TipoGuardia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idTipoGuardia;
+    private Long id;
     @Column(columnDefinition = "VARCHAR(30)")
     private String nombre;
     @Column(columnDefinition = "VARCHAR(80)")

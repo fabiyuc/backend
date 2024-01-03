@@ -2,6 +2,8 @@ package com.guardias.backend.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,16 +26,17 @@ public class Pais {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
 
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nacionalidad;
 
     @Column(columnDefinition = "VARCHAR(5)")
     private String codigo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pais", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "pais" })
     List<Provincia> provincias;
 
 }
