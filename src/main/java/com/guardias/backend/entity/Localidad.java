@@ -2,8 +2,8 @@ package com.guardias.backend.entity;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -27,11 +27,9 @@ public class Localidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonInclude
     private Long id;
 
     @Column(columnDefinition = "VARCHAR(50)")
-    @JsonInclude
     private String nombre;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +38,7 @@ public class Localidad {
     Departamento departamento;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "localidad", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Efector> efectores;
 
     @Override
