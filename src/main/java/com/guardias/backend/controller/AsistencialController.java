@@ -45,15 +45,15 @@ public class AsistencialController {
     public ResponseEntity<Asistencial> getById(@PathVariable("id") Long id) {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la persona tipo asistencial"), HttpStatus.NOT_FOUND);
-        Asistencial asistencial = asistencialService.getOne(id).get();
+        Asistencial asistencial = asistencialService.findById(id).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
     }
 
     @GetMapping("/detalledni/{dni}")
-    public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") String dni) {
+    public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
         if (!asistencialService.existsByDni(dni))
             return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
-        Asistencial asistencial = asistencialService.getByDni(dni).get();
+        Asistencial asistencial = asistencialService.findByDni(dni).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
 
     }
@@ -76,7 +76,7 @@ public class AsistencialController {
         asistencial.setCuil(asistencialDto.getCuil());
         asistencial.setFechaNacimiento(asistencialDto.getFechaNacimiento());
         asistencial.setSexo(asistencialDto.getSexo());
-        asistencial.setNumCelular(asistencialDto.getNumCelular());
+        asistencial.setTelefono(asistencialDto.getTelefono());
         asistencial.setEmail(asistencialDto.getEmail());
         asistencial.setDomicilio(asistencialDto.getDomicilio());
         asistencial.setEstado(asistencialDto.getEstado());

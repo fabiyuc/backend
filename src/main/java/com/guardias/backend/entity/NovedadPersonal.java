@@ -2,6 +2,8 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,28 +38,15 @@ public class NovedadPersonal {
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 
-    private Long idExtensionLicencia; // en caso que se extienda la licecncia, crea una nueva y se la asocia a la
-                                      // anterior mediante este id
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "id_novedades")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "novedades" })
+    private Person persona;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "id_novedadesAsistencial")
-    private Person novedadesAsistencial;
-
-    // VER!!!
-    // Person novedad = new Asistencial();
-    // Person suplente = new NoAsistencial();
-
-    // @ManyToOne(optional = true)
-    // @JoinColumn(name = "id_asistencialReemplazante")
-    // private Asistencial asistencialReemplazante;
-
-    // @ManyToOne(optional = true)
-    // @JoinColumn(name = "id_novedadesNoAistencial")
-    // private NoAsistencial novedadesNoAsistencial;
-
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_reemplazantesNoAsistencial")
-    private Person reemplazantesNoAsistencial;
+    @JoinColumn(name = "id_suplente")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suplentes" })
+    private Person suplente;
 
     @OneToOne(mappedBy = "novedadPersonal")
     private TipoLicencia tipoLicencia;

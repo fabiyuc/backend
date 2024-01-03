@@ -1,6 +1,9 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.Set;
+
+import com.guardias.backend.entity.NovedadPersonal;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,29 +14,25 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonaDto {
+public class PersonDto {
 
     @NotBlank
     private String nombre;
-
     @NotBlank
     private String apellido;
-
-    @Min(value = 0)
+    @Min(value = 1000000)
     private int dni;
-
     @NotBlank
     private String cuil;
-
-    private LocalDate fechaNac;
-
+    private LocalDate fechaNacimiento;
     private String sexo;
-
+    private String telefono;
+    private String email;
+    private String domicilio;
     private Boolean estado;
 
-    private String domicilio;
+    private Set<NovedadPersonal> novedadesPersonales;
 
-    private String telefono;
+    private Set<NovedadPersonal> suplente;
 
-    private String email;
 }
