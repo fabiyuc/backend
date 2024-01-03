@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @SequenceGenerator(name = "efector_sequence", sequenceName = "efector_sequence", allocationSize = 1)
-public class Efector {
+public abstract class Efector {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "efector_sequence")
