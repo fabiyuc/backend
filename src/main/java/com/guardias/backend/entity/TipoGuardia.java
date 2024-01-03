@@ -2,6 +2,7 @@ package com.guardias.backend.entity;
 
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,17 +12,16 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Entity(name = "tiposGuardias")
 @Data
-//@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class TipoGuardia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idTipoGuardia;
+    private Long id;
     @Column(columnDefinition = "VARCHAR(30)")
     private String nombre;
     @Column(columnDefinition = "VARCHAR(80)")
@@ -29,6 +29,9 @@ public class TipoGuardia {
 
     @OneToMany(mappedBy = "tipoGuardia")
     private Set<RegistroActividad> registroActividades;
+
+    @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    private Set<Asistencial> asistenciales;
 
     /*
      * public TipoGuardia() {

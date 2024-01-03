@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "profesiones")
 @Data
-//@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Profesion {
