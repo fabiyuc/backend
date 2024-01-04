@@ -28,7 +28,7 @@ public class Especialidad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
     private boolean esPasiva;
 
