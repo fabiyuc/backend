@@ -68,8 +68,8 @@ public class HospitalController {
         hospital.setDomicilio(hospitalDto.getDomicilio());
         hospital.setTelefono(hospitalDto.getTelefono());
         hospital.setEstado(hospitalDto.isEstado());
-        hospital.setIdRegion(hospitalDto.getIdRegion());
-        hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
+        hospital.setRegion(hospitalDto.getRegion());
+        hospital.setLocalidad(hospitalDto.getLocalidad());
         hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
 
@@ -108,8 +108,12 @@ public class HospitalController {
         if (hospital.isEstado() != hospitalDto.isEstado())
             hospital.setEstado(hospitalDto.isEstado());
 
-        if (hospital.getIdLocalidad() != hospitalDto.getIdLocalidad())
-            hospital.setIdLocalidad(hospitalDto.getIdLocalidad());
+        if (!hospitalDto.getRegion().equals(hospital.getRegion())) {
+            hospital.setRegion(hospitalDto.getRegion());
+        }
+        if (!hospitalDto.getLocalidad().equals(hospital.getLocalidad())) {
+            hospital.setLocalidad(hospitalDto.getLocalidad());
+        }
 
         if (hospital.getObservacion() != hospitalDto.getObservacion() && hospitalDto.getObservacion() != null
                 && !hospitalDto.getObservacion().isEmpty())

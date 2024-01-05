@@ -49,4 +49,5 @@ public class Cargo {
     @JoinColumn(name = "tipo_cargo_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cargo" })
     private TipoCargo tipoCargo;
+
 }

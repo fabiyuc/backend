@@ -1,14 +1,20 @@
 package com.guardias.backend.dto;
 
-import jakarta.validation.constraints.Min;
+import java.util.List;
+
+import com.guardias.backend.entity.Ministerio;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class MinisterioDto extends EfectorDto {
 
-    @Min(value = 1)
-    private Long idCabecera;
+    Ministerio cabecera;
+
+    List<Ministerio> ministerios;
 
 }

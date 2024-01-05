@@ -69,11 +69,12 @@ public class CapsController {
         caps.setDomicilio(capsDto.getDomicilio());
         caps.setTelefono(capsDto.getTelefono());
         caps.setEstado(capsDto.isEstado());
-        caps.setIdRegion(capsDto.getIdRegion());
-        caps.setIdLocalidad(capsDto.getIdLocalidad());
+        caps.setRegion(capsDto.getRegion());
+        caps.setLocalidad(capsDto.getLocalidad());
         caps.setObservacion(capsDto.getObservacion());
-        caps.setIdUdo(capsDto.getIdUdo());
+        caps.setCabecera(capsDto.getCabecera());
         caps.setTipoCaps(capsDto.getTipoCaps());
+        caps.setAreaProgramatica(capsDto.getAreaProgramatica());
 
         capsService.save(caps);
         return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
@@ -103,22 +104,26 @@ public class CapsController {
         if (caps.isEstado() != capsDto.isEstado()) {
             caps.setEstado(capsDto.isEstado());
         }
-        if (caps.getIdRegion() != capsDto.getIdRegion() && capsDto.getIdRegion() != null) {
-            caps.setIdRegion(capsDto.getIdRegion());
+        if (!capsDto.getRegion().equals(caps.getRegion())) {
+            caps.setRegion(capsDto.getRegion());
         }
-        if (caps.getIdLocalidad() != capsDto.getIdLocalidad() && capsDto.getIdLocalidad() != null) {
-            caps.setIdLocalidad(capsDto.getIdLocalidad());
+        if (!capsDto.getLocalidad().equals(caps.getLocalidad())) {
+            caps.setLocalidad(capsDto.getLocalidad());
         }
         if (caps.getObservacion() != capsDto.getObservacion() && capsDto.getObservacion() != null
                 && !capsDto.getObservacion().isEmpty()) {
             caps.setObservacion(capsDto.getObservacion());
         }
-        if (caps.getIdUdo() != capsDto.getIdUdo() && capsDto.getIdUdo() != null) {
-            caps.setIdUdo(capsDto.getIdUdo());
+        if (caps.getCabecera() != capsDto.getCabecera() && capsDto.getCabecera() != null) {
+            caps.setCabecera(capsDto.getCabecera());
         }
         if (caps.getTipoCaps() != capsDto.getTipoCaps() && capsDto.getTipoCaps() != null
                 && !capsDto.getTipoCaps().isEmpty()) {
             caps.setTipoCaps(capsDto.getTipoCaps());
+        }
+
+        if (capsDto.getAreaProgramatica() != caps.getAreaProgramatica()) {
+            caps.setAreaProgramatica(capsDto.getAreaProgramatica());
         }
 
         capsService.save(caps);

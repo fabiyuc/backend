@@ -34,8 +34,6 @@ public class Notificacion {
     @Column(columnDefinition = "VARCHAR(80)")
     private String detalle;
 
-    //@Column(columnDefinition = "VARCHAR(80)")
-    //private String detalle;
     @Column(columnDefinition = "VARCHAR(50)")
     private String url;
 

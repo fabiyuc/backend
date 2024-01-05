@@ -1,6 +1,9 @@
 package com.guardias.backend.dto;
 
+import java.util.Set;
+
 import com.guardias.backend.entity.Departamento;
+import com.guardias.backend.entity.Efector;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -14,5 +17,7 @@ public class LocalidadDto {
     private String nombre;
 
     Departamento departamento;
+
+    private Set<Efector> efectores;
 
 }

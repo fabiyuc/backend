@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,7 +33,7 @@ public class TipoGuardia {
     @JsonIgnore // Añade esta anotación para evitar la recursión infinita
     private Set<RegistroActividad> registroActividades;
 
-    @OneToMany(mappedBy = "tipoGuardia")
+    @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
     private Set<Asistencial> asistenciales;
 
     /*
