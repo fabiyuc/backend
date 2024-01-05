@@ -35,6 +35,7 @@ public class NovedadPersonal {
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
+    private boolean activo; // Para ver si esta activo o no
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 

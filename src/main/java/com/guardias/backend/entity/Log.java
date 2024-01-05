@@ -29,4 +29,6 @@ public class Log {
     private String seccion;
     private String accion;
 
+    private Person persona; // VER!!!!!!!!!!
+
 }
