@@ -36,7 +36,7 @@ public class PaisController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Pais>> getById(@PathVariable("id") Long id) {
         if (!paisService.existsById(id))
             return new ResponseEntity(new Mensaje("pais no existe"), HttpStatus.NOT_FOUND);
@@ -44,7 +44,7 @@ public class PaisController {
         return new ResponseEntity(pais, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<Pais> getByNombre(@PathVariable("nombre") String nombre) {
         if (!paisService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el nombre del pais"), HttpStatus.NOT_FOUND);

@@ -6,13 +6,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.guardias.backend.entity.CargaHoraria;
 import com.guardias.backend.repository.CargaHorariaRepository;
 
 @Service
 @Transactional
 public class CargaHorariaService {
-    
+
     @Autowired
     CargaHorariaRepository cargaHorariaRepository;
 
@@ -20,7 +21,7 @@ public class CargaHorariaService {
         return cargaHorariaRepository.findAll();
     }
 
-    public Optional<CargaHoraria> getOne(Long id) {
+    public Optional<CargaHoraria> findById(Long id) {
         return cargaHorariaRepository.findById(id);
     }
 

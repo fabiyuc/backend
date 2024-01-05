@@ -77,11 +77,18 @@ public class AutoridadController {
         // validar las fechas y los datos booleanos en front que no sea campo vacio
         // hasta poder validar en back
 
-        // TODO faltan los controles antes de reemplazar los valores
         Autoridad autoridad = autoridadService.getOne(id).get();
-        autoridad.setNombre(autoridadDto.getNombre());
-        autoridad.setFechaInicio(autoridadDto.getFechaInicio());
-        autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (autoridad.getNombre() != autoridadDto.getNombre() && autoridadDto.getNombre() != null
+                && !autoridadDto.getNombre().isEmpty())
+            autoridad.setNombre(autoridadDto.getNombre());
+
+        if (autoridad.getFechaInicio() != autoridadDto.getFechaInicio() && autoridadDto.getFechaInicio() != null)
+            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
+
+        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
         autoridad.setEsActual(autoridadDto.isEsActual());
         autoridad.setEsRegional(autoridadDto.isEsRegional());
         autoridadService.save(autoridad);

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Legajo;
@@ -43,32 +45,32 @@ public class LegajoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
-       
+
         if (legajoDto.getFechaInicio() == null) {
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-        }    
+        }
         if (legajoDto.getFechaFinal() == null) {
             return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
-        } 
-        if (legajoDto.getActual()==null)
+        }
+        if (legajoDto.getActual() == null)
             return new ResponseEntity(new Mensaje("indicar si es actual o no"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getLegal()==null)
+        if (legajoDto.getLegal() == null)
             return new ResponseEntity(new Mensaje("indicar si es legal o no"),
                     HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(legajoDto.getMatriculaNacional()))
             return new ResponseEntity(new Mensaje("la matricula nacional es obligatoria"),
-                    HttpStatus.BAD_REQUEST);  
-        if (legajoDto.getProfesion()==null)
+                    HttpStatus.BAD_REQUEST);
+        if (legajoDto.getProfesion() == null)
             return new ResponseEntity(new Mensaje("indicar la profesion"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getRevista()==null)
+        if (legajoDto.getRevista() == null)
             return new ResponseEntity(new Mensaje("indicar la revista"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getAsistencial()==null && legajoDto.getNoAsistencial()== null )
+        if (legajoDto.getAsistencial() == null && legajoDto.getNoAsistencial() == null)
             return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
-                    HttpStatus.BAD_REQUEST);          
-             
+                    HttpStatus.BAD_REQUEST);
+
         Legajo legajo = new Legajo();
         legajo.setFechaInicio(legajoDto.getFechaInicio());
         legajo.setFechaFinal(legajoDto.getFechaFinal());
@@ -93,30 +95,30 @@ public class LegajoController {
 
         if (legajoDto.getFechaInicio() == null) {
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-        }    
+        }
         if (legajoDto.getFechaFinal() == null) {
             return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
-        } 
-        if (legajoDto.getActual()==null)
+        }
+        if (legajoDto.getActual() == null)
             return new ResponseEntity(new Mensaje("indicar si es actual o no"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getLegal()==null)
+        if (legajoDto.getLegal() == null)
             return new ResponseEntity(new Mensaje("indicar si es legal o no"),
                     HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(legajoDto.getMatriculaNacional()))
             return new ResponseEntity(new Mensaje("la matricula nacional es obligatoria"),
-                    HttpStatus.BAD_REQUEST); 
+                    HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getProfesion()==null)
+        if (legajoDto.getProfesion() == null)
             return new ResponseEntity(new Mensaje("indicar la profesion"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getRevista()==null)
+        if (legajoDto.getRevista() == null)
             return new ResponseEntity(new Mensaje("indicar la revista"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getAsistencial()==null && legajoDto.getNoAsistencial()== null )
+        if (legajoDto.getAsistencial() == null && legajoDto.getNoAsistencial() == null)
             return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
-                    HttpStatus.BAD_REQUEST);  
-        
+                    HttpStatus.BAD_REQUEST);
+
         Legajo legajo = legajoService.getOne(id).get();
         legajo.setFechaInicio(legajoDto.getFechaInicio());
         legajo.setFechaFinal(legajoDto.getFechaFinal());
@@ -129,7 +131,7 @@ public class LegajoController {
         legajo.setRevista(legajoDto.getRevista());
         legajo.setAsistencial(legajoDto.getAsistencial());
         legajo.setNoAsistencial(legajoDto.getNoAsistencial());
-        
+
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("El legajo ha sido actualizado"), HttpStatus.OK);
     }

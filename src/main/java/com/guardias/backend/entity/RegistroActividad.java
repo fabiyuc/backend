@@ -15,12 +15,10 @@ import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Entity(name = "registrosActividades")
 @Data
 @AllArgsConstructor
-//@RequiredArgsConstructor
 @NoArgsConstructor
 public class RegistroActividad {
 
@@ -30,7 +28,7 @@ public class RegistroActividad {
     @Column(columnDefinition = "VARCHAR(50)")
     private String establecimiento; // VER NO DEBERIA SER EL ID DEL EFECTOR??????????????????
     @Column(columnDefinition = "VARCHAR(50)")
-    private String servicio; // VER CONVENDRIA HACER UNA TABLA SERVICIOS?????????????
+    private String servicio; // VER CONVENDRIA HACER UNA TABLA SERVICIOS????????????
     @Temporal(TemporalType.DATE)
     private LocalDate fechaIngreso; // ! Date ya no se usa....
     @Temporal(TemporalType.DATE)

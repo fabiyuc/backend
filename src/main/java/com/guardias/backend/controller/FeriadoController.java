@@ -44,7 +44,7 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{motivo}")
+    @GetMapping("/detallemotivo/{motivo}")
     public ResponseEntity<List<Feriado>> getById(@PathVariable("motivo") String motivo) {
         if (!feriadoService.existsByMotivo(motivo))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);

@@ -1,5 +1,8 @@
 package com.guardias.backend.dto;
 
+import com.guardias.backend.entity.Localidad;
+import com.guardias.backend.entity.Region;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +22,6 @@ public class EfectorDto {
     @NotBlank
     private boolean estado;
     private String observacion;
-    private Long idRegion;
-    private Long idLocalidad;
+    private Region region;
+    private Localidad localidad;
 }

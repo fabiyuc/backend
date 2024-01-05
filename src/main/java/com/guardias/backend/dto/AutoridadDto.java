@@ -16,7 +16,6 @@ public class AutoridadDto {
     @NotBlank
     private LocalDate fechaInicio;
 
-    @NotBlank
     private LocalDate fechaFinal;
 
     @NotBlank
