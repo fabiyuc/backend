@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
 @AllArgsConstructor
 @NoArgsConstructor
+// @EqualsAndHashCode(callSuper = false)
 public class Asistencial extends Person {
 
     // Si necesitas legajos, puedes mantener esta relación

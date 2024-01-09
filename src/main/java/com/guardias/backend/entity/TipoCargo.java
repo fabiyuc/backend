@@ -1,5 +1,7 @@
 package com.guardias.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,5 +31,6 @@ public class TipoCargo {
     private boolean eshospitalario;
 
     @OneToOne(mappedBy = "tipoCargo")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tipoCargo" })
     private Cargo cargo;
 }

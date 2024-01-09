@@ -41,24 +41,36 @@ public class DistribucionHorariaController {
         return new ResponseEntity<DistribucionHoraria>(distribucionHoraria, HttpStatus.OK);
     }
 
-    @GetMapping("/detailcantidad/{cantidad}")
-    public ResponseEntity<DistribucionHoraria> getByCantidad(@PathVariable("cantidad") int cantidad) {
-        if (!distribucionHorariaService.existsByCantidad(cantidad))
+    @GetMapping("/detalleefector/{idEfector}")
+    public ResponseEntity<List<DistribucionHoraria>> getByEfector(@PathVariable("idEfector") Long idEfector) {
+        if (!distribucionHorariaService.existsByEfectorId(idEfector))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
-        DistribucionHoraria distribucionHoraria = distribucionHorariaService.getByCantidad(cantidad).get();
-        return new ResponseEntity<DistribucionHoraria>(distribucionHoraria, HttpStatus.OK);
+        List<DistribucionHoraria> distribucionHoraria = distribucionHorariaService.findByEfectorId(idEfector).get();
+        return new ResponseEntity<>(distribucionHoraria, HttpStatus.OK);
+    }
+
+    @GetMapping("/detallepersona/{idPersona}")
+    public ResponseEntity<List<DistribucionHoraria>> getByPersona(@PathVariable("idPersona") Long idPersona) {
+        if (!distribucionHorariaService.existsByPersonaId(idPersona))
+            return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
+        List<DistribucionHoraria> distribucionHoraria = distribucionHorariaService.findByPersonaId(idPersona).get();
+        return new ResponseEntity<>(distribucionHoraria, HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionHorariaDto distribucionHorariaDto) {
 
-        if (distribucionHorariaDto.getCantidad() < 1)
+        if (distribucionHorariaDto.getCantidadHoras() == null)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        DistribucionHoraria distribucionHoraria = new DistribucionHoraria();
-        distribucionHoraria.setCantidad(distribucionHorariaDto.getCantidad());
-        distribucionHoraria.setDescripcion(distribucionHorariaDto.getDescripcion());
+        DistribucionHoraria distribucionHoraria = new DistribucionHoraria(); // CLASE ABSTRACTA!!!!!
+        distribucionHoraria.setFecha(distribucionHorariaDto.getFecha());
+        distribucionHoraria.setHoraIngreso(distribucionHorariaDto.getHoraIngreso());
+        distribucionHoraria.setPersona(distribucionHorariaDto.getPersona());
+        distribucionHoraria.setEfector(distribucionHorariaDto.getEfector());
+        distribucionHoraria.setCantidadHoras(distribucionHorariaDto.getCantidadHoras());
+
         distribucionHorariaService.save(distribucionHoraria);
         return new ResponseEntity(new Mensaje("Carga horaria creada"), HttpStatus.OK);
     }
@@ -67,21 +79,8 @@ public class DistribucionHorariaController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionHorariaDto distribucionHorariaDto) {
 
-        if (!distribucionHorariaService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe la distribucion horaria"), HttpStatus.NOT_FOUND);
-
-        if (distribucionHorariaDto.getCantidad() < 1)
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
         DistribucionHoraria distribucionHoraria = distribucionHorariaService.findById(id).get();
 
-        if (distribucionHoraria.getCantidad() != distribucionHorariaDto.getCantidad()
-                && distribucionHorariaDto.getCantidad() > 0)
-            distribucionHoraria.setCantidad(distribucionHorariaDto.getCantidad());
-        if (!distribucionHoraria.getDescripcion().equals(distribucionHorariaDto.getDescripcion()))
-            distribucionHoraria.setDescripcion(distribucionHorariaDto.getDescripcion());
-        distribucionHorariaService.save(distribucionHoraria);
         return new ResponseEntity(new Mensaje("Carga horaria modificada"), HttpStatus.OK);
     }
 
