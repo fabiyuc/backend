@@ -2,6 +2,8 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,7 +18,8 @@ public class NotificacionDto {
     @NotBlank
     private String categoria;
     @NotNull
-    private LocalDate fechaNotificacion;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate fNotificacion;
     @NotBlank
     private String detalle;
     @NotBlank

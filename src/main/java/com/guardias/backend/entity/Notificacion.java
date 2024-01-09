@@ -27,9 +27,9 @@ public class Notificacion {
     @Column(columnDefinition = "VARCHAR(50)")
     private String categoria;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(columnDefinition = "DATE")
-    private LocalDate fechanotificacion;
+    private LocalDate fnotificacion;
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String detalle;

@@ -26,7 +26,8 @@ public class NotificacionService {
         return notificacionRepository.findById((Long) id);
     }
 
-    public Optional<Notificacion> getByTipo(String tipo) {
+    // public Optional<Notificacion> getByTipo(String tipo) {
+    public List<Notificacion> getByTipo(String tipo) {
         return notificacionRepository.findByTipo(tipo);
     }
 

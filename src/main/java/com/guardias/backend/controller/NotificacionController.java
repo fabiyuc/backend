@@ -43,12 +43,32 @@ public class NotificacionController {
         return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
     }
 
+    // @GetMapping("/detalletipo/{tipo}")
+    // public ResponseEntity<Notificacion> getByTipo(@PathVariable("tipo") String
+    // tipo) {
+    // if (!notificacionService.existsByTipo(tipo))
+    // return new ResponseEntity(new Mensaje("no existe ese tipo de Notificaión"),
+    // HttpStatus.NOT_FOUND);
+    // Notificacion notificacion = notificacionService.getByTipo(tipo).get();
+    // return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
+    // }
+
     @GetMapping("/detalletipo/{tipo}")
     public ResponseEntity<Notificacion> getByTipo(@PathVariable("tipo") String tipo) {
         if (!notificacionService.existsByTipo(tipo))
-            return new ResponseEntity(new Mensaje("no existe ese tipo de Notificaión"), HttpStatus.NOT_FOUND);
-        Notificacion notificacion = notificacionService.getByTipo(tipo).get();
-        return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("no existe ese tipo de Notificación"), HttpStatus.NOT_FOUND);
+
+        List<Notificacion> notificaciones = notificacionService.getByTipo(tipo);
+
+        if (notificaciones.isEmpty()) {
+            return new ResponseEntity(new Mensaje("No se encontraron notificaciones para ese tipo"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // Puedes devolver la primera notificación encontrada
+        List<Notificacion> notificacion = notificacionService.getByTipo(tipo);
+
+        return new ResponseEntity(notificacion, HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -57,13 +77,14 @@ public class NotificacionController {
         if (StringUtils.isBlank(notificacionDto.getTipo()))
             return new ResponseEntity<>(new Mensaje("El Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (notificacionService.existsByTipo(notificacionDto.getTipo()))
-            return new ResponseEntity(new Mensaje("El Tipo ya existe"), HttpStatus.BAD_REQUEST);
+        // if (notificacionService.existsByTipo(notificacionDto.getTipo()))
+        // return new ResponseEntity(new Mensaje("El Tipo ya existe"),
+        // HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(notificacionDto.getCategoria())) {
             return new ResponseEntity<>(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
         }
-        if (notificacionDto.getFechaNotificacion() == null)
+        if (notificacionDto.getFNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(notificacionDto.getDetalle())) {
@@ -76,7 +97,7 @@ public class NotificacionController {
         Notificacion notificacion = new Notificacion();
         notificacion.setTipo(notificacionDto.getTipo());
         notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFechanotificacion(notificacionDto.getFechaNotificacion());
+        notificacion.setFnotificacion(notificacionDto.getFNotificacion());
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
 
@@ -90,9 +111,11 @@ public class NotificacionController {
         if (!notificacionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        if (notificacionService.existsByTipo(notificacionDto.getTipo())
-                && notificacionService.getByTipo(notificacionDto.getTipo()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("La notificacion ya existe"), HttpStatus.BAD_REQUEST);
+        // if (notificacionService.existsByTipo(notificacionDto.getTipo())
+        // && notificacionService.getByTipo(notificacionDto.getTipo()).get(0).getId() !=
+        // id)
+        // return new ResponseEntity(new Mensaje("La notificacion ya existe"),
+        // HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(notificacionDto.getTipo()))
             return new ResponseEntity<>(new Mensaje("el Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -100,8 +123,8 @@ public class NotificacionController {
         if (notificacionDto.getCategoria() == null)
             return new ResponseEntity(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (notificacionDto.getFechaNotificacion() == null)
-            return new ResponseEntity(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
+        if (notificacionDto.getFNotificacion() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getDetalle() == null)
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -112,7 +135,7 @@ public class NotificacionController {
         Notificacion notificacion = notificacionService.getone(id).get();
         notificacion.setTipo(notificacionDto.getTipo());
         notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFechanotificacion(notificacionDto.getFechaNotificacion());
+        notificacion.setFnotificacion(notificacionDto.getFNotificacion());
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
         notificacionService.save(notificacion);
