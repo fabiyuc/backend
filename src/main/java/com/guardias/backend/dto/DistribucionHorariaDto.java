@@ -17,10 +17,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DistribucionHorariaDto {
 
+    private String tipo;
     @NotNull
     private LocalDate fecha;
     @NotNull
-    private LocalTime HoraIngreso;
+    private LocalTime horaIngreso;
     @NotNull
     private BigDecimal cantidadHoras;
     @NotNull
