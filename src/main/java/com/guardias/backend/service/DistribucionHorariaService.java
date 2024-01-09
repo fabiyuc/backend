@@ -26,23 +26,31 @@ public class DistribucionHorariaService {
         return distribucionHorariaRepository.findById(id);
     }
 
-    public void save(DistribucionHoraria distribucionHoraria) {
-        distribucionHorariaRepository.save(distribucionHoraria);
+    public Optional<List<DistribucionHoraria>> findByPersonaId(Long personaId) {
+        return distribucionHorariaRepository.findByPersonaId(personaId);
     }
 
-    public void delete(Long id) {
-        distribucionHorariaRepository.deleteById(id);
+    public Optional<List<DistribucionHoraria>> findByEfectorId(Long efectorId) {
+        return distribucionHorariaRepository.findByEfectorId(efectorId);
     }
 
     public boolean existsById(Long id) {
         return distribucionHorariaRepository.existsById(id);
     }
 
-    public Optional<DistribucionHoraria> getByCantidad(int cantidad) {
-        return distribucionHorariaRepository.findByCantidad(cantidad);
+    public boolean existsByEfectorId(Long efectorId) {
+        return distribucionHorariaRepository.existsByEfectorId(efectorId);
     }
 
-    public boolean existsByCantidad(int cantidad) {
-        return distribucionHorariaRepository.existsByCantidad(cantidad);
+    public boolean existsByPersonaId(Long personaId) {
+        return distribucionHorariaRepository.existsByPersonaId(personaId);
+    }
+
+    public void save(DistribucionHoraria distribucionHoraria) {
+        distribucionHorariaRepository.save(distribucionHoraria);
+    }
+
+    public void delete(Long id) {
+        distribucionHorariaRepository.deleteById(id);
     }
 }

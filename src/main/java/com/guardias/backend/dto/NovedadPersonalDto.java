@@ -21,6 +21,7 @@ public class NovedadPersonalDto {
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
+    private boolean activa;
     private String descripcion;
     private Long idExtensionLicencia;
 

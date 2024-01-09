@@ -60,6 +60,10 @@ public abstract class Person {
     @JsonIgnore
     private Set<NovedadPersonal> suplentes;
 
+    @OneToMany(mappedBy = "persona")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    private Set<DistribucionHoraria> distribucionesHorarias;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
