@@ -1,6 +1,6 @@
 package com.guardias.backend.enums;
 
-public enum TipoGuardia {
+public enum TipoGuardiaEnum {
     CONTRAFACTURA,
     EXTRA,
     CARGO,

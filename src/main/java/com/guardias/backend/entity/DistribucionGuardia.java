@@ -1,6 +1,11 @@
 package com.guardias.backend.entity;
 
+import com.guardias.backend.enums.TipoGuardiaEnum;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +17,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistribucionGuardia extends DistribucionHoraria {
-    private TipoGuardia tipoGuardia;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15)")
+    private TipoGuardiaEnum tipoGuardia; // TODO VER esto para hacerlo bien!!!!
 }

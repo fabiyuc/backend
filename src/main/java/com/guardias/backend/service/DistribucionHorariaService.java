@@ -26,13 +26,15 @@ public class DistribucionHorariaService {
         return distribucionHorariaRepository.findById(id);
     }
 
-    public Optional<List<DistribucionHoraria>> findByPersonaId(Long personaId) {
-        return distribucionHorariaRepository.findByPersonaId(personaId);
-    }
-
-    public Optional<List<DistribucionHoraria>> findByEfectorId(Long efectorId) {
-        return distribucionHorariaRepository.findByEfectorId(efectorId);
-    }
+    /*
+     * public Optional<List<DistribucionHoraria>> findByPersonaId(Long personaId) {
+     * return distribucionHorariaRepository.findByPersonaId(personaId);
+     * }
+     * 
+     * public Optional<List<DistribucionHoraria>> findByEfectorId(Long efectorId) {
+     * return distribucionHorariaRepository.findByEfectorId(efectorId);
+     * }
+     */
 
     public boolean existsById(Long id) {
         return distribucionHorariaRepository.existsById(id);

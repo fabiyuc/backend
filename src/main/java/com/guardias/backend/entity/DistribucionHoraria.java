@@ -9,6 +9,8 @@ import com.guardias.backend.enums.TipoDistribucion;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,6 +32,7 @@ public abstract class DistribucionHoraria {
     private Long id;
 
     @Column(columnDefinition = "VARCHAR(15)")
+    @Enumerated(EnumType.STRING)
     private TipoDistribucion tipo; // para poder mapear
     private LocalDate fecha;
     private LocalTime horaIngreso;
