@@ -3,9 +3,12 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.guardias.backend.enums.TipoNotificacion;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,8 +25,14 @@ public class Notificacion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(30)")
-    private String tipo;
+
+    // @Column(columnDefinition = "VARCHAR(30)")
+    // private String tipo;
+
+    @Column(columnDefinition = "VARCHAR(50)")
+    @Enumerated(EnumType.STRING) // Cambiado a INTEGER para mapear el enum
+    private TipoNotificacion tipo;
+
     @Column(columnDefinition = "VARCHAR(50)")
     private String categoria;
 
