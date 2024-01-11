@@ -4,5 +4,6 @@ public enum TipoGuardiaEnum {
     CONTRAFACTURA,
     EXTRA,
     CARGO,
+    AGRUPACION,
     PASIVA
 }

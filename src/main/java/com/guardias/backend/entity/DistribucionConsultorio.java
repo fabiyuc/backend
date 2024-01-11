@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistribucionConsultorio extends DistribucionHoraria {
-    private String tipoConsultorio; // TODO debo hacer un enum con los tipos de consultorios?
-    private int turno;
+    private String lugar; // donde realiza el consultorio
+    private String especialidad; // especialidad del consultorio no del profesional
+    private int cantidadTurnos;
 }
