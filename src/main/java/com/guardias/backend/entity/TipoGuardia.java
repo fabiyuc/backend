@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "tiposGuardias")
 @Data
-// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class TipoGuardia {
@@ -36,45 +35,5 @@ public class TipoGuardia {
     @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Asistencial> asistenciales;
-
-    /*
-     * public TipoGuardia() {
-     * }
-     * 
-     * public TipoGuardia(int idTipoGuardia, String nombre, String descripcion) {
-     * this.idTipoGuardia = idTipoGuardia;
-     * this.nombre = nombre;
-     * this.descripcion = descripcion;
-     * }
-     * 
-     * 
-     */
-    // getters y setters
-
-    /*
-     * public int getIdTipoGuardia() {
-     * return idTipoGuardia;
-     * }
-     * 
-     * public void setIdTipoGuardia(int idTipoGuardia) {
-     * this.idTipoGuardia = idTipoGuardia;
-     * }
-     * 
-     * public String getNombre() {
-     * return nombre;
-     * }
-     * 
-     * public void setNombre(String nombre) {
-     * this.nombre = nombre;
-     * }
-     * 
-     * public String getDescripcion() {
-     * return descripcion;
-     * }
-     * 
-     * public void setDescripcion(String descripcion) {
-     * this.descripcion = descripcion;
-     * }
-     */
 
 }

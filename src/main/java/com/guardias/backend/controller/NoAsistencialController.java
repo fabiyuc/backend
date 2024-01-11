@@ -79,6 +79,7 @@ public class NoAsistencialController {
         noAsistencial.setEstado(noAsistencialDto.getEstado());
         noAsistencial.setDescripcion(noAsistencialDto.getDescripcion());
         noAsistencial.setLegajos(noAsistencialDto.getLegajos());
+        noAsistencial.setDistribucionesHorarias(noAsistencialDto.getDistribucionesHorarias());
 
         noAsistencialService.save(noAsistencial);
         return new ResponseEntity(new Mensaje("no asistencial creado"), HttpStatus.OK);
