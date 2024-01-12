@@ -2,7 +2,6 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.guardias.backend.enums.TipoNotificacion;
 
 import jakarta.validation.constraints.NotBlank;
