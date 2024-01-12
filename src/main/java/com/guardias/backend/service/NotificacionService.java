@@ -28,9 +28,14 @@ public class NotificacionService {
     }
 
     // public Optional<Notificacion> getByTipo(String tipo) {
-    public List<Notificacion> getByTipo(TipoNotificacion tipo) {
-        return notificacionRepository.findByTipo(tipo);
+
+    public List<Notificacion> getByTipoAndActivo(TipoNotificacion tipo, boolean activo) {
+        return notificacionRepository.findByTipoAndActivo(tipo, activo);
     }
+
+    // public List<Notificacion> getByActivo(TipoNotificacion tipo) {
+    // return notificacionRepository.findByActivo(true);
+    // }
 
     // public void save(Notificacion notificacion) {
     // notificacionRepository.save(notificacion);
@@ -48,8 +53,8 @@ public class NotificacionService {
         return notificacionRepository.existsById(id);
     }
 
-    public boolean existsByTipo(String tipo) {
-        return notificacionRepository.existsByTipo(tipo);
-    }
+    // public boolean existsByActivo(boolean activo) {
+    // return notificacionRepository.existsByActivo(true);
+    // }
 
 }

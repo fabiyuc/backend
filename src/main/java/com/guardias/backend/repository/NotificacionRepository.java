@@ -10,7 +10,11 @@ import com.guardias.backend.enums.TipoNotificacion;
 
 @Repository
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
-    List<Notificacion> findByTipo(TipoNotificacion tipo);
+    List<Notificacion> findByTipoAndActivo(TipoNotificacion tipo, boolean activo);
 
-    Boolean existsByTipo(String tipo);
+    Boolean findByTipoAndActivo(String tipo, boolean activo);
+
+    // List<Notificacion> findByActivo(boolean activo);
+
+    // Boolean existsByActivo(boolean activo);
 }

@@ -22,12 +22,22 @@ public class NotificacionDto {
 
     @NotBlank
     private String categoria;
+
     @NotNull
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate fNotificacion;
+    // @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate fechaNotificacion;
+
     @NotBlank
     private String detalle;
+
     @NotBlank
     private String url;
+
+    @NotNull
+    private boolean activo;
+
+    @NotNull
+    // @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDate fechaBaja;
 
 }

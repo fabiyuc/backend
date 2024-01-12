@@ -2,7 +2,6 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.guardias.backend.enums.TipoNotificacion;
 
 import jakarta.persistence.Column;
@@ -12,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,9 +37,10 @@ public class Notificacion {
     @Column(columnDefinition = "VARCHAR(50)")
     private String categoria;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    @Column(columnDefinition = "DATE")
-    private LocalDate fnotificacion;
+    // @JsonFormat(pattern = "dd/MM/yyyy")
+    // @Column(columnDefinition = "DATE")
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaNotificacion;
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String detalle;
@@ -46,4 +48,11 @@ public class Notificacion {
     @Column(columnDefinition = "VARCHAR(50)")
     private String url;
 
+    @Column
+    private boolean activo;
+
+    // @JsonFormat(pattern = "dd/MM/yyyy")
+    // @Column(columnDefinition = "DATE")
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaBaja;
 }

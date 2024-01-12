@@ -54,9 +54,10 @@ public class NotificacionController {
     // return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
     // }
 
-    @GetMapping("/detalletipo/{tipo}")
-    public ResponseEntity<List<Notificacion>> getByTipo(@PathVariable("tipo") TipoNotificacion tipo) {
-        List<Notificacion> notificaciones = notificacionService.getByTipo(tipo);
+    @GetMapping("/detalletipo/{tipo},{activo}")
+    public ResponseEntity<List<Notificacion>> getByTipoAndActivo(@PathVariable("tipo") TipoNotificacion tipo,
+            @PathVariable("activo") boolean activo) {
+        List<Notificacion> notificaciones = notificacionService.getByTipoAndActivo(tipo, activo);
 
         if (notificaciones.isEmpty()) {
             return new ResponseEntity(new Mensaje("No se encontraron notificaciones para ese tipo"),
@@ -118,8 +119,11 @@ public class NotificacionController {
             return new ResponseEntity<>(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
         }
 
-        if (notificacionDto.getFNotificacion() == null)
+        if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (notificacionDto.getFechaBaja() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(notificacionDto.getDetalle())) {
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -131,9 +135,11 @@ public class NotificacionController {
         Notificacion notificacion = new Notificacion();
         notificacion.setTipo(notificacionDto.getTipo()); // Cambiado a TipoNotificacion
         notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFnotificacion(notificacionDto.getFNotificacion());
+        notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
+        notificacion.setActivo(notificacionDto.isActivo());
+        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
 
         notificacionService.save(notificacion);
 
@@ -196,8 +202,11 @@ public class NotificacionController {
         if (notificacionDto.getCategoria() == null)
             return new ResponseEntity(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (notificacionDto.getFNotificacion() == null)
+        if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (notificacionDto.getFechaBaja() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getDetalle() == null)
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -208,9 +217,12 @@ public class NotificacionController {
         Notificacion notificacion = notificacionService.getone(id).get();
         notificacion.setTipo(notificacionDto.getTipo()); // Cambiado a TipoNotificacion
         notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFnotificacion(notificacionDto.getFNotificacion());
+        notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
+        notificacion.setActivo(notificacionDto.isActivo());
+        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+
         notificacionService.save(notificacion);
 
         return new ResponseEntity<>(new Mensaje("Notificaión Actualizada"), HttpStatus.OK);
@@ -226,3 +238,5 @@ public class NotificacionController {
     }
 
 }
+// {"tipo":"NOTIFICACION","categoria":"UNO","fnotificacion":"17/12/2024","detalle":"hola","url":
+// "www.cen.com","activo":"TRUE","fechaBaja":"01/12/2024"}
