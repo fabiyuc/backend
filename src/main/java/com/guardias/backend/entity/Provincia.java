@@ -27,17 +27,18 @@ public class Provincia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(50)")
     private String gentilicio;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_pais")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "provincias" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "provincias", "nacionalidad", "codigo" })
     Pais pais;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "provincia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "provincia", "codigoPostal" })
     List<Departamento> departamentos;
 
 }

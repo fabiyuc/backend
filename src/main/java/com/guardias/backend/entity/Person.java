@@ -1,36 +1,101 @@
 package com.guardias.backend.entity;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@SequenceGenerator(name = "person_sequence", sequenceName = "person_sequence", allocationSize = 1)
+public abstract class Person {
 
-@MappedSuperclass
-public class Person {
-   
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_sequence")
     private Long id;
+    @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
+    @Column(columnDefinition = "VARCHAR(30)")
     private String apellido;
-    private String dni;
+    private int dni;
+    @Column(columnDefinition = "VARCHAR(15)")
     private String cuil;
+    @Temporal(TemporalType.DATE)
     private LocalDate fechaNacimiento;
+    @Column(columnDefinition = "VARCHAR(15)")
     private String sexo;
-    private String numCelular;
+    @Column(columnDefinition = "VARCHAR(15)")
+    private String telefono;
+    @Column(columnDefinition = "VARCHAR(25)")
     private String email;
+    @Column(columnDefinition = "VARCHAR(50)")
     private String domicilio;
+    @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
-    
-    
+
+    @OneToMany(mappedBy = "persona")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    private Set<NovedadPersonal> novedades;
+
+    @OneToMany(mappedBy = "suplente")
+    @JsonIgnore
+    private Set<NovedadPersonal> suplentes;
+
+    @OneToMany(mappedBy = "persona")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    private Set<DistribucionHoraria> distribucionesHorarias;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Person other = (Person) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (dni != other.dni)
+            return false;
+        if (cuil == null) {
+            if (other.cuil != null)
+                return false;
+        } else if (!cuil.equals(other.cuil))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + dni;
+        result = prime * result + ((cuil == null) ? 0 : cuil.hashCode());
+        return result;
+    }
+
 }

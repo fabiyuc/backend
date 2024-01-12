@@ -64,15 +64,11 @@ public class TipoCargoController {
 
         if (tipoCargoDto.getDescripcion() == null)
             return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (tipoCargoDto.getEshospitalario() == null)
-            return new ResponseEntity<>(new Mensaje("El campo eshospitalario es obligatorio"), HttpStatus.BAD_REQUEST);
-
         TipoCargo tipoCargo = new TipoCargo();
 
         tipoCargo.setNombre(tipoCargoDto.getNombre());
         tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
-        tipoCargo.setEshospitalario(tipoCargoDto.getEshospitalario());
+        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
 
         tipoCargoService.save(tipoCargo);
 
@@ -98,10 +94,6 @@ public class TipoCargoController {
         if (StringUtils.isBlank(tipoCargoDto.getDescripcion())) {
             return new ResponseEntity<>(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
         }
-
-        if (tipoCargoDto.getEshospitalario() == null)
-            return new ResponseEntity<>(new Mensaje("El campo eshospitalario es obligatorio"), HttpStatus.BAD_REQUEST);
-
         // Obtén el TipoCargo actual
         TipoCargo tipoCargo = tipoCargoService.getone(id).orElse(null);
         if (tipoCargo == null) {
@@ -113,7 +105,7 @@ public class TipoCargoController {
         // Actualiza los campos
         tipoCargo.setNombre(tipoCargoDto.getNombre());
         tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
-        tipoCargo.setEshospitalario(tipoCargoDto.getEshospitalario());
+        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
 
         // Guarda la actualización
         tipoCargoService.save(tipoCargo);

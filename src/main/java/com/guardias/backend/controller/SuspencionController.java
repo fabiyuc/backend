@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.SuspencionDto;
 import com.guardias.backend.entity.Suspencion;
@@ -42,7 +44,7 @@ public class SuspencionController {
         return new ResponseEntity<Suspencion>(suspencion, HttpStatus.OK);
     }
 
-    //**** ESTO DEBERIA SER UN LISTA CON LAS SUSPENCIONES DE LAS FEC DE INICIO? */
+    // **** ESTO DEBERIA SER UN LISTA CON LAS SUSPENCIONES DE LAS FEC DE INICIO? */
     @GetMapping("/detalleFechaInicio/{fechaInicio}")
     public ResponseEntity<Suspencion> getByFechaInicio(@PathVariable("fechaInicio") LocalDate fechaInicio) {
         if (!suspencionService.existsByFechaInicio(fechaInicio))
@@ -65,11 +67,11 @@ public class SuspencionController {
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),
                     HttpStatus.BAD_REQUEST);
         if (suspencionDto.getFechaInicio() == null) {
-                return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-            }    
+            return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+        }
         if (suspencionDto.getFechaFin() == null) {
-                return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
-            }   
+            return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
+        }
         Suspencion suspencion = new Suspencion();
         suspencion.setDescripcion(suspencionDto.getDescripcion());
         suspencion.setFechaInicio(suspencionDto.getFechaInicio());
@@ -88,15 +90,20 @@ public class SuspencionController {
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (suspencionDto.getFechaInicio() == null) {
-                return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-            }    
+            return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+        }
         if (suspencionDto.getFechaFin() == null) {
-                return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
-            }    
+            return new ResponseEntity(new Mensaje("La fecha de fin es obligatoria"), HttpStatus.BAD_REQUEST);
+        }
         Suspencion suspencion = suspencionService.getOne(id).get();
-        suspencion.setDescripcion(suspencionDto.getDescripcion());
-        suspencion.setFechaInicio(suspencionDto.getFechaInicio());
-        suspencion.setFechaFin(suspencionDto.getFechaFin());
+
+        if (!suspencionDto.getDescripcion().equals(suspencion.getDescripcion()))
+            suspencion.setDescripcion(suspencionDto.getDescripcion());
+        if (!suspencionDto.getFechaInicio().equals(suspencion.getFechaInicio()))
+            suspencion.setFechaInicio(suspencionDto.getFechaInicio());
+        if (!suspencionDto.getFechaFin().equals(suspencion.getFechaFin()))
+            suspencion.setFechaFin(suspencionDto.getFechaFin());
+
         suspencionService.save(suspencion);
         return new ResponseEntity(new Mensaje("La suspensión ha sido actualizada"), HttpStatus.OK);
     }

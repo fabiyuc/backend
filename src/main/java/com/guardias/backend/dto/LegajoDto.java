@@ -1,11 +1,13 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.Suspencion;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
