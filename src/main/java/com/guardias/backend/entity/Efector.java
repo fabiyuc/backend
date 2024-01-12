@@ -12,6 +12,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,6 +48,9 @@ public abstract class Efector {
     @JoinColumn(name = "id_localidad")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "departamento" })
     private Localidad localidad;
+
+    @OneToOne(mappedBy = "efector")
+    DistribucionHoraria distribucionHoraria;
 
     @Override
     public boolean equals(Object obj) {

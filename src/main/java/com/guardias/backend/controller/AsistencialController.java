@@ -65,7 +65,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        if (asistencialDto.getDni() < 0)
+        if (asistencialDto.getDni() < 1000000)
             return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(asistencialDto.getApellido())) {
@@ -92,7 +92,10 @@ public class AsistencialController {
         asistencial.setEmail(asistencialDto.getEmail());
         asistencial.setDomicilio(asistencialDto.getDomicilio());
         asistencial.setEstado(asistencialDto.getEstado());
-        // asistencial.setLegajos(asistencialDto.getLegajos());
+        asistencial.setLegajos(asistencialDto.getLegajos());
+        asistencial.setDistribucionesHorarias(asistencialDto.getDistribucionesHorarias()); // MAPEAR AL TIPO DE
+                                                                                           // DISTRIBUCION HORARIA
+                                                                                           // CORRECTO
 
         asistencialService.save(asistencial);
         return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
@@ -103,11 +106,7 @@ public class AsistencialController {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        if (asistencialService.existsByDni(asistencialDto.getDni())
-                && asistencialService.findByDni(asistencialDto.getDni()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (asistencialDto.getDni() < 0)
+        if (asistencialDto.getDni() < 1000000)
             return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(asistencialDto.getApellido())) {
@@ -135,6 +134,7 @@ public class AsistencialController {
         asistencial.setDomicilio(asistencialDto.getDomicilio());
         asistencial.setEstado(asistencialDto.getEstado());
         asistencial.setLegajos(asistencialDto.getLegajos());
+        asistencial.setDistribucionesHorarias(asistencialDto.getDistribucionesHorarias());
 
         asistencialService.save(asistencial);
 

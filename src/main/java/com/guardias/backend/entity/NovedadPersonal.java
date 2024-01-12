@@ -35,6 +35,8 @@ public class NovedadPersonal {
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
+    @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
+    private boolean activa; // Si la novedad es actual(1) o pasada(0)
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 

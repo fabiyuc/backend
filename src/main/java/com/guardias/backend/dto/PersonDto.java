@@ -3,6 +3,7 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.NovedadPersonal;
 
 import jakarta.validation.constraints.Min;
@@ -34,5 +35,7 @@ public class PersonDto {
     private Set<NovedadPersonal> novedadesPersonales;
 
     private Set<NovedadPersonal> suplente;
+
+    private Set<DistribucionHoraria> distribucionesHorarias;
 
 }
