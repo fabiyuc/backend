@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+/*
+ * TODO debe ser reemplazado por las clases Articulo e Inciso
+ */
 public class TipoLicencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
