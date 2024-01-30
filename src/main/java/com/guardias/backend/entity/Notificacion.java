@@ -2,7 +2,7 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
-import com.guardias.backend.enums.TipoNotificacion;
+import com.guardias.backend.enums.TipoNotificacionEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,12 +27,9 @@ public class Notificacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @Column(columnDefinition = "VARCHAR(30)")
-    // private String tipo;
-
     @Column(columnDefinition = "VARCHAR(50)")
     @Enumerated(EnumType.STRING) // Cambiado a INTEGER para mapear el enum
-    private TipoNotificacion tipo;
+    private TipoNotificacionEnum tipo;
 
     @Column(columnDefinition = "VARCHAR(50)")
     private String categoria;

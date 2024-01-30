@@ -6,15 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Notificacion;
-import com.guardias.backend.enums.TipoNotificacion;
+import com.guardias.backend.enums.TipoNotificacionEnum;
 
 @Repository
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
-    List<Notificacion> findByTipoAndActivo(TipoNotificacion tipo, boolean activo);
+    List<Notificacion> findByTipoAndActivo(TipoNotificacionEnum tipo, boolean activo);
 
     Boolean findByTipoAndActivo(String tipo, boolean activo);
 
-    // List<Notificacion> findByActivo(boolean activo);
-
-    // Boolean existsByActivo(boolean activo);
 }

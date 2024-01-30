@@ -1,6 +1,6 @@
 package com.guardias.backend.enums;
 
-public enum TipoNotificacion {
+public enum TipoNotificacionEnum {
     DIGESTO,
     NOTIFICACION
 }
