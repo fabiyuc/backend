@@ -52,6 +52,55 @@ public abstract class Ley {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_ley")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes" })
-    TipoLey ley;
+    private TipoLey ley;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Ley other = (Ley) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (numero == null) {
+            if (other.numero != null)
+                return false;
+        } else if (!numero.equals(other.numero))
+            return false;
+        if (denominacion == null) {
+            if (other.denominacion != null)
+                return false;
+        } else if (!denominacion.equals(other.denominacion))
+            return false;
+        if (detalle == null) {
+            if (other.detalle != null)
+                return false;
+        } else if (!detalle.equals(other.detalle))
+            return false;
+        if (fechaAlta == null) {
+            if (other.fechaAlta != null)
+                return false;
+        } else if (!fechaAlta.equals(other.fechaAlta))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((numero == null) ? 0 : numero.hashCode());
+        result = prime * result + ((denominacion == null) ? 0 : denominacion.hashCode());
+        result = prime * result + ((detalle == null) ? 0 : detalle.hashCode());
+        result = prime * result + ((fechaAlta == null) ? 0 : fechaAlta.hashCode());
+        return result;
+    }
 
 }

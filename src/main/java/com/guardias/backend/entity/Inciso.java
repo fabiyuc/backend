@@ -27,15 +27,15 @@ public class Inciso extends Ley {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_inciso")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subIncisos", "inciso" })
-    Inciso inciso;
+    private Inciso inciso;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso" })
-    List<Inciso> subIncisos;
+    private List<Inciso> subIncisos;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_articulo")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos", "articulo" })
-    Articulo articulo;
+    private Articulo articulo;
 
 }
