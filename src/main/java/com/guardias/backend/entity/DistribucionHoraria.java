@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,11 +37,16 @@ public abstract class DistribucionHoraria {
     private LocalTime horaIngreso;
     private BigDecimal cantidadHoras; // para calcular el dia y horario de salida
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_efector")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias" })
+    private Efector efector;
+    
+  /*   @OneToOne
     @JoinColumn(name = "id_efector")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionHoraria", "region", "localidad",
             "estado", "observacion" })
-    private Efector efector;
+    private Efector efector; */
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_persona")
