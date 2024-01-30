@@ -33,6 +33,7 @@ public class TipoGuardia {
     private Set<RegistroActividad> registroActividades;
 
     @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Asistencial> asistenciales;
 
 }
