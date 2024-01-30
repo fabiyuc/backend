@@ -2,7 +2,6 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
-import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.TipoLey;
 import com.guardias.backend.enums.EstadoLey;
 
@@ -28,7 +27,6 @@ public class LeyDto {
     LocalDate fechaBaja;
     LocalDate fechaModificacion;
     String motivoModificacion;
-    NovedadPersonal novedadPersonal;
 
     @NotNull
     TipoLey ley;
