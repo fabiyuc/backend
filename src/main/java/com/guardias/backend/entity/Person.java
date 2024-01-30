@@ -58,8 +58,8 @@ public abstract class Person {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
     private Set<NovedadPersonal> novedades;
 
-    @OneToMany(mappedBy = "suplente")
-    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suplente" })
     private Set<NovedadPersonal> suplentes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)

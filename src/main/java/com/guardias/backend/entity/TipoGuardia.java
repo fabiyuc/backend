@@ -28,10 +28,10 @@ public class TipoGuardia {
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 
-    @OneToMany(mappedBy = "tipoGuardia")
+   /*  @OneToMany(mappedBy = "tipoGuardia")
     @JsonIgnore // Añade esta anotación para evitar la recursión infinita
     private Set<RegistroActividad> registroActividades;
-
+ */
     @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
     private Set<Asistencial> asistenciales;
 

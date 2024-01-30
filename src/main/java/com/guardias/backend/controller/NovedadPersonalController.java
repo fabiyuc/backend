@@ -64,8 +64,31 @@ public class NovedadPersonalController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NovedadPersonalDto novedadPersonalDto) {
         if (novedadPersonalDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getFechaFinal() == null)
+            return new ResponseEntity(new Mensaje("la fecha final es obligatoria"), HttpStatus.BAD_REQUEST);
+          
+        if (novedadPersonalDto.getPuedeRealizarGuardia() == null)
+            return new ResponseEntity(new Mensaje("indicar si puede realizar guardia o no"), HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getCobraSueldo() == null)
+            return new ResponseEntity(new Mensaje("indicar si cobra sueldo o no"), HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getNecesitaReemplazo() == null)
+            return new ResponseEntity(new Mensaje("indicar si necesita reemplazo o no"), HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getActiva() == null)
+            return new ResponseEntity(new Mensaje("indicar si la novedad es actual o no"), HttpStatus.BAD_REQUEST);
+
+            //validar que esté esa persona
+        if (novedadPersonalDto.getPersona() == null)
+            return new ResponseEntity(new Mensaje("indicar la persona"), HttpStatus.BAD_REQUEST);
+
+        if ((novedadPersonalDto.getNecesitaReemplazo()== true) && (novedadPersonalDto.getSuplente()== null)){
+            return new ResponseEntity(new Mensaje("indicar la persona suplente"), HttpStatus.BAD_REQUEST);
+        }
+        
         if (novedadPersonalDto.getTipoLicencia() == null)
             return new ResponseEntity(new Mensaje("el tipo de licencia es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -74,10 +97,18 @@ public class NovedadPersonalController {
 
         novedadPersonal.setFechaInicio(novedadPersonalDto.getFechaInicio());
         novedadPersonal.setFechaFinal(novedadPersonalDto.getFechaFinal());
-        novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
-        novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
-        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
+        novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.getPuedeRealizarGuardia());
+        novedadPersonal.setCobraSueldo(novedadPersonalDto.getCobraSueldo());
+        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.getNecesitaReemplazo());
+        novedadPersonal.setActiva(novedadPersonalDto.getActiva());
         novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
+
+        novedadPersonal.setPersona(novedadPersonalDto.getPersona());
+        novedadPersonal.setSuplente(novedadPersonalDto.getSuplente());
+        novedadPersonal.setTipoLicencia(novedadPersonalDto.getTipoLicencia());
+       
+        //**********************************
+
         // novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
         // novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
         // novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
@@ -108,9 +139,9 @@ public class NovedadPersonalController {
         if (!novedadPersonalDto.getFechaFinal().isEqual(novedadPersonal.getFechaFinal()))
             novedadPersonal.setFechaFinal(novedadPersonalDto.getFechaFinal());
 
-        novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
-        novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
-        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
+        novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.getPuedeRealizarGuardia());
+        novedadPersonal.setCobraSueldo(novedadPersonalDto.getCobraSueldo());
+        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.getNecesitaReemplazo());
 
         if (novedadPersonalDto.getDescripcion() != novedadPersonal.getDescripcion()
                 && novedadPersonalDto.getDescripcion() != null && !novedadPersonalDto.getDescripcion().isEmpty())

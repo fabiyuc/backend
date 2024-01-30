@@ -38,8 +38,8 @@ public class RegistroActividad {
     @Temporal(TemporalType.TIME)
     private LocalTime horaEgreso;
 
-    @ManyToOne(optional = true)
+    /* @ManyToOne(optional = true)
     @JoinColumn(name = "id_tipo_guardia")
-    private TipoGuardia tipoGuardia;
+    private TipoGuardia tipoGuardia; */
 
 }

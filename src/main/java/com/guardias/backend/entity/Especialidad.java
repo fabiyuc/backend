@@ -38,7 +38,7 @@ public class Especialidad {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "especialidades", "asistencial", "legajos" })
     private Profesion profesion;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "especialidad", cascade = CascadeType.ALL)
+    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "especialidad", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<Asistencial> asistenciales;
+    private List<Asistencial> asistenciales; */
 }

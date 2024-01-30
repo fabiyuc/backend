@@ -39,7 +39,7 @@ public class NovedadPersonalService {
     // return novedadPersonalRepository.existsByPersona(idPersona);
     // }
 
-    public boolean existsByFechaInicio(LocalDate fechaInicio) {
+    public Boolean existsByFechaInicio(LocalDate fechaInicio) {
         return novedadPersonalRepository.existsByFechaInicio(fechaInicio);
     }
 
@@ -51,7 +51,7 @@ public class NovedadPersonalService {
         novedadPersonalRepository.deleteById(id);
     }
 
-    public boolean existsById(Long id) {
+    public Boolean existsById(Long id) {
         return novedadPersonalRepository.existsById(id);
     }
 

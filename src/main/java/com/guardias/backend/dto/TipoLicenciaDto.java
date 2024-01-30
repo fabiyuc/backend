@@ -5,9 +5,11 @@ import com.guardias.backend.entity.NovedadPersonal;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TipoLicenciaDto {
 
     @NotBlank
@@ -20,5 +22,4 @@ public class TipoLicenciaDto {
 
     private String inciso;
 
-    private NovedadPersonal novedadPersonal;
 }

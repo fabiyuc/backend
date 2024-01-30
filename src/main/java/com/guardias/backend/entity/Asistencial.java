@@ -30,8 +30,11 @@ public class Asistencial extends Person {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
     private TipoGuardia tipoGuardia;
 
-    @ManyToOne
+    
+    //posible relacion de profesion con especialidad directamente en legajo
+
+    /* @ManyToOne
     @JoinColumn(name = "id_especialidad")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
-    private Especialidad especialidad;
+    private Especialidad especialidad; */
 }
