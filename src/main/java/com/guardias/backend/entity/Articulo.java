@@ -27,14 +27,14 @@ public class Articulo extends Ley {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_articulo")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subArticulos", "articulo" })
-    Articulo articulo;
+    private Articulo articulo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subArticulos" })
-    List<Articulo> subArticulos;
+    private List<Articulo> subArticulos;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos" })
-    List<Inciso> incisos;
+    private List<Inciso> incisos;
 
 }
