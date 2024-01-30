@@ -26,7 +26,7 @@ public class Asistencial extends Person {
     private Set<Legajo> legajos;
 
     @ManyToOne
-    @JoinColumn(name = "id_Tipo_Guardia")
+    @JoinColumn(name = "id_tipo_guardia")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
     private TipoGuardia tipoGuardia;
 

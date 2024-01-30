@@ -38,11 +38,15 @@ public abstract class DistribucionHoraria {
 
     @OneToOne
     @JoinColumn(name = "id_efector")
-    private Efector efector; // para registrar el efector donde esta cumpliendo ESTA dist. horaria
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionHoraria", "region", "localidad",
+            "estado", "observacion" })
+    private Efector efector;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_persona")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias", "dni", "cuil",
+            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes",
+            "distribucionesHorarias" })
     private Person persona;
 
     @Override

@@ -50,6 +50,7 @@ public abstract class Efector {
     private Localidad localidad;
 
     @OneToOne(mappedBy = "efector")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
     DistribucionHoraria distribucionHoraria;
 
     @Override
