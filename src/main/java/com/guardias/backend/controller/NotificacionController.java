@@ -61,11 +61,13 @@ public class NotificacionController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto) {
         // Validaciones
-        if (notificacionDto.getTipo() == null)
-            return new ResponseEntity<>(new Mensaje("El Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
+
         if (StringUtils.isBlank(notificacionDto.getCategoria())) {
             return new ResponseEntity<>(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
         }
+
+        if (notificacionDto.getTipo() == null)
+            return new ResponseEntity<>(new Mensaje("El Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
