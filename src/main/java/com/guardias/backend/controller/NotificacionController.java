@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NotificacionDto;
 import com.guardias.backend.entity.Notificacion;
+import com.guardias.backend.enums.TipoNotificacionEnum;
 import com.guardias.backend.service.NotificacionService;
 
 @RestController
@@ -43,28 +44,36 @@ public class NotificacionController {
         return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
     }
 
-    @GetMapping("/detalletipo/{tipo}")
-    public ResponseEntity<Notificacion> getByTipo(@PathVariable("tipo") String tipo) {
-        if (!notificacionService.existsByTipo(tipo))
-            return new ResponseEntity(new Mensaje("no existe ese tipo de Notificaión"), HttpStatus.NOT_FOUND);
-        Notificacion notificacion = notificacionService.getByTipo(tipo).get();
-        return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
+    @GetMapping("/detalletipo/{tipo},{activo}")
+    public ResponseEntity<List<Notificacion>> getByTipoAndActivo(@PathVariable("tipo") TipoNotificacionEnum tipo,
+            @PathVariable("activo") boolean activo) {
+        List<Notificacion> notificaciones = notificacionService.getByTipoAndActivo(tipo, activo);
+
+        if (notificaciones.isEmpty()) {
+            return new ResponseEntity(new Mensaje("No se encontraron notificaciones para ese tipo"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(notificaciones, HttpStatus.OK);
     }
 
+    // Método create
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto) {
         // Validaciones
-        if (StringUtils.isBlank(notificacionDto.getTipo()))
-            return new ResponseEntity<>(new Mensaje("El Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (notificacionService.existsByTipo(notificacionDto.getTipo()))
-            return new ResponseEntity(new Mensaje("El Tipo ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(notificacionDto.getCategoria())) {
             return new ResponseEntity<>(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
         }
+
+        if (notificacionDto.getTipo() == null)
+            return new ResponseEntity<>(new Mensaje("El Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
+
         if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (notificacionDto.getFechaBaja() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(notificacionDto.getDetalle())) {
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -76,32 +85,34 @@ public class NotificacionController {
         Notificacion notificacion = new Notificacion();
         notificacion.setTipo(notificacionDto.getTipo());
         notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFechanotificacion(notificacionDto.getFechaNotificacion());
+        notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
+        notificacion.setActivo(notificacionDto.isActivo());
+        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
 
         notificacionService.save(notificacion);
 
         return new ResponseEntity<>(new Mensaje("Notificación creada"), HttpStatus.OK);
     }
 
+    // Método update
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody NotificacionDto notificacionDto) {
         if (!notificacionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        if (notificacionService.existsByTipo(notificacionDto.getTipo())
-                && notificacionService.getByTipo(notificacionDto.getTipo()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("La notificacion ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(notificacionDto.getTipo()))
+        if (notificacionDto.getTipo() == null)
             return new ResponseEntity<>(new Mensaje("el Tipo es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getCategoria() == null)
             return new ResponseEntity(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getFechaNotificacion() == null)
-            return new ResponseEntity(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (notificacionDto.getFechaBaja() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getDetalle() == null)
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -112,9 +123,12 @@ public class NotificacionController {
         Notificacion notificacion = notificacionService.getone(id).get();
         notificacion.setTipo(notificacionDto.getTipo());
         notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFechanotificacion(notificacionDto.getFechaNotificacion());
+        notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
+        notificacion.setActivo(notificacionDto.isActivo());
+        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+
         notificacionService.save(notificacion);
 
         return new ResponseEntity<>(new Mensaje("Notificaión Actualizada"), HttpStatus.OK);

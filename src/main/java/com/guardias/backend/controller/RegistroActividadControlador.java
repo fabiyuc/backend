@@ -29,7 +29,7 @@ public class RegistroActividadControlador {
 
     @GetMapping("/lista")
     public ResponseEntity<List<RegistroActividad>> list() {
-        System.out.println("entra######################");
+        // System.out.println("entra######################");
         List<RegistroActividad> list = registroActividadServicio.list();
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
@@ -40,9 +40,11 @@ public class RegistroActividadControlador {
         if (StringUtils.isBlank(registroActividadDto.getEstablecimiento()))
             return new ResponseEntity(new Mensaje("el establecimiento es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(registroActividadDto.getServicio()))
-            return new ResponseEntity(new Mensaje("el servicio es obligatorio"), HttpStatus.BAD_REQUEST);
-
+        /*
+         * if (StringUtils.isBlank(registroActividadDto.getServicio()))
+         * return new ResponseEntity(new Mensaje("el servicio es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
@@ -63,7 +65,7 @@ public class RegistroActividadControlador {
         RegistroActividad registroActividad = new RegistroActividad();
 
         registroActividad.setEstablecimiento(registroActividadDto.getEstablecimiento());
-        registroActividad.setServicio(registroActividadDto.getServicio());
+        // registroActividad.setServicio(registroActividadDto.getServicio());
         registroActividad.setFechaIngreso(registroActividadDto.getFechaIngreso());
         registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
         registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
