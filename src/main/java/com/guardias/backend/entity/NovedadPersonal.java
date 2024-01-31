@@ -50,10 +50,10 @@ public class NovedadPersonal {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suplentes" })
     private Person suplente;
 
-    @OneToOne(mappedBy = "articulo")
+    @OneToOne(mappedBy = "novedadPersonal")
     private Articulo articulo;
 
-    @OneToOne(mappedBy = "inciso")
+    @OneToOne(mappedBy = "novedadPersonal")
     private Inciso inciso;
 
 }

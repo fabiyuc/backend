@@ -77,6 +77,7 @@ public class ArticuloController {
         articulo.setMotivoModificacion(articuloDto.getMotivoModificacion());
         articulo.setSubArticulos(articuloDto.getSubArticulos());
         articulo.setIncisos(articuloDto.getIncisos());
+        articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
 
         articuloService.save(articulo);
         return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
@@ -127,6 +128,8 @@ public class ArticuloController {
             articulo.setSubArticulos(articuloDto.getSubArticulos());
         if (!articuloDto.getIncisos().equals(articulo.getIncisos()))
             articulo.setIncisos(articuloDto.getIncisos());
+        if (!articuloDto.getNovedadPersonal().equals(articulo.getNovedadPersonal()))
+            articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
 
         articuloService.save(articulo);
         return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);

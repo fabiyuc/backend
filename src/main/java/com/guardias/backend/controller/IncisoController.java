@@ -77,6 +77,7 @@ public class IncisoController {
         inciso.setMotivoModificacion(incisoDto.getMotivoModificacion());
         inciso.setSubIncisos(incisoDto.getSubIncisos());
         inciso.setArticulo(incisoDto.getArticulo());
+        inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
 
         incisoService.save(inciso);
         return new ResponseEntity<Mensaje>(new Mensaje("Inciso creado correctamente"), HttpStatus.OK);
@@ -126,6 +127,8 @@ public class IncisoController {
             inciso.setSubIncisos(incisoDto.getSubIncisos());
         if (!incisoDto.getArticulo().equals(inciso.getArticulo()))
             inciso.setArticulo(incisoDto.getArticulo());
+        if (!incisoDto.getNovedadPersonal().equals(inciso.getNovedadPersonal()))
+            inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
 
         incisoService.save(inciso);
         return new ResponseEntity<Mensaje>(new Mensaje("Inciso modificado correctamente"), HttpStatus.OK);
