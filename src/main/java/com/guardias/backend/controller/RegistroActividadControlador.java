@@ -70,7 +70,7 @@ public class RegistroActividadControlador {
         registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
         registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
         registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
-        registroActividad.setTipoGuardia(registroActividadDto.getTipoGuardia());
+       // registroActividad.setTipoGuardia(registroActividadDto.getTipoGuardia());
         registroActividadServicio.save(registroActividad);
         return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
     }

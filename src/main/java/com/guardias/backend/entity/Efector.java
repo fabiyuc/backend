@@ -1,7 +1,9 @@
 package com.guardias.backend.entity;
 
+import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,7 +14,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,10 +51,11 @@ public abstract class Efector {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "departamento" })
     private Localidad localidad;
 
-    @OneToOne(mappedBy = "efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
-    DistribucionHoraria distribucionHoraria;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<DistribucionHoraria> distribucionesHorarias;
 
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

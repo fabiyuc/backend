@@ -31,17 +31,12 @@ public class TipoGuardia {
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 
-    // @OneToMany(mappedBy = "tipoGuardia")
-    // @JsonIgnore // Añade esta anotación para evitar la recursión infinita
-    // private Set<RegistroActividad> registroActividades;
-
-    @Column(columnDefinition = "VARCHAR(50)")
-    @Enumerated(EnumType.STRING)
-    private TipoGuardiaEnum tipoGuardia;
-
-    @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Asistencial> asistenciales;
+   /*  @OneToMany(mappedBy = "tipoGuardia")
+    @JsonIgnore // Añade esta anotación para evitar la recursión infinita
+    private Set<RegistroActividad> registroActividades;
+ */
+    /* @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    private Set<Asistencial> asistenciales; */
 
     @Override
     public boolean equals(Object obj) {

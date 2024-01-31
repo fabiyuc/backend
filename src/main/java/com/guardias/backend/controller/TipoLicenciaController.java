@@ -35,7 +35,7 @@ public class TipoLicenciaController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/detalle/{id}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("id") Long id) {
         if (!tipoLicenciaService.existsById(id))
             return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
@@ -43,7 +43,7 @@ public class TipoLicenciaController {
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);
     }
 
-    @GetMapping("/detailname/{nombre}")
+    @GetMapping("/detallenombre/{nombre}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("nombre") String nombre) {
         if (!tipoLicenciaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);

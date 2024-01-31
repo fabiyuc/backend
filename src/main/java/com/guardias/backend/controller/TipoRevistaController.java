@@ -54,12 +54,13 @@ public class TipoRevistaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoRevistaDto tipoRevistaDto) {
         if (StringUtils.isBlank(tipoRevistaDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
         if (tipoRevistaService.existsByNombre(tipoRevistaDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
         TipoRevista tipoRevista = new TipoRevista();
+        
         tipoRevista.setNombre(tipoRevistaDto.getNombre());
         tipoRevistaService.save(tipoRevista);
         return new ResponseEntity(new Mensaje("tipo de revista creado"), HttpStatus.OK);

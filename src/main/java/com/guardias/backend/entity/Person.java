@@ -2,10 +2,7 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,15 +52,15 @@ public abstract class Person {
     private Boolean estado;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
-    private Set<NovedadPersonal> novedades;
+    @JsonIgnore
+    private Set<NovedadPersonal> novedadesPersonales;
 
-    @OneToMany(mappedBy = "suplente")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<NovedadPersonal> suplentes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
     @Override

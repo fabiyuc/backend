@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
@@ -62,19 +60,36 @@ public class DistribucionGuardiaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
-        if (distribucionGuardiaDto.getCantidadHoras() == null)
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+        if (distribucionGuardiaDto.getFecha() == null) {
+            return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
+            }
 
-        DistribucionGuardia distribucionGuardia = new DistribucionGuardia(); // CLASE ABSTRACTA!!!!!
+        if (distribucionGuardiaDto.getHoraIngreso() == null) {
+            return new ResponseEntity(new Mensaje("La hora de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
+            }
+
+        if (distribucionGuardiaDto.getCantidadHoras() == null) {
+            return new ResponseEntity(new Mensaje("La cantodad de horas es obligatoria"), HttpStatus.BAD_REQUEST);
+            }
+
+        if (distribucionGuardiaDto.getEfector() == null) {
+            return new ResponseEntity(new Mensaje("el efector es obligatorio"), HttpStatus.BAD_REQUEST);
+            }
+
+        if (distribucionGuardiaDto.getPersona() == null) {
+            return new ResponseEntity(new Mensaje("es obligatorio indicar la persona"), HttpStatus.BAD_REQUEST);
+            }
+
+        DistribucionGuardia distribucionGuardia = new DistribucionGuardia(); 
         distribucionGuardia.setFecha(distribucionGuardiaDto.getFecha());
         distribucionGuardia.setHoraIngreso(distribucionGuardiaDto.getHoraIngreso());
-        distribucionGuardia.setPersona(distribucionGuardiaDto.getPersona());
-        distribucionGuardia.setEfector(distribucionGuardiaDto.getEfector());
         distribucionGuardia.setCantidadHoras(distribucionGuardiaDto.getCantidadHoras());
-
+        distribucionGuardia.setEfector(distribucionGuardiaDto.getEfector());
+        distribucionGuardia.setPersona(distribucionGuardiaDto.getPersona());
+        distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
+        
         distribucionGuardiaService.save(distribucionGuardia);
-        return new ResponseEntity(new Mensaje("Carga horaria creada"),
+        return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
                 HttpStatus.OK);
     }
 

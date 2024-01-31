@@ -1,12 +1,11 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.guardias.backend.enums.TipoGuardiaEnum;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,20 +17,13 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
 @AllArgsConstructor
 @NoArgsConstructor
-// @EqualsAndHashCode(callSuper = false)
 public class Asistencial extends Person {
 
-    // Si necesitas legajos, puedes mantener esta relación
     @OneToMany(mappedBy = "asistencial")
     private Set<Legajo> legajos;
 
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_guardia")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
-    private TipoGuardia tipoGuardia;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15)")
+    private TipoGuardiaEnum tipoGuardia;
 
-    @ManyToOne
-    @JoinColumn(name = "id_especialidad")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
-    private Especialidad especialidad;
 }
