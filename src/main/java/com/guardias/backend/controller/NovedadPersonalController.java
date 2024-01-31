@@ -90,9 +90,7 @@ public class NovedadPersonalController {
         // if (!novedadPersonalService.existsByPersona(id))
         // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
         // HttpStatus.NOT_FOUND);
-        if (novedadPersonalDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+       
 
         NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
 
