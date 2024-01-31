@@ -19,5 +19,5 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
     Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fechaInicio);
 
-    boolean existsByFechaInicio(LocalDate fechaInicio);
+    Boolean existsByFechaInicio(LocalDate fechaInicio);
 }

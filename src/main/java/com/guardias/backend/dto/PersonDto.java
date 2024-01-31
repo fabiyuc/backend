@@ -34,7 +34,7 @@ public class PersonDto {
 
     private Set<NovedadPersonal> novedadesPersonales;
 
-    private Set<NovedadPersonal> suplente;
+    private Set<NovedadPersonal> suplentes;
 
     private Set<DistribucionHoraria> distribucionesHorarias;
 
