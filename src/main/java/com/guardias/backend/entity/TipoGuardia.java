@@ -32,7 +32,7 @@ public class TipoGuardia {
     @JsonIgnore // Añade esta anotación para evitar la recursión infinita
     private Set<RegistroActividad> registroActividades;
  */
-    @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
-    private Set<Asistencial> asistenciales;
+    /* @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    private Set<Asistencial> asistenciales; */
 
 }

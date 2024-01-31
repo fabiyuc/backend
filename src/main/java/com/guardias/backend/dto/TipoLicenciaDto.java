@@ -1,5 +1,7 @@
 package com.guardias.backend.dto;
 
+import java.util.Set;
+
 import com.guardias.backend.entity.NovedadPersonal;
 
 import jakarta.validation.constraints.NotBlank;
@@ -21,5 +23,7 @@ public class TipoLicenciaDto {
     private String articulo;
 
     private String inciso;
+
+    private Set<NovedadPersonal> novedadesPersonales;
 
 }

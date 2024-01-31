@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
 import com.guardias.backend.entity.NovedadPersonal;
@@ -81,13 +79,19 @@ public class NovedadPersonalController {
         if (novedadPersonalDto.getActiva() == null)
             return new ResponseEntity(new Mensaje("indicar si la novedad es actual o no"), HttpStatus.BAD_REQUEST);
 
-            //validar que esté esa persona
+          
         if (novedadPersonalDto.getPersona() == null)
             return new ResponseEntity(new Mensaje("indicar la persona"), HttpStatus.BAD_REQUEST);
+        
+        if (!novedadPersonalService.existsById(novedadPersonalDto.getPersona().getId()))
+            return new ResponseEntity(new Mensaje("no existe la persona"), HttpStatus.NOT_FOUND);
 
         if ((novedadPersonalDto.getNecesitaReemplazo()== true) && (novedadPersonalDto.getSuplente()== null)){
             return new ResponseEntity(new Mensaje("indicar la persona suplente"), HttpStatus.BAD_REQUEST);
         }
+
+        if (!novedadPersonalService.existsById(novedadPersonalDto.getSuplente().getId()))
+            return new ResponseEntity(new Mensaje("no existe la persona suplente"), HttpStatus.NOT_FOUND);
         
         if (novedadPersonalDto.getTipoLicencia() == null)
             return new ResponseEntity(new Mensaje("el tipo de licencia es obligatorio"),

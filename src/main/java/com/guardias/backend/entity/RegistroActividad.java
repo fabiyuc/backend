@@ -8,8 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -38,8 +36,8 @@ public class RegistroActividad {
     @Temporal(TemporalType.TIME)
     private LocalTime horaEgreso;
 
-    /* @ManyToOne(optional = true)
-    @JoinColumn(name = "id_tipo_guardia")
-    private TipoGuardia tipoGuardia; */
+  
 
+    //falta relacion a una persona
+    //tipo_guardia enum
 }
