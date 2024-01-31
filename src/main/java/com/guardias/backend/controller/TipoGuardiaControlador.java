@@ -74,7 +74,6 @@ public class TipoGuardiaControlador {
         TipoGuardia tipoGuardia = new TipoGuardia();
         tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
         tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
-        tipoGuardia.setTipoGuardia(tipoGuardiaDto.getTipoGuardia());
         tipoGuardiaServicio.save(tipoGuardia);
         return new ResponseEntity(new Mensaje("tipo de guardia creado"), HttpStatus.OK);
     }
@@ -97,7 +96,6 @@ public class TipoGuardiaControlador {
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
         tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
         tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
-        tipoGuardia.setTipoGuardia(tipoGuardiaDto.getTipoGuardia());
         tipoGuardiaServicio.save(tipoGuardia);
         return new ResponseEntity(new Mensaje("servicio actualizado"), HttpStatus.OK);
     }

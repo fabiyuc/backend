@@ -47,7 +47,7 @@ public class NovedadPersonalService {
         novedadPersonalRepository.deleteById(id);
     }
 
-    public Boolean existsById(Long id) {
+    public boolean existsById(Long id) {
         return novedadPersonalRepository.existsById(id);
     }
 
