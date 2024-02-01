@@ -75,6 +75,13 @@ public class NovedadPersonalController {
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
         novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
         novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
+
+        novedadPersonal.setPersona(novedadPersonalDto.getPersona());
+        novedadPersonal.setSuplente(novedadPersonalDto.getSuplente());
+        novedadPersonal.setTipoLicencia(novedadPersonalDto.getTipoLicencia());
+
+        // **********************************
+
         // novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
         // novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
         // novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
@@ -90,7 +97,6 @@ public class NovedadPersonalController {
         // if (!novedadPersonalService.existsByPersona(id))
         // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
         // HttpStatus.NOT_FOUND);
-       
 
         NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
 

@@ -56,10 +56,4 @@ public class NovedadPersonal {
     @OneToOne(mappedBy = "novedadPersonal")
     private Inciso inciso;
 
-    // REVISAR ESTA RELACION CON TipoLicencia
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id_tipo_licencia")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "novedadesPersonales" })
-    private TipoLicencia tipoLicencia;
-
 }
