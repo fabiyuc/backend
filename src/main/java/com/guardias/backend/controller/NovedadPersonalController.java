@@ -90,7 +90,6 @@ public class NovedadPersonalController {
         // if (!novedadPersonalService.existsByPersona(id))
         // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
         // HttpStatus.NOT_FOUND);
-       
 
         NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
 
