@@ -64,16 +64,42 @@ public class DistribucionConsultorioController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
+        if (distribucionConsultorioDto.getDia() == null)
+            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getFechaInicio() == null)
+            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getHoraIngreso() == null)
+            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
         if (distribucionConsultorioDto.getCantidadHoras() == null)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        DistribucionConsultorio distribucionConsultorio = new DistribucionConsultorio(); // CLASE ABSTRACTA!!!!!
-        distribucionConsultorio.setFecha(distribucionConsultorioDto.getFecha());
+        if (distribucionConsultorioDto.getEfector() == null)
+            return new ResponseEntity(new Mensaje("El efector es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getPersona() == null)
+            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        DistribucionConsultorio distribucionConsultorio = new DistribucionConsultorio();
+        distribucionConsultorio.setDia(distribucionConsultorioDto.getDia());
+        distribucionConsultorio.setFechaInicio(distribucionConsultorioDto.getFechaInicio());
+        distribucionConsultorio.setFechaFinalizacion(distribucionConsultorioDto.getFechaFinalizacion());
         distribucionConsultorio.setHoraIngreso(distribucionConsultorioDto.getHoraIngreso());
         distribucionConsultorio.setPersona(distribucionConsultorioDto.getPersona());
         distribucionConsultorio.setEfector(distribucionConsultorioDto.getEfector());
         distribucionConsultorio.setCantidadHoras(distribucionConsultorioDto.getCantidadHoras());
+
+        distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
+        distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
+        distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
 
         distribucionConsultorioService.save(distribucionConsultorio);
         return new ResponseEntity(new Mensaje("Carga horaria creada"),
@@ -85,7 +111,58 @@ public class DistribucionConsultorioController {
 
             @RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
+        if (!distribucionConsultorioService.existsById(id))
+            return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
+
+        if (distribucionConsultorioDto.getDia() == null)
+            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getFechaInicio() == null)
+            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getHoraIngreso() == null)
+            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getCantidadHoras() == null)
+            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getEfector() == null)
+            return new ResponseEntity(new Mensaje("El efector es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (distribucionConsultorioDto.getPersona() == null)
+            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
         DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.findById(id).get();
+
+        if (!distribucionConsultorioDto.getDia().equals(distribucionConsultorio.getDia()))
+            distribucionConsultorio.setDia(distribucionConsultorioDto.getDia());
+        if (!distribucionConsultorioDto.getFechaInicio().equals(distribucionConsultorio.getFechaInicio()))
+            distribucionConsultorio.setFechaInicio(distribucionConsultorioDto.getFechaInicio());
+        if (!distribucionConsultorioDto.getFechaFinalizacion().equals(distribucionConsultorio.getFechaFinalizacion()))
+            distribucionConsultorio.setFechaFinalizacion(distribucionConsultorioDto.getFechaFinalizacion());
+        if (!distribucionConsultorioDto.getHoraIngreso().equals(distribucionConsultorio.getHoraIngreso()))
+            distribucionConsultorio.setHoraIngreso(distribucionConsultorioDto.getHoraIngreso());
+        if (!distribucionConsultorioDto.getPersona().equals(distribucionConsultorio.getPersona()))
+            distribucionConsultorio.setPersona(distribucionConsultorioDto.getPersona());
+        if (!distribucionConsultorioDto.getEfector().equals(distribucionConsultorio.getEfector()))
+            distribucionConsultorio.setEfector(distribucionConsultorioDto.getEfector());
+        if (!distribucionConsultorioDto.getCantidadHoras().equals(distribucionConsultorio.getCantidadHoras()))
+            distribucionConsultorio.setCantidadHoras(distribucionConsultorioDto.getCantidadHoras());
+
+        if (!distribucionConsultorioDto.getLugar().equals(distribucionConsultorio.getLugar()))
+            distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
+        if (!distribucionConsultorioDto.getEspecialidad().equals(distribucionConsultorio.getEspecialidad()))
+            distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
+        if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
+            distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
+
+        distribucionConsultorioService.save(distribucionConsultorio);
 
         return new ResponseEntity(new Mensaje("Carga horaria modificada"),
                 HttpStatus.OK);

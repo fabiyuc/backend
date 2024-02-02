@@ -27,8 +27,8 @@ public class Notificacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "VARCHAR(50)")
-    @Enumerated(EnumType.STRING) // Cambiado a INTEGER para mapear el enum
+    @Column(columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING) // Cambiado a STRING para mapear el enum
     private TipoNotificacionEnum tipo;
 
     @Column(columnDefinition = "VARCHAR(50)")
