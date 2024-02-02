@@ -35,6 +35,12 @@ public class HospitalController {
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listaPasivas")
+    public ResponseEntity<List<Hospital>> listPasivas() {
+        List<Hospital> list = hospitalService.findByPasiva();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detalle/{id}")
     public ResponseEntity<List<Hospital>> getById(@PathVariable("id") Long id) {
         if (!hospitalService.existsById(id))
@@ -72,6 +78,7 @@ public class HospitalController {
         hospital.setLocalidad(hospitalDto.getLocalidad());
         hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
+        hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
 
         hospitalService.save(hospital);
         return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
@@ -121,6 +128,9 @@ public class HospitalController {
 
         if (hospital.isEsCabecera() != hospitalDto.isEsCabecera())
             hospital.setEsCabecera(hospitalDto.isEsCabecera());
+
+        if (hospital.isAdmitePasiva() != hospitalDto.isAdmitePasiva())
+            hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
 
         hospitalService.save(hospital);
         return new ResponseEntity(new Mensaje("Hospital actualizado"), HttpStatus.OK);
