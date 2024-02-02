@@ -108,7 +108,6 @@ public class DistribucionConsultorioController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id,
-
             @RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
         if (!distribucionConsultorioService.existsById(id))
