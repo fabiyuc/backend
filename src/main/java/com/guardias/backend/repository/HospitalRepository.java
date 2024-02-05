@@ -1,8 +1,10 @@
 package com.guardias.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Hospital;
@@ -11,6 +13,9 @@ import com.guardias.backend.entity.Hospital;
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     Optional<Hospital> findByNombre(String nombre);
+
+    @Query("SELECT h FROM hospitales h WHERE h.admite_pasiva = true")
+    List<Hospital> findByPasiva();
 
     boolean existsByNombre(String nombre);
 }

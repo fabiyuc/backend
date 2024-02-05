@@ -22,6 +22,10 @@ public class HospitalService {
         return hospitalRepository.findAll();
     }
 
+    public List<Hospital> findByPasiva() {
+        return hospitalRepository.findByPasiva();
+    }
+
     public Optional<Hospital> getById(Long id) {
         return hospitalRepository.findById(id);
     }
