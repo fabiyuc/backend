@@ -1,14 +1,11 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
-
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,9 +17,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Asistencial extends Person {
-
-    @OneToMany(mappedBy = "asistencial")
-    private Set<Legajo> legajos;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15)")

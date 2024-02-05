@@ -52,12 +52,8 @@ public class Legajo {
   private Revista revista;
 
   @ManyToOne(optional = true)
-  @JoinColumn(name = "id_asistencial")
-  private Asistencial asistencial;
-
-  @ManyToOne(optional = true)
-  @JoinColumn(name = "id_noAsistencial")
-  private NoAsistencial noAsistencial;
+  @JoinColumn(name = "id_persona")
+  private Person persona;
 
   @Override
   public boolean equals(Object obj) {
