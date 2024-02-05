@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,10 @@ public class DistribucionOtraService {
 
     public Optional<List<DistribucionOtra>> findByPersonaId(Long personaId) {
         return distribucionOtraRepository.findByPersonaId(personaId);
+    }
+
+    public List<DistribucionOtra> findByFechaInicio(LocalDate fechaInicio) {
+        return distribucionOtraRepository.findByFechaInicio(fechaInicio);
     }
 
     public Optional<List<DistribucionOtra>> findByEfectorId(Long efectorId) {

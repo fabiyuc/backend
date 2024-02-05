@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,10 @@ public class DistribucionHorariaService {
 
     public Optional<DistribucionHoraria> findById(Long id) {
         return distribucionHorariaRepository.findById(id);
+    }
+
+    public List<DistribucionHoraria> findByFechaInicio(LocalDate fechaInicio) {
+        return distribucionHorariaRepository.findByFechaInicio(fechaInicio);
     }
 
     /*

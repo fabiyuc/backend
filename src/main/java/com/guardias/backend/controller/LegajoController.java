@@ -81,8 +81,6 @@ public class LegajoController {
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajo.setAsistencial(legajoDto.getAsistencial());
-        legajo.setNoAsistencial(legajoDto.getNoAsistencial());
 
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
@@ -129,8 +127,6 @@ public class LegajoController {
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajo.setAsistencial(legajoDto.getAsistencial());
-        legajo.setNoAsistencial(legajoDto.getNoAsistencial());
 
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("El legajo ha sido actualizado"), HttpStatus.OK);
