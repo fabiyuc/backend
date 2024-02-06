@@ -48,23 +48,28 @@ public class Legajo {
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_profesion")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "especialidades" })
   private Profesion profesion;
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_suspencion")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Suspencion suspencion;
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_revista")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Revista revista;
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_persona")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Person persona;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-  @JsonIgnoreProperties("efectores")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "domicilio", "telefono", "estado",
+      "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
   private Set<Efector> efectores = new HashSet<>();
 
   @Override
