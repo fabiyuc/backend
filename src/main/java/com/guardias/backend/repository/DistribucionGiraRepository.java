@@ -14,7 +14,7 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
 
     Optional<DistribucionGira> findById(Long id);
 
-    Optional<List<DistribucionGira>> findByFecha(LocalDate fecha);
+    Optional<List<DistribucionGira>> findByFechaInicio(LocalDate fechaInicio);
 
     @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.persona.id = :personaId")
     Optional<List<DistribucionGira>> findByPersonaId(@Param("personaId") Long personaId);

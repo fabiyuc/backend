@@ -37,7 +37,7 @@ public class HospitalController {
 
     @GetMapping("/listaPasivas")
     public ResponseEntity<List<Hospital>> listPasivas() {
-        List<Hospital> list = hospitalService.findByPasiva();
+        List<Hospital> list = hospitalService.findByAdmitePasiva();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

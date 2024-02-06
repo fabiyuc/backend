@@ -14,8 +14,8 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     Optional<Hospital> findByNombre(String nombre);
 
-    @Query("SELECT h FROM hospitales h WHERE h.admite_pasiva = true")
-    List<Hospital> findByPasiva();
+    @Query("SELECT h FROM hospitales h WHERE h.admitePasiva = true")
+    List<Hospital> findByAdmitePasiva();
 
     boolean existsByNombre(String nombre);
 }
