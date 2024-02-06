@@ -35,6 +35,10 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.findByPersonaId(personaId);
     }
 
+    public List<DistribucionGuardia> findByFechaInicio(LocalDate fechaInicio) {
+        return distribucionGuardiaRepository.findByFechaInicio(fechaInicio);
+    }
+
     public Optional<List<DistribucionGuardia>> findByEfectorId(Long efectorId) {
         return distribucionGuardiaRepository.findByEfectorId(efectorId);
     }

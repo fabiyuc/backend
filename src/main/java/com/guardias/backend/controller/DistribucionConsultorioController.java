@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,13 @@ public class DistribucionConsultorioController {
     @GetMapping("/lista")
     public ResponseEntity<List<DistribucionConsultorio>> list() {
         List<DistribucionConsultorio> list = distribucionConsultorioService.list();
+        return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/lista/{fechaInicio}")
+    public ResponseEntity<List<DistribucionConsultorio>> getByFechainicio(
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionConsultorio> list = distribucionConsultorioService.findByFechaInicio(fechaInicio);
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 

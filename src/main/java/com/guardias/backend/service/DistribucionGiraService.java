@@ -27,7 +27,7 @@ public class DistribucionGiraService {
         return distribucionGiraRepository.findById(id);
     }
 
-    public Optional<List<DistribucionGira>> findByFechaInicio(LocalDate fechaInicio) {
+    public List<DistribucionGira> findByFechaInicio(LocalDate fechaInicio) {
         return distribucionGiraRepository.findByFechaInicio(fechaInicio);
     }
 

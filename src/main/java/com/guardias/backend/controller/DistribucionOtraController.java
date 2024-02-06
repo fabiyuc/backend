@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,13 @@ public class DistribucionOtraController {
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         DistribucionOtra distribucionOtra = distribucionOtraService.findById(id).get();
         return new ResponseEntity<DistribucionOtra>(distribucionOtra, HttpStatus.OK);
+    }
+
+    @GetMapping("/lista/{fechaInicio}")
+    public ResponseEntity<List<DistribucionOtra>> getByFechainicio(
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionOtra> list = distribucionOtraService.findByFechaInicio(fechaInicio);
+        return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detalleefector/{idEfector}")

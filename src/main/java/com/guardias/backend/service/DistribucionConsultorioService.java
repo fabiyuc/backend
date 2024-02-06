@@ -27,7 +27,7 @@ public class DistribucionConsultorioService {
         return distribucionConsultorioRepository.findById(id);
     }
 
-    public Optional<List<DistribucionConsultorio>> findByFechaInicio(LocalDate fechaInicio) {
+    public List<DistribucionConsultorio> findByFechaInicio(LocalDate fechaInicio) {
         return distribucionConsultorioRepository.findByFechaInicio(fechaInicio);
     }
 

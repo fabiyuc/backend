@@ -14,7 +14,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
 
     Optional<DistribucionGuardia> findById(Long id);
 
-    Optional<List<DistribucionGuardia>> findByFechaInicio(LocalDate fechaInicio);
+    List<DistribucionGuardia> findByFechaInicio(LocalDate fechaInicio);
 
     @Query("SELECT dg FROM distribucionesGuardias dg WHERE dg.persona.id = :personaId")
     Optional<List<DistribucionGuardia>> findByPersonaId(@Param("personaId") Long personaId);

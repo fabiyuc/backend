@@ -13,7 +13,7 @@ import com.guardias.backend.entity.DistribucionHoraria;
 public interface DistribucionHorariaRepository extends JpaRepository<DistribucionHoraria, Long> {
     Optional<DistribucionHoraria> findById(Long id);
 
-    Optional<List<DistribucionHoraria>> findByFechaInicio(LocalDate fechaInicio);
+    List<DistribucionHoraria> findByFechaInicio(LocalDate fechaInicio);
     /*
      * @Query("SELECT dh FROM DistribucionHoraria dh WHERE dh.persona.id = :personaId"
      * )

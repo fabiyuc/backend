@@ -1,13 +1,20 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,12 +59,13 @@ public class Legajo {
   private Revista revista;
 
   @ManyToOne(optional = true)
-  @JoinColumn(name = "id_asistencial")
-  private Asistencial asistencial;
+  @JoinColumn(name = "id_persona")
+  private Person persona;
 
-  @ManyToOne(optional = true)
-  @JoinColumn(name = "id_noAsistencial")
-  private NoAsistencial noAsistencial;
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+  @JsonIgnoreProperties("efectores")
+  private Set<Efector> efectores = new HashSet<>();
 
   @Override
   public boolean equals(Object obj) {
