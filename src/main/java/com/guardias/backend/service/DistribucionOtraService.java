@@ -27,10 +27,6 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.findById(id);
     }
 
-    public Optional<List<DistribucionOtra>> findByFechaInicio(LocalDate fechaInicio) {
-        return distribucionOtraRepository.findByFechaInicio(fechaInicio);
-    }
-
     public Optional<List<DistribucionOtra>> findByPersonaId(Long personaId) {
         return distribucionOtraRepository.findByPersonaId(personaId);
     }
