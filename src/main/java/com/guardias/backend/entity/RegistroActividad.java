@@ -66,6 +66,7 @@ public class RegistroActividad {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_efector")
+
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades", "domicilio", "telefono",
             "estado", "observacion", "region", "localidad", "servicios", "esCabecera", "nivelComplejidad", "caps" })
     private Efector efector;
