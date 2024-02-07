@@ -63,12 +63,13 @@ public class Legajo {
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_udo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo", "domicilio", "telefono", "estado",
+      "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
   private Efector udo;
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_persona")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades" })
   private Person persona;
 
   @ManyToMany(fetch = FetchType.LAZY)
