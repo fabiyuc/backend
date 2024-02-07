@@ -37,10 +37,13 @@ public class RegistroActividad {
     // SERVICIOS????????????
     @Temporal(TemporalType.DATE)
     private LocalDate fechaIngreso; // ! Date ya no se usa....
+
     @Temporal(TemporalType.DATE)
     private LocalDate fechaEgreso;
+
     @Temporal(TemporalType.TIME)
     private LocalTime horaIngreso;
+
     @Temporal(TemporalType.TIME)
     private LocalTime horaEgreso;
 
@@ -63,7 +66,9 @@ public class RegistroActividad {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades" })
+
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades", "domicilio", "telefono",
+            "estado", "observacion", "region", "localidad", "servicios", "esCabecera", "nivelComplejidad", "caps" })
     private Efector efector;
 
 }
