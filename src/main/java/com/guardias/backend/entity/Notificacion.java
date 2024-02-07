@@ -1,9 +1,9 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-
+import java.util.Set;
 import com.guardias.backend.enums.TipoNotificacionEnum;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,6 +11,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -28,14 +31,12 @@ public class Notificacion {
     private Long id;
 
     @Column(columnDefinition = "VARCHAR(20)")
-    @Enumerated(EnumType.STRING) // Cambiado a STRING para mapear el enum
+    @Enumerated(EnumType.STRING) 
     private TipoNotificacionEnum tipo;
 
     @Column(columnDefinition = "VARCHAR(50)")
     private String categoria;
 
-    // @JsonFormat(pattern = "dd/MM/yyyy")
-    // @Column(columnDefinition = "DATE")
     @Temporal(TemporalType.DATE)
     private LocalDate fechaNotificacion;
 
@@ -48,8 +49,12 @@ public class Notificacion {
     @Column
     private boolean activo;
 
-    // @JsonFormat(pattern = "dd/MM/yyyy")
-    // @Column(columnDefinition = "DATE")
     @Temporal(TemporalType.DATE)
     private LocalDate fechaBaja;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) 
+    @JoinTable(name = "notificacion_region",
+               joinColumns = @JoinColumn(name = "notificacion_id"),
+               inverseJoinColumns = @JoinColumn(name = "region_id"))
+    private Set<Region> regiones;
 }
