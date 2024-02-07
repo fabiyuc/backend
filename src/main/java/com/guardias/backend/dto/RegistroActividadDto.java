@@ -3,7 +3,7 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,6 @@ public class RegistroActividadDto {
     private LocalTime horaEgreso;
 
     @NotBlank
-    private TipoGuardia tipoGuardia;
+    private TipoGuardiaEnum tipoGuardia;
 
 }

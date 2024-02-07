@@ -22,7 +22,7 @@ public class RegistroActividadService {
     }
 
     public Optional<RegistroActividad> getOne(Long id) {
-        return registroActividadRepositorio.findById(id);
+        return registroActividadRepositorio.findById((Long) id);
     }
 
     public void save(RegistroActividad registroActividad) {

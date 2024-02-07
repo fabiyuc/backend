@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.service.AsistencialService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -65,20 +62,35 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        if (asistencialDto.getDni() < 1000000)
-            return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(asistencialDto.getApellido())) {
-            return new ResponseEntity<>(new Mensaje("El Apellido es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-
         if (StringUtils.isBlank(asistencialDto.getNombre())) {
             return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
         }
+        if (StringUtils.isBlank(asistencialDto.getApellido())) {
+            return new ResponseEntity<>(new Mensaje("El Apellido es obligatorio"), HttpStatus.BAD_REQUEST);
+        }
+        if (asistencialDto.getDni() < 1000000) 
+            return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(asistencialDto.getCuil())) {
             return new ResponseEntity<>(new Mensaje("El Cuil es obligatorio"), HttpStatus.BAD_REQUEST);
         }
+        if (asistencialDto.getFechaNacimiento() == null) {
+            return new ResponseEntity(new Mensaje("La fecha de nacimiento es obligatoria"), HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(asistencialDto.getSexo())) {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(asistencialDto.getTelefono())) {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el telefono"), HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(asistencialDto.getEmail())) {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el email"), HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(asistencialDto.getDomicilio())) {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el domicilio"), HttpStatus.BAD_REQUEST);
+        }
+        if (asistencialDto.getEstado() == null)
+            return new ResponseEntity(new Mensaje("indicar si el estado es True o False"), HttpStatus.BAD_REQUEST);
 
         Asistencial asistencial = new Asistencial();
 
@@ -93,10 +105,8 @@ public class AsistencialController {
         asistencial.setDomicilio(asistencialDto.getDomicilio());
         asistencial.setEstado(asistencialDto.getEstado());
         asistencial.setLegajos(asistencialDto.getLegajos());
-        asistencial.setDistribucionesHorarias(asistencialDto.getDistribucionesHorarias()); // MAPEAR AL TIPO DE
-                                                                                           // DISTRIBUCION HORARIA
-                                                                                           // CORRECTO
-
+        asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
+        
         asistencialService.save(asistencial);
         return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
     }
@@ -135,6 +145,8 @@ public class AsistencialController {
         asistencial.setEstado(asistencialDto.getEstado());
         asistencial.setLegajos(asistencialDto.getLegajos());
         asistencial.setDistribucionesHorarias(asistencialDto.getDistribucionesHorarias());
+        asistencial.setNovedadesPersonales(asistencialDto.getNovedadesPersonales());
+        asistencial.setSuplentes(asistencialDto.getSuplentes());
 
         asistencialService.save(asistencial);
 

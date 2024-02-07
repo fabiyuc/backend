@@ -67,9 +67,10 @@ public class LegajoController {
         if (legajoDto.getRevista() == null)
             return new ResponseEntity(new Mensaje("indicar la revista"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getAsistencial() == null && legajoDto.getNoAsistencial() == null)
-            return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
-                    HttpStatus.BAD_REQUEST);
+        // if (legajoDto.getAsistencial() == null && legajoDto.getNoAsistencial() ==
+        // null)
+        // return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
+        // HttpStatus.BAD_REQUEST);
 
         Legajo legajo = new Legajo();
         legajo.setFechaInicio(legajoDto.getFechaInicio());
@@ -81,8 +82,7 @@ public class LegajoController {
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajo.setAsistencial(legajoDto.getAsistencial());
-        legajo.setNoAsistencial(legajoDto.getNoAsistencial());
+        legajo.setAgrupacion(legajoDto.getAgrupacion());
 
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
@@ -129,8 +129,7 @@ public class LegajoController {
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajo.setAsistencial(legajoDto.getAsistencial());
-        legajo.setNoAsistencial(legajoDto.getNoAsistencial());
+        legajo.setAgrupacion(legajoDto.getAgrupacion());
 
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("El legajo ha sido actualizado"), HttpStatus.OK);

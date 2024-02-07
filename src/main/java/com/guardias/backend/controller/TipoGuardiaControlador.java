@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
 import com.guardias.backend.entity.TipoGuardia;
@@ -62,15 +64,13 @@ public class TipoGuardiaControlador {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(tipoGuardiaDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
         if (tipoGuardiaServicio.existsByNombre(tipoGuardiaDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-        if (tipoGuardiaServicio.existsByDescripcion(tipoGuardiaDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("esa descripcion ya existe"),
-                    HttpStatus.BAD_REQUEST);
+
+        if (tipoGuardiaDto.getTipoGuardia() == null)
+            return new ResponseEntity<>(new Mensaje("El Tipo de Guardia es obligatorio"), HttpStatus.BAD_REQUEST);
+
         TipoGuardia tipoGuardia = new TipoGuardia();
         tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
         tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
@@ -90,8 +90,8 @@ public class TipoGuardiaControlador {
         if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(tipoGuardiaDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
+        if (tipoGuardiaDto.getTipoGuardia() == null)
+            return new ResponseEntity<>(new Mensaje("El Tipo de Guardia es obligatorio"), HttpStatus.BAD_REQUEST);
 
         TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
         tipoGuardia.setNombre(tipoGuardiaDto.getNombre());

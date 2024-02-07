@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.Notificacion;
-import com.guardias.backend.enums.TipoNotificacion;
+import com.guardias.backend.enums.TipoNotificacionEnum;
 import com.guardias.backend.repository.NotificacionRepository;
 
 @Service
@@ -27,19 +27,9 @@ public class NotificacionService {
         return notificacionRepository.findById((Long) id);
     }
 
-    // public Optional<Notificacion> getByTipo(String tipo) {
-
-    public List<Notificacion> getByTipoAndActivo(TipoNotificacion tipo, boolean activo) {
+    public List<Notificacion> getByTipoAndActivo(TipoNotificacionEnum tipo, boolean activo) {
         return notificacionRepository.findByTipoAndActivo(tipo, activo);
     }
-
-    // public List<Notificacion> getByActivo(TipoNotificacion tipo) {
-    // return notificacionRepository.findByActivo(true);
-    // }
-
-    // public void save(Notificacion notificacion) {
-    // notificacionRepository.save(notificacion);
-    // }
 
     public void save(Notificacion notificacion) {
         notificacionRepository.save(notificacion);
@@ -52,9 +42,5 @@ public class NotificacionService {
     public boolean existsById(Long id) {
         return notificacionRepository.existsById(id);
     }
-
-    // public boolean existsByActivo(boolean activo) {
-    // return notificacionRepository.existsByActivo(true);
-    // }
 
 }

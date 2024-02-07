@@ -2,7 +2,7 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
-import com.guardias.backend.enums.TipoNotificacion;
+import com.guardias.backend.enums.TipoNotificacionEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,11 +13,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class NotificacionDto {
 
-    // @NotBlank
-    // private String tipo;
-
     @NotNull
-    private TipoNotificacion tipo;
+    private TipoNotificacionEnum tipo;
 
     @NotBlank
     private String categoria;

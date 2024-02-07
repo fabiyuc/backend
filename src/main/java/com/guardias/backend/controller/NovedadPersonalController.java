@@ -66,9 +66,6 @@ public class NovedadPersonalController {
         if (novedadPersonalDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
                     HttpStatus.BAD_REQUEST);
-        if (novedadPersonalDto.getTipoLicencia() == null)
-            return new ResponseEntity(new Mensaje("el tipo de licencia es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
 
         NovedadPersonal novedadPersonal = new NovedadPersonal();
 
@@ -93,12 +90,6 @@ public class NovedadPersonalController {
         // if (!novedadPersonalService.existsByPersona(id))
         // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
         // HttpStatus.NOT_FOUND);
-        if (novedadPersonalDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (novedadPersonalDto.getTipoLicencia() == null)
-            return new ResponseEntity(new Mensaje("el tipo de licencia es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
 
         NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
 

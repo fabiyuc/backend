@@ -2,9 +2,11 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.repository.ServicioRepository;
 
@@ -27,6 +29,10 @@ public class ServiceService {
         return servicioRepositorio.findByDescripcion(descripcion);
     }
 
+    public List<Servicio> getByNivel(int nivel) {
+        return servicioRepositorio.findByNivel(nivel);
+    }
+
     public void save(Servicio servicio) {
         servicioRepositorio.save(servicio);
     }
@@ -41,6 +47,11 @@ public class ServiceService {
 
     public boolean existsByDescripcion(String descripcion) {
         return servicioRepositorio.existsByDescripcion(descripcion);
+    }
+
+    public boolean existsByNivel(int nivel) {
+        return servicioRepositorio.existsByNivel(nivel);
+
     }
 
 }

@@ -51,6 +51,9 @@ public class NovedadPersonal {
     private Person suplente;
 
     @OneToOne(mappedBy = "novedadPersonal")
-    private TipoLicencia tipoLicencia;
+    private Articulo articulo;
+
+    @OneToOne(mappedBy = "novedadPersonal")
+    private Inciso inciso;
 
 }

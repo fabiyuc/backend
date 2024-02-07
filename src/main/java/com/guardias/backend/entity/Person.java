@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -54,16 +53,19 @@ public abstract class Person {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
-    private Set<NovedadPersonal> novedades;
+    @OneToMany(mappedBy = "persona")
+    private Set<Legajo> legajos;
 
-    @OneToMany(mappedBy = "suplente")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<NovedadPersonal> novedadesPersonales;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<NovedadPersonal> suplentes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
     @Override
