@@ -7,7 +7,6 @@ import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.Suspencion;
-import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -22,7 +21,6 @@ public class LegajoDto {
     @NotBlank
     private LocalDate fechaInicio;
 
-    @NotBlank
     private LocalDate fechaFinal;
 
     @NotBlank
@@ -31,10 +29,8 @@ public class LegajoDto {
     @NotBlank
     private Boolean legal;
 
-    @NotBlank
     private String matriculaNacional;
 
-    @NotBlank
     private String matriculaProvincial;
 
     @NotBlank
@@ -51,7 +47,4 @@ public class LegajoDto {
 
     @NotBlank
     private NoAsistencial noAsistencial;
-
-    @NotBlank
-    private AgrupacionEnum agrupacion;
 }

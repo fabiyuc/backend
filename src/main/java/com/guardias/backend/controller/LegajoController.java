@@ -43,6 +43,13 @@ public class LegajoController {
         return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
     }
 
+    /*
+     * EN EL POST DEBO CREAR DOS MAPPING
+     * UNO PARA ASISTENCIAL Y OTRO PARA NO ASISTENCIAL
+     * 
+     * 
+     * 
+     */
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
 
@@ -76,13 +83,12 @@ public class LegajoController {
         legajo.setFechaInicio(legajoDto.getFechaInicio());
         legajo.setFechaFinal(legajoDto.getFechaFinal());
         legajo.setActual(legajoDto.getActual());
-        legajo.setLegal(legajoDto.getActual());
+        legajo.setLegal(legajoDto.getLegal());
         legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
         legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajo.setAgrupacion(legajoDto.getAgrupacion());
 
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
@@ -129,7 +135,6 @@ public class LegajoController {
         legajo.setProfesion(legajoDto.getProfesion());
         legajo.setSuspencion(legajoDto.getSuspencion());
         legajo.setRevista(legajoDto.getRevista());
-        legajo.setAgrupacion(legajoDto.getAgrupacion());
 
         legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("El legajo ha sido actualizado"), HttpStatus.OK);
