@@ -53,6 +53,9 @@ public abstract class Person {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
 
+    @OneToMany(mappedBy = "persona")
+    private Set<Legajo> legajos;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<NovedadPersonal> novedadesPersonales;

@@ -22,9 +22,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Asistencial extends Person {
 
-    @OneToMany(mappedBy = "asistencial")
-    private Set<Legajo> legajos;
-
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15)")
     private TipoGuardiaEnum tipoGuardia;
