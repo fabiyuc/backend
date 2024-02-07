@@ -67,9 +67,10 @@ public class LegajoController {
         if (legajoDto.getRevista() == null)
             return new ResponseEntity(new Mensaje("indicar la revista"),
                     HttpStatus.BAD_REQUEST);
-        if (legajoDto.getAsistencial() == null && legajoDto.getNoAsistencial() == null)
-            return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
-                    HttpStatus.BAD_REQUEST);
+        // if (legajoDto.getAsistencial() == null && legajoDto.getNoAsistencial() ==
+        // null)
+        // return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
+        // HttpStatus.BAD_REQUEST);
 
         Legajo legajo = new Legajo();
         legajo.setFechaInicio(legajoDto.getFechaInicio());

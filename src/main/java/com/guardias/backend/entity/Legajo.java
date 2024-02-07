@@ -5,9 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -71,6 +74,10 @@ public class Legajo {
   @JoinColumn(name = "id_persona")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades" })
   private Person persona;
+
+  @Enumerated(EnumType.STRING)
+  @Column(columnDefinition = "VARCHAR(15)")
+  private AgrupacionEnum agrupacion;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
