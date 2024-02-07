@@ -67,6 +67,10 @@ public abstract class Efector {
     @JsonIgnore
     private Set<Legajo> legajos = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    @JsonIgnore
+    private Set<Notificacion> notificaciones;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
