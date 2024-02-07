@@ -33,7 +33,8 @@ public class Region {
     @JsonIgnore
     private Set<Efector> efectores;
 
-     @ManyToMany(mappedBy = "regiones")
+     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "regiones")
+     @JsonIgnore
     private Set<Notificacion> notificaciones;
 
     @Override
