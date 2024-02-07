@@ -62,6 +62,11 @@ public class Legajo {
   private Revista revista;
 
   @ManyToOne(optional = true)
+  @JoinColumn(name = "id_udo")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo" })
+  private Efector udo;
+
+  @ManyToOne(optional = true)
   @JoinColumn(name = "id_persona")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Person persona;

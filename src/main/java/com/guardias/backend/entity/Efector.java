@@ -59,6 +59,10 @@ public abstract class Efector {
     @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Legajo> legajosUdo = new HashSet<>();
+
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Legajo> legajos = new HashSet<>();
