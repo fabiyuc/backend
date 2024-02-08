@@ -1,9 +1,14 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.Cargo;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.NoAsistencial;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.Suspencion;
@@ -24,6 +29,12 @@ public class LegajoDto {
     private LocalDate fechaFinal;
 
     @NotBlank
+    private Person persona;
+
+    @NotBlank
+    private Efector udo;
+
+    @NotBlank
     private Boolean actual;
 
     @NotBlank
@@ -36,15 +47,16 @@ public class LegajoDto {
     @NotBlank
     private Profesion profesion;
 
-    @NotBlank
     private Suspencion suspencion;
 
     @NotBlank
     private Revista revista;
 
-    @NotBlank
     private Asistencial asistencial;
 
-    @NotBlank
     private NoAsistencial noAsistencial;
+
+    private Cargo cargo;
+
+    private Set<Efector> efectores = new HashSet<>();
 }
