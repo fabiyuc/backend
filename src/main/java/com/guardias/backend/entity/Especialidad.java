@@ -3,7 +3,6 @@ package com.guardias.backend.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -43,7 +42,7 @@ public class Especialidad {
     // private Set<Asistencial> asistenciales;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "especialidades", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "especialidades" })
     private Set<Asistencial> asistenciales = new HashSet<>();
 
 }

@@ -42,7 +42,7 @@ public class Asistencial extends Person {
     // private Set<Especialidad> especialidades;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "asistencial_especialidad", joinColumns = @JoinColumn(name = "asistencial_id"), inverseJoinColumns = @JoinColumn(name = "especialidad_id"))
+    @JoinTable(name = "asistencial_especialidad", joinColumns = @JoinColumn(name = "id_asistencial"), inverseJoinColumns = @JoinColumn(name = "id_especialidad"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales" })
     private Set<Especialidad> especialidades = new HashSet<>();
 
