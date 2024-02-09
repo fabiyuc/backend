@@ -1,10 +1,15 @@
 package com.guardias.backend.entity;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "servicios")
 @Data
 @AllArgsConstructor
-//@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @NoArgsConstructor
 public class Servicio {
 
@@ -22,4 +27,11 @@ public class Servicio {
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+
+    @Column(columnDefinition = "VARCHAR(20)")
+    private int nivel;
+
+    @OneToMany(mappedBy = "servicio")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio" })
+    private Set<RegistroActividad> registrosActividades;
 }

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
 import com.guardias.backend.entity.Servicio;
@@ -41,12 +43,33 @@ public class ServicioControlador {
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
     }
 
+    // @GetMapping("/detaildescripcion/{descripcion}")
+    // public ResponseEntity<?> getByDescripcion(@PathVariable("descripcion") String
+    // descripcion) {
+    // try {
+    // Servicio servicio = serviceServicio.getByDescripcion(descripcion).get();
+    // return new ResponseEntity<>(servicio, HttpStatus.OK);
+    // } catch (NoSuchElementException e) {
+    // return new ResponseEntity<>(new Mensaje("No existe el servicio"),
+    // HttpStatus.NOT_FOUND);
+    // }
+    // }
+
     @GetMapping("/detaildescripcion/{descripcion}")
     public ResponseEntity<Servicio> getByDescripcion(@PathVariable("descripcion") String descripcion) {
         if (!serviceServicio.existsByDescripcion(descripcion))
-            return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe el servicio"),
+                    HttpStatus.NOT_FOUND);
         Servicio servicio = serviceServicio.getByDescripcion(descripcion).get();
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
+    }
+
+    @GetMapping("/detailnivel/{nivel}")
+    public ResponseEntity<List<Servicio>> getByNivel(@PathVariable("nivel") int nivel) {
+        List<Servicio> servicios = serviceServicio.getByNivel(nivel);
+        if (!serviceServicio.existsByNivel(nivel))
+            return new ResponseEntity(new Mensaje("no existe el nivel"), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(servicios, HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -57,8 +80,12 @@ public class ServicioControlador {
         if (serviceServicio.existsByDescripcion(servicioDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("esa descripcion ya existe"),
                     HttpStatus.BAD_REQUEST);
+        if (servicioDto.getNivel() <= 0)
+            return new ResponseEntity(new Mensaje("el nivel debe ser mayor que 0"),
+                    HttpStatus.BAD_REQUEST);
         Servicio servicio = new Servicio();
         servicio.setDescripcion(servicioDto.getDescripcion());
+        servicio.setNivel(servicioDto.getNivel());
         serviceServicio.save(servicio);
         return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
     }
@@ -75,10 +102,14 @@ public class ServicioControlador {
         if (StringUtils.isBlank(servicioDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
+        if (servicioDto.getNivel() <= 0)
+            return new ResponseEntity(new Mensaje("el nivel debe ser mayor que 0"), HttpStatus.BAD_REQUEST);
+
         Servicio servicio = serviceServicio.getOne(id).get();
         if (servicio.getDescripcion() != servicioDto.getDescripcion() && servicioDto.getDescripcion() != null
                 && !servicioDto.getDescripcion().isEmpty())
             servicio.setDescripcion(servicioDto.getDescripcion());
+        servicio.setNivel(servicioDto.getNivel());
         serviceServicio.save(servicio);
         return new ResponseEntity(new Mensaje("servicio actualizado"), HttpStatus.OK);
     }

@@ -3,15 +3,15 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,9 +45,13 @@ public class Cargo {
     @Column(columnDefinition = "DATE")
     private LocalDate fechafinal;
 
-    @OneToOne
-    @JoinColumn(name = "tipo_cargo_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cargo" })
-    private TipoCargo tipoCargo;
+    // @OneToOne
+    // @JoinColumn(name = "tipo_cargo_id")
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cargo" })
+    // private TipoCargo tipoCargo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15)")
+    private AgrupacionEnum agrupacion;
 
 }

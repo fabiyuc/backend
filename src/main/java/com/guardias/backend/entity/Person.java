@@ -2,7 +2,9 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,6 +52,9 @@ public abstract class Person {
     private String domicilio;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
+
+    @OneToMany(mappedBy = "persona")
+    private Set<Legajo> legajos;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore

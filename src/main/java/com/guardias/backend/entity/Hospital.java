@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Hospital extends Efector {
 
     private boolean esCabecera;
+    private boolean admitePasiva;
     private int nivelComplejidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)

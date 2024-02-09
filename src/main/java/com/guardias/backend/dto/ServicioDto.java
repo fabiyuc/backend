@@ -12,4 +12,6 @@ public class ServicioDto {
 
     @NotBlank
     private String descripcion;
+
+    private int nivel;
 }

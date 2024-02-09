@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 public class HospitalDto extends EfectorDto {
 
     private boolean esCabecera;
+    private boolean admitePasiva;
 
     @Min(value = 1)
     private int nivelComplejidad;

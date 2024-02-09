@@ -1,8 +1,11 @@
 package com.guardias.backend.entity;
 
+import java.util.HashSet;
 import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
@@ -55,7 +59,18 @@ public abstract class Efector {
     @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
-    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Legajo> legajosUdo = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Legajo> legajos = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    @JsonIgnore
+    private Set<Notificacion> notificaciones;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
