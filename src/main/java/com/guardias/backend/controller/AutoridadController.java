@@ -79,8 +79,7 @@ public class AutoridadController {
 
         Autoridad autoridad = autoridadService.getOne(id).get();
 
-        if (autoridad.getNombre() != autoridadDto.getNombre() && autoridadDto.getNombre() != null
-                && !autoridadDto.getNombre().isEmpty())
+        if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
 
         if (autoridad.getFechaInicio() != autoridadDto.getFechaInicio() && autoridadDto.getFechaInicio() != null)
@@ -88,6 +87,12 @@ public class AutoridadController {
 
         if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (!autoridadDto.getEfectores().equals(autoridad.getEfectores()))
+            autoridad.setEfectores(autoridadDto.getEfectores());
 
         autoridad.setEsActual(autoridadDto.isEsActual());
         autoridad.setEsRegional(autoridadDto.isEsRegional());
