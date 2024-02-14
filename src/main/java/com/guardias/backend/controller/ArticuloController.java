@@ -43,8 +43,8 @@ public class ArticuloController {
         return new ResponseEntity(articulo, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody ArticuloDto articuloDto) {
+    private ResponseEntity<?> validations(ArticuloDto articuloDto) {
+
         if (StringUtils.isBlank(articuloDto.getNumero()))
             return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -65,49 +65,10 @@ public class ArticuloController {
         if (articuloService.existsByDenominacion(articuloDto.getDenominacion()))
             return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
                     HttpStatus.BAD_REQUEST);
-
-        Articulo articulo = new Articulo();
-        articulo.setNumero(articuloDto.getNumero());
-        articulo.setDenominacion(articuloDto.getDenominacion());
-        articulo.setDetalle(articuloDto.getDetalle());
-        articulo.setEstado(articuloDto.getEstado());
-        articulo.setFechaAlta(articuloDto.getFechaAlta());
-        articulo.setFechaBaja(articuloDto.getFechaBaja());
-        articulo.setFechaModificacion(articuloDto.getFechaModificacion());
-        articulo.setMotivoModificacion(articuloDto.getMotivoModificacion());
-        articulo.setSubArticulos(articuloDto.getSubArticulos());
-        articulo.setIncisos(articuloDto.getIncisos());
-        articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
-
-        articuloService.save(articulo);
-        return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ArticuloDto articuloDto) {
-        if (StringUtils.isBlank(articuloDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(articuloDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("La denominacion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (articuloDto.getEstado() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El estado es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (articuloDto.getFechaAlta() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (articuloService.existsByNumero(articuloDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (articuloService.existsByDenominacion(articuloDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        Articulo articulo = articuloService.findById(id).get();
-
+    private Articulo createUpdate(Articulo articulo, ArticuloDto articuloDto) {
         if (!articuloDto.getNumero().equals(articulo.getNumero()))
             articulo.setNumero(articuloDto.getNumero());
         if (!articuloDto.getDenominacion().equals(articulo.getDenominacion()))
@@ -130,9 +91,40 @@ public class ArticuloController {
             articulo.setIncisos(articuloDto.getIncisos());
         if (!articuloDto.getNovedadPersonal().equals(articulo.getNovedadPersonal()))
             articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
+        return articulo;
+    }
 
-        articuloService.save(articulo);
-        return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody ArticuloDto articuloDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(articuloDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Articulo articulo = createUpdate(new Articulo(), articuloDto);
+            articuloService.save(articulo);
+            return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ArticuloDto articuloDto) {
+        if (!articuloService.existsById(id))
+            return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(articuloDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Articulo articulo = createUpdate(articuloService.findById(id).get(), articuloDto);
+            articuloService.save(articulo);
+            return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @DeleteMapping("/delete/{id}")

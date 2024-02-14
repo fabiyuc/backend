@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.AdicionalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Adicional;
@@ -52,17 +53,34 @@ public class AdicionalController {
 
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody AdicionalDto adicionalDto) {
+    private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
         if (StringUtils.isBlank(adicionalDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (adicionalService.existsByNombre(adicionalDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-        Adicional adicional = new Adicional();
-        adicional.setNombre(adicionalDto.getNombre());
-        adicionalService.save(adicional);
-        return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
+        if (!adicionalDto.getNombre().equals(adicional.getNombre()))
+            adicional.setNombre(adicionalDto.getNombre());
+        return adicional;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody AdicionalDto adicionalDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Adicional adicional = createUpdate(new Adicional(), adicionalDto);
+            adicionalService.save(adicional);
+            return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/update/{id}")
@@ -70,17 +88,14 @@ public class AdicionalController {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
 
-        if (adicionalService.existsByNombre(adicionalDto.getNombre())
-                && adicionalService.getByNombre(adicionalDto.getNombre()).get().getId() == id)
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(adicionalDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        Adicional adicional = adicionalService.getById(id).get();
-        adicional.setNombre(adicionalDto.getNombre());
-        adicionalService.save(adicional);
-        return new ResponseEntity<>(new Mensaje("Adicional Actualizado"), HttpStatus.OK);
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Adicional adicional = createUpdate(adicionalService.getById(id).get(), adicionalDto);
+            adicionalService.save(adicional);
+            return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
