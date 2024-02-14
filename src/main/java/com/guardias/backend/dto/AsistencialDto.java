@@ -1,8 +1,11 @@
 package com.guardias.backend.dto;
 
 import java.util.Set;
+
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,5 +21,6 @@ public class AsistencialDto extends PersonDto {
 
     @NotBlank
     private TipoGuardiaEnum tipoGuardia;
+    Set<RegistroActividad> registrosActividades;
 
 }

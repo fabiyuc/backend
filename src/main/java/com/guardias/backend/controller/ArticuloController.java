@@ -57,11 +57,9 @@ public class ArticuloController {
         if (articuloDto.getFechaAlta() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
                     HttpStatus.BAD_REQUEST);
-
         if (articuloService.existsByNumero(articuloDto.getNumero()))
             return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
                     HttpStatus.BAD_REQUEST);
-
         if (articuloService.existsByDenominacion(articuloDto.getDenominacion()))
             return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
                     HttpStatus.BAD_REQUEST);
@@ -124,7 +122,6 @@ public class ArticuloController {
             return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
                     HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @DeleteMapping("/delete/{id}")

@@ -66,6 +66,9 @@ public class AdicionalController {
     private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
         if (!adicionalDto.getNombre().equals(adicional.getNombre()))
             adicional.setNombre(adicionalDto.getNombre());
+
+        if (!adicionalDto.getRevistas().equals(adicional.getRevistas()))
+            adicional.setRevistas(adicionalDto.getRevistas());
         return adicional;
     }
 
