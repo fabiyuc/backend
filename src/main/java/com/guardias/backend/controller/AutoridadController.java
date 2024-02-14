@@ -74,9 +74,6 @@ public class AutoridadController {
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        // validar las fechas y los datos booleanos en front que no sea campo vacio
-        // hasta poder validar en back
-
         Autoridad autoridad = autoridadService.getOne(id).get();
 
         if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
