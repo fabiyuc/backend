@@ -159,6 +159,5 @@ public class AsistencialController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         asistencialService.delete(id);
         return new ResponseEntity<>(new Mensaje("Asistencial eliminado"), HttpStatus.OK);
-
     }
 }
