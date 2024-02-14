@@ -45,4 +45,8 @@ public class DepartamentoService {
     public boolean existsByNombre(String nombre) {
         return departamentoRepository.existsByNombre(nombre);
     }
+
+    public boolean existsByCodigoPostal(String codigoPostal){
+        return departamentoRepository.existsByCodigoPostal(codigoPostal);
+    }
 }
