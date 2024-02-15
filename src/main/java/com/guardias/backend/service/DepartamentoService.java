@@ -30,6 +30,10 @@ public class DepartamentoService {
         return departamentoRepository.findByNombre(nombre);
     }
 
+    public Optional<Departamento>getByCodigoPostal(String codigoPostal){
+        return departamentoRepository.findByCodigoPostal(codigoPostal);
+    }
+
     public void save(Departamento departamento) {
         departamentoRepository.save(departamento);
     }
@@ -44,5 +48,9 @@ public class DepartamentoService {
 
     public boolean existsByNombre(String nombre) {
         return departamentoRepository.existsByNombre(nombre);
+    }
+
+    public boolean existsByCodigoPostal(String codigoPostal){
+        return departamentoRepository.existsByCodigoPostal(codigoPostal);
     }
 }

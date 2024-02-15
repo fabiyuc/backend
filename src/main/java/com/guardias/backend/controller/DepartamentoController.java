@@ -60,7 +60,7 @@ public class DepartamentoController {
         Departamento departamento = new Departamento();
         departamento.setNombre(departamentoDto.getNombre());
         departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
-        departamento.setLocalidades(departamentoDto.getLocalidades());
+        //departamento.setLocalidades(departamentoDto.getLocalidades());
         departamento.setProvincia(departamentoDto.getProvincia());
 
         departamentoService.save(departamento);
@@ -72,11 +72,22 @@ public class DepartamentoController {
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("El departamento no existe"), HttpStatus.NOT_FOUND);
         if (departamentoService.existsByNombre(departamentoDto.getNombre()) &&
-                departamentoService.getByNombre(departamentoDto.getNombre()).get().getId() == id)
+                departamentoService.getByNombre(departamentoDto.getNombre()).get().getId() != id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(departamentoDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+        
+        if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
+            return new ResponseEntity(new Mensaje("el CP es obligatorio"), HttpStatus.BAD_REQUEST);
+            
+        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal())&& departamentoService.getByCodigoPostal(departamentoDto.getCodigoPostal()).get().getId()!= id)
+            return new ResponseEntity(new Mensaje("ese CP ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (departamentoDto.getProvincia() == null)
+            return new ResponseEntity(new Mensaje("indicar la provincia"),
+                    HttpStatus.BAD_REQUEST);
+
 
         Departamento departamento = departamentoService.getById(id).get();
 
@@ -85,9 +96,9 @@ public class DepartamentoController {
         if (!departamentoDto.getCodigoPostal().equals(departamento.getCodigoPostal()))
             departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
         if (!departamentoDto.getProvincia().equals(departamento.getProvincia()))
-            departamento.setProvincia(departamento.getProvincia());
-        if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
-            departamento.setLocalidades(departamentoDto.getLocalidades());
+            departamento.setProvincia(departamentoDto.getProvincia());
+       // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
+         //   departamento.setLocalidades(departamentoDto.getLocalidades());
 
         departamentoService.save(departamento);
         return new ResponseEntity(new Mensaje("Departamento modificado correctamente"), HttpStatus.OK);

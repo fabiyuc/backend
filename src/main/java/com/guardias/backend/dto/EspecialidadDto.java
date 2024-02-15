@@ -1,6 +1,7 @@
 package com.guardias.backend.dto;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Profesion;
@@ -18,6 +19,6 @@ public class EspecialidadDto {
     private String nombre;
     private Profesion profesion;
     private boolean esPasiva;
-    private List<Asistencial> asistenciales;
+    private Set<Asistencial> asistenciales = new HashSet<>();
 
 }

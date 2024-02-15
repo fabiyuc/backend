@@ -11,6 +11,10 @@ import com.guardias.backend.entity.Departamento;
 public interface DepartamentoRepository extends JpaRepository<Departamento, Long> {
     Optional<Departamento> findByNombre(String nombre);
 
+    Optional<Departamento> findByCodigoPostal(String codigoPostal);
+
     boolean existsByNombre(String nombre);
+    
+    boolean existsByCodigoPostal(String codigoPostal);
 
 }
