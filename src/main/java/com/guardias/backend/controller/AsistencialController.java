@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.AsistencialService;
 
 import io.micrometer.common.util.StringUtils;
@@ -35,6 +37,17 @@ public class AsistencialController {
     public ResponseEntity<List<Asistencial>> list() {
         List<Asistencial> list = asistencialService.list();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/legajos/{id}")
+    public ResponseEntity<?> getLegajosByAsistencial(@PathVariable("id") Long id) {
+        if (!asistencialService.existsById(id))
+            return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
+
+        Asistencial asistencial = asistencialService.findById(id).get();
+        Set<Legajo> legajos = asistencial.getLegajos();
+
+        return new ResponseEntity<>(legajos, HttpStatus.OK);
     }
 
     // *** POSTMAN: /asistencial/listaestado?estado=true o
