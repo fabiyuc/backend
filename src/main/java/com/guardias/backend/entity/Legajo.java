@@ -70,7 +70,8 @@ public class Legajo {
 
   @ManyToOne(optional = true)
   @JoinColumn(name = "id_persona")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades", "especialidades",
+      "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
   private Person persona;
 
   @OneToOne(mappedBy = "legajo")

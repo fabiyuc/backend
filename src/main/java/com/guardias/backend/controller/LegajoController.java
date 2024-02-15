@@ -1,6 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
-import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.service.LegajoService;
 
 @RestController
@@ -31,85 +28,19 @@ public class LegajoController {
     @Autowired
     LegajoService legajoService;
 
-    /*
-     * EN EL GET DEBO CREAR DOS MAPPING
-     * debo mapear el objeto legajo a legajoDto y dentro de ese mapeo discriminar
-     * si es asistencial o noasistencial
-     * if (legajo.getPersona() instanceof Asistencial)
-     * tambien podria agregar los atributos especificos dee asistencial y no
-     * asistencial a PersonaDto....
-     */
-
-    private LegajoDto convertToDto(Legajo legajo) {
-        LegajoDto legajoDto = new LegajoDto();
-        legajoDto.setId(legajo.getId());
-        legajoDto.setFechaInicio(legajo.getFechaInicio());
-        legajoDto.setFechaFinal(legajo.getFechaFinal());
-        legajoDto.setPersona(legajo.getPersona());
-        legajoDto.setUdo(legajo.getUdo());
-        legajoDto.setActual(legajo.getActual());
-        legajoDto.setLegal(legajo.getLegal());
-        legajoDto.setMatriculaNacional(legajo.getMatriculaNacional());
-        legajoDto.setMatriculaProvincial(legajo.getMatriculaProvincial());
-        legajoDto.setProfesion(legajo.getProfesion());
-        legajoDto.setSuspencion(legajo.getSuspencion());
-        legajoDto.setRevista(legajo.getRevista());
-        legajoDto.setCargo(legajo.getCargo());
-        legajoDto.setEfectores(legajo.getEfectores());
-
-        if (legajo.getPersona() instanceof Asistencial) {
-            Asistencial asistencial = (Asistencial) legajo.getPersona();
-            legajoDto.setTipoGuardia(asistencial.getTipoGuardia().toString());
-        } else if (legajo.getPersona() instanceof NoAsistencial) {
-            NoAsistencial noAsistencial = (NoAsistencial) legajo.getPersona();
-            legajoDto.setDescripcion(noAsistencial.getDescripcion());
-        }
-
-        return legajoDto;
-    }
-
-    // @GetMapping("/lista")
-    // public ResponseEntity<List<Legajo>> list() {
-    // List<Legajo> list = legajoService.list();
-    // return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
-    // }
-
     @GetMapping("/lista")
-    public ResponseEntity<List<LegajoDto>> list() {
-        List<Legajo> listaLegajos = legajoService.list();
-        List<LegajoDto> listaLegajosDto = new ArrayList<>();
-
-        for (Legajo legajo : listaLegajos) {
-            LegajoDto legajoDto = convertToDto(legajo);
-            listaLegajosDto.add(legajoDto);
-        }
-
-        return new ResponseEntity<>(listaLegajosDto, HttpStatus.OK);
+    public ResponseEntity<List<Legajo>> list() {
+        List<Legajo> list = legajoService.list();
+        return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
     }
 
-    /*
-     * //ORIGINAL
-     * 
-     * @GetMapping("/detalle/{id}")
-     * public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
-     * if (!legajoService.existsById(id))
-     * return new ResponseEntity(new Mensaje("No existe el legajo"),
-     * HttpStatus.NOT_FOUND);
-     * Legajo legajo = legajoService.getOne(id).get();
-     * return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
-     * }
-     */
-
-    // NUEVA
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<LegajoDto> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
         if (!legajoService.existsById(id))
-            return new ResponseEntity(new Mensaje("No existe el legajo"), HttpStatus.NOT_FOUND);
-
+            return new ResponseEntity(new Mensaje("No existe el legajo"),
+                    HttpStatus.NOT_FOUND);
         Legajo legajo = legajoService.getOne(id).get();
-        LegajoDto legajoDto = convertToDto(legajo);
-
-        return new ResponseEntity<LegajoDto>(legajoDto, HttpStatus.OK);
+        return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
     }
 
     private ResponseEntity<?> validations(LegajoDto legajoDto) {
