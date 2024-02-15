@@ -18,7 +18,7 @@ public class EspecialidadDto {
     @NotBlank
     private String nombre;
     private Profesion profesion;
-    private boolean esPasiva;
+    private Boolean esPasiva;
     private Set<Asistencial> asistenciales = new HashSet<>();
 
 }
