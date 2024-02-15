@@ -146,7 +146,7 @@ public class AsistencialController {
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
