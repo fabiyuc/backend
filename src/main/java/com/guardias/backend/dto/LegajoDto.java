@@ -4,10 +4,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Cargo;
 import com.guardias.backend.entity.Efector;
-import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.entity.Revista;
@@ -23,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LegajoDto {
 
+    Long id;
     @NotBlank
     private LocalDate fechaInicio;
 
@@ -52,9 +51,8 @@ public class LegajoDto {
     @NotBlank
     private Revista revista;
 
-    private Asistencial asistencial;
-
-    private NoAsistencial noAsistencial;
+    private String tipoGuardia;
+    private String descripcion;
 
     private Cargo cargo;
 

@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.service.LegajoService;
 
 @RestController
@@ -37,89 +40,79 @@ public class LegajoController {
      * asistencial a PersonaDto....
      */
 
-    @GetMapping("/lista")
-    public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.list();
-        return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
+    private LegajoDto convertToDto(Legajo legajo) {
+        LegajoDto legajoDto = new LegajoDto();
+        legajoDto.setId(legajo.getId());
+        legajoDto.setFechaInicio(legajo.getFechaInicio());
+        legajoDto.setFechaFinal(legajo.getFechaFinal());
+        legajoDto.setPersona(legajo.getPersona());
+        legajoDto.setUdo(legajo.getUdo());
+        legajoDto.setActual(legajo.getActual());
+        legajoDto.setLegal(legajo.getLegal());
+        legajoDto.setMatriculaNacional(legajo.getMatriculaNacional());
+        legajoDto.setMatriculaProvincial(legajo.getMatriculaProvincial());
+        legajoDto.setProfesion(legajo.getProfesion());
+        legajoDto.setSuspencion(legajo.getSuspencion());
+        legajoDto.setRevista(legajo.getRevista());
+        legajoDto.setCargo(legajo.getCargo());
+        legajoDto.setEfectores(legajo.getEfectores());
+
+        if (legajo.getPersona() instanceof Asistencial) {
+            Asistencial asistencial = (Asistencial) legajo.getPersona();
+            legajoDto.setTipoGuardia(asistencial.getTipoGuardia().toString());
+        } else if (legajo.getPersona() instanceof NoAsistencial) {
+            NoAsistencial noAsistencial = (NoAsistencial) legajo.getPersona();
+            legajoDto.setDescripcion(noAsistencial.getDescripcion());
+        }
+
+        return legajoDto;
     }
 
+    // @GetMapping("/lista")
+    // public ResponseEntity<List<Legajo>> list() {
+    // List<Legajo> list = legajoService.list();
+    // return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
+    // }
+
+    @GetMapping("/lista")
+    public ResponseEntity<List<LegajoDto>> list() {
+        List<Legajo> listaLegajos = legajoService.list();
+        List<LegajoDto> listaLegajosDto = new ArrayList<>();
+
+        for (Legajo legajo : listaLegajos) {
+            LegajoDto legajoDto = convertToDto(legajo);
+            listaLegajosDto.add(legajoDto);
+        }
+
+        return new ResponseEntity<>(listaLegajosDto, HttpStatus.OK);
+    }
+
+    /*
+     * //ORIGINAL
+     * 
+     * @GetMapping("/detalle/{id}")
+     * public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
+     * if (!legajoService.existsById(id))
+     * return new ResponseEntity(new Mensaje("No existe el legajo"),
+     * HttpStatus.NOT_FOUND);
+     * Legajo legajo = legajoService.getOne(id).get();
+     * return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
+     * }
+     */
+
+    // NUEVA
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<LegajoDto> getById(@PathVariable("id") Long id) {
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el legajo"), HttpStatus.NOT_FOUND);
+
         Legajo legajo = legajoService.getOne(id).get();
-        return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
+        LegajoDto legajoDto = convertToDto(legajo);
+
+        return new ResponseEntity<LegajoDto>(legajoDto, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Legajo legajo = createUpdate(new Legajo(), legajoDto);
-            legajoService.save(legajo);
-            return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
-        } else {
-            return new ResponseEntity(new Mensaje("error al guardar los cambios"),
-                    HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {
-        if (!legajoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
-
-        ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Legajo legajo = createUpdate(legajoService.getOne(id).get(), legajoDto);
-            legajoService.save(legajo);
-            return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
-        } else {
-            return new ResponseEntity(new Mensaje("error al guardar los cambios"),
-                    HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    public Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
-        if (!legajoDto.getFechaInicio().equals(legajo.getFechaInicio()))
-            legajo.setFechaInicio(legajoDto.getFechaInicio());
-        if (!legajoDto.getFechaFinal().equals(legajo.getFechaFinal()))
-            legajo.setFechaFinal(legajoDto.getFechaFinal());
-        if (!legajoDto.getPersona().equals(legajo.getPersona()))
-            legajo.setPersona(legajoDto.getPersona());
-        if (!legajoDto.getUdo().equals(legajo.getUdo()))
-            legajo.setUdo(legajoDto.getUdo());
-        if (!legajoDto.getActual().equals(legajo.getActual()))
-            legajo.setActual(legajoDto.getActual());
-        if (!legajoDto.getLegal().equals(legajo.getLegal()))
-            legajo.setLegal(legajoDto.getLegal());
-        if (!legajoDto.getMatriculaNacional().equals(legajo.getMatriculaNacional()))
-            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
-        if (!legajoDto.getMatriculaProvincial().equals(legajo.getMatriculaProvincial()))
-            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
-        if (!legajoDto.getProfesion().equals(legajo.getProfesion()))
-            legajo.setProfesion(legajoDto.getProfesion());
-        if (!legajoDto.getSuspencion().equals(legajo.getSuspencion()))
-            legajo.setSuspencion(legajoDto.getSuspencion());
-        if (!legajoDto.getRevista().equals(legajo.getRevista()))
-            legajo.setRevista(legajoDto.getRevista());
-
-        if (legajoDto.getAsistencial() != null) {
-            if (!legajoDto.getAsistencial().equals(legajo.getPersona()))
-                legajo.setPersona(legajoDto.getAsistencial());
-        } else {
-            if (!legajoDto.getNoAsistencial().equals(legajo.getPersona()))
-                legajo.setPersona(legajoDto.getNoAsistencial());
-        }
-        if (!legajoDto.getCargo().equals(legajo.getCargo()))
-            legajo.setCargo(legajoDto.getCargo());
-        if (!legajoDto.getEfectores().equals(legajo.getEfectores()))
-            legajo.setEfectores(legajoDto.getEfectores());
-
-        return legajo;
-    }
-
-    public ResponseEntity<?> validations(LegajoDto legajoDto) {
+    private ResponseEntity<?> validations(LegajoDto legajoDto) {
         if (legajoDto.getFechaInicio() == null) {
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
         }
@@ -147,6 +140,70 @@ public class LegajoController {
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
+        if (!legajoDto.getFechaInicio().equals(legajo.getFechaInicio()))
+            legajo.setFechaInicio(legajoDto.getFechaInicio());
+        if (!legajoDto.getFechaFinal().equals(legajo.getFechaFinal()))
+            legajo.setFechaFinal(legajoDto.getFechaFinal());
+        if (!legajoDto.getPersona().equals(legajo.getPersona()))
+            legajo.setPersona(legajoDto.getPersona());
+        if (!legajoDto.getUdo().equals(legajo.getUdo()))
+            legajo.setUdo(legajoDto.getUdo());
+        if (!legajoDto.getActual().equals(legajo.getActual()))
+            legajo.setActual(legajoDto.getActual());
+        if (!legajoDto.getLegal().equals(legajo.getLegal()))
+            legajo.setLegal(legajoDto.getLegal());
+        if (!legajoDto.getMatriculaNacional().equals(legajo.getMatriculaNacional()))
+            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
+        if (!legajoDto.getMatriculaProvincial().equals(legajo.getMatriculaProvincial()))
+            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
+        if (!legajoDto.getProfesion().equals(legajo.getProfesion()))
+            legajo.setProfesion(legajoDto.getProfesion());
+        if (!legajoDto.getSuspencion().equals(legajo.getSuspencion()))
+            legajo.setSuspencion(legajoDto.getSuspencion());
+        if (!legajoDto.getRevista().equals(legajo.getRevista()))
+            legajo.setRevista(legajoDto.getRevista());
+        if (!legajoDto.getPersona().equals(legajo.getPersona()))
+            legajo.setPersona(legajoDto.getPersona());
+        if (!legajoDto.getCargo().equals(legajo.getCargo()))
+            legajo.setCargo(legajoDto.getCargo());
+        if (!legajoDto.getEfectores().equals(legajo.getEfectores()))
+            legajo.setEfectores(legajoDto.getEfectores());
+
+        return legajo;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Legajo legajo = createUpdate(new Legajo(), legajoDto);
+            legajoService.save(legajo);
+
+            return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity(new Mensaje("error al guardar los cambios"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {
+        if (!legajoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Legajo legajo = createUpdate(legajoService.getOne(id).get(), legajoDto);
+            legajoService.save(legajo);
+
+            return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity(new Mensaje("error al guardar los cambios"),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
