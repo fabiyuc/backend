@@ -80,6 +80,7 @@ public class ProfesionController {
         profesion.setNombre(profesionDto.getNombre());
         profesion.setAsistencial(profesionDto.getAsistencial());
         profesion.setLegajos(profesionDto.getLegajos());
+        profesion.setEspecialidades(profesionDto.getEspecialidades());
 
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);

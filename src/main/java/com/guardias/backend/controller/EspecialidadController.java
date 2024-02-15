@@ -60,6 +60,7 @@ public class EspecialidadController {
 
         Especialidad especialidad = new Especialidad();
         especialidad.setNombre(especialidadDto.getNombre());
+        especialidad.setProfesion(especialidadDto.getProfesion());
 
         especialidadService.save(especialidad);
         return new ResponseEntity(new Mensaje("Especialidad creada"), HttpStatus.OK);

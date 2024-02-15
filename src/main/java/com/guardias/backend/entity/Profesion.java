@@ -31,11 +31,11 @@ public class Profesion {
     private Boolean asistencial;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profesion", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "profesion" })
-    private Set<Legajo> legajos;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "profesion", "asistenciales", "legajos" })
+    private Set<Especialidad> especialidades;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profesion", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "profesion" })
-    private Set<Especialidad> especialidades;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "profesion", "legajos" })
+    private Set<Legajo> legajos;
 
 }

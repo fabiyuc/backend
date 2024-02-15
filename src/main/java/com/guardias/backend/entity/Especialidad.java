@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -44,5 +45,20 @@ public class Especialidad {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "especialidades", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "especialidades" })
     private Set<Asistencial> asistenciales = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Especialidad that = (Especialidad) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
 }
