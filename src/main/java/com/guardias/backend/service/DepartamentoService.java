@@ -30,6 +30,10 @@ public class DepartamentoService {
         return departamentoRepository.findByNombre(nombre);
     }
 
+    public Optional<Departamento>getByCodigoPostal(String codigoPostal){
+        return departamentoRepository.findByCodigoPostal(codigoPostal);
+    }
+
     public void save(Departamento departamento) {
         departamentoRepository.save(departamento);
     }

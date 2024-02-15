@@ -72,7 +72,7 @@ public class DepartamentoController {
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("El departamento no existe"), HttpStatus.NOT_FOUND);
         if (departamentoService.existsByNombre(departamentoDto.getNombre()) &&
-                departamentoService.getByNombre(departamentoDto.getNombre()).get().getId() == id)
+                departamentoService.getByNombre(departamentoDto.getNombre()).get().getId() != id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(departamentoDto.getNombre()))
@@ -81,7 +81,7 @@ public class DepartamentoController {
         if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
             return new ResponseEntity(new Mensaje("el CP es obligatorio"), HttpStatus.BAD_REQUEST);
             
-        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal()))
+        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal())&& departamentoService.getByCodigoPostal(departamentoDto.getCodigoPostal()).get().getId()!= id)
             return new ResponseEntity(new Mensaje("ese CP ya existe"), HttpStatus.BAD_REQUEST);
 
         if (departamentoDto.getProvincia() == null)
@@ -96,7 +96,7 @@ public class DepartamentoController {
         if (!departamentoDto.getCodigoPostal().equals(departamento.getCodigoPostal()))
             departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
         if (!departamentoDto.getProvincia().equals(departamento.getProvincia()))
-            departamento.setProvincia(departamento.getProvincia());
+            departamento.setProvincia(departamentoDto.getProvincia());
        // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
          //   departamento.setLocalidades(departamentoDto.getLocalidades());
 
