@@ -71,6 +71,10 @@ public abstract class Efector {
     @JsonIgnore
     private Set<Notificacion> notificaciones;
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    @JsonIgnore
+    private Set<Autoridad> autoridades;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
