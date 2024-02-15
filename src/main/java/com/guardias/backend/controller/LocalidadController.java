@@ -58,6 +58,13 @@ public class LocalidadController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
+        if (localidadService.existsByNombre(localidadDto.getNombre()))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (localidadDto.getDepartamento() == null)
+            return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
+                            HttpStatus.BAD_REQUEST); 
+
         Localidad localidad = new Localidad();
         localidad.setNombre(localidadDto.getNombre());
         localidad.setDepartamento(localidadDto.getDepartamento());
@@ -69,10 +76,21 @@ public class LocalidadController {
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LocalidadDto localidadDto) {
         if (StringUtils.isBlank(localidadDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (localidadService.existsByNombre(localidadDto.getNombre()) &&
+            localidadService.getByNombre(localidadDto.getNombre()).get().getId() != id)
+        return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (localidadDto.getDepartamento() == null)
+            return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
+                            HttpStatus.BAD_REQUEST); 
 
         Localidad localidad = localidadService.getById(id).get();
+        //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
+
+        //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */
+        
         if (!localidadDto.getNombre().equals(localidad.getNombre()))
             localidad.setNombre(localidadDto.getNombre());
         if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
@@ -86,8 +104,8 @@ public class LocalidadController {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
 
         if (!localidadService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el localidad"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe la localidad"), HttpStatus.NOT_FOUND);
         localidadService.deleteById(id);
-        return new ResponseEntity(new Mensaje("localidad eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("localidad eliminada"), HttpStatus.OK);
     }
 }

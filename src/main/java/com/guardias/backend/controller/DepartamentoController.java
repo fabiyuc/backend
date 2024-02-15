@@ -86,6 +86,7 @@ public class DepartamentoController {
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody DepartamentoDto departamentoDto) {
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("El departamento no existe"), HttpStatus.NOT_FOUND);
+
         if (departamentoService.existsByNombre(departamentoDto.getNombre()) &&
                 departamentoService.getByNombre(departamentoDto.getNombre()).get().getId() != id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
@@ -106,6 +107,10 @@ public class DepartamentoController {
 
         Departamento departamento = departamentoService.getById(id).get();
 
+        //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
+
+        //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */
+        
         if (!departamentoDto.getNombre().equals(departamento.getNombre()))
             departamento.setNombre(departamentoDto.getNombre());
         if (!departamentoDto.getCodigoPostal().equals(departamento.getCodigoPostal()))
