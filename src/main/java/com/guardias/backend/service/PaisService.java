@@ -30,7 +30,7 @@ public class PaisService {
         return paisRepository.findById(id);
     }
 
-    public Optional<Pais> getPaisByNombre(String nombre) {
+    public Optional<Pais> getByNombre(String nombre) {
         return paisRepository.findByNombre(nombre);
     }
 
@@ -48,6 +48,10 @@ public class PaisService {
 
     public boolean existsByNombre(String nombre) {
         return paisRepository.existsByNombre(nombre);
+    }
+
+    public boolean existsByNacionalidad(String nacionalidad) {
+        return paisRepository.existsByNacionalidad(nacionalidad);
     }
 
 }

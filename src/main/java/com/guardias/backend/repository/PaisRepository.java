@@ -13,4 +13,6 @@ public interface PaisRepository extends JpaRepository<Pais, Long> {
 
     boolean existsByNombre(String nombre);
 
+    boolean existsByNacionalidad(String nacionalidad);
+
 }

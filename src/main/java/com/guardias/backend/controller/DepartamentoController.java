@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.DepartamentoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.service.DepartamentoService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -54,13 +51,31 @@ public class DepartamentoController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DepartamentoDto departamentoDto) {
         if (StringUtils.isBlank(departamentoDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (departamentoService.existsByNombre(departamentoDto.getNombre()))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+                            
+        if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
+            return new ResponseEntity(new Mensaje("el codigo postal es obligatorio"),
                     HttpStatus.BAD_REQUEST);
+
+        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal()))
+            return new ResponseEntity(new Mensaje("ese CP ya existe"),
+                            HttpStatus.BAD_REQUEST);
+
+        //******************** el control de provincia valida es necesario???? lo obtiene de un select al valor
+        if (departamentoDto.getProvincia() == null)
+            return new ResponseEntity(new Mensaje("la provincia  es obligatoria"),
+                            HttpStatus.BAD_REQUEST);                   
 
         Departamento departamento = new Departamento();
         departamento.setNombre(departamentoDto.getNombre());
         departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
+        
+        //******* no necesito guardar ni modificar la listas  */
         //departamento.setLocalidades(departamentoDto.getLocalidades());
+        
         departamento.setProvincia(departamentoDto.getProvincia());
 
         departamentoService.save(departamento);
@@ -97,11 +112,13 @@ public class DepartamentoController {
             departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
         if (!departamentoDto.getProvincia().equals(departamento.getProvincia()))
             departamento.setProvincia(departamentoDto.getProvincia());
-       // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
+       
+            //******* no necesito guardar ni modificar la listas  */
+            // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
          //   departamento.setLocalidades(departamentoDto.getLocalidades());
 
         departamentoService.save(departamento);
-        return new ResponseEntity(new Mensaje("Departamento modificado correctamente"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Departamento actualizado"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
