@@ -1,17 +1,17 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.Set;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -46,8 +46,15 @@ public class Autoridad {
      * un efector y el historial de una persona
      */
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "autoridad_efector", joinColumns = @JoinColumn(name = "id_autoridad"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    private Set<Efector> efectores;
+    // @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    // @JoinTable(name = "autoridad_efector", joinColumns = @JoinColumn(name =
+    // "id_autoridad"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+    // private Set<Efector> efectores;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_efector")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",
+            "observacion", "region", "esCabecera", "admitePasiva", "caps" })
+    private Efector efector;
 
 }

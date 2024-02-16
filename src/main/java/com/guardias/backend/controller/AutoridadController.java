@@ -88,8 +88,8 @@ public class AutoridadController {
         if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
 
-        if (!autoridadDto.getEfectores().equals(autoridad.getEfectores()))
-            autoridad.setEfectores(autoridadDto.getEfectores());
+        // if (!autoridadDto.getEfectores().equals(autoridad.getEfectores()))
+        // autoridad.setEfectores(autoridadDto.getEfectores());
 
         autoridad.setEsActual(autoridadDto.isEsActual());
         autoridad.setEsRegional(autoridadDto.isEsRegional());

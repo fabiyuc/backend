@@ -31,5 +31,7 @@ public class EfectorDto {
 
     private Set<DistribucionHoraria> distribucionesHorarias;
 
+    // private Set<Autoridad> autoridades;
+
     private Set<Autoridad> autoridades;
 }

@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 import com.guardias.backend.entity.Efector;
 
@@ -27,7 +26,10 @@ public class AutoridadDto {
     @NotBlank
     private boolean esRegional;
 
+    // @NotBlank
+    // Set<Efector> efectores;
+
     @NotBlank
-    Set<Efector> efectores;
+    private Efector efector;
 
 }
