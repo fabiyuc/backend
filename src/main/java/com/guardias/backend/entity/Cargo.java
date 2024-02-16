@@ -3,6 +3,7 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.persistence.Column;
@@ -12,6 +13,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,13 +48,56 @@ public class Cargo {
     @Column(columnDefinition = "DATE")
     private LocalDate fechafinal;
 
-    // @OneToOne
-    // @JoinColumn(name = "tipo_cargo_id")
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cargo" })
-    // private TipoCargo tipoCargo;
+    @OneToOne
+    @JoinColumn(name = "id_legajo")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
+    private Legajo legajo;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15)")
+    @Column(columnDefinition = "VARCHAR(30)")
     private AgrupacionEnum agrupacion;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Cargo other = (Cargo) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (nombre == null) {
+            if (other.nombre != null)
+                return false;
+        } else if (!nombre.equals(other.nombre))
+            return false;
+        if (nroresolucion == null) {
+            if (other.nroresolucion != null)
+                return false;
+        } else if (!nroresolucion.equals(other.nroresolucion))
+            return false;
+        if (nrodecreto == null) {
+            if (other.nrodecreto != null)
+                return false;
+        } else if (!nrodecreto.equals(other.nrodecreto))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+        result = prime * result + ((nroresolucion == null) ? 0 : nroresolucion.hashCode());
+        result = prime * result + ((nrodecreto == null) ? 0 : nrodecreto.hashCode());
+        return result;
+    }
 
 }

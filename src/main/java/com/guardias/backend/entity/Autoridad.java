@@ -1,12 +1,17 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -33,5 +38,16 @@ public class Autoridad {
     private LocalDate fechaFinal;
     private boolean esActual;
     private boolean esRegional;
+
+    /*
+     * //TODO hacer la relacion N:M con PERSONA
+     * modificar el resto de los elementos de Autoridad
+     * el repositorio debe poder traer el listado de autoridades, el histoirial de
+     * un efector y el historial de una persona
+     */
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "autoridad_efector", joinColumns = @JoinColumn(name = "id_autoridad"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+    private Set<Efector> efectores;
 
 }
