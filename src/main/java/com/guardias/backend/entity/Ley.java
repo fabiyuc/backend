@@ -7,6 +7,8 @@ import com.guardias.backend.enums.EstadoLey;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +41,7 @@ public abstract class Ley {
     private String denominacion;
     @Column(columnDefinition = "VARCHAR(2000)")
     private String detalle;
+    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15)")
     private EstadoLey estado;
     @Temporal(TemporalType.DATE)

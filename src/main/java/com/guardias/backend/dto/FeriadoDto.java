@@ -2,6 +2,8 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
+import com.guardias.backend.enums.TipoFeriadoEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,6 +17,6 @@ public class FeriadoDto {
     @NotBlank
     private String motivo;
     @NotBlank
-    private String tipoFeriado;
+    private TipoFeriadoEnum tipoFeriado;
     private String descripcion;
 }

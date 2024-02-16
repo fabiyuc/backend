@@ -2,8 +2,12 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
+import com.guardias.backend.enums.TipoFeriadoEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,9 +30,10 @@ public class Feriado {
     private LocalDate fecha;
     @Column(columnDefinition = "VARCHAR(25)")
     private String motivo;
-    @Column(columnDefinition = "VARCHAR(25)")
-    private String tipoFeriado; // Feriado Nacional/Provincial - Asueto administrativo - Feriado Puente
-                                // Turistico
+    @Enumerated(EnumType.STRING)
+    @Column(length = 25)
+    private TipoFeriadoEnum tipoFeriado;
+
     @Column(columnDefinition = "VARCHAR(50)")
     private String descripcion;
 
