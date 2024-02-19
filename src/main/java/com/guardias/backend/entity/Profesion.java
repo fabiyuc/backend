@@ -1,9 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +16,6 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "profesiones")
 @Data
-// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Profesion {
