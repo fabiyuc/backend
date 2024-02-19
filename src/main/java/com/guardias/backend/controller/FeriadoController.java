@@ -69,9 +69,6 @@ public class FeriadoController {
         if (feriadoDto.getFecha() == null)
             return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (feriadoService.existsByMotivo(feriadoDto.getMotivo()))
-            return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
-
         return new ResponseEntity(new Mensaje("Feriado creado correctamente"), HttpStatus.OK);
     }
 
@@ -89,6 +86,9 @@ public class FeriadoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FeriadoDto feriadoDto) {
+
+        if (feriadoService.existsByMotivo(feriadoDto.getMotivo()))
+            return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
 
         ResponseEntity<?> respuestaValidaciones = validations(feriadoDto);
 
