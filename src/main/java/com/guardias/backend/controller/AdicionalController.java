@@ -21,6 +21,8 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.service.AdicionalService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @RestController
 @RequestMapping("/adicional")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -101,6 +103,21 @@ public class AdicionalController {
         }
     }
 
+    @PostMapping("/{idAdicional}/agregarRevista/{idRevista}")
+    public ResponseEntity<?> agregarRevista(@PathVariable("idAdicional") Long idAdicional,
+            @PathVariable("idRevista") Long idRevista) {
+        try {
+            adicionalService.agregarRevista(idAdicional, idRevista);
+            return new ResponseEntity<>(new Mensaje("Revista agregada al adicional correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el adicional con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la revista al adicional"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
@@ -111,4 +128,3 @@ public class AdicionalController {
     }
 
 }
-// 3W9UxKZRVT

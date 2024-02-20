@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.Adicional;
+import com.guardias.backend.entity.Revista;
 import com.guardias.backend.repository.AdicionalRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -16,6 +19,9 @@ public class AdicionalService {
 
     @Autowired
     AdicionalRepository adicionalRepository;
+
+    @Autowired
+    RevistaService revistaService;
 
     public List<Adicional> list() {
         return adicionalRepository.findAll();
@@ -43,6 +49,19 @@ public class AdicionalService {
 
     public boolean existsByNombre(String nombre) {
         return adicionalRepository.existsByNombre(nombre);
+    }
+
+    public void agregarRevista(Long adicionalId, Long idRevista) {
+        Adicional adicional = adicionalRepository.findById(adicionalId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("No se encontró el adicional con el ID: " + adicionalId));
+
+        Revista nuevaRevista = revistaService.getOne(idRevista).get();
+        nuevaRevista.setAdicional(adicional);
+
+        adicional.getRevistas().add(nuevaRevista);
+
+        adicionalRepository.save(adicional);
     }
 
 }
