@@ -22,8 +22,10 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.PersonService;
 
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -32,6 +34,8 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    PersonService personservice;
 
     @GetMapping("/lista")
     public ResponseEntity<List<Asistencial>> list() {
@@ -162,7 +166,54 @@ public class AsistencialController {
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial modificado correctamente"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
+        }
+    }
+
+    @PostMapping("/{idPersona}/agregarLegajo/{idLegajo}")
+    public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idLegajo") Long idLegajo) {
+        try {
+            personservice.agregarLegajo(idPersona, idLegajo);
+            return new ResponseEntity<>(new Mensaje("Legajo agregado al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // utilizar para la novedad y para el suplente
+    @PostMapping("/{idPersona}/agregarNovedadPersonal/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
+        try {
+            personservice.agregarNovedadPersonal(idPersona, idNovedadPersonal);
+            return new ResponseEntity<>(new Mensaje("Novedad agregada al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/{idPersona}/agregarDistribucionHoraria/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
+        try {
+            personservice.agregarDistribucionHoraria(idPersona, idDistribucionHoraria);
+            return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada al articulo correctamente"),
+                    HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion horaria al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

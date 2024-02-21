@@ -21,6 +21,7 @@ import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.service.ArticuloService;
 
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 
 @Controller
 @RequestMapping("/articulo")
@@ -121,6 +122,38 @@ public class ArticuloController {
         } else {
             return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/{idArticulo}/agregarInciso/{idInciso}")
+    public ResponseEntity<?> agregarInciso(@PathVariable("idArticulo") Long idArticulo,
+            @PathVariable("idInciso") Long idInciso) {
+        try {
+            articuloService.agregarInciso(idArticulo, idInciso);
+
+            return new ResponseEntity<>(new Mensaje("Inciso agregado al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el articlo con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el inciso agregado al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/{idArticulo}/agregarSubArticulo/{idSubArticulo}")
+    public ResponseEntity<?> agregarSubArticulo(@PathVariable("idArticulo") Long idArticulo,
+            @PathVariable("idSubArticulo") Long idSubArticulo) {
+        try {
+            articuloService.agregarSubArticulo(idArticulo, idSubArticulo);
+
+            return new ResponseEntity<>(new Mensaje("SubArticulo agregado al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el articlo con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el SubArticulo al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

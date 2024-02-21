@@ -56,10 +56,11 @@ public class AdicionalService {
                 .orElseThrow(
                         () -> new EntityNotFoundException("No se encontró el adicional con el ID: " + adicionalId));
 
-        Revista nuevaRevista = revistaService.getOne(idRevista).get();
-        nuevaRevista.setAdicional(adicional);
+        Revista revista = revistaService.getOne(idRevista).get();
+        revista.setAdicional(adicional);
+        revistaService.save(revista);
 
-        adicional.getRevistas().add(nuevaRevista);
+        adicional.getRevistas().add(revista);
 
         adicionalRepository.save(adicional);
     }
