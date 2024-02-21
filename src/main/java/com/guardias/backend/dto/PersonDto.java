@@ -25,6 +25,7 @@ public class PersonDto {
     private int dni;
     @NotBlank
     private String cuil;
+    @NotBlank
     private LocalDate fechaNacimiento;
     private String sexo;
     private String telefono;
@@ -37,5 +38,7 @@ public class PersonDto {
     private Set<NovedadPersonal> suplentes;
 
     private Set<DistribucionHoraria> distribucionesHorarias;
+
+    private Set<AutoridadDto> autoridades;
 
 }

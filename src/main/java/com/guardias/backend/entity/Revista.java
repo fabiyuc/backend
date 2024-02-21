@@ -3,8 +3,12 @@ package com.guardias.backend.entity;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.AgrupacionEnum;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -48,4 +52,8 @@ public class Revista {
   @OneToMany(mappedBy = "revista")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
   private Set<Legajo> legajos;
+
+  @Enumerated(EnumType.STRING)
+  @Column(columnDefinition = "VARCHAR(30)")
+  private AgrupacionEnum agrupacion;
 }

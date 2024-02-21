@@ -1,13 +1,15 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.guardias.backend.entity.Asistencial;
-import com.guardias.backend.entity.NoAsistencial;
+import com.guardias.backend.entity.Cargo;
+import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.Suspencion;
-import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -19,11 +21,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LegajoDto {
 
+    Long id;
     @NotBlank
     private LocalDate fechaInicio;
 
-    @NotBlank
     private LocalDate fechaFinal;
+
+    @NotBlank
+    private Person persona;
+
+    @NotBlank
+    private Efector udo;
 
     @NotBlank
     private Boolean actual;
@@ -31,27 +39,22 @@ public class LegajoDto {
     @NotBlank
     private Boolean legal;
 
-    @NotBlank
     private String matriculaNacional;
 
-    @NotBlank
     private String matriculaProvincial;
 
     @NotBlank
     private Profesion profesion;
 
-    @NotBlank
     private Suspencion suspencion;
 
     @NotBlank
     private Revista revista;
 
-    @NotBlank
-    private Asistencial asistencial;
+    private String tipoGuardia;
+    private String descripcion;
 
-    @NotBlank
-    private NoAsistencial noAsistencial;
+    private Cargo cargo;
 
-    @NotBlank
-    private AgrupacionEnum agrupacion;
+    private Set<Efector> efectores = new HashSet<>();
 }

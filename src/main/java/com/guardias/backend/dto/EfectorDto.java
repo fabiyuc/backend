@@ -1,9 +1,12 @@
 package com.guardias.backend.dto;
 
 import java.util.Set;
+
+import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.entity.Region;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,4 +30,8 @@ public class EfectorDto {
     private Localidad localidad;
 
     private Set<DistribucionHoraria> distribucionesHorarias;
+
+    // private Set<Autoridad> autoridades;
+
+    private Set<Autoridad> autoridades;
 }

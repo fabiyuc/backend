@@ -54,6 +54,7 @@ public abstract class Person {
     private Boolean estado;
 
     @OneToMany(mappedBy = "persona")
+    @JsonIgnore
     private Set<Legajo> legajos;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
@@ -67,6 +68,10 @@ public abstract class Person {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Autoridad> autoridades;
 
     @Override
     public boolean equals(Object obj) {

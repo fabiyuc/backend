@@ -74,13 +74,9 @@ public class AutoridadController {
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        // validar las fechas y los datos booleanos en front que no sea campo vacio
-        // hasta poder validar en back
-
         Autoridad autoridad = autoridadService.getOne(id).get();
 
-        if (autoridad.getNombre() != autoridadDto.getNombre() && autoridadDto.getNombre() != null
-                && !autoridadDto.getNombre().isEmpty())
+        if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
 
         if (autoridad.getFechaInicio() != autoridadDto.getFechaInicio() && autoridadDto.getFechaInicio() != null)
@@ -88,6 +84,12 @@ public class AutoridadController {
 
         if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        // if (!autoridadDto.getEfectores().equals(autoridad.getEfectores()))
+        // autoridad.setEfectores(autoridadDto.getEfectores());
 
         autoridad.setEsActual(autoridadDto.isEsActual());
         autoridad.setEsRegional(autoridadDto.isEsRegional());
