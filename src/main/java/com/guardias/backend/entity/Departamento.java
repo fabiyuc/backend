@@ -33,6 +33,8 @@ public class Departamento {
 
     @Column(columnDefinition = "VARCHAR(10)")
     private String codigoPostal;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_provincia")

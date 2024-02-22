@@ -44,6 +44,8 @@ public abstract class DistribucionHoraria {
     private LocalDate fechaFinalizacion;
     private LocalTime horaIngreso;
     private BigDecimal cantidadHoras; // para calcular el dia y horario de salida
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
