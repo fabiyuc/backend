@@ -1,19 +1,12 @@
 package com.guardias.backend.entity;
 
-import java.util.HashSet;
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,16 +27,5 @@ public class Asistencial extends Person {
     @OneToMany(mappedBy = "asistencial")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
     private Set<RegistroActividad> registrosActividades;
-
-    // @ManyToMany
-    // @JoinTable(name = "asistencial_especialidad", joinColumns = @JoinColumn(name
-    // = "asistencial_id"), inverseJoinColumns = @JoinColumn(name =
-    // "especialidad_id"))
-    // private Set<Especialidad> especialidades;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "asistencial_especialidad", joinColumns = @JoinColumn(name = "id_asistencial"), inverseJoinColumns = @JoinColumn(name = "id_especialidad"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales" })
-    private Set<Especialidad> especialidades = new HashSet<>();
 
 }

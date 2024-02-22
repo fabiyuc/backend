@@ -71,7 +71,11 @@ public abstract class Efector {
     @JsonIgnore
     private Set<Notificacion> notificaciones;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    // @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    // @JsonIgnore
+    // private Set<Autoridad> autoridades;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Autoridad> autoridades;
 

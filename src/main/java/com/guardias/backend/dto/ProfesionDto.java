@@ -1,10 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.util.Set;
-
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;

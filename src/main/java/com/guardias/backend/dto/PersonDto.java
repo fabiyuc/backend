@@ -39,4 +39,6 @@ public class PersonDto {
 
     private Set<DistribucionHoraria> distribucionesHorarias;
 
+    private Set<AutoridadDto> autoridades;
+
 }

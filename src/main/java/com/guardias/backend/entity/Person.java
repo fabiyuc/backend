@@ -69,6 +69,10 @@ public abstract class Person {
     @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Autoridad> autoridades;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

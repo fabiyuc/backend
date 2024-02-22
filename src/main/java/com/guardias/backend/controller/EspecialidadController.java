@@ -60,6 +60,8 @@ public class EspecialidadController {
 
         Especialidad especialidad = new Especialidad();
         especialidad.setNombre(especialidadDto.getNombre());
+        especialidad.setEsPasiva(especialidadDto.getEsPasiva());
+        especialidad.setProfesion(especialidadDto.getProfesion());
 
         especialidadService.save(especialidad);
         return new ResponseEntity(new Mensaje("Especialidad creada"), HttpStatus.OK);
@@ -73,6 +75,8 @@ public class EspecialidadController {
 
         Especialidad especialidad = especialidadService.getById(id).get();
         especialidad.setNombre(especialidadDto.getNombre());
+        especialidad.setEsPasiva(especialidadDto.getEsPasiva());
+        especialidad.setProfesion(especialidadDto.getProfesion());
         especialidadService.save(especialidad);
         return new ResponseEntity(new Mensaje("Especialidad modificada"), HttpStatus.OK);
     }
