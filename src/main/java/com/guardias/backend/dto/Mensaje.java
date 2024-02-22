@@ -7,6 +7,4 @@ import lombok.Data;
 @AllArgsConstructor
 public class Mensaje {
     private String mensaje;
-    private boolean activo;
-
 }
