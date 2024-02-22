@@ -42,15 +42,17 @@ public abstract class Efector {
     @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
     private boolean estado;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     private String observacion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private Region region;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_localidad")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "departamento" })
     private Localidad localidad;

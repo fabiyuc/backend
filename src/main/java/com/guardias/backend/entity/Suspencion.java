@@ -3,6 +3,7 @@ package com.guardias.backend.entity;
 //import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "suspenciones")
 @Data
-//@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Suspencion {
@@ -27,11 +28,13 @@ public class Suspencion {
 
     private String descripcion;
 
-    //@Temporal(TemporalType.DATE)
+    // @Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
-    
-    //@Temporal(TemporalType.DATE)
+
+    // @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(mappedBy = "suspencion")
     private Set<Legajo> legajos;

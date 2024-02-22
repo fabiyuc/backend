@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.DiasEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -44,12 +45,12 @@ public abstract class DistribucionHoraria {
     private LocalTime horaIngreso;
     private BigDecimal cantidadHoras; // para calcular el dia y horario de salida
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias" })
     private Efector efector;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias", "dni", "cuil",
             "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes" })

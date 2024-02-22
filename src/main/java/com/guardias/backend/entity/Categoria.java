@@ -2,8 +2,10 @@ package com.guardias.backend.entity;
 
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,8 +26,10 @@ public class Categoria {
 
     @Column(columnDefinition = "VARCHAR(30)")
     private String nombre;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
-    @OneToMany(mappedBy = "categoria")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "categoria", cascade = CascadeType.ALL)
     private Set<Revista> revistas;
-    
+
 }

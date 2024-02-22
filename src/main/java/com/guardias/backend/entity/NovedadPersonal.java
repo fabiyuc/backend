@@ -39,6 +39,8 @@ public class NovedadPersonal {
     private boolean activa; // Si la novedad es actual(1) o pasada(0)
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_novedades")

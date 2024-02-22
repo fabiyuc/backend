@@ -30,6 +30,8 @@ public class Servicio {
 
     @Column(columnDefinition = "VARCHAR(20)")
     private int nivel;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(mappedBy = "servicio")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio" })

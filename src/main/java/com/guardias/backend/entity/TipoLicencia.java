@@ -29,5 +29,7 @@ public class TipoLicencia {
     private String articulo;
     @Column(columnDefinition = "VARCHAR(10)")
     private String inciso;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
 }

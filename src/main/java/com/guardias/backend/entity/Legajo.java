@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,6 +41,8 @@ public class Legajo {
 
   private Boolean actual;
   private Boolean legal;
+  @Column(columnDefinition = "BIT DEFAULT 1")
+  private boolean activo;
 
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaNacional;
@@ -47,28 +50,28 @@ public class Legajo {
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaProvincial;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_profesion")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "especialidades" })
   private Profesion profesion;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_suspencion")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Suspencion suspencion;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_revista")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Revista revista;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_udo")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo", "domicilio", "telefono", "estado",
       "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
   private Efector udo;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_persona")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades", "especialidades",
       "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })

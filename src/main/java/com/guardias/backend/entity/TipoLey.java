@@ -26,6 +26,8 @@ public class TipoLey {
     private Long id;
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ley", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ley" })

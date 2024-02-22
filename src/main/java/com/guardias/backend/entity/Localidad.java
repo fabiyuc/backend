@@ -1,8 +1,10 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +31,8 @@ public class Localidad {
 
     @Column(columnDefinition = "VARCHAR(50)")
     private String nombre;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_departamento")

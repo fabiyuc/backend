@@ -28,13 +28,15 @@ public class Region {
     private Long id;
     @Column(columnDefinition = "VARCHAR(15)")
     private String nombre;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Efector> efectores;
 
-     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "regiones")
-     @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "regiones")
+    @JsonIgnore
     private Set<Notificacion> notificaciones;
 
     @Override

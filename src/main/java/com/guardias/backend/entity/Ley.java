@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.EstadoLey;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,11 +54,14 @@ public abstract class Ley {
     @Column(columnDefinition = "VARCHAR(80)")
     private String motivoModificacion;
 
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
+
     @OneToOne
     @JoinColumn(name = "id_novedad_personal")
     private NovedadPersonal novedadPersonal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_ley")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes" })
     private TipoLey ley;

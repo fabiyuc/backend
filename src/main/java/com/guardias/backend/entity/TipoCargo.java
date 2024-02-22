@@ -26,6 +26,8 @@ public class TipoCargo {
     private String descripcion;
 
     private boolean eshospitalario;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     // @OneToOne(mappedBy = "tipoCargo")
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tipoCargo" })

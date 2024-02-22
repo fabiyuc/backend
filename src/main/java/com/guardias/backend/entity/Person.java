@@ -52,6 +52,8 @@ public abstract class Person {
     private String domicilio;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean estado;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(mappedBy = "persona")
     @JsonIgnore

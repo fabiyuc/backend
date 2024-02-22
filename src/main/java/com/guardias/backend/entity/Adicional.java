@@ -28,6 +28,8 @@ public class Adicional {
     @Column(columnDefinition = "VARCHAR(20)")
     private String nombre;
 
+    private boolean activo;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "adicional", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tipoRevista", "categoria", "adicional",
             "cargaHoraria", "legajos", "agrupacion" })

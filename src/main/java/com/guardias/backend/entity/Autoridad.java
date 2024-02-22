@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -38,6 +39,8 @@ public class Autoridad {
         private LocalDate fechaFinal;
         private boolean esActual;
         private boolean esRegional;
+        @Column(columnDefinition = "BIT DEFAULT 1")
+        private boolean activo;
 
         /*
          * //TODO hacer la relacion N:M con PERSONA
@@ -51,13 +54,13 @@ public class Autoridad {
         // "id_autoridad"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
         // private Set<Efector> efectores;
 
-        @ManyToOne(fetch = FetchType.LAZY)
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_efector")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",
                         "observacion", "region", "esCabecera", "admitePasiva", "caps" })
         private Efector efector;
 
-        @ManyToOne(fetch = FetchType.LAZY)
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_persona")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "novedadesPersonales", "suplentes",
                         "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio",

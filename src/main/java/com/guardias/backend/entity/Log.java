@@ -28,5 +28,7 @@ public class Log {
     @Column(columnDefinition = "VARCHAR(25)")
     private String seccion;
     private String accion;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
 }

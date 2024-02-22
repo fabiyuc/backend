@@ -33,6 +33,8 @@ public class Feriado {
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private TipoFeriadoEnum tipoFeriado;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @Column(columnDefinition = "VARCHAR(50)")
     private String descripcion;

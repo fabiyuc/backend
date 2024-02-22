@@ -34,6 +34,8 @@ public class Pais {
 
     @Column(columnDefinition = "VARCHAR(5)")
     private String codigo;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pais", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "pais" })
