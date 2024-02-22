@@ -48,7 +48,7 @@ public class CapsController {
     public ResponseEntity<List<Caps>> getById(@PathVariable("nombre") String nombre) {
         if (!capsService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
-        Caps caps = capsService.getCapsByNombre(nombre).get();
+        Caps caps = capsService.findByNombre(nombre).get();
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 

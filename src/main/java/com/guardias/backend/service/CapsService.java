@@ -26,7 +26,7 @@ public class CapsService {
         return capsRepository.findById(id);
     }
 
-    public Optional<Caps> getCapsByNombre(String nombre) {
+    public Optional<Caps> findByNombre(String nombre) {
         return capsRepository.findByNombre(nombre);
     }
 
