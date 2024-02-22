@@ -16,6 +16,7 @@ public class DepartamentoDto {
     @NotBlank
     private String nombre;
     private String codigoPostal;
+    private boolean activo;
     Provincia provincia;
     List<Localidad> localidades;
 

@@ -27,7 +27,7 @@ public class Adicional {
     private Long id;
     @Column(columnDefinition = "VARCHAR(20)")
     private String nombre;
-
+    @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "adicional", cascade = CascadeType.ALL)

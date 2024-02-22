@@ -19,6 +19,7 @@ public class EspecialidadDto {
     private String nombre;
     private Profesion profesion;
     private Boolean esPasiva;
+    private boolean activo;
     private Set<Asistencial> asistenciales = new HashSet<>();
 
 }

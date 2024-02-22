@@ -15,6 +15,7 @@ public class TipoGuardiaDto {
 
     @NotBlank
     private String nombre;
+    private boolean activo;
 
     @NotBlank
     private String descripcion;

@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 public class MinisterioDto extends EfectorDto {
 
     Ministerio cabecera;
-
+    private boolean activo;
     List<Ministerio> ministerios;
 
 }

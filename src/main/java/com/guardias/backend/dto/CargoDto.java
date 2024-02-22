@@ -25,4 +25,5 @@ public class CargoDto {
     private LocalDate fechainicio;
     @NotNull
     private LocalDate fechafinal;
+    private boolean activo;
 }

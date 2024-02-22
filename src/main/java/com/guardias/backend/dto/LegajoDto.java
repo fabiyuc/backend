@@ -55,6 +55,7 @@ public class LegajoDto {
     private String descripcion;
 
     private Cargo cargo;
+    private boolean activo;
 
     private Set<Efector> efectores = new HashSet<>();
 }

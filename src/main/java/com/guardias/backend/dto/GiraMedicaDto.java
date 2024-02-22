@@ -18,4 +18,5 @@ public class GiraMedicaDto {
     private int cantidadHoras;
     @NotBlank
     private String descripcion;
+    private boolean activo;
 }

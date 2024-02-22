@@ -28,6 +28,7 @@ public class EfectorDto {
     private String observacion;
     private Region region;
     private Localidad localidad;
+    private boolean activo;
 
     private Set<DistribucionHoraria> distribucionesHorarias;
 

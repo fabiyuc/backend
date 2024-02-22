@@ -23,6 +23,7 @@ public class RevistaDto {
 
     @NotBlank
     private Categoria categoria;
+    private boolean activo;
 
     @NotBlank
     private Adicional adicional;

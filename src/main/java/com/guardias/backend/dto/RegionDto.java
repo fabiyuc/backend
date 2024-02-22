@@ -15,5 +15,5 @@ public class RegionDto {
     @NotBlank
     private String nombre;
     private Set<Efector> efectores;
-
+    private boolean activo;
 }

@@ -17,4 +17,5 @@ public class AdicionalDto {
     @NotBlank
     private String nombre;
     private Set<Revista> revistas;
+    private boolean activo;
 }

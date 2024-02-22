@@ -31,5 +31,6 @@ public class DistribucionHorariaDto {
     private Efector efector;
     @NotNull
     private Person persona;
+    private boolean activo;
 
 }

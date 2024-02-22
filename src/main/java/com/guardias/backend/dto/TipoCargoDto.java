@@ -14,6 +14,7 @@ public class TipoCargoDto {
     private String nombre;
     @NotBlank
     private String descripcion;
+    private boolean activo;
     @NotBlank
     private boolean eshospitalario;
 

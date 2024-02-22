@@ -12,4 +12,5 @@ public class CategoriaDto {
 
     @NotBlank
     private String nombre;
+    private boolean activo;
 }

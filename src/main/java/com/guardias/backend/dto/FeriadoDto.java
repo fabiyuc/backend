@@ -19,4 +19,5 @@ public class FeriadoDto {
     @NotBlank
     private TipoFeriadoEnum tipoFeriado;
     private String descripcion;
+    private boolean activo;
 }

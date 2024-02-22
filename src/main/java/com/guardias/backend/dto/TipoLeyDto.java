@@ -16,6 +16,7 @@ public class TipoLeyDto {
 
     @NotBlank
     String descripcion;
+    private boolean activo;
 
     List<Ley> leyes;
 }

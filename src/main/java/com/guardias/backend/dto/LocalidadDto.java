@@ -17,6 +17,7 @@ public class LocalidadDto {
     private String nombre;
 
     Departamento departamento;
+    private boolean activo;
 
     private Set<Efector> efectores;
 

@@ -18,6 +18,7 @@ public class ProvinciaDTO {
     @NotBlank
     private String nombre;
     private String gentilicio;
+    private boolean activo;
     Pais pais;
     List<Departamento> departamentos;
 

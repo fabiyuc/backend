@@ -27,6 +27,7 @@ public class LeyDto {
     LocalDate fechaBaja;
     LocalDate fechaModificacion;
     String motivoModificacion;
+    private boolean activo;
 
     @NotNull
     TipoLey ley;

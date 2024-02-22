@@ -24,6 +24,7 @@ public class NovedadPersonalDto {
     private boolean activa;
     private String descripcion;
     private Long idExtensionLicencia;
+    private boolean activo;
 
     @NotEmpty
     private Person persona;

@@ -12,5 +12,6 @@ public class TipoRevistaDto {
 
     @NotBlank
     private String nombre;
+    private boolean activo;
 
 }

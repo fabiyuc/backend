@@ -17,6 +17,7 @@ public class PaisDto {
     @NotBlank
     private String nacionalidad;
     private String codigo;
+    private boolean activo;
     List<Provincia> provincias;
 
 }

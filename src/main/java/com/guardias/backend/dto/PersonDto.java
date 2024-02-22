@@ -32,6 +32,7 @@ public class PersonDto {
     private String email;
     private String domicilio;
     private Boolean estado;
+    private boolean activo;
 
     private Set<NovedadPersonal> novedadesPersonales;
 

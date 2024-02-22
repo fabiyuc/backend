@@ -21,6 +21,7 @@ public class TipoLicenciaDto {
     private String ley;
 
     private String articulo;
+    private boolean activo;
 
     private String inciso;
 

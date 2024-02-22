@@ -23,6 +23,7 @@ public class RegistroActividadDto {
     private LocalDate fechaIngreso;
 
     private LocalDate fechaEgreso;
+    private boolean activo;
 
     @NotBlank
     private LocalTime horaIngreso;

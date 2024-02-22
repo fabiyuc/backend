@@ -16,5 +16,5 @@ public class LogDto {
     private String seccion;
     @NotBlank
     private String accion;
-
+    private boolean activo;
 }
