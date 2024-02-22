@@ -31,7 +31,7 @@ public class PersonService {
     @Autowired
     DistribucionHorariaRepository distribucionHorariaRepository;
 
-    private Person instanciar(Long idPersona) {
+    private Person findPerson(Long idPersona) {
         Person persona = asistencialRepository.findById(idPersona).orElse(null);
 
         if (persona == null) {
@@ -52,7 +52,7 @@ public class PersonService {
 
     @Transactional
     public void agregarLegajo(Long idPersona, Long idLegajo) {
-        Person persona = instanciar(idPersona);
+        Person persona = findPerson(idPersona);
 
         Legajo legajo = legajoRepository.findById(idLegajo).get();
         legajo.setPersona(persona);
@@ -65,7 +65,7 @@ public class PersonService {
     // Para NovedadPersonal y para supolente!!!!!!!!!!!!!!!!!
     @Transactional
     public void agregarNovedadPersonal(Long idPersona, Long idNovedadPersonal) {
-        Person persona = instanciar(idPersona);
+        Person persona = findPerson(idPersona);
 
         NovedadPersonal novedadPersonal = novedadPersonalRepository.findById(idNovedadPersonal).get();
         novedadPersonal.setPersona(persona);
@@ -75,10 +75,11 @@ public class PersonService {
         savePersona(persona);
     }
 
+    // TODO corregir esto!!!!!
     @Transactional
     public void agregarDistribucionHoraria(Long idPersona, Long idDistribucionHoraria) {
 
-        Person persona = instanciar(idPersona);
+        Person persona = findPerson(idPersona);
 
         DistribucionHoraria distribucionHoraria = distribucionHorariaRepository.findById(idDistribucionHoraria).get();
         distribucionHoraria.setPersona(persona);
