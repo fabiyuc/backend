@@ -55,7 +55,7 @@ public abstract class Person {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @OneToMany(mappedBy = "persona")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Legajo> legajos;
 

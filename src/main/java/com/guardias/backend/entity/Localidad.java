@@ -34,7 +34,7 @@ public class Localidad {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_departamento")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades" })
     Departamento departamento;

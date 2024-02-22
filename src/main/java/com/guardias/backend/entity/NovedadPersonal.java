@@ -4,8 +4,10 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,12 +44,12 @@ public class NovedadPersonal {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_novedades")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "novedades" })
     private Person persona;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_suplente")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suplentes" })
     private Person suplente;
