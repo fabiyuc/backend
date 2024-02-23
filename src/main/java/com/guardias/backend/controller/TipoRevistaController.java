@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.TipoRevista;
@@ -29,21 +27,21 @@ public class TipoRevistaController {
     @Autowired
     TipoRevistaService tipoRevistaService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<TipoRevista>> list() {
         List<TipoRevista> list = tipoRevistaService.list();
         return new ResponseEntity<List<TipoRevista>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<TipoRevista> getById(@PathVariable("id") Long id) {
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de revista"), HttpStatus.NOT_FOUND);
-        TipoRevista tipoRevista = tipoRevistaService.getOne(id).get();
+        TipoRevista tipoRevista = tipoRevistaService.findById(id).get();
         return new ResponseEntity<TipoRevista>(tipoRevista, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<TipoRevista> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoRevistaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista con ese nombre"), HttpStatus.NOT_FOUND);
@@ -82,7 +80,7 @@ public class TipoRevistaController {
         if (StringUtils.isBlank(tipoRevistaDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        TipoRevista tipoRevista = tipoRevistaService.getOne(id).get();
+        TipoRevista tipoRevista = tipoRevistaService.findById(id).get();
         tipoRevista.setNombre(tipoRevistaDto.getNombre());
         tipoRevistaService.save(tipoRevista);
         return new ResponseEntity(new Mensaje("Tipo de servicio actualizado"), HttpStatus.OK);
@@ -93,7 +91,7 @@ public class TipoRevistaController {
 
         if (!tipoRevistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
-        tipoRevistaService.delete(id);
+        tipoRevistaService.deleteById(id);
         return new ResponseEntity(new Mensaje("tipo de revista eliminado"), HttpStatus.OK);
     }
 

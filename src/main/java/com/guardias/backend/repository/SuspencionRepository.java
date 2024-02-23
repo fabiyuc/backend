@@ -9,13 +9,16 @@ import com.guardias.backend.entity.Suspencion;
 @Repository
 public interface SuspencionRepository extends JpaRepository<Suspencion,Long> {
 
-    Optional<Suspencion> findById(Long id); 
+    Optional<Suspencion> findById(Long id);
+
     boolean existsById(Long id);
 
     Boolean existsByFechaInicio(LocalDate fechaInicio);
+
     Boolean existsByFechaFin(LocalDate fechaFin);
 
     Optional<Suspencion> findByFechaInicio(LocalDate fechaInicio);
+    
     Optional<Suspencion> findByFechaFin(LocalDate fechaFin);
 
     

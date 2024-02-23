@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.EspecialidadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.service.EspecialidadService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -30,25 +27,25 @@ public class EspecialidadController {
     @Autowired
     EspecialidadService especialidadService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Especialidad>> list() {
         List<Especialidad> list = especialidadService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Especialidad>> getById(@PathVariable("id") Long id) {
         if (!especialidadService.existsById(id))
             return new ResponseEntity(new Mensaje("especialidad no existe"), HttpStatus.NOT_FOUND);
-        Especialidad especialidad = especialidadService.getById(id).get();
+        Especialidad especialidad = especialidadService.findById(id).get();
         return new ResponseEntity(especialidad, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Especialidad>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!especialidadService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("especialidad no existe"), HttpStatus.NOT_FOUND);
-        Especialidad especialidad = especialidadService.getEspecialidadByNombre(nombre).get();
+        Especialidad especialidad = especialidadService.findByNombre(nombre).get();
         return new ResponseEntity(especialidad, HttpStatus.OK);
     }
 
@@ -73,7 +70,7 @@ public class EspecialidadController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        Especialidad especialidad = especialidadService.getById(id).get();
+        Especialidad especialidad = especialidadService.findById(id).get();
         especialidad.setNombre(especialidadDto.getNombre());
         especialidad.setEsPasiva(especialidadDto.getEsPasiva());
         especialidad.setProfesion(especialidadDto.getProfesion());

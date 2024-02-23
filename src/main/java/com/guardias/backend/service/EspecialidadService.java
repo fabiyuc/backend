@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.repository.EspecialidadRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -22,11 +19,11 @@ public class EspecialidadService {
         return especialidadRepository.findAll();
     }
 
-    public Optional<Especialidad> getById(Long id) {
+    public Optional<Especialidad> findById(Long id) {
         return especialidadRepository.findById(id);
     }
 
-    public Optional<Especialidad> getEspecialidadByNombre(String nombre) {
+    public Optional<Especialidad> findByNombre(String nombre) {
         return especialidadRepository.findByNombre(nombre);
     }
 

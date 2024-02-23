@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.FeriadoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Feriado;
 import com.guardias.backend.service.FeriadoService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -31,21 +28,21 @@ public class FeriadoController {
     @Autowired
     FeriadoService feriadoService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Feriado>> list() {
         List<Feriado> list = feriadoService.list();
         return new ResponseEntity<List<Feriado>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Feriado>> getById(@PathVariable("id") Long id) {
         if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
-        Feriado feriado = feriadoService.getById(id).get();
+        Feriado feriado = feriadoService.findById(id).get();
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detallemotivo/{motivo}")
+    @GetMapping("/detailmotivo/{motivo}")
     public ResponseEntity<List<Feriado>> getById(@PathVariable("motivo") String motivo) {
         if (!feriadoService.existsByMotivo(motivo))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
@@ -53,7 +50,7 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{fecha}")
+    @GetMapping("/detail/{fecha}")
     public ResponseEntity<List<Feriado>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
         if (!feriadoService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
@@ -107,7 +104,7 @@ public class FeriadoController {
         ResponseEntity<?> respuestaValidaciones = validations(feriadoDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Feriado feriado = createUpdate(feriadoService.getById(id).get(), feriadoDto);
+            Feriado feriado = createUpdate(feriadoService.findById(id).get(), feriadoDto);
             feriadoService.save(feriado);
         }
         return respuestaValidaciones;

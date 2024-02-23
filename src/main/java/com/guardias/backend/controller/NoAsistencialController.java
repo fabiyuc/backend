@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.service.NoAsistencialService;
 import com.guardias.backend.service.PersonService;
-
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -34,13 +31,13 @@ public class NoAsistencialController {
     @Autowired
     PersonService personservice;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<NoAsistencial>> list() {
         List<NoAsistencial> list = noAsistencialService.list();
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<NoAsistencial> getById(@PathVariable("id") Long id) {
         if (!noAsistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("Profesional no entontrado"), HttpStatus.NOT_FOUND);
@@ -48,7 +45,7 @@ public class NoAsistencialController {
         return new ResponseEntity<NoAsistencial>(noAsistencial, HttpStatus.OK);
     }
 
-    @GetMapping("/detalleDni/{dni}")
+    @GetMapping("/detailDni/{dni}")
     public ResponseEntity<NoAsistencial> getById(@PathVariable("dni") int dni) {
         if (!noAsistencialService.existsByDni(dni))
             return new ResponseEntity(new Mensaje("Profesional no entontrado"), HttpStatus.NOT_FOUND);
@@ -146,7 +143,7 @@ public class NoAsistencialController {
         }
     }
 
-    @PostMapping("/{idPersona}/agregarLegajo/{idLegajo}")
+    @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
     public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long idPersona,
             @PathVariable("idLegajo") Long idLegajo) {
         try {
@@ -162,7 +159,7 @@ public class NoAsistencialController {
     }
 
     // utilizar para la novedad y para el suplente
-    @PostMapping("/{idPersona}/agregarNovedadPersonal/{idNovedadPersonal}")
+    @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
     public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona") Long idPersona,
             @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
         try {
@@ -177,7 +174,7 @@ public class NoAsistencialController {
         }
     }
 
-    @PostMapping("/{idPersona}/agregarDistribucionHoraria/{idNovedadPersonal}")
+    @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
     public ResponseEntity<?> agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
             @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
         try {
@@ -197,7 +194,7 @@ public class NoAsistencialController {
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
         if (!noAsistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        noAsistencialService.delete(id);
+        noAsistencialService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Persona eliminada correctamente"), HttpStatus.OK);
     }
 }

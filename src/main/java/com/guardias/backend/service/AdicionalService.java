@@ -2,15 +2,12 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.repository.AdicionalRepository;
-
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -27,7 +24,7 @@ public class AdicionalService {
         return adicionalRepository.findAll();
     }
 
-    public Optional<Adicional> getById(Long id) {
+    public Optional<Adicional> findById(Long id) {
         return adicionalRepository.findById((Long) id);
     }
 
@@ -39,7 +36,7 @@ public class AdicionalService {
         adicionalRepository.save(adicional);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         adicionalRepository.deleteById((Long) id);
     }
 
@@ -56,7 +53,7 @@ public class AdicionalService {
                 .orElseThrow(
                         () -> new EntityNotFoundException("No se encontró el adicional con el ID: " + adicionalId));
 
-        Revista revista = revistaService.getOne(idRevista).get();
+        Revista revista = revistaService.findById(idRevista).get();
         revista.setAdicional(adicional);
         revistaService.save(revista);
 

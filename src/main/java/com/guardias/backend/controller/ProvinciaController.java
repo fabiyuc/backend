@@ -27,13 +27,13 @@ public class ProvinciaController {
     @Autowired
     ProvinciaService provinciaService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Provincia>> list() {
         List<Provincia> list = provinciaService.list();
         return ResponseEntity.ok(list);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Provincia> getById(@PathVariable("id") Long id) {
         if (!provinciaService.existsById(id))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -41,11 +41,11 @@ public class ProvinciaController {
         return ResponseEntity.ok(provincia);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Provincia> getByNombre(@PathVariable("nombre") String nombre) {
         if (!provinciaService.existsByNombre(nombre))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        Provincia provincia = provinciaService.getByNombre(nombre).get();
+        Provincia provincia = provinciaService.findByNombre(nombre).get();
         return ResponseEntity.ok(provincia);
     }
 
@@ -84,7 +84,7 @@ public class ProvinciaController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
         
         if (provinciaService.existsByNombre(provinciaDto.getNombre()) &&
-            provinciaService.getByNombre(provinciaDto.getNombre()).get().getId() != id)
+            provinciaService.findByNombre(provinciaDto.getNombre()).get().getId() != id)
         return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(provinciaDto.getGentilicio()))

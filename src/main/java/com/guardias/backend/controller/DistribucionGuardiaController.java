@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
@@ -28,7 +26,7 @@ public class DistribucionGuardiaController {
     @Autowired
     DistribucionGuardiaService distribucionGuardiaService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
         List<DistribucionGuardia> list = distribucionGuardiaService.list();
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
@@ -42,14 +40,14 @@ public class DistribucionGuardiaController {
         return new ResponseEntity<DistribucionGuardia>(distribucionGuardia, HttpStatus.OK);
     }
 
-    @GetMapping("/lista/{fechaInicio}")
+    @GetMapping("/list/{fechaInicio}")
     public ResponseEntity<List<DistribucionGuardia>> getByFechainicio(
             @PathVariable("fechaInicio") LocalDate fechaInicio) {
         List<DistribucionGuardia> list = distribucionGuardiaService.findByFechaInicio(fechaInicio);
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalleefector/{idEfector}")
+    @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionGuardia>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionGuardiaService.existsByEfectorId(idEfector))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"),
@@ -58,7 +56,7 @@ public class DistribucionGuardiaController {
         return new ResponseEntity<>(distribucionGuardia, HttpStatus.OK);
     }
 
-    @GetMapping("/detallepersona/{idPersona}")
+    @GetMapping("/detailpersona/{idPersona}")
     public ResponseEntity<List<DistribucionGuardia>> getByPersona(@PathVariable("idPersona") Long idPersona) {
         if (!distribucionGuardiaService.existsByPersonaId(idPersona))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"),

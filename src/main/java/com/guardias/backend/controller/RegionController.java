@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegionDto;
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.service.RegionService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -30,7 +27,7 @@ public class RegionController {
     @Autowired
     RegionService regionService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Region>> list() {
         List<Region> list = regionService.list();
         return new ResponseEntity(list, HttpStatus.OK);
@@ -48,7 +45,7 @@ public class RegionController {
     public ResponseEntity<List<Region>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!regionService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
-        Region region = regionService.getByNombre(nombre).get();
+        Region region = regionService.findByNombre(nombre).get();
         return new ResponseEntity(region, HttpStatus.OK);
     }
 

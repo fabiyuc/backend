@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
 import com.guardias.backend.entity.TipoGuardia;
@@ -32,7 +30,7 @@ public class TipoGuardiaControlador {
     public ResponseEntity<TipoGuardia> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoGuardiaServicio.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
-        TipoGuardia tipoGuardia = tipoGuardiaServicio.getByNombre(nombre).get();
+        TipoGuardia tipoGuardia = tipoGuardiaServicio.findByNombre(nombre).get();
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
     }
 
@@ -40,11 +38,11 @@ public class TipoGuardiaControlador {
     public ResponseEntity<TipoGuardia> getByDescripcion(@PathVariable("descripcion") String descripcion) {
         if (!tipoGuardiaServicio.existsByDescripcion(descripcion))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
-        TipoGuardia tipoGuardia = tipoGuardiaServicio.getByDescripcion(descripcion).get();
+        TipoGuardia tipoGuardia = tipoGuardiaServicio.findByDescripcion(descripcion).get();
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
     }
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<TipoGuardia>> list() {
         List<TipoGuardia> list = tipoGuardiaServicio.list();
         return new ResponseEntity<List<TipoGuardia>>(list, HttpStatus.OK);
@@ -54,7 +52,7 @@ public class TipoGuardiaControlador {
     public ResponseEntity<TipoGuardia> getById(@PathVariable("id") Long id) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el tipo de guardia"), HttpStatus.NOT_FOUND);
-        TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
+        TipoGuardia tipoGuardia = tipoGuardiaServicio.findById(id).get();
         return new ResponseEntity<TipoGuardia>(tipoGuardia, HttpStatus.OK);
     }
 
@@ -84,7 +82,7 @@ public class TipoGuardiaControlador {
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
 
         if (tipoGuardiaServicio.existsByNombre(tipoGuardiaDto.getNombre()) &&
-                tipoGuardiaServicio.getByNombre(tipoGuardiaDto.getNombre()).get().getId() == id)
+                tipoGuardiaServicio.findByNombre(tipoGuardiaDto.getNombre()).get().getId() == id)
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
@@ -93,7 +91,7 @@ public class TipoGuardiaControlador {
         if (tipoGuardiaDto.getTipoGuardia() == null)
             return new ResponseEntity<>(new Mensaje("El Tipo de Guardia es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        TipoGuardia tipoGuardia = tipoGuardiaServicio.getOne(id).get();
+        TipoGuardia tipoGuardia = tipoGuardiaServicio.findById(id).get();
         tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
         tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
         tipoGuardiaServicio.save(tipoGuardia);
@@ -104,7 +102,7 @@ public class TipoGuardiaControlador {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         if (!tipoGuardiaServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de guardia"), HttpStatus.NOT_FOUND);
-        tipoGuardiaServicio.delete(id);
+        tipoGuardiaServicio.deleteById(id);
         return new ResponseEntity(new Mensaje("tipo de guardia eliminado"), HttpStatus.OK);
     }
 

@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLeyDto;
 import com.guardias.backend.entity.TipoLey;
 import com.guardias.backend.service.TipoLeyService;
-
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -30,13 +27,13 @@ public class TipoLeyController {
     @Autowired
     TipoLeyService tipoLeyService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<TipoLey>> list() {
         List<TipoLey> list = tipoLeyService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<TipoLey>> getById(@PathVariable("id") Long id) {
         if (!tipoLeyService.existsById(id))
             return new ResponseEntity(new Mensaje("Tipo de Ley no encontrada"), HttpStatus.NOT_FOUND);

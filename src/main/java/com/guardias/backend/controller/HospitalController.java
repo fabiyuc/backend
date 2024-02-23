@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Hospital;
@@ -29,31 +27,31 @@ public class HospitalController {
     @Autowired
     HospitalService hospitalService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
         List<Hospital> list = hospitalService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listaPasivas")
+    @GetMapping("/listPasivas")
     public ResponseEntity<List<Hospital>> listPasivas() {
         List<Hospital> list = hospitalService.findByAdmitePasiva();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Hospital>> getById(@PathVariable("id") Long id) {
         if (!hospitalService.existsById(id))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
-        Hospital hospital = hospitalService.getById(id).get();
+        Hospital hospital = hospitalService.findById(id).get();
         return new ResponseEntity(hospital, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Hospital>> getById(@PathVariable("nombre") String nombre) {
         if (!hospitalService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
-        Hospital hospital = hospitalService.getHospitalByNombre(nombre).get();
+        Hospital hospital = hospitalService.findByNombre(nombre).get();
         return new ResponseEntity(hospital, HttpStatus.OK);
     }
 
@@ -98,7 +96,7 @@ public class HospitalController {
         if (StringUtils.isBlank(hospitalDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Hospital hospital = hospitalService.getById(id).get();
+        Hospital hospital = hospitalService.findById(id).get();
 
         if (hospital.getNombre() != hospitalDto.getNombre() && hospitalDto.getNombre() != null
                 && !hospitalDto.getNombre().isEmpty())

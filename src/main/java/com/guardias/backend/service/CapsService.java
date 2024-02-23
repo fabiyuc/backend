@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.repository.CapsRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -22,7 +19,7 @@ public class CapsService {
         return capsRepository.findAll();
     }
 
-    public Optional<Caps> getById(Long id) {
+    public Optional<Caps> findById(Long id) {
         return capsRepository.findById(id);
     }
 

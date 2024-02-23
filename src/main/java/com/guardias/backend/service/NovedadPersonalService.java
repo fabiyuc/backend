@@ -3,13 +3,10 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.repository.NovedadPersonalRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -27,11 +24,11 @@ public class NovedadPersonalService {
         return novedadPersonalRepository.findById(id);
     }
 
-    public Optional<List<NovedadPersonal>> getByPersona(Long idPersona) {
+    public Optional<List<NovedadPersonal>> findByPersona(Long idPersona) {
         return novedadPersonalRepository.findByPersona(idPersona);
     }
 
-    public Optional<List<NovedadPersonal>> getByFechaInicio(LocalDate fecha) {
+    public Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fecha) {
         return novedadPersonalRepository.findByFechaInicio(fecha);
     }
 

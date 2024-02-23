@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Provincia;
 import com.guardias.backend.repository.ProvinciaRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -26,7 +23,7 @@ public class ProvinciaService {
         return ProvinciaRepository.findById(id);
     }
 
-    public Optional<Provincia> getByNombre(String nombre) {
+    public Optional<Provincia> findByNombre(String nombre) {
         return ProvinciaRepository.findByNombre(nombre);
     }
 

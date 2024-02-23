@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.service.CapsService;
-
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -30,21 +27,21 @@ public class CapsController {
     @Autowired
     CapsService capsService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
         List<Caps> list = capsService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("id") Long id) {
         if (!capsService.existsById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
-        Caps caps = capsService.getById(id).get();
+        Caps caps = capsService.findById(id).get();
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("nombre") String nombre) {
         if (!capsService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
@@ -88,7 +85,7 @@ public class CapsController {
         if (StringUtils.isBlank(capsDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Caps caps = capsService.getById(id).get();
+        Caps caps = capsService.findById(id).get();
 
         if (caps.getNombre() != capsDto.getNombre() && capsDto.getNombre() != null && !capsDto.getNombre().isEmpty()) {
             caps.setNombre(capsDto.getNombre());

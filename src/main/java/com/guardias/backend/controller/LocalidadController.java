@@ -27,25 +27,25 @@ public class LocalidadController {
     @Autowired
     LocalidadService localidadService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Localidad>> list() {
         List<Localidad> list = localidadService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Localidad>> getById(@PathVariable("id") Long id) {
         if (!localidadService.existsById(id))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
-        Localidad localidad = localidadService.getById(id).get();
+        Localidad localidad = localidadService.findById(id).get();
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Localidad>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!localidadService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
-        Localidad localidad = localidadService.getByNombre(nombre).get();
+        Localidad localidad = localidadService.findByNombre(nombre).get();
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
@@ -76,14 +76,14 @@ public class LocalidadController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (localidadService.existsByNombre(localidadDto.getNombre()) &&
-            localidadService.getByNombre(localidadDto.getNombre()).get().getId() != id)
+            localidadService.findByNombre(localidadDto.getNombre()).get().getId() != id)
         return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (localidadDto.getDepartamento() == null)
             return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
                             HttpStatus.BAD_REQUEST); 
 
-        Localidad localidad = localidadService.getById(id).get();
+        Localidad localidad = localidadService.findById(id).get();
         //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
 
         //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */

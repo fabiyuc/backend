@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Categoria;
 import com.guardias.backend.repository.CategoriaRepository;
 
@@ -21,7 +19,7 @@ public class CategoriaService {
         return categoriaRepository.findAll();
     }
 
-    public Optional<Categoria> getOne(Long id) {
+    public Optional<Categoria> findById(Long id) {
         return categoriaRepository.findById((Long) id);
     }
 
@@ -33,7 +31,7 @@ public class CategoriaService {
         categoriaRepository.save(adicional);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         categoriaRepository.deleteById((Long) id);
     }
 

@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
 import com.guardias.backend.entity.NovedadPersonal;
@@ -27,7 +25,7 @@ public class NovedadPersonalController {
     @Autowired
     NovedadPersonalService novedadPersonalService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
         List<NovedadPersonal> list = novedadPersonalService.list();
         return new ResponseEntity(list, HttpStatus.OK);
@@ -57,7 +55,7 @@ public class NovedadPersonalController {
         // if (!novedadPersonalService.existsByFechaIniciofecha))
         // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
         // HttpStatus.NOT_FOUND);
-        List<NovedadPersonal> novedadesList = novedadPersonalService.getByFechaInicio(fecha).get();
+        List<NovedadPersonal> novedadesList = novedadPersonalService.findByFechaInicio(fecha).get();
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 

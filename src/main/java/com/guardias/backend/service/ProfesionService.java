@@ -19,19 +19,19 @@ public class ProfesionService {
         return profesionRepository.findAll();
     }
 
-    public List<Profesion> listAsistenciales() {
+    public List<Profesion> findByAsistencialTrue() {
         return profesionRepository.findByAsistencialTrue();
     }
 
-    public List<Profesion> listNoAsistenciales() {
+    public List<Profesion> findByAsistencialFalse() {
         return profesionRepository.findByAsistencialFalse();
     }
 
-    public Optional<Profesion> getOne(Long id) {
+    public Optional<Profesion> findById(Long id) {
         return profesionRepository.findById(id);
     }
 
-    public Optional<Profesion> getByNombre(String nombre) {
+    public Optional<Profesion> findByNombre(String nombre) {
         return profesionRepository.findByNombre(nombre);
     }
 
@@ -39,7 +39,7 @@ public class ProfesionService {
         profesionRepository.save(profesion);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         profesionRepository.deleteById(id);
     }
 

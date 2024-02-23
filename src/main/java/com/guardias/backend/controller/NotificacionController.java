@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NotificacionDto;
 import com.guardias.backend.entity.Notificacion;
@@ -30,30 +28,29 @@ public class NotificacionController {
     @Autowired
     NotificacionService notificacionService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Notificacion>> list() {
         List<Notificacion> list = notificacionService.list();
         return new ResponseEntity<List<Notificacion>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Notificacion> getById(@PathVariable("id") Long id) {
         if (!notificacionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe una notificación con ese nombre"), HttpStatus.NOT_FOUND);
-        Notificacion notificacion = notificacionService.getone(id).get();
+        Notificacion notificacion = notificacionService.findById(id).get();
         return new ResponseEntity<Notificacion>(notificacion, HttpStatus.OK);
     }
 
-    @GetMapping("/detalletipo/{tipo},{activo}")
+    @GetMapping("/detailtipo/{tipo},{activo}")
     public ResponseEntity<List<Notificacion>> getByTipoAndActivo(@PathVariable("tipo") TipoNotificacionEnum tipo,
             @PathVariable("activo") boolean activo) {
-        List<Notificacion> notificaciones = notificacionService.getByTipoAndActivo(tipo, activo);
+        List<Notificacion> notificaciones = notificacionService.findByTipoAndActivo(tipo, activo);
 
         if (notificaciones.isEmpty()) {
             return new ResponseEntity(new Mensaje("No se encontraron notificaciones para ese tipo"),
                     HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<>(notificaciones, HttpStatus.OK);
     }
 
@@ -120,7 +117,7 @@ public class NotificacionController {
         if (notificacionDto.getUrl() == null)
             return new ResponseEntity(new Mensaje("El Url es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Notificacion notificacion = notificacionService.getone(id).get();
+        Notificacion notificacion = notificacionService.findById(id).get();
         notificacion.setTipo(notificacionDto.getTipo());
         notificacion.setCategoria(notificacionDto.getCategoria());
         notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
@@ -138,7 +135,7 @@ public class NotificacionController {
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
         if (!notificacionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        notificacionService.delete(id);
+        notificacionService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Notificación eliminada"), HttpStatus.OK);
 
     }

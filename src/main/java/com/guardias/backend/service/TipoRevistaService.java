@@ -19,7 +19,7 @@ public class TipoRevistaService {
         return tipoRevistaRepository.findAll();
     }
 
-    public Optional<TipoRevista> getOne(Long id) {
+    public Optional<TipoRevista> findById(Long id) {
         return tipoRevistaRepository.findById(id);
     }
 
@@ -35,7 +35,7 @@ public class TipoRevistaService {
         tipoRevistaRepository.save(tipoRevista);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         tipoRevistaRepository.deleteById(id);
     }
 

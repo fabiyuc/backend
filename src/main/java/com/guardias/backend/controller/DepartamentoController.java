@@ -26,21 +26,21 @@ public class DepartamentoController {
     @Autowired
     DepartamentoService departamentoService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Departamento>> list() {
         List<Departamento> list = departamentoService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Departamento>> getById(@PathVariable("id") Long id) {
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
-        Departamento departamento = departamentoService.getById(id).get();
+        Departamento departamento = departamentoService.findById(id).get();
         return new ResponseEntity(departamento, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Departamento>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!departamentoService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
@@ -105,7 +105,7 @@ public class DepartamentoController {
                     HttpStatus.BAD_REQUEST);
 
 
-        Departamento departamento = departamentoService.getById(id).get();
+        Departamento departamento = departamentoService.findById(id).get();
 
         //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
 

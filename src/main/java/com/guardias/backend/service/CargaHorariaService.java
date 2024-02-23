@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.CargaHoraria;
 import com.guardias.backend.repository.CargaHorariaRepository;
 
@@ -29,7 +27,7 @@ public class CargaHorariaService {
         cargaHorariaRepository.save(cargaHoraria);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         cargaHorariaRepository.deleteById(id);
     }
 

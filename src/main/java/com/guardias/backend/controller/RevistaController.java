@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RevistaDto;
 import com.guardias.backend.entity.Revista;
@@ -28,17 +26,17 @@ public class RevistaController {
     @Autowired
     RevistaService revistaService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Revista>> list() {
         List<Revista> list = revistaService.list();
         return new ResponseEntity<List<Revista>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Revista> getById(@PathVariable("id") Long id) {
         if (!revistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la revista con ese ID"), HttpStatus.NOT_FOUND);
-        Revista revista = revistaService.getOne(id).get();
+        Revista revista = revistaService.findById(id).get();
         return new ResponseEntity<Revista>(revista, HttpStatus.OK);
     }
 
@@ -92,7 +90,7 @@ public class RevistaController {
             return new ResponseEntity(new Mensaje("indicar la carga horaria"),
                     HttpStatus.BAD_REQUEST);
 
-        Revista revista = revistaService.getOne(id).get();
+        Revista revista = revistaService.findById(id).get();
         revista.setCargaHoraria(revistaDto.getCargaHoraria());
         revista.setAdicional(revistaDto.getAdicional());
         revista.setCategoria(revistaDto.getCategoria());
@@ -106,7 +104,7 @@ public class RevistaController {
 
         if (!revistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
-        revistaService.delete(id);
+        revistaService.deleteById(id);
         return new ResponseEntity(new Mensaje("revista eliminada"), HttpStatus.OK);
     }
 }

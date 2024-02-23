@@ -27,37 +27,37 @@ public class ProfesionController {
     @Autowired
     ProfesionService profesionService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Profesion>> list() {
         List<Profesion> list = profesionService.list();
         return new ResponseEntity<List<Profesion>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listaasistenciales")
+    @GetMapping("/listasistenciales")
     public ResponseEntity<List<Profesion>> listAsistenciales() {
-        List<Profesion> asistenciales = profesionService.listAsistenciales();
+        List<Profesion> asistenciales = profesionService.findByAsistencialTrue();
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
-    @GetMapping("/listanoasistenciales")
+    @GetMapping("/listnoasistenciales")
     public ResponseEntity<List<Profesion>> listNoAsistenciales() {
-        List<Profesion> noAsistenciales = profesionService.listNoAsistenciales();
+        List<Profesion> noAsistenciales = profesionService.findByAsistencialFalse();
         return new ResponseEntity<>(noAsistenciales, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Profesion> getById(@PathVariable("id") Long id) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la profesion"), HttpStatus.NOT_FOUND);
-        Profesion profesion = profesionService.getOne(id).get();
+        Profesion profesion = profesionService.findById(id).get();
         return new ResponseEntity<Profesion>(profesion, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Profesion> getByNombre(@PathVariable("nombre") String nombre) {
         if (!profesionService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe profesion con ese nombre"), HttpStatus.NOT_FOUND);
-        Profesion profesion = profesionService.getByNombre(nombre).get();
+        Profesion profesion = profesionService.findByNombre(nombre).get();
         return new ResponseEntity<Profesion>(profesion, HttpStatus.OK);
 
     }
@@ -93,7 +93,7 @@ public class ProfesionController {
 
         // Verifica que el nombre no exista para el mismo ID
         if (profesionService.existsByNombre(profesionDto.getNombre()) &&
-                profesionService.getByNombre(profesionDto.getNombre()).get().getId() != id)
+                profesionService.findByNombre(profesionDto.getNombre()).get().getId() != id)
             return new ResponseEntity(new Mensaje("esa profesion ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(profesionDto.getNombre()))
@@ -103,7 +103,7 @@ public class ProfesionController {
             return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
                     HttpStatus.BAD_REQUEST);
 
-        Profesion profesion = profesionService.getOne(id).get();
+        Profesion profesion = profesionService.findById(id).get();
         profesion.setNombre(profesionDto.getNombre());
         profesion.setAsistencial(profesionDto.getAsistencial());
         profesionService.save(profesion);
@@ -115,7 +115,7 @@ public class ProfesionController {
 
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
-        profesionService.delete(id);
+        profesionService.deleteById(id);
         return new ResponseEntity(new Mensaje("Profesion eliminada"), HttpStatus.OK);
     }
 }

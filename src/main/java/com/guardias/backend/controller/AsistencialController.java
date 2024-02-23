@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.PersonService;
-
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -37,7 +34,7 @@ public class AsistencialController {
     @Autowired
     PersonService personservice;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
         List<Asistencial> list = asistencialService.list();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
@@ -56,13 +53,13 @@ public class AsistencialController {
 
     // *** POSTMAN: /asistencial/listaestado?estado=true o
     // /asistencial/lista?estado=false
-    @GetMapping("/listaestado")
+    @GetMapping("/listestado")
     public ResponseEntity<List<Asistencial>> list(@RequestParam("estado") Boolean estado) {
         List<Asistencial> list = asistencialService.findByEstado(estado);
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Asistencial> getById(@PathVariable("id") Long id) {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la persona tipo asistencial"), HttpStatus.NOT_FOUND);
@@ -70,7 +67,7 @@ public class AsistencialController {
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
     }
 
-    @GetMapping("/detalledni/{dni}")
+    @GetMapping("/detaildni/{dni}")
     public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
         if (!asistencialService.existsByDni(dni))
             return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
@@ -170,7 +167,7 @@ public class AsistencialController {
         }
     }
 
-    @PostMapping("/{idPersona}/agregarLegajo/{idLegajo}")
+    @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
     public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long idPersona,
             @PathVariable("idLegajo") Long idLegajo) {
         try {
@@ -186,7 +183,7 @@ public class AsistencialController {
     }
 
     // utilizar para la novedad y para el suplente
-    @PostMapping("/{idPersona}/agregarNovedadPersonal/{idNovedadPersonal}")
+    @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
     public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona") Long idPersona,
             @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
         try {
@@ -201,7 +198,7 @@ public class AsistencialController {
         }
     }
 
-    @PostMapping("/{idPersona}/agregarDistribucionHoraria/{idNovedadPersonal}")
+    @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
     public ResponseEntity<?> agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
             @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
         try {
@@ -221,7 +218,7 @@ public class AsistencialController {
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        asistencialService.delete(id);
+        asistencialService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Asistencial eliminado"), HttpStatus.OK);
     }
 }

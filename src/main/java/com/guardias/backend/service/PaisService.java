@@ -22,15 +22,11 @@ public class PaisService {
         return paisRepository.findAll();
     }
 
-    public Optional<Pais> getOne(Long id) {
+    public Optional<Pais> findById(Long id) {
         return paisRepository.findById(id);
     }
 
-    public Optional<Pais> getById(Long id) {
-        return paisRepository.findById(id);
-    }
-
-    public Optional<Pais> getByNombre(String nombre) {
+    public Optional<Pais> findByNombre(String nombre) {
         return paisRepository.findByNombre(nombre);
     }
 

@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.DistribucionGiraDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGira;
@@ -28,7 +26,7 @@ public class DistribucionGiraController {
     @Autowired
     DistribucionGiraService distribucionGiraService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<DistribucionGira>> list() {
         List<DistribucionGira> list = distribucionGiraService.list();
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
@@ -42,14 +40,14 @@ public class DistribucionGiraController {
         return new ResponseEntity<DistribucionGira>(distribucionGira, HttpStatus.OK);
     }
 
-    @GetMapping("/lista/{fechaInicio}")
+    @GetMapping("/list/{fechaInicio}")
     public ResponseEntity<List<DistribucionGira>> getByFechainicio(
             @PathVariable("fechaInicio") LocalDate fechaInicio) {
         List<DistribucionGira> list = distribucionGiraService.findByFechaInicio(fechaInicio);
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalleefector/{idEfector}")
+    @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionGira>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionGiraService.existsByEfectorId(idEfector))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"),
@@ -58,7 +56,7 @@ public class DistribucionGiraController {
         return new ResponseEntity<>(distribucionGira, HttpStatus.OK);
     }
 
-    @GetMapping("/detallepersona/{idPersona}")
+    @GetMapping("/detailpersona/{idPersona}")
     public ResponseEntity<List<DistribucionGira>> getByPersona(@PathVariable("idPersona") Long idPersona) {
         if (!distribucionGiraService.existsByPersonaId(idPersona))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"),

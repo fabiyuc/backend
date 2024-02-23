@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
 import com.guardias.backend.entity.Servicio;
@@ -29,7 +27,7 @@ public class ServicioControlador {
     @Autowired
     ServiceService serviceServicio;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Servicio>> list() {
         List<Servicio> list = serviceServicio.list();
         return new ResponseEntity<List<Servicio>>(list, HttpStatus.OK);
@@ -39,7 +37,7 @@ public class ServicioControlador {
     public ResponseEntity<Servicio> getById(@PathVariable("id") Long id) {
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el servicio"), HttpStatus.NOT_FOUND);
-        Servicio servicio = serviceServicio.getOne(id).get();
+        Servicio servicio = serviceServicio.findById(id).get();
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
     }
 
@@ -60,13 +58,13 @@ public class ServicioControlador {
         if (!serviceServicio.existsByDescripcion(descripcion))
             return new ResponseEntity(new Mensaje("no existe el servicio"),
                     HttpStatus.NOT_FOUND);
-        Servicio servicio = serviceServicio.getByDescripcion(descripcion).get();
+        Servicio servicio = serviceServicio.findByDescripcion(descripcion).get();
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
     }
 
     @GetMapping("/detailnivel/{nivel}")
     public ResponseEntity<List<Servicio>> getByNivel(@PathVariable("nivel") int nivel) {
-        List<Servicio> servicios = serviceServicio.getByNivel(nivel);
+        List<Servicio> servicios = serviceServicio.findByNivel(nivel);
         if (!serviceServicio.existsByNivel(nivel))
             return new ResponseEntity(new Mensaje("no existe el nivel"), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(servicios, HttpStatus.OK);
@@ -96,7 +94,7 @@ public class ServicioControlador {
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
 
         if (serviceServicio.existsByDescripcion(servicioDto.getDescripcion()) &&
-                serviceServicio.getByDescripcion(servicioDto.getDescripcion()).get().getId() == id)
+                serviceServicio.findByDescripcion(servicioDto.getDescripcion()).get().getId() == id)
             return new ResponseEntity(new Mensaje("esa descripcion ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(servicioDto.getDescripcion()))
@@ -105,7 +103,7 @@ public class ServicioControlador {
         if (servicioDto.getNivel() <= 0)
             return new ResponseEntity(new Mensaje("el nivel debe ser mayor que 0"), HttpStatus.BAD_REQUEST);
 
-        Servicio servicio = serviceServicio.getOne(id).get();
+        Servicio servicio = serviceServicio.findById(id).get();
         if (servicio.getDescripcion() != servicioDto.getDescripcion() && servicioDto.getDescripcion() != null
                 && !servicioDto.getDescripcion().isEmpty())
             servicio.setDescripcion(servicioDto.getDescripcion());
@@ -119,7 +117,7 @@ public class ServicioControlador {
 
         if (!serviceServicio.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
-        serviceServicio.delete(id);
+        serviceServicio.deleteById(id);
         return new ResponseEntity(new Mensaje("servicio eliminado"), HttpStatus.OK);
     }
 

@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.TipoCargo;
 import com.guardias.backend.repository.TipoCargoRepository;
 
@@ -21,11 +19,11 @@ public class TipoCargoService {
         return tipoCargoRepository.findAll();
     }
 
-    public Optional<TipoCargo> getone(Long id) {
+    public Optional<TipoCargo> findById(Long id) {
         return tipoCargoRepository.findById(id);
     }
 
-    public Optional<TipoCargo> getByNombre(String nombre) {
+    public Optional<TipoCargo> findByNombre(String nombre) {
         return tipoCargoRepository.findByNombre(nombre);
     }
 

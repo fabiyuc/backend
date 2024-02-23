@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.repository.RevistaRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -22,7 +19,7 @@ public class RevistaService {
         return revistaRepository.findAll();
     }
 
-    public Optional<Revista> getOne(Long id) {
+    public Optional<Revista> findById(Long id) {
         return revistaRepository.findById(id);
     }
 
@@ -30,7 +27,7 @@ public class RevistaService {
         revistaRepository.save(revista);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         revistaRepository.deleteById(id);
     }
 

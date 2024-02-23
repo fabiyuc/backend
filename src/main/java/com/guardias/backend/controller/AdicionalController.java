@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AdicionalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.service.AdicionalService;
-
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -31,22 +28,22 @@ public class AdicionalController {
     @Autowired
     AdicionalService adicionalService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
         List<Adicional> list = adicionalService.list();
         return new ResponseEntity<List<Adicional>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Adicional> getById(@PathVariable("id") Long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe adicional con ese nombre"), HttpStatus.NOT_FOUND);
-        Adicional adicional = adicionalService.getById(id).get();
+        Adicional adicional = adicionalService.findById(id).get();
         return new ResponseEntity<Adicional>(adicional, HttpStatus.OK);
 
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Adicional> getByNombre(@PathVariable("nombre") String nombre) {
         if (!adicionalService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe adicional con ese nombre"), HttpStatus.NOT_FOUND);
@@ -95,7 +92,7 @@ public class AdicionalController {
 
         ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Adicional adicional = createUpdate(adicionalService.getById(id).get(), adicionalDto);
+            Adicional adicional = createUpdate(adicionalService.findById(id).get(), adicionalDto);
             adicionalService.save(adicional);
             return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
         } else {
@@ -103,7 +100,7 @@ public class AdicionalController {
         }
     }
 
-    @PostMapping("/{idAdicional}/agregarRevista/{idRevista}")
+    @PostMapping("/{idAdicional}/addRevista/{idRevista}")
     public ResponseEntity<?> agregarRevista(@PathVariable("idAdicional") Long idAdicional,
             @PathVariable("idRevista") Long idRevista) {
         try {
@@ -122,7 +119,7 @@ public class AdicionalController {
     public ResponseEntity<?> delete(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        adicionalService.delete(id);
+        adicionalService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Adicional eliminado"), HttpStatus.OK);
 
     }

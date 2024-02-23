@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Notificacion;
 import com.guardias.backend.enums.TipoNotificacionEnum;
 import com.guardias.backend.repository.NotificacionRepository;
@@ -23,11 +21,11 @@ public class NotificacionService {
 
     }
 
-    public Optional<Notificacion> getone(Long id) {
+    public Optional<Notificacion> findById(Long id) {
         return notificacionRepository.findById((Long) id);
     }
 
-    public List<Notificacion> getByTipoAndActivo(TipoNotificacionEnum tipo, boolean activo) {
+    public List<Notificacion> findByTipoAndActivo(TipoNotificacionEnum tipo, boolean activo) {
         return notificacionRepository.findByTipoAndActivo(tipo, activo);
     }
 
@@ -35,7 +33,7 @@ public class NotificacionService {
         notificacionRepository.save(notificacion);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         notificacionRepository.deleteById(id);
     }
 

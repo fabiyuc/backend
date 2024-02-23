@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AutoridadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
@@ -28,7 +26,7 @@ public class AutoridadController {
     @Autowired
     AutoridadService autoridadService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Autoridad>> list() {
         List<Autoridad> list = autoridadService.list();
         return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
@@ -38,7 +36,7 @@ public class AutoridadController {
     public ResponseEntity<Autoridad> getById(@PathVariable("id") Long id) {
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la autoridad"), HttpStatus.NOT_FOUND);
-        Autoridad autoridad = autoridadService.getOne(id).get();
+        Autoridad autoridad = autoridadService.findById(id).get();
         return new ResponseEntity<Autoridad>(autoridad, HttpStatus.OK);
     }
 
@@ -74,7 +72,7 @@ public class AutoridadController {
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        Autoridad autoridad = autoridadService.getOne(id).get();
+        Autoridad autoridad = autoridadService.findById(id).get();
 
         if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
@@ -102,7 +100,7 @@ public class AutoridadController {
 
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
-        autoridadService.delete(id);
+        autoridadService.deleteById(id);
         return new ResponseEntity(new Mensaje("autoridad eliminada"), HttpStatus.OK);
     }
 }
