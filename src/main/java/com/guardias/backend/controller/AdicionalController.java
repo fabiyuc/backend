@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.AdicionalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.service.AdicionalService;
+
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -115,13 +118,25 @@ public class AdicionalController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    // BORRADO LOGICO
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") long id) {
+        if (!adicionalService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        Adicional adicional = adicionalService.findById(id).get();
+        adicional.setActivo(false);
+        adicionalService.save(adicional);
+        return new ResponseEntity<>(new Mensaje("Adicional eliminado correctamente"), HttpStatus.OK);
+    }
+
+    // BORRADO FISICO
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         adicionalService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Adicional eliminado"), HttpStatus.OK);
-
+        return new ResponseEntity<>(new Mensaje("Adicional eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

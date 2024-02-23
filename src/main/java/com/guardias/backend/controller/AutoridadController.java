@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.AutoridadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
@@ -40,22 +42,13 @@ public class AutoridadController {
         return new ResponseEntity<Autoridad>(autoridad, HttpStatus.OK);
     }
 
+    // TODO hacer las validaciones y el createUpdate
+    private ResponseEntity<?> validations(AutoridadDto autoridadDto) {
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
-
-        /*
-         * ############ validar campos en front o ver como hacerlo aqui con bool y date
-         */
-
-        /*
-         * if (StringUtils.isBlank(legajoDto.isEsActual()))
-         * return new ResponseEntity(new
-         * Mensaje("el establecimiento es obligatorio"),HttpStatus.BAD_REQUEST);
-         * 
-         * if (StringUtils.isBlank(legajoDto.isEsLegal()))
-         * return new ResponseEntity(new
-         * Mensaje("el servicio es obligatorio"),HttpStatus.BAD_REQUEST);
-         */
 
         Autoridad autoridad = new Autoridad();
         autoridad.setNombre(autoridadDto.getNombre());
@@ -86,21 +79,28 @@ public class AutoridadController {
         if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
 
-        // if (!autoridadDto.getEfectores().equals(autoridad.getEfectores()))
-        // autoridad.setEfectores(autoridadDto.getEfectores());
-
         autoridad.setEsActual(autoridadDto.isEsActual());
         autoridad.setEsRegional(autoridadDto.isEsRegional());
         autoridadService.save(autoridad);
         return new ResponseEntity(new Mensaje("La autoridad ha sido actualizada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!autoridadService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
+        Autoridad autoridad = autoridadService.findById(id).get();
+        autoridad.setActivo(false);
+        autoridadService.save(autoridad);
+        return new ResponseEntity(new Mensaje("autoridad eliminada"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
 
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
         autoridadService.deleteById(id);
-        return new ResponseEntity(new Mensaje("autoridad eliminada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("autoridad eliminada FISICAMENTE"), HttpStatus.OK);
     }
 }

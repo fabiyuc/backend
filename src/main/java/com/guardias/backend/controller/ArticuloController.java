@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.ArticuloDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.service.ArticuloService;
+
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -154,11 +157,21 @@ public class ArticuloController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!articuloService.existsById(id))
+            return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
+        Articulo articulo = articuloService.findById(id).get();
+        articulo.setActivo(false);
+        articuloService.save(articulo);
+        return new ResponseEntity<>(new Mensaje("Articulo eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!articuloService.existsById(id))
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo no encontrado"), HttpStatus.NOT_FOUND);
         articuloService.deleteById(id);
-        return new ResponseEntity<Mensaje>(new Mensaje("Articulo eliminado"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Articulo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 }
