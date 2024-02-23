@@ -21,10 +21,10 @@ import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.PersonService;
 
-import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -36,6 +36,8 @@ public class AsistencialController {
     AsistencialService asistencialService;
     @Autowired
     PersonService personservice;
+    @Autowired
+    PersonController personController;
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
@@ -79,62 +81,12 @@ public class AsistencialController {
 
     }
 
-    private ResponseEntity<?> validations(AsistencialDto asistencialDto) {
-        if (StringUtils.isBlank(asistencialDto.getNombre())) {
-            return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(asistencialDto.getApellido())) {
-            return new ResponseEntity<>(new Mensaje("El Apellido es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (asistencialDto.getDni() < 1000000)
-            return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(asistencialDto.getCuil())) {
-            return new ResponseEntity<>(new Mensaje("El Cuil es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (asistencialDto.getFechaNacimiento() == null) {
-            return new ResponseEntity(new Mensaje("La fecha de nacimiento es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(asistencialDto.getSexo())) {
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
-        }
-
-        if (asistencialDto.getEstado() == null)
-            return new ResponseEntity(new Mensaje("indicar si el estado es True o False"), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
+        Person person = personController.createUpdate(asistencial, asistencialDto);
+        asistencial = (Asistencial) person;
         if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
             asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
-        if (!asistencialDto.getTelefono().equals(asistencial.getTelefono()))
-            asistencial.setTelefono(asistencialDto.getTelefono());
-        if (!asistencialDto.getSuplentes().equals(asistencial.getSuplentes()))
-            asistencial.setSuplentes(asistencialDto.getSuplentes());
-        if (!asistencialDto.getSexo().equals(asistencial.getSexo()))
-            asistencial.setSexo(asistencialDto.getSexo());
-        if (!asistencialDto.getNovedadesPersonales().equals(asistencial.getNovedadesPersonales()))
-            asistencial.setNovedadesPersonales(asistencialDto.getNovedadesPersonales());
-        if (!asistencialDto.getNombre().equals(asistencial.getNombre()))
-            asistencial.setNombre(asistencialDto.getNombre());
-        if (!asistencialDto.getLegajos().equals(asistencial.getLegajos()))
-            asistencial.setLegajos(asistencialDto.getLegajos());
-        if (!asistencialDto.getFechaNacimiento().equals(asistencial.getFechaNacimiento()))
-            asistencial.setFechaNacimiento(asistencialDto.getFechaNacimiento());
-        if (!asistencialDto.getEstado().equals(asistencial.getEstado()))
-            asistencial.setEstado(asistencialDto.getEstado());
-        if (!asistencialDto.getEmail().equals(asistencial.getEmail()))
-            asistencial.setEmail(asistencialDto.getEmail());
-        if (!asistencialDto.getDomicilio().equals(asistencial.getDomicilio()))
-            asistencial.setDomicilio(asistencialDto.getDomicilio());
-        if (asistencialDto.getDni() != asistencial.getDni())
-            asistencial.setDni(asistencialDto.getDni());
-        if (!asistencialDto.getDistribucionesHorarias().equals(asistencial.getDistribucionesHorarias()))
-            asistencial.setDistribucionesHorarias(asistencialDto.getDistribucionesHorarias());
-        if (!asistencialDto.getCuil().equals(asistencial.getCuil()))
-            asistencial.setCuil(asistencialDto.getCuil());
-        if (!asistencialDto.getApellido().equals(asistencial.getApellido()))
-            asistencial.setApellido(asistencialDto.getApellido());
+
         if (!asistencialDto.getRegistrosActividades().equals(asistencial.getRegistrosActividades()))
             asistencial.setRegistrosActividades(asistencialDto.getRegistrosActividades());
         return asistencial;
@@ -143,7 +95,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
@@ -159,7 +111,7 @@ public class AsistencialController {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(asistencialService.findById(id).get(), asistencialDto);

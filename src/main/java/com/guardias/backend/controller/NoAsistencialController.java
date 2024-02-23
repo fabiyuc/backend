@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
 import com.guardias.backend.entity.NoAsistencial;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.NoAsistencialService;
 import com.guardias.backend.service.PersonService;
-import io.micrometer.common.util.StringUtils;
+
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -30,6 +33,8 @@ public class NoAsistencialController {
     NoAsistencialService noAsistencialService;
     @Autowired
     PersonService personservice;
+    @Autowired
+    PersonController personController;
 
     @GetMapping("/list")
     public ResponseEntity<List<NoAsistencial>> list() {
@@ -53,74 +58,24 @@ public class NoAsistencialController {
         return new ResponseEntity<NoAsistencial>(noAsistencial, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(NoAsistencialDto noNoAsistencialDto) {
-        if (StringUtils.isBlank(noNoAsistencialDto.getNombre())) {
-            return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(noNoAsistencialDto.getApellido())) {
-            return new ResponseEntity<>(new Mensaje("El Apellido es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (noNoAsistencialDto.getDni() < 1000000)
-            return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
+    private NoAsistencial createUpdate(NoAsistencial noAsistencial, NoAsistencialDto noAsistencialDto) {
 
-        if (StringUtils.isBlank(noNoAsistencialDto.getCuil())) {
-            return new ResponseEntity<>(new Mensaje("El Cuil es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (noNoAsistencialDto.getFechaNacimiento() == null) {
-            return new ResponseEntity(new Mensaje("La fecha de nacimiento es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(noNoAsistencialDto.getSexo())) {
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
-        }
+        Person person = personController.createUpdate(noAsistencial, noAsistencialDto);
+        noAsistencial = (NoAsistencial) person;
 
-        if (noNoAsistencialDto.getEstado() == null)
-            return new ResponseEntity(new Mensaje("indicar si el estado es True o False"), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private NoAsistencial createUpdate(NoAsistencial noNoAsistencial, NoAsistencialDto noNoAsistencialDto) {
-
-        if (!noNoAsistencialDto.getTelefono().equals(noNoAsistencial.getTelefono()))
-            noNoAsistencial.setTelefono(noNoAsistencialDto.getTelefono());
-        if (!noNoAsistencialDto.getSuplentes().equals(noNoAsistencial.getSuplentes()))
-            noNoAsistencial.setSuplentes(noNoAsistencialDto.getSuplentes());
-        if (!noNoAsistencialDto.getSexo().equals(noNoAsistencial.getSexo()))
-            noNoAsistencial.setSexo(noNoAsistencialDto.getSexo());
-        if (!noNoAsistencialDto.getNovedadesPersonales().equals(noNoAsistencial.getNovedadesPersonales()))
-            noNoAsistencial.setNovedadesPersonales(noNoAsistencialDto.getNovedadesPersonales());
-        if (!noNoAsistencialDto.getNombre().equals(noNoAsistencial.getNombre()))
-            noNoAsistencial.setNombre(noNoAsistencialDto.getNombre());
-        if (!noNoAsistencialDto.getLegajos().equals(noNoAsistencial.getLegajos()))
-            noNoAsistencial.setLegajos(noNoAsistencialDto.getLegajos());
-        if (!noNoAsistencialDto.getFechaNacimiento().equals(noNoAsistencial.getFechaNacimiento()))
-            noNoAsistencial.setFechaNacimiento(noNoAsistencialDto.getFechaNacimiento());
-        if (!noNoAsistencialDto.getEstado().equals(noNoAsistencial.getEstado()))
-            noNoAsistencial.setEstado(noNoAsistencialDto.getEstado());
-        if (!noNoAsistencialDto.getEmail().equals(noNoAsistencial.getEmail()))
-            noNoAsistencial.setEmail(noNoAsistencialDto.getEmail());
-        if (!noNoAsistencialDto.getDomicilio().equals(noNoAsistencial.getDomicilio()))
-            noNoAsistencial.setDomicilio(noNoAsistencialDto.getDomicilio());
-        if (noNoAsistencialDto.getDni() != noNoAsistencial.getDni())
-            noNoAsistencial.setDni(noNoAsistencialDto.getDni());
-        if (!noNoAsistencialDto.getDistribucionesHorarias().equals(noNoAsistencial.getDistribucionesHorarias()))
-            noNoAsistencial.setDistribucionesHorarias(noNoAsistencialDto.getDistribucionesHorarias());
-        if (!noNoAsistencialDto.getCuil().equals(noNoAsistencial.getCuil()))
-            noNoAsistencial.setCuil(noNoAsistencialDto.getCuil());
-        if (!noNoAsistencialDto.getApellido().equals(noNoAsistencial.getApellido()))
-            noNoAsistencial.setApellido(noNoAsistencialDto.getApellido());
-        if (!noNoAsistencialDto.getDescripcion().equals(noNoAsistencial.getDescripcion()))
-            noNoAsistencial.setDescripcion(noNoAsistencialDto.getDescripcion());
-        return noNoAsistencial;
+        if (!noAsistencialDto.getDescripcion().equals(noAsistencial.getDescripcion()))
+            noAsistencial.setDescripcion(noAsistencialDto.getDescripcion());
+        return noAsistencial;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody NoAsistencialDto noNoAsistencialDto) {
+    public ResponseEntity<?> create(@RequestBody NoAsistencialDto noAsistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(noNoAsistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            NoAsistencial noNoAsistencial = createUpdate(new NoAsistencial(), noNoAsistencialDto);
-            noAsistencialService.save(noNoAsistencial);
+            NoAsistencial noAsistencial = createUpdate(new NoAsistencial(), noAsistencialDto);
+            noAsistencialService.save(noAsistencial);
             return new ResponseEntity(new Mensaje("Presona creada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
@@ -128,15 +83,15 @@ public class NoAsistencialController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody NoAsistencialDto noNoAsistencialDto) {
+    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody NoAsistencialDto noAsistencialDto) {
         if (!noAsistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("La persona no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(noNoAsistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            NoAsistencial noNoAsistencial = createUpdate(noAsistencialService.findById(id).get(), noNoAsistencialDto);
-            noAsistencialService.save(noNoAsistencial);
+            NoAsistencial noAsistencial = createUpdate(noAsistencialService.findById(id).get(), noAsistencialDto);
+            noAsistencialService.save(noAsistencial);
             return new ResponseEntity(new Mensaje("Persona modificada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

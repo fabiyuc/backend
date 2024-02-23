@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import com.guardias.backend.entity.DistribucionHoraria;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NovedadPersonal;
 
 import jakarta.validation.constraints.Min;
@@ -41,5 +42,7 @@ public class PersonDto {
     private Set<DistribucionHoraria> distribucionesHorarias;
 
     private Set<AutoridadDto> autoridades;
+
+    private Set<Legajo> legajos;
 
 }
