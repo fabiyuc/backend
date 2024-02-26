@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Hospital;
@@ -134,12 +136,23 @@ public class HospitalController {
         return new ResponseEntity(new Mensaje("Hospital actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!hospitalService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
+
+        Hospital hospital = hospitalService.findById(id).get();
+        hospital.setActivo(false);
+        hospitalService.save(hospital);
+        return new ResponseEntity(new Mensaje("Hospital eliminado"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!hospitalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
         hospitalService.deleteById(id);
-        return new ResponseEntity(new Mensaje("Hospital eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Hospital eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

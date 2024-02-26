@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
 import com.guardias.backend.entity.Profesion;
@@ -74,12 +76,14 @@ public class ProfesionController {
         if (profesionDto.getAsistencial() == null)
             return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
                     HttpStatus.BAD_REQUEST);
-        
+
         Profesion profesion = new Profesion();
         profesion.setNombre(profesionDto.getNombre());
         profesion.setAsistencial(profesionDto.getAsistencial());
-       /*  profesion.setLegajos(profesionDto.getLegajos());
-        profesion.setEspecialidades(profesionDto.getEspecialidades()); */
+        /*
+         * profesion.setLegajos(profesionDto.getLegajos());
+         * profesion.setEspecialidades(profesionDto.getEspecialidades());
+         */
 
         profesionService.save(profesion);
         return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);
@@ -110,12 +114,21 @@ public class ProfesionController {
         return new ResponseEntity(new Mensaje("Profesion actualizada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!profesionService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
+        Profesion profesion = profesionService.findById(id).get();
+        profesion.setActivo(false);
+        profesionService.save(profesion);
+        return new ResponseEntity(new Mensaje("Profesion eliminada correctamente"), HttpStatus.OK);
+    }
 
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!profesionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
         profesionService.deleteById(id);
-        return new ResponseEntity(new Mensaje("Profesion eliminada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Profesion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 }

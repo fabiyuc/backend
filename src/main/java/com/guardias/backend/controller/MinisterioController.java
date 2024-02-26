@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.service.MinisterioService;
+
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -127,12 +130,23 @@ public class MinisterioController {
         return new ResponseEntity<Mensaje>(new Mensaje("Ministerio actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!ministerioService.existsById(id))
+            return new ResponseEntity<Mensaje>(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+
+        Ministerio ministerio = ministerioService.findById(id).get();
+        ministerio.setActivo(false);
+        ministerioService.save(ministerio);
+        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!ministerioService.existsById(id))
             return new ResponseEntity<Mensaje>(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
         ministerioService.deleteById(id);
-        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

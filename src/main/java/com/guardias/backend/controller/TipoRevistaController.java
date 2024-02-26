@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoRevistaDto;
 import com.guardias.backend.entity.TipoRevista;
@@ -58,7 +60,7 @@ public class TipoRevistaController {
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         TipoRevista tipoRevista = new TipoRevista();
-        
+
         tipoRevista.setNombre(tipoRevistaDto.getNombre());
         tipoRevistaService.save(tipoRevista);
         return new ResponseEntity(new Mensaje("tipo de revista creado"), HttpStatus.OK);
@@ -86,13 +88,23 @@ public class TipoRevistaController {
         return new ResponseEntity(new Mensaje("Tipo de servicio actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!tipoRevistaService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        TipoRevista tipoRevista = tipoRevistaService.findById(id).get();
+        tipoRevista.setActivo(false);
+        tipoRevistaService.save(tipoRevista);
+        return new ResponseEntity<>(new Mensaje("Tipo Revista eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
+        if (!tipoRevistaService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         tipoRevistaService.deleteById(id);
-        return new ResponseEntity(new Mensaje("tipo de revista eliminado"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Tipo Revista eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

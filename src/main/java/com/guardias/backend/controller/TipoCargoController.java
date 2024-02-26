@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoCargoDto;
 import com.guardias.backend.entity.TipoCargo;
@@ -111,13 +113,23 @@ public class TipoCargoController {
         return ResponseEntity.ok(new Mensaje("Tipo cargo actualizado"));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!tipoCargoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        TipoCargo tipoCargo = tipoCargoService.findById(id).get();
+        tipoCargo.setActivo(false);
+        tipoCargoService.save(tipoCargo);
+        return new ResponseEntity<>(new Mensaje("Tipo Cargo eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!tipoCargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         tipoCargoService.delete(id);
-        return new ResponseEntity<>(new Mensaje("Tipo Cargo eliminado"), HttpStatus.OK);
-
+        return new ResponseEntity<>(new Mensaje("Tipo Cargo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

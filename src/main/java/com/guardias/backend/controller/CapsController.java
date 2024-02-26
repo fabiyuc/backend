@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.service.CapsService;
+
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -127,12 +130,23 @@ public class CapsController {
         return new ResponseEntity(new Mensaje("Caps actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!capsService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el caps"), HttpStatus.NOT_FOUND);
+        Caps caps = capsService.findById(id).get();
+        caps.setActivo(false);
+        capsService.save(caps);
+        return new ResponseEntity(new Mensaje("caps eliminado correctamente"), HttpStatus.OK);
+
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!capsService.existsById(id))
             return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
         capsService.deleteById(id);
-        return new ResponseEntity(new Mensaje("Efector eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

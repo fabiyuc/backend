@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DepartamentoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.service.DepartamentoService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -55,27 +58,28 @@ public class DepartamentoController {
 
         if (departamentoService.existsByNombre(departamentoDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-                            
+
         if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
             return new ResponseEntity(new Mensaje("el codigo postal es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
         if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal()))
             return new ResponseEntity(new Mensaje("ese CP ya existe"),
-                            HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST);
 
-        //******************** el control de provincia valida es necesario???? lo obtiene de un select al valor
+        // ******************** el control de provincia valida es necesario???? lo
+        // obtiene de un select al valor
         if (departamentoDto.getProvincia() == null)
             return new ResponseEntity(new Mensaje("la provincia  es obligatoria"),
-                            HttpStatus.BAD_REQUEST);                   
+                    HttpStatus.BAD_REQUEST);
 
         Departamento departamento = new Departamento();
         departamento.setNombre(departamentoDto.getNombre());
         departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
-        
-        //******* no necesito guardar ni modificar la listas  */
-        //departamento.setLocalidades(departamentoDto.getLocalidades());
-        
+
+        // ******* no necesito guardar ni modificar la listas */
+        // departamento.setLocalidades(departamentoDto.getLocalidades());
+
         departamento.setProvincia(departamentoDto.getProvincia());
 
         departamentoService.save(departamento);
@@ -93,41 +97,54 @@ public class DepartamentoController {
 
         if (StringUtils.isBlank(departamentoDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-        
+
         if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
             return new ResponseEntity(new Mensaje("el CP es obligatorio"), HttpStatus.BAD_REQUEST);
-            
-        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal())&& departamentoService.getByCodigoPostal(departamentoDto.getCodigoPostal()).get().getId()!= id)
+
+        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal())
+                && departamentoService.getByCodigoPostal(departamentoDto.getCodigoPostal()).get().getId() != id)
             return new ResponseEntity(new Mensaje("ese CP ya existe"), HttpStatus.BAD_REQUEST);
 
         if (departamentoDto.getProvincia() == null)
             return new ResponseEntity(new Mensaje("indicar la provincia"),
                     HttpStatus.BAD_REQUEST);
 
-
         Departamento departamento = departamentoService.findById(id).get();
 
-        //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
+        // ******* La validacion antes de setear los valores me gusta que sea en la
+        // misma linea pero no muestra mensajes de error
 
-        //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */
-        
+        // ******* Ahora está mostrando los msjs de error por la validacion previa, ver
+        // como queda para limpiar el codigo */
+
         if (!departamentoDto.getNombre().equals(departamento.getNombre()))
             departamento.setNombre(departamentoDto.getNombre());
         if (!departamentoDto.getCodigoPostal().equals(departamento.getCodigoPostal()))
             departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
         if (!departamentoDto.getProvincia().equals(departamento.getProvincia()))
             departamento.setProvincia(departamentoDto.getProvincia());
-       
-            //******* no necesito guardar ni modificar la listas  */
-            // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
-         //   departamento.setLocalidades(departamentoDto.getLocalidades());
+
+        // ******* no necesito guardar ni modificar la listas */
+        // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
+        // departamento.setLocalidades(departamentoDto.getLocalidades());
 
         departamentoService.save(departamento);
         return new ResponseEntity(new Mensaje("Departamento actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!departamentoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el departamento"), HttpStatus.NOT_FOUND);
+
+        Departamento departamento = departamentoService.findById(id).get();
+        departamento.setActivo(false);
+        departamentoService.save(departamento);
+        return new ResponseEntity(new Mensaje("departamento eliminado"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
 
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el departamento"), HttpStatus.NOT_FOUND);

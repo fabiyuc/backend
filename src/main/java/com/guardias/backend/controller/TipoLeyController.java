@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLeyDto;
 import com.guardias.backend.entity.TipoLey;
 import com.guardias.backend.service.TipoLeyService;
+
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -75,12 +78,23 @@ public class TipoLeyController {
         return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley modificada correctamente"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!tipoLeyService.existsById(id))
-            return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley  no encontrada"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        TipoLey tipoLey = tipoLeyService.findById(id).get();
+        tipoLey.setActivo(false);
+        tipoLeyService.save(tipoLey);
+        return new ResponseEntity<>(new Mensaje("Tipo Ley eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
+        if (!tipoLeyService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         tipoLeyService.deleteById(id);
-        return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley  eliminada"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Tipo Ley eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

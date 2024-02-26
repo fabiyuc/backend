@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.LogDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Log;
 import com.guardias.backend.service.LogService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -84,13 +87,23 @@ public class LogController {
         return new ResponseEntity<>(new Mensaje("Log Actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!logService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        Log log = logService.findById(id).get();
+        log.setActivo(false);
+        logService.save(log);
+        return new ResponseEntity<>(new Mensaje("Log eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!logService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         logService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Log eliminado"), HttpStatus.OK);
-
+        return new ResponseEntity<>(new Mensaje("Log eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.CategoriaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Categoria;
@@ -81,12 +83,22 @@ public class CategoriaController {
         return new ResponseEntity<>(new Mensaje("Categoria Actualizada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!categoriaService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
+        Categoria categoria = categoriaService.findById(id).get();
+        categoria.setActivo(false);
+        categoriaService.save(categoria);
+        return new ResponseEntity<>(new Mensaje("Categoria eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!categoriaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
         categoriaService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Categoria eliminada"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Categoria eliminada FISICAMENTE"), HttpStatus.OK);
 
     }
 

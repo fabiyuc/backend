@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +12,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.GiraMedicaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.GiraMedica;
 import com.guardias.backend.service.GiraMedicaService;
+
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -89,12 +93,23 @@ public class GiraMedicaController {
         return new ResponseEntity(new Mensaje("Gira medica actualizada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!giraMedicaService.existsById(id))
+            return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
+
+        GiraMedica giraMedica = giraMedicaService.findById(id).get();
+        giraMedica.setActivo(false);
+        giraMedicaService.save(giraMedica);
+        return new ResponseEntity(new Mensaje("gira medica eliminada"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!giraMedicaService.existsById(id))
             return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
         giraMedicaService.deleteById(id);
-        return new ResponseEntity(new Mensaje("gira medica eliminada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("gira medica eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
 }

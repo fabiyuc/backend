@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.CargoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Cargo;
@@ -134,12 +136,23 @@ public class CargoController {
         return new ResponseEntity<>(new Mensaje("Cargo Actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!cargoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        Cargo cargo = cargoService.findById(id).get();
+        cargo.setActivo(false);
+        cargoService.save(cargo);
+        return new ResponseEntity<>(new Mensaje("Cargo eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!cargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         cargoService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Cargo eliminado"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Cargo eliminado FISICAMENTE"), HttpStatus.OK);
 
     }
 }

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PaisDto;
 import com.guardias.backend.entity.Pais;
 import com.guardias.backend.service.PaisService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -57,7 +60,7 @@ public class PaisController {
         if (paisService.existsByNombre(paisDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
-                    
+
         if (StringUtils.isBlank(paisDto.getNacionalidad()))
             return new ResponseEntity(new Mensaje("la nacionalidad es obligatoria"),
                     HttpStatus.BAD_REQUEST);
@@ -66,16 +69,16 @@ public class PaisController {
                     HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(paisDto.getCodigo()))
-                    return new ResponseEntity(new Mensaje("el codigo es obligatorio"),
-                            HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el codigo es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
 
         Pais pais = new Pais();
         pais.setNombre(paisDto.getNombre());
         pais.setNacionalidad(paisDto.getNacionalidad());
         pais.setCodigo(paisDto.getCodigo());
-        
-        //******* no necesito guardar ni modificar la listas  */
-       // pais.setProvincias(paisDto.getProvincias());
+
+        // ******* no necesito guardar ni modificar la listas */
+        // pais.setProvincias(paisDto.getProvincias());
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("pais creado"), HttpStatus.OK);
     }
@@ -102,12 +105,14 @@ public class PaisController {
 
         if (StringUtils.isBlank(paisDto.getCodigo()))
             return new ResponseEntity(new Mensaje("el codigo es obligatorio"),
-                            HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST);
 
         Pais pais = paisService.findById(id).get();
-        //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
+        // ******* La validacion antes de setear los valores me gusta que sea en la
+        // misma linea pero no muestra mensajes de error
 
-        //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */
+        // ******* Ahora está mostrando los msjs de error por la validacion previa, ver
+        // como queda para limpiar el codigo */
         if (pais.getNombre() != paisDto.getNombre() && paisDto.getNombre() != null && !paisDto.getNombre().isEmpty())
             pais.setNombre(paisDto.getNombre());
 
@@ -118,21 +123,31 @@ public class PaisController {
                 && !paisDto.getNacionalidad().isEmpty())
             pais.setNacionalidad(paisDto.getNacionalidad());
 
-        //******* no necesito guardar ni modificar la listas  */
-        //if (!pais.getProvincias().equals(paisDto.getProvincias()))
-        //    pais.setProvincias(paisDto.getProvincias());
+        // ******* no necesito guardar ni modificar la listas */
+        // if (!pais.getProvincias().equals(paisDto.getProvincias()))
+        // pais.setProvincias(paisDto.getProvincias());
 
         paisService.save(pais);
         return new ResponseEntity(new Mensaje("pais actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!paisService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
 
+        Pais pais = paisService.findById(id).get();
+        pais.setActivo(false);
+        paisService.save(pais);
+        return new ResponseEntity(new Mensaje("pais eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!paisService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
         paisService.deleteById(id);
-        return new ResponseEntity(new Mensaje("pais eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("pais eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

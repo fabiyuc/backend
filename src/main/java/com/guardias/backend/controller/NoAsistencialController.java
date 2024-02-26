@@ -145,11 +145,21 @@ public class NoAsistencialController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!noAsistencialService.existsById(id))
+            return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
+        NoAsistencial noNoAsistencial = noAsistencialService.findById(id).get();
+        noNoAsistencial.setActivo(false);
+        noAsistencialService.save(noNoAsistencial);
+        return new ResponseEntity<>(new Mensaje("NoAsistencial eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!noAsistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         noAsistencialService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Persona eliminada correctamente"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("NoAsistencial eliminado FISICAMENTE"), HttpStatus.OK);
     }
 }

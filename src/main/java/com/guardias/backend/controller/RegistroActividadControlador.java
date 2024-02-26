@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.RegistroActividadService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -25,12 +28,12 @@ import io.micrometer.common.util.StringUtils;
 public class RegistroActividadControlador {
 
     @Autowired
-    RegistroActividadService registroActividadServicio;
+    RegistroActividadService registroActividadServicie;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
         // System.out.println("entra######################");
-        List<RegistroActividad> list = registroActividadServicio.list();
+        List<RegistroActividad> list = registroActividadServicie.list();
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
 
@@ -71,7 +74,7 @@ public class RegistroActividadControlador {
         registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
         registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
         registroActividad.setTipoGuardia(registroActividadDto.getTipoGuardia());
-        registroActividadServicio.save(registroActividad);
+        registroActividadServicie.save(registroActividad);
         return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
     }
 
@@ -79,7 +82,7 @@ public class RegistroActividadControlador {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody RegistroActividadDto registroActividadDto) {
 
-        if (!registroActividadServicio.existsById(id))
+        if (!registroActividadServicie.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         if (StringUtils.isBlank(registroActividadDto.getEstablecimiento()))
@@ -102,7 +105,7 @@ public class RegistroActividadControlador {
          * return new ResponseEntity(new Mensaje("ese nombre ya existe"),
          * HttpStatus.BAD_REQUEST);
          */
-        RegistroActividad registroActividad = registroActividadServicio.findById(id).get();
+        RegistroActividad registroActividad = registroActividadServicie.findById(id).get();
 
         registroActividad.setEstablecimiento(registroActividadDto.getEstablecimiento());
         // registroActividad.setServicio(registroActividadDto.getServicio());
@@ -111,17 +114,27 @@ public class RegistroActividadControlador {
         registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
         registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
         registroActividad.setTipoGuardia(registroActividadDto.getTipoGuardia());
-        registroActividadServicio.save(registroActividad);
+        registroActividadServicie.save(registroActividad);
         return new ResponseEntity(new Mensaje("Registro de Actividad actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
-        if (!registroActividadServicio.existsById(id))
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!registroActividadServicie.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        registroActividadServicio.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada"), HttpStatus.OK);
 
+        RegistroActividad registroActividad = registroActividadServicie.findById(id).get();
+        registroActividad.setActivo(false);
+        registroActividadServicie.save(registroActividad);
+        return new ResponseEntity<>(new Mensaje("Notificación eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
+        if (!registroActividadServicie.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        registroActividadServicie.deleteById(id);
+        return new ResponseEntity<>(new Mensaje("Notificación eliminada FISICAMENTEE"), HttpStatus.OK);
     }
 
 }

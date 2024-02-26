@@ -69,7 +69,7 @@ public abstract class Efector {
     @JsonIgnore
     private Set<Legajo> legajos = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Notificacion> notificaciones;
 

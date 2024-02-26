@@ -2,10 +2,12 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionConsultorio;
@@ -171,6 +174,26 @@ public class DistribucionConsultorioController {
 
         return new ResponseEntity(new Mensaje("Carga horaria modificada"),
                 HttpStatus.OK);
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!distribucionConsultorioService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
+
+        DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.findById(id).get();
+        distribucionConsultorio.setActivo(false);
+        distribucionConsultorioService.save(distribucionConsultorio);
+        return new ResponseEntity(new Mensaje("distribucion eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
+
+        if (!distribucionConsultorioService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
+        distribucionConsultorioService.deleteById(id);
+        return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
 }

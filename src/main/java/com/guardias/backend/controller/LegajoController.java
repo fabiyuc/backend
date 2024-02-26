@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Legajo;
@@ -135,13 +137,25 @@ public class LegajoController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+
+        if (!legajoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
+
+        Legajo legajo = legajoService.findById(id).get();
+        legajo.setActivo(false);
+        legajoService.save(legajo);
+        return new ResponseEntity(new Mensaje("legajo eliminado"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
 
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
         legajoService.deleteById(id);
-        return new ResponseEntity(new Mensaje("legajo eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("legajo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.LocalidadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.service.LocalidadService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -60,7 +63,7 @@ public class LocalidadController {
 
         if (localidadDto.getDepartamento() == null)
             return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
-                            HttpStatus.BAD_REQUEST); 
+                    HttpStatus.BAD_REQUEST);
 
         Localidad localidad = new Localidad();
         localidad.setNombre(localidadDto.getNombre());
@@ -76,18 +79,20 @@ public class LocalidadController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (localidadService.existsByNombre(localidadDto.getNombre()) &&
-            localidadService.findByNombre(localidadDto.getNombre()).get().getId() != id)
-        return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+                localidadService.findByNombre(localidadDto.getNombre()).get().getId() != id)
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (localidadDto.getDepartamento() == null)
             return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
-                            HttpStatus.BAD_REQUEST); 
+                    HttpStatus.BAD_REQUEST);
 
         Localidad localidad = localidadService.findById(id).get();
-        //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
+        // ******* La validacion antes de setear los valores me gusta que sea en la
+        // misma linea pero no muestra mensajes de error
 
-        //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */
-        
+        // ******* Ahora está mostrando los msjs de error por la validacion previa, ver
+        // como queda para limpiar el codigo */
+
         if (!localidadDto.getNombre().equals(localidad.getNombre()))
             localidad.setNombre(localidadDto.getNombre());
         if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
@@ -97,12 +102,23 @@ public class LocalidadController {
         return new ResponseEntity(new Mensaje("Localidad modificada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
 
         if (!localidadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la localidad"), HttpStatus.NOT_FOUND);
+
+        Localidad localidad = localidadService.findById(id).get();
+        localidad.setActivo(false);
+        localidadService.save(localidad);
+        return new ResponseEntity(new Mensaje("localidad eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
+        if (!localidadService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la localidad"), HttpStatus.NOT_FOUND);
         localidadService.deleteById(id);
-        return new ResponseEntity(new Mensaje("localidad eliminada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("localidad eliminada FISICAMENTE"), HttpStatus.OK);
     }
 }

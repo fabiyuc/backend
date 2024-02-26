@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RevistaDto;
 import com.guardias.backend.entity.Revista;
@@ -99,12 +101,22 @@ public class RevistaController {
         return new ResponseEntity(new Mensaje("revista actualizada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!revistaService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
 
+        Revista revista = revistaService.findById(id).get();
+        revista.setActivo(false);
+        revistaService.save(revista);
+        return new ResponseEntity(new Mensaje("revista eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!revistaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
         revistaService.deleteById(id);
-        return new ResponseEntity(new Mensaje("revista eliminada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("revista eliminada FISICAMENTE"), HttpStatus.OK);
     }
 }
