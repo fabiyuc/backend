@@ -28,8 +28,6 @@ public class AutoridadDto {
     private boolean esRegional;
 
     private boolean activo;
-    // @NotBlank
-    // Set<Efector> efectores;
 
     @NotBlank
     private Efector efector;

@@ -84,7 +84,7 @@ public class AdicionalController {
             adicionalService.save(adicional);
             return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
@@ -99,7 +99,7 @@ public class AdicionalController {
             adicionalService.save(adicional);
             return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 

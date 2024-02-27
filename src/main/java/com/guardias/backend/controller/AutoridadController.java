@@ -20,6 +20,8 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.service.AutoridadService;
 
+import io.micrometer.common.util.StringUtils;
+
 @RestController
 @RequestMapping("/autoridad")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -44,20 +46,52 @@ public class AutoridadController {
 
     // TODO hacer las validaciones y el createUpdate
     private ResponseEntity<?> validations(AutoridadDto autoridadDto) {
+        if (StringUtils.isBlank(autoridadDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (autoridadDto.getFechaInicio() == null)
+            return new ResponseEntity<>(new Mensaje("La fechad e inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
+        if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
+            autoridad.setNombre(autoridadDto.getNombre());
+
+        if (!autoridadDto.getFechaInicio().equals(autoridad.getFechaInicio()))
+            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
+
+        if (!autoridadDto.getFechaFinal().equals(autoridad.getFechaFinal()))
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (!autoridadDto.getFechaFinal().equals(autoridad.getFechaFinal()))
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (!autoridadDto.getEfector().equals(autoridad.getEfector()))
+            autoridad.setEfector(autoridadDto.getEfector());
+
+        if (!autoridadDto.getPersona().equals(autoridad.getPersona()))
+            autoridad.setPersona(autoridadDto.getPersona());
+
+        autoridad.setEsActual(autoridadDto.isEsActual());
+        autoridad.setEsRegional(autoridadDto.isEsRegional());
+
+        return autoridad;
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
 
-        Autoridad autoridad = new Autoridad();
-        autoridad.setNombre(autoridadDto.getNombre());
-        autoridad.setFechaInicio(autoridadDto.getFechaInicio());
-        autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-        autoridad.setEsActual(autoridadDto.isEsActual());
-        autoridad.setEsRegional(autoridadDto.isEsRegional());
-        autoridadService.save(autoridad);
-        return new ResponseEntity(new Mensaje("Autoridad creada"), HttpStatus.OK);
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
+            autoridadService.save(autoridad);
+            return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
@@ -65,24 +99,15 @@ public class AutoridadController {
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        Autoridad autoridad = autoridadService.findById(id).get();
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
 
-        if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
-            autoridad.setNombre(autoridadDto.getNombre());
-
-        if (autoridad.getFechaInicio() != autoridadDto.getFechaInicio() && autoridadDto.getFechaInicio() != null)
-            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
-
-        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
-            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-
-        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
-            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-
-        autoridad.setEsActual(autoridadDto.isEsActual());
-        autoridad.setEsRegional(autoridadDto.isEsRegional());
-        autoridadService.save(autoridad);
-        return new ResponseEntity(new Mensaje("La autoridad ha sido actualizada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);
+            autoridadService.save(autoridad);
+            return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
