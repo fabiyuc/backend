@@ -17,7 +17,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -77,7 +76,12 @@ public class Legajo {
       "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
   private Person persona;
 
-  @OneToOne(mappedBy = "legajo")
+  // @OneToOne(mappedBy = "legajo")
+  // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
+  // private Cargo cargo;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "id_cargo")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
   private Cargo cargo;
 

@@ -88,7 +88,7 @@ public class CargoController {
         cargo.setFechainicio(cargoDto.getFechainicio());
         cargo.setFechafinal(cargoDto.getFechafinal());
 
-        cargo.setLegajo(cargoDto.getLegajo());
+        cargo.setLegajos(cargoDto.getLegajos());
         cargo.setAgrupacion(cargoDto.getAgrupacion());
 
         cargoService.save(cargo);
@@ -135,7 +135,7 @@ public class CargoController {
         cargo.setFechainicio(cargoDto.getFechainicio());
         cargo.setFechafinal(cargoDto.getFechafinal());
 
-        cargo.setLegajo(cargoDto.getLegajo());
+        cargo.setLegajos(cargoDto.getLegajos());
         cargo.setAgrupacion(cargoDto.getAgrupacion());
         cargoService.save(cargo);
 

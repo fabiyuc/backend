@@ -1,20 +1,23 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.AgrupacionEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,13 +53,18 @@ public class Cargo {
     @Column(columnDefinition = "DATE")
     private LocalDate fechafinal;
 
-    @OneToOne
-    @JoinColumn(name = "id_legajo")
+    // @OneToOne
+    // @JoinColumn(name = "id_legajo")
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo",
+    // "cargo" })
+    // private Legajo legajo;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
+    // @JoinColumn(name = "id_legajo")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo", "cargo" })
-    private Legajo legajo;
+    private Set<Legajo> legajos = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(30)")
+    @Column(columnDefinition = "VARCHAR(40)")
     private AgrupacionEnum agrupacion;
 
     @Override
