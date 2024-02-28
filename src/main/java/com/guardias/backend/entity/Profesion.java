@@ -26,6 +26,8 @@ public class Profesion {
     @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
     private Boolean asistencial;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "profesion", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "profesion", "asistenciales", "legajos" })

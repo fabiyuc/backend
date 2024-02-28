@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.service.MinisterioService;
-
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -30,25 +27,31 @@ public class MinisterioController {
     @Autowired
     MinisterioService ministerioService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.list();
+        List<Ministerio> list = ministerioService.findByActivo(true);
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Ministerio>> listAll() {
+        List<Ministerio> list = ministerioService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Ministerio>> getById(@PathVariable("id") Long id) {
         if (!ministerioService.existsById(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
-        Ministerio ministerio = ministerioService.getById(id).get();
+        Ministerio ministerio = ministerioService.findById(id).get();
         return new ResponseEntity(ministerio, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Ministerio>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!ministerioService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
-        Ministerio ministerio = ministerioService.getMinisterioByNombre(nombre).get();
+        Ministerio ministerio = ministerioService.findByNombre(nombre).get();
         return new ResponseEntity(ministerio, HttpStatus.OK);
     }
 
@@ -95,7 +98,7 @@ public class MinisterioController {
         if (StringUtils.isBlank(ministerioDto.getNombre()))
             return new ResponseEntity<Mensaje>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        Ministerio ministerio = ministerioService.getById(id).get();
+        Ministerio ministerio = ministerioService.findById(id).get();
 
         if (ministerio.getNombre() != ministerioDto.getNombre() && ministerioDto.getNombre() != null
                 && !ministerioDto.getNombre().isEmpty())
@@ -130,12 +133,23 @@ public class MinisterioController {
         return new ResponseEntity<Mensaje>(new Mensaje("Ministerio actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!ministerioService.existsById(id))
+            return new ResponseEntity<Mensaje>(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+
+        Ministerio ministerio = ministerioService.findById(id).get();
+        ministerio.setActivo(false);
+        ministerioService.save(ministerio);
+        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
         if (!ministerioService.existsById(id))
             return new ResponseEntity<Mensaje>(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
         ministerioService.deleteById(id);
-        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

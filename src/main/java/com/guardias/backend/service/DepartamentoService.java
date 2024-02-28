@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.repository.DepartamentoRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,11 +15,15 @@ public class DepartamentoService {
     @Autowired
     DepartamentoRepository departamentoRepository;
 
-    public List<Departamento> list() {
+    public List<Departamento> findByActivo(boolean activo) {
+        return departamentoRepository.findByActivo(activo);
+    }
+
+    public List<Departamento> findAll() {
         return departamentoRepository.findAll();
     }
 
-    public Optional<Departamento> getById(Long id) {
+    public Optional<Departamento> findById(Long id) {
         return departamentoRepository.findById(id);
     }
 

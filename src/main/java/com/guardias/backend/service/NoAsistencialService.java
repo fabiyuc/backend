@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.repository.NoAsistencialRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,7 +15,11 @@ public class NoAsistencialService {
     @Autowired
     NoAsistencialRepository noAsistencialRepository;
 
-    public List<NoAsistencial> list() {
+    public List<NoAsistencial> findByActivo(boolean activo) {
+        return noAsistencialRepository.findByActivo(activo);
+    }
+
+    public List<NoAsistencial> findAll() {
         return noAsistencialRepository.findAll();
     }
 
@@ -46,7 +47,7 @@ public class NoAsistencialService {
         noAsistencialRepository.save(noAsistencial);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         noAsistencialRepository.deleteById(id);
     }
 }

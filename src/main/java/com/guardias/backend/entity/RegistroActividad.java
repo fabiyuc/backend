@@ -2,14 +2,14 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -50,21 +50,23 @@ public class RegistroActividad {
     @Column(columnDefinition = "VARCHAR(50)")
     @Enumerated(EnumType.STRING)
     private TipoGuardiaEnum tipoGuardia;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     // @ManyToOne // Relación muchos a uno con Person
     // private Asistencial asistencial;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_asistencial")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades" })
     private Asistencial asistencial;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_servicio")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades" })
     private Servicio servicio;
 
-    @ManyToOne(optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
 
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades", "domicilio", "telefono",

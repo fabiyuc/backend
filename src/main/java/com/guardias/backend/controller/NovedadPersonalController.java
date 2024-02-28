@@ -2,18 +2,18 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
 import com.guardias.backend.entity.NovedadPersonal;
@@ -27,9 +27,15 @@ public class NovedadPersonalController {
     @Autowired
     NovedadPersonalService novedadPersonalService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
-        List<NovedadPersonal> list = novedadPersonalService.list();
+        List<NovedadPersonal> list = novedadPersonalService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<NovedadPersonal>> listAll() {
+        List<NovedadPersonal> list = novedadPersonalService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -57,7 +63,7 @@ public class NovedadPersonalController {
         // if (!novedadPersonalService.existsByFechaIniciofecha))
         // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
         // HttpStatus.NOT_FOUND);
-        List<NovedadPersonal> novedadesList = novedadPersonalService.getByFechaInicio(fecha).get();
+        List<NovedadPersonal> novedadesList = novedadPersonalService.findByFechaInicio(fecha).get();
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
@@ -133,6 +139,25 @@ public class NovedadPersonalController {
 
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!novedadPersonalService.existsById(id))
+            return new ResponseEntity(new Mensaje("La novedad no exixte"), HttpStatus.NOT_FOUND);
+
+        NovedadPersonal novedadPersonal = novedadPersonalService.findById(id).get();
+        novedadPersonal.setActiva(false);
+        novedadPersonalService.save(novedadPersonal);
+        return new ResponseEntity<>(new Mensaje("novedad eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
+        if (!novedadPersonalService.existsById(id))
+            return new ResponseEntity(new Mensaje("La novedad no exixte"), HttpStatus.NOT_FOUND);
+        novedadPersonalService.deleteById(null);
+        return new ResponseEntity<>(new Mensaje("novedad eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
 }

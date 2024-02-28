@@ -1,24 +1,22 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLicenciaDto;
 import com.guardias.backend.entity.TipoLicencia;
 import com.guardias.backend.service.TipoLicenciaService;
-
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -29,25 +27,25 @@ public class TipoLicenciaController {
     @Autowired
     TipoLicenciaService tipoLicenciaService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<TipoLicencia>> list() {
         List<TipoLicencia> list = tipoLicenciaService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("id") Long id) {
         if (!tipoLicenciaService.existsById(id))
             return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
-        TipoLicencia tipoLicencia = tipoLicenciaService.getById(id).get();
+        TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).get();
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("nombre") String nombre) {
         if (!tipoLicenciaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
-        TipoLicencia tipoLicencia = tipoLicenciaService.getByNombre(nombre).get();
+        TipoLicencia tipoLicencia = tipoLicenciaService.findByNombre(nombre).get();
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);
     }
 
@@ -84,7 +82,7 @@ public class TipoLicenciaController {
             return new ResponseEntity(new Mensaje("el numero de ley es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        TipoLicencia tipoLicencia = tipoLicenciaService.getById(id).get();
+        TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).get();
 
         if (!tipoLicenciaDto.getNombre().equals(tipoLicencia.getNombre()))
             tipoLicencia.setNombre(tipoLicenciaDto.getNombre());
@@ -100,6 +98,25 @@ public class TipoLicenciaController {
 
         tipoLicenciaService.save(tipoLicencia);
         return new ResponseEntity(new Mensaje("Tipo de licencia modificado correctamente"), HttpStatus.OK);
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!tipoLicenciaService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).get();
+        tipoLicencia.setActivo(false);
+        tipoLicenciaService.save(tipoLicencia);
+        return new ResponseEntity<>(new Mensaje("Tipo Licencia eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
+        if (!tipoLicenciaService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        tipoLicenciaService.deleteById(id);
+        return new ResponseEntity<>(new Mensaje("Tipo Licencia eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

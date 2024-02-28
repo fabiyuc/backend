@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDateTime;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +15,5 @@ public class LogDto {
     private String seccion;
     @NotBlank
     private String accion;
-
+    private boolean activo;
 }

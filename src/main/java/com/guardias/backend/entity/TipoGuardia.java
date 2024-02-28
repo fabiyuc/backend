@@ -21,6 +21,8 @@ public class TipoGuardia {
     private String nombre;
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     /*
      * @OneToMany(mappedBy = "tipoGuardia")

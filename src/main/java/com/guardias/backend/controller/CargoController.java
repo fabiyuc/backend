@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.CargoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Cargo;
@@ -29,18 +27,23 @@ public class CargoController {
     @Autowired
     CargoService cargoService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Cargo>> list() {
-        List<Cargo> list = cargoService.list();
+        List<Cargo> list = cargoService.findByActivo(true);
         return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
+    }
 
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Cargo>> listAll() {
+        List<Cargo> list = cargoService.findAll();
+        return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Cargo> getById(@PathVariable("id") Long id) {
         if (!cargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Cargo cargo = cargoService.getone(id).get();
+        Cargo cargo = cargoService.findById(id).get();
         return new ResponseEntity<Cargo>(cargo, HttpStatus.OK);
     }
 
@@ -88,6 +91,9 @@ public class CargoController {
         cargo.setFechainicio(cargoDto.getFechainicio());
         cargo.setFechafinal(cargoDto.getFechafinal());
 
+        cargo.setLegajos(cargoDto.getLegajos());
+        cargo.setAgrupacion(cargoDto.getAgrupacion());
+
         cargoService.save(cargo);
 
         return new ResponseEntity<>(new Mensaje("Cargo creado"), HttpStatus.OK);
@@ -123,7 +129,7 @@ public class CargoController {
         if (cargoDto.getFechafinal() == null)
             return new ResponseEntity(new Mensaje("Fecha final obligatoria"), HttpStatus.BAD_REQUEST);
 
-        Cargo cargo = cargoService.getone(id).get();
+        Cargo cargo = cargoService.findById(id).get();
         cargo.setNombre(cargoDto.getNombre());
         cargo.setDescripcion(cargoDto.getDescripcion());
         cargo.setNroresolucion(cargoDto.getNroresolucion());
@@ -131,17 +137,31 @@ public class CargoController {
         cargo.setFecharesolucion(cargoDto.getFecharesolucion());
         cargo.setFechainicio(cargoDto.getFechainicio());
         cargo.setFechafinal(cargoDto.getFechafinal());
+
+        cargo.setLegajos(cargoDto.getLegajos());
+        cargo.setAgrupacion(cargoDto.getAgrupacion());
         cargoService.save(cargo);
 
         return new ResponseEntity<>(new Mensaje("Cargo Actualizado"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!cargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        cargoService.delete(id);
-        return new ResponseEntity<>(new Mensaje("Cargo eliminado"), HttpStatus.OK);
+
+        Cargo cargo = cargoService.findById(id).get();
+        cargo.setActivo(false);
+        cargoService.save(cargo);
+        return new ResponseEntity<>(new Mensaje("Cargo eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
+        if (!cargoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        cargoService.deleteById(id);
+        return new ResponseEntity<>(new Mensaje("Cargo eliminado FISICAMENTE"), HttpStatus.OK);
 
     }
 }

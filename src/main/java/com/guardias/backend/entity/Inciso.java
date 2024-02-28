@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
 public class Inciso extends Ley {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_inciso")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subIncisos", "inciso" })
     private Inciso inciso;
@@ -34,7 +34,7 @@ public class Inciso extends Ley {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso" })
     private List<Inciso> subIncisos;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_articulo")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos", "articulo" })
     private Articulo articulo;

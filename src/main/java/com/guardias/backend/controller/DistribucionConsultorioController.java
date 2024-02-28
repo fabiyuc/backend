@@ -2,11 +2,11 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionConsultorio;
@@ -28,13 +27,19 @@ public class DistribucionConsultorioController {
     @Autowired
     DistribucionConsultorioService distribucionConsultorioService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<DistribucionConsultorio>> list() {
-        List<DistribucionConsultorio> list = distribucionConsultorioService.list();
+        List<DistribucionConsultorio> list = distribucionConsultorioService.findByActivo(true);
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/lista/{fechaInicio}")
+    @GetMapping("/listAll")
+    public ResponseEntity<List<DistribucionConsultorio>> listAll() {
+        List<DistribucionConsultorio> list = distribucionConsultorioService.findAll();
+        return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/list/{fechaInicio}")
     public ResponseEntity<List<DistribucionConsultorio>> getByFechainicio(
             @PathVariable("fechaInicio") LocalDate fechaInicio) {
         List<DistribucionConsultorio> list = distribucionConsultorioService.findByFechaInicio(fechaInicio);
@@ -49,7 +54,7 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<DistribucionConsultorio>(distribucionConsultorio, HttpStatus.OK);
     }
 
-    @GetMapping("/detalleefector/{idEfector}")
+    @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionConsultorio>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionConsultorioService.existsByEfectorId(idEfector))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"),
@@ -59,7 +64,7 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<>(distribucionConsultorio, HttpStatus.OK);
     }
 
-    @GetMapping("/detallepersona/{idPersona}")
+    @GetMapping("/detailpersona/{idPersona}")
     public ResponseEntity<List<DistribucionConsultorio>> getByPersona(@PathVariable("idPersona") Long idPersona) {
         if (!distribucionConsultorioService.existsByPersonaId(idPersona))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"),
@@ -173,6 +178,26 @@ public class DistribucionConsultorioController {
 
         return new ResponseEntity(new Mensaje("Carga horaria modificada"),
                 HttpStatus.OK);
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!distribucionConsultorioService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
+
+        DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.findById(id).get();
+        distribucionConsultorio.setActivo(false);
+        distribucionConsultorioService.save(distribucionConsultorio);
+        return new ResponseEntity(new Mensaje("distribucion eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
+
+        if (!distribucionConsultorioService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
+        distribucionConsultorioService.deleteById(id);
+        return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
 }

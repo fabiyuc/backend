@@ -27,25 +27,31 @@ public class LocalidadController {
     @Autowired
     LocalidadService localidadService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Localidad>> list() {
-        List<Localidad> list = localidadService.list();
+        List<Localidad> list = localidadService.findByActivo(true);
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Localidad>> listAll() {
+        List<Localidad> list = localidadService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Localidad>> getById(@PathVariable("id") Long id) {
         if (!localidadService.existsById(id))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
-        Localidad localidad = localidadService.getById(id).get();
+        Localidad localidad = localidadService.findById(id).get();
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
-    @GetMapping("/detallenombre/{nombre}")
+    @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Localidad>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!localidadService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
-        Localidad localidad = localidadService.getByNombre(nombre).get();
+        Localidad localidad = localidadService.findByNombre(nombre).get();
         return new ResponseEntity(localidad, HttpStatus.OK);
     }
 
@@ -60,7 +66,7 @@ public class LocalidadController {
 
         if (localidadDto.getDepartamento() == null)
             return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
-                            HttpStatus.BAD_REQUEST); 
+                    HttpStatus.BAD_REQUEST);
 
         Localidad localidad = new Localidad();
         localidad.setNombre(localidadDto.getNombre());
@@ -76,18 +82,20 @@ public class LocalidadController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (localidadService.existsByNombre(localidadDto.getNombre()) &&
-            localidadService.getByNombre(localidadDto.getNombre()).get().getId() != id)
-        return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+                localidadService.findByNombre(localidadDto.getNombre()).get().getId() != id)
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (localidadDto.getDepartamento() == null)
             return new ResponseEntity(new Mensaje("el departamento es obligatorio"),
-                            HttpStatus.BAD_REQUEST); 
+                    HttpStatus.BAD_REQUEST);
 
-        Localidad localidad = localidadService.getById(id).get();
-        //******* La validacion antes de setear los valores me gusta que sea en la misma linea pero no muestra mensajes de error
+        Localidad localidad = localidadService.findById(id).get();
+        // ******* La validacion antes de setear los valores me gusta que sea en la
+        // misma linea pero no muestra mensajes de error
 
-        //******* Ahora está mostrando los msjs de error por la validacion previa, ver como queda para limpiar el codigo  */
-        
+        // ******* Ahora está mostrando los msjs de error por la validacion previa, ver
+        // como queda para limpiar el codigo */
+
         if (!localidadDto.getNombre().equals(localidad.getNombre()))
             localidad.setNombre(localidadDto.getNombre());
         if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
@@ -97,12 +105,23 @@ public class LocalidadController {
         return new ResponseEntity(new Mensaje("Localidad modificada"), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
 
         if (!localidadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la localidad"), HttpStatus.NOT_FOUND);
+
+        Localidad localidad = localidadService.findById(id).get();
+        localidad.setActivo(false);
+        localidadService.save(localidad);
+        return new ResponseEntity(new Mensaje("localidad eliminada correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
+        if (!localidadService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe la localidad"), HttpStatus.NOT_FOUND);
         localidadService.deleteById(id);
-        return new ResponseEntity(new Mensaje("localidad eliminada"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("localidad eliminada FISICAMENTE"), HttpStatus.OK);
     }
 }

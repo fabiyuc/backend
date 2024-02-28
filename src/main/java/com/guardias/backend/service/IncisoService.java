@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.repository.IncisoRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -17,7 +14,11 @@ public class IncisoService {
     @Autowired
     IncisoRepository incisoRepository;
 
-    public List<Inciso> list() {
+    public List<Inciso> findByActivo(boolean activo) {
+        return incisoRepository.findByActivo(activo);
+    }
+
+    public List<Inciso> findAll() {
         return incisoRepository.findAll();
     }
 

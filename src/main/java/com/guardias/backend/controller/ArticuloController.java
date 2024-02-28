@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +13,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.ArticuloDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.service.ArticuloService;
-
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 
 @Controller
 @RequestMapping("/articulo")
@@ -29,13 +27,19 @@ public class ArticuloController {
     @Autowired
     ArticuloService articuloService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Articulo>> list() {
-        List<Articulo> list = articuloService.list();
+        List<Articulo> list = articuloService.findByActivo(true);
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Articulo>> listAll() {
+        List<Articulo> list = articuloService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{id}")
     public ResponseEntity<List<Articulo>> getById(@PathVariable("id") Long id) {
         if (!articuloService.existsById(id))
             return new ResponseEntity(new Mensaje("Articulo no encontrado"), HttpStatus.NOT_FOUND);
@@ -124,11 +128,53 @@ public class ArticuloController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PostMapping("/{idArticulo}/agregarInciso/{idInciso}")
+    public ResponseEntity<?> agregarInciso(@PathVariable("idArticulo") Long idArticulo,
+            @PathVariable("idInciso") Long idInciso) {
+        try {
+            articuloService.agregarInciso(idArticulo, idInciso);
+
+            return new ResponseEntity<>(new Mensaje("Inciso agregado al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el articlo con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el inciso agregado al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/{idArticulo}/addSubArticulo/{idSubArticulo}")
+    public ResponseEntity<?> agregarSubArticulo(@PathVariable("idArticulo") Long idArticulo,
+            @PathVariable("idSubArticulo") Long idSubArticulo) {
+        try {
+            articuloService.agregarSubArticulo(idArticulo, idSubArticulo);
+
+            return new ResponseEntity<>(new Mensaje("SubArticulo agregado al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el articlo con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el SubArticulo al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!articuloService.existsById(id))
+            return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
+        Articulo articulo = articuloService.findById(id).get();
+        articulo.setActivo(false);
+        articuloService.save(articulo);
+        return new ResponseEntity<>(new Mensaje("Articulo eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!articuloService.existsById(id))
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo no encontrado"), HttpStatus.NOT_FOUND);
         articuloService.deleteById(id);
-        return new ResponseEntity<Mensaje>(new Mensaje("Articulo eliminado"), HttpStatus.OK);
+        return new ResponseEntity<Mensaje>(new Mensaje("Articulo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 }

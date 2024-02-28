@@ -16,11 +16,15 @@ public class SuspencionService {
     @Autowired
     SuspencionRepository suspencionRepository;
 
-    public List<Suspencion> list() {
+    public List<Suspencion> findByActivo(boolean activo) {
+        return suspencionRepository.findByActivo(activo);
+    }
+
+    public List<Suspencion> findAll() {
         return suspencionRepository.findAll();
     }
 
-    public Optional<Suspencion> getOne(Long id) {
+    public Optional<Suspencion> findById(Long id) {
         return suspencionRepository.findById(id);
     }
 
@@ -36,11 +40,11 @@ public class SuspencionService {
         return suspencionRepository.existsById(id);
     }
 
-    public Optional<Suspencion> getByFechaInicio(LocalDate fechaInicio) {
+    public Optional<Suspencion> findByFechaInicio(LocalDate fechaInicio) {
         return suspencionRepository.findByFechaInicio(fechaInicio);
     }
 
-    public Optional<Suspencion> getByFechaFin(LocalDate fechaFin) {
+    public Optional<Suspencion> findByFechaFin(LocalDate fechaFin) {
         return suspencionRepository.findByFechaFin(fechaFin);
     }
 

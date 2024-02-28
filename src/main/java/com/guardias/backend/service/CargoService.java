@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Cargo;
 import com.guardias.backend.repository.CargoRepository;
 
@@ -17,11 +15,15 @@ public class CargoService {
     @Autowired
     CargoRepository cargoRepository;
 
-    public List<Cargo> list() {
+    public List<Cargo> findByActivo(boolean activo) {
+        return cargoRepository.findByActivo(activo);
+    }
+
+    public List<Cargo> findAll() {
         return cargoRepository.findAll();
     }
 
-    public Optional<Cargo> getone(Long id) {
+    public Optional<Cargo> findById(Long id) {
         return cargoRepository.findById((Long) id);
     }
 
@@ -34,7 +36,7 @@ public class CargoService {
 
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         cargoRepository.deleteById((Long) id);
     }
 

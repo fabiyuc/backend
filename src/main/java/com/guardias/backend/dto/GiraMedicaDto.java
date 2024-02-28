@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -18,4 +17,5 @@ public class GiraMedicaDto {
     private int cantidadHoras;
     @NotBlank
     private String descripcion;
+    private boolean activo;
 }

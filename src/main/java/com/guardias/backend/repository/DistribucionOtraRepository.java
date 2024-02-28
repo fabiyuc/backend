@@ -3,13 +3,13 @@ package com.guardias.backend.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.DistribucionOtra;
 
+@Repository
 public interface DistribucionOtraRepository extends JpaRepository<DistribucionOtra, Long> {
 
     Optional<DistribucionOtra> findById(Long id);
@@ -27,4 +27,6 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
     boolean existsByEfectorId(Long efectorId);
 
     boolean existsByPersonaId(Long personaId);
+
+    List<DistribucionOtra> findByActivo(boolean activo); 
 }

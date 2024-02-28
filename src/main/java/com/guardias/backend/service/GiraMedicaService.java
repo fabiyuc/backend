@@ -3,13 +3,10 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.GiraMedica;
 import com.guardias.backend.repository.GiraMedicaRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -19,15 +16,19 @@ public class GiraMedicaService {
     @Autowired
     GiraMedicaRepository giraMedicaRepository;
 
-    public List<GiraMedica> list() {
+    public List<GiraMedica> findByActivo(boolean activo) {
+        return giraMedicaRepository.findByActivo(activo);
+    }
+
+    public List<GiraMedica> findAll() {
         return giraMedicaRepository.findAll();
     }
 
-    public Optional<GiraMedica> getById(Long id) {
+    public Optional<GiraMedica> findById(Long id) {
         return giraMedicaRepository.findById(id);
     }
 
-    public Optional<List<GiraMedica>> getByFecha(LocalDate fecha) {
+    public Optional<List<GiraMedica>> findByFecha(LocalDate fecha) {
         return giraMedicaRepository.findByFecha(fecha);
     }
 

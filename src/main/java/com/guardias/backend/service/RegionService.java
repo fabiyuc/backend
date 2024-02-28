@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.repository.RegionRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -17,19 +14,19 @@ public class RegionService {
     @Autowired
     RegionRepository regionRepository;
 
-    public List<Region> list() {
+    public List<Region> findByActivo(boolean activo) {
+        return regionRepository.findByActivo(activo);
+    }
+
+    public List<Region> findAll() {
         return regionRepository.findAll();
     }
 
-    public Optional<Region> getById(Long id) {
+    public Optional<Region> findById(Long id) {
         return regionRepository.findById(id);
     }
 
-    public Optional<Region> getByNombre(String nombre) {
-        return regionRepository.findByNombre(nombre);
-    }
-
-    public Optional<Region> getRegionByNombre(String nombre) {
+    public Optional<Region> findByNombre(String nombre) {
         return regionRepository.findByNombre(nombre);
     }
 

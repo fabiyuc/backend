@@ -1,11 +1,11 @@
 package com.guardias.backend.repository;
 
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import com.guardias.backend.entity.Inciso;
+import java.util.List;
+
 
 @Repository
 public interface IncisoRepository extends JpaRepository<Inciso, Long> {
@@ -18,4 +18,5 @@ public interface IncisoRepository extends JpaRepository<Inciso, Long> {
 
     boolean existsByDenominacion(String denominacion);
 
+    List<Inciso> findByActivo(boolean activo);
 }

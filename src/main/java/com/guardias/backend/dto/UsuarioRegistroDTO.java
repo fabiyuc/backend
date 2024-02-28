@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -15,6 +14,7 @@ public class UsuarioRegistroDTO {
     private String usuario;
     @NotBlank
     private String contrasena;
+    private boolean activo;
     @NotBlank
     private boolean estado;
     @Min(value = 1)

@@ -3,9 +3,8 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,14 +15,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "legajos")
 @Data
-// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Legajo {
@@ -31,15 +28,12 @@ public class Legajo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  // @Temporal(TemporalType.DATE)
   private LocalDate fechaInicio;
-
-  // @Temporal(TemporalType.DATE)
   private LocalDate fechaFinal;
-
   private Boolean actual;
   private Boolean legal;
+  @Column(columnDefinition = "BIT DEFAULT 1")
+  private boolean activo;
 
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaNacional;
@@ -47,34 +41,39 @@ public class Legajo {
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaProvincial;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_profesion")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "especialidades" })
   private Profesion profesion;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_suspencion")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Suspencion suspencion;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_revista")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Revista revista;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_udo")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo", "domicilio", "telefono", "estado",
       "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
   private Efector udo;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_persona")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades", "especialidades",
       "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
   private Person persona;
 
-  @OneToOne(mappedBy = "legajo")
+  // @OneToOne(mappedBy = "legajo")
+  // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
+  // private Cargo cargo;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "id_cargo")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
   private Cargo cargo;
 

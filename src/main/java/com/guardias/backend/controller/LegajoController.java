@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Legajo;
@@ -28,18 +26,24 @@ public class LegajoController {
     @Autowired
     LegajoService legajoService;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.list();
+        List<Legajo> list = legajoService.findByActivo(true);
         return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Legajo>> listAll() {
+        List<Legajo> list = legajoService.findAll();
+        return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe el legajo"),
                     HttpStatus.NOT_FOUND);
-        Legajo legajo = legajoService.getOne(id).get();
+        Legajo legajo = legajoService.findById(id).get();
         return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
     }
 
@@ -127,7 +131,7 @@ public class LegajoController {
 
         ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Legajo legajo = createUpdate(legajoService.getOne(id).get(), legajoDto);
+            Legajo legajo = createUpdate(legajoService.findById(id).get(), legajoDto);
             legajoService.save(legajo);
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
@@ -137,13 +141,25 @@ public class LegajoController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
 
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
-        legajoService.delete(id);
+
+        Legajo legajo = legajoService.findById(id).get();
+        legajo.setActivo(false);
+        legajoService.save(legajo);
         return new ResponseEntity(new Mensaje("legajo eliminado"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
+
+        if (!legajoService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
+        legajoService.deleteById(id);
+        return new ResponseEntity(new Mensaje("legajo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
 }

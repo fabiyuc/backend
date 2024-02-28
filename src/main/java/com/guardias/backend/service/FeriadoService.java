@@ -3,13 +3,10 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Feriado;
 import com.guardias.backend.repository.FeriadoRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,11 +15,14 @@ public class FeriadoService {
     @Autowired
     FeriadoRepository feriadoRepository;
 
-    public List<Feriado> list() {
+    public List<Feriado> findByActivo(boolean activo) {
+        return feriadoRepository.findByActivo(activo);
+    }
+    public List<Feriado> findAll() {
         return feriadoRepository.findAll();
     }
 
-    public Optional<Feriado> getById(Long id) {
+    public Optional<Feriado> findById(Long id) {
         return feriadoRepository.findById(id);
     }
 

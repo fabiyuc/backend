@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.AsistencialService;
-
-import io.micrometer.common.util.StringUtils;
+import com.guardias.backend.service.PersonService;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -32,10 +31,20 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    PersonService personservice;
+    @Autowired
+    PersonController personController;
 
-    @GetMapping("/lista")
+    @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
-        List<Asistencial> list = asistencialService.list();
+        List<Asistencial> list = asistencialService.findByActivo(true);
+        return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
+    }
+
+     @GetMapping("/listAll")
+    public ResponseEntity<List<Asistencial>> listAll() {
+        List<Asistencial> list = asistencialService.findAll();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 
@@ -52,13 +61,13 @@ public class AsistencialController {
 
     // *** POSTMAN: /asistencial/listaestado?estado=true o
     // /asistencial/lista?estado=false
-    @GetMapping("/listaestado")
+    @GetMapping("/listestado")
     public ResponseEntity<List<Asistencial>> list(@RequestParam("estado") Boolean estado) {
         List<Asistencial> list = asistencialService.findByEstado(estado);
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detalle/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<Asistencial> getById(@PathVariable("id") Long id) {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("No existe la persona tipo asistencial"), HttpStatus.NOT_FOUND);
@@ -66,7 +75,7 @@ public class AsistencialController {
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
     }
 
-    @GetMapping("/detalledni/{dni}")
+    @GetMapping("/detaildni/{dni}")
     public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
         if (!asistencialService.existsByDni(dni))
             return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
@@ -75,62 +84,12 @@ public class AsistencialController {
 
     }
 
-    private ResponseEntity<?> validations(AsistencialDto asistencialDto) {
-        if (StringUtils.isBlank(asistencialDto.getNombre())) {
-            return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(asistencialDto.getApellido())) {
-            return new ResponseEntity<>(new Mensaje("El Apellido es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (asistencialDto.getDni() < 1000000)
-            return new ResponseEntity<>(new Mensaje("DNI es incorrecto"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(asistencialDto.getCuil())) {
-            return new ResponseEntity<>(new Mensaje("El Cuil es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-        if (asistencialDto.getFechaNacimiento() == null) {
-            return new ResponseEntity(new Mensaje("La fecha de nacimiento es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
-        if (StringUtils.isBlank(asistencialDto.getSexo())) {
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
-        }
-
-        if (asistencialDto.getEstado() == null)
-            return new ResponseEntity(new Mensaje("indicar si el estado es True o False"), HttpStatus.BAD_REQUEST);
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
+        Person person = personController.createUpdate(asistencial, asistencialDto);
+        asistencial = (Asistencial) person;
         if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
             asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
-        if (!asistencialDto.getTelefono().equals(asistencial.getTelefono()))
-            asistencial.setTelefono(asistencialDto.getTelefono());
-        if (!asistencialDto.getSuplentes().equals(asistencial.getSuplentes()))
-            asistencial.setSuplentes(asistencialDto.getSuplentes());
-        if (!asistencialDto.getSexo().equals(asistencial.getSexo()))
-            asistencial.setSexo(asistencialDto.getSexo());
-        if (!asistencialDto.getNovedadesPersonales().equals(asistencial.getNovedadesPersonales()))
-            asistencial.setNovedadesPersonales(asistencialDto.getNovedadesPersonales());
-        if (!asistencialDto.getNombre().equals(asistencial.getNombre()))
-            asistencial.setNombre(asistencialDto.getNombre());
-        if (!asistencialDto.getLegajos().equals(asistencial.getLegajos()))
-            asistencial.setLegajos(asistencialDto.getLegajos());
-        if (!asistencialDto.getFechaNacimiento().equals(asistencial.getFechaNacimiento()))
-            asistencial.setFechaNacimiento(asistencialDto.getFechaNacimiento());
-        if (!asistencialDto.getEstado().equals(asistencial.getEstado()))
-            asistencial.setEstado(asistencialDto.getEstado());
-        if (!asistencialDto.getEmail().equals(asistencial.getEmail()))
-            asistencial.setEmail(asistencialDto.getEmail());
-        if (!asistencialDto.getDomicilio().equals(asistencial.getDomicilio()))
-            asistencial.setDomicilio(asistencialDto.getDomicilio());
-        if (asistencialDto.getDni() != asistencial.getDni())
-            asistencial.setDni(asistencialDto.getDni());
-        if (!asistencialDto.getDistribucionesHorarias().equals(asistencial.getDistribucionesHorarias()))
-            asistencial.setDistribucionesHorarias(asistencialDto.getDistribucionesHorarias());
-        if (!asistencialDto.getCuil().equals(asistencial.getCuil()))
-            asistencial.setCuil(asistencialDto.getCuil());
-        if (!asistencialDto.getApellido().equals(asistencial.getApellido()))
-            asistencial.setApellido(asistencialDto.getApellido());
+
         if (!asistencialDto.getRegistrosActividades().equals(asistencial.getRegistrosActividades()))
             asistencial.setRegistrosActividades(asistencialDto.getRegistrosActividades());
         return asistencial;
@@ -139,7 +98,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
@@ -155,22 +114,79 @@ public class AsistencialController {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(asistencialService.findById(id).get(), asistencialDto);
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial modificado correctamente"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") long id) {
+    @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
+    public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idLegajo") Long idLegajo) {
+        try {
+            personservice.agregarLegajo(idPersona, idLegajo);
+            return new ResponseEntity<>(new Mensaje("Legajo agregado al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // utilizar para la novedad y para el suplente
+    @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
+        try {
+            personservice.agregarNovedadPersonal(idPersona, idNovedadPersonal);
+            return new ResponseEntity<>(new Mensaje("Novedad agregada al articulo correctamente"), HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
+        try {
+            personservice.agregarDistribucionHoraria(idPersona, idDistribucionHoraria);
+            return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada al articulo correctamente"),
+                    HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion horaria al articulo "),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!asistencialService.existsById(id))
+            return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
+        Asistencial asistencial = asistencialService.findById(id).get();
+        asistencial.setActivo(false);
+        asistencialService.save(asistencial);
+        return new ResponseEntity<>(new Mensaje("Asistencial eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!asistencialService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        asistencialService.delete(id);
-        return new ResponseEntity<>(new Mensaje("Asistencial eliminado"), HttpStatus.OK);
+        asistencialService.deleteById(id);
+        return new ResponseEntity<>(new Mensaje("Asistencial eliminado FISICAMENTE"), HttpStatus.OK);
     }
 }

@@ -1,7 +1,6 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +24,8 @@ public class GiraMedica {
     private int cantidadHoras;
     @Temporal(TemporalType.DATE)
     private LocalDate fecha;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;

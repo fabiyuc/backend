@@ -1,11 +1,9 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Person;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,6 +22,7 @@ public class NovedadPersonalDto {
     private boolean activa;
     private String descripcion;
     private Long idExtensionLicencia;
+    private boolean activo;
 
     @NotEmpty
     private Person persona;

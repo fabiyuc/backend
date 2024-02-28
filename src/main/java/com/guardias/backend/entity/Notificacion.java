@@ -31,7 +31,7 @@ public class Notificacion {
     private Long id;
 
     @Column(columnDefinition = "VARCHAR(20)")
-    @Enumerated(EnumType.STRING) 
+    @Enumerated(EnumType.STRING)
     private TipoNotificacionEnum tipo;
 
     @Column(columnDefinition = "VARCHAR(50)")
@@ -45,22 +45,17 @@ public class Notificacion {
 
     @Column(columnDefinition = "VARCHAR(50)")
     private String url;
-
-    @Column
+    @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
     @Temporal(TemporalType.DATE)
     private LocalDate fechaBaja;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) 
-    @JoinTable(name = "notificacion_region",
-               joinColumns = @JoinColumn(name = "notificacion_id"),
-               inverseJoinColumns = @JoinColumn(name = "region_id"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "notificacion_region", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "region_id"))
     private Set<Region> regiones;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) 
-    @JoinTable(name = "notificacion_efector",
-               joinColumns = @JoinColumn(name = "notificacion_id"),
-               inverseJoinColumns = @JoinColumn(name = "efector_id"))
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "notificacion_efector", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "efector_id"))
     private Set<Efector> efectores;
 }

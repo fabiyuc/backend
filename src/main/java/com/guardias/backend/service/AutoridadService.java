@@ -15,11 +15,15 @@ public class AutoridadService {
     @Autowired
     AutoridadRepository autoridadRepository;
 
-    public List<Autoridad> list(){
+    public List<Autoridad> findByActivo(boolean activo) {
+        return autoridadRepository.findByActivo(activo);
+    }
+
+    public List<Autoridad> findAll(){
         return autoridadRepository.findAll();
     }
 
-    public Optional<Autoridad> getOne(Long id){
+    public Optional<Autoridad> findById(Long id){
         return autoridadRepository.findById(id);
     }
 
@@ -27,7 +31,7 @@ public class AutoridadService {
         autoridadRepository.save(autoridad);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         autoridadRepository.deleteById(id);
     }
 

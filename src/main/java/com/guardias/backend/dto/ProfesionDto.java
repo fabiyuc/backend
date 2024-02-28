@@ -18,6 +18,7 @@ public class ProfesionDto {
 
     @NotBlank
     private Boolean asistencial;
+    private boolean activo;
 
     @NotBlank
     private Set<Legajo> legajos;

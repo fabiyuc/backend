@@ -1,10 +1,11 @@
 package com.guardias.backend.entity;
 
-//import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,7 +16,6 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "suspenciones")
 @Data
-//@RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Suspencion {
@@ -24,15 +24,12 @@ public class Suspencion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "VARCHAR(80)")
-
     private String descripcion;
-
-    //@Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
-    
-    //@Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
 
-    @OneToMany(mappedBy = "suspencion")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "suspencion", cascade = CascadeType.ALL)
     private Set<Legajo> legajos;
 }

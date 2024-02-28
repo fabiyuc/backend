@@ -15,11 +15,15 @@ public class LegajoService {
     @Autowired
     LegajoRepository legajoRepository;
 
-    public List<Legajo> list(){
+    public List<Legajo> findByActivo(boolean activo){
+        return legajoRepository.findByActivo(activo);
+    }
+
+    public List<Legajo> findAll(){
         return legajoRepository.findAll();
     }
 
-    public Optional<Legajo> getOne(Long id){
+    public Optional<Legajo> findById(Long id){
         return legajoRepository.findById(id);
     }
 
@@ -27,7 +31,7 @@ public class LegajoService {
         legajoRepository.save(legajo);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         legajoRepository.deleteById(id);
     }
 
