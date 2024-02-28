@@ -2,6 +2,9 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
+import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.enums.AgrupacionEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -26,4 +29,8 @@ public class CargoDto {
     @NotNull
     private LocalDate fechafinal;
     private boolean activo;
+
+    private Legajo legajo;
+
+    private AgrupacionEnum agrupacion;
 }

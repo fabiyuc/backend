@@ -52,7 +52,7 @@ public class Cargo {
 
     @OneToOne
     @JoinColumn(name = "id_legajo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo", "cargo" })
     private Legajo legajo;
 
     @Enumerated(EnumType.STRING)

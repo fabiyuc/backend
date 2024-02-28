@@ -88,6 +88,9 @@ public class CargoController {
         cargo.setFechainicio(cargoDto.getFechainicio());
         cargo.setFechafinal(cargoDto.getFechafinal());
 
+        cargo.setLegajo(cargoDto.getLegajo());
+        cargo.setAgrupacion(cargoDto.getAgrupacion());
+
         cargoService.save(cargo);
 
         return new ResponseEntity<>(new Mensaje("Cargo creado"), HttpStatus.OK);
@@ -131,6 +134,9 @@ public class CargoController {
         cargo.setFecharesolucion(cargoDto.getFecharesolucion());
         cargo.setFechainicio(cargoDto.getFechainicio());
         cargo.setFechafinal(cargoDto.getFechafinal());
+
+        cargo.setLegajo(cargoDto.getLegajo());
+        cargo.setAgrupacion(cargoDto.getAgrupacion());
         cargoService.save(cargo);
 
         return new ResponseEntity<>(new Mensaje("Cargo Actualizado"), HttpStatus.OK);

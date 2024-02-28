@@ -21,7 +21,7 @@ public class LeyDto {
     String denominacion;
     String detalle;
     @NotEmpty
-    EstadoLey estado;
+    private EstadoLey estado;
     @NotEmpty
     LocalDate fechaAlta;
     LocalDate fechaBaja;
