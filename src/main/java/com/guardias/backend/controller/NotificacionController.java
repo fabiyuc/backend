@@ -30,7 +30,13 @@ public class NotificacionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Notificacion>> list() {
-        List<Notificacion> list = notificacionService.list();
+        List<Notificacion> list = notificacionService.findByActivo(true);
+        return new ResponseEntity<List<Notificacion>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Notificacion>> listAll() {
+        List<Notificacion> list = notificacionService.findAll();
         return new ResponseEntity<List<Notificacion>>(list, HttpStatus.OK);
     }
 

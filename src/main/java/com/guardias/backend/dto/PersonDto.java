@@ -2,10 +2,8 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 import java.util.Set;
-
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.NovedadPersonal;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

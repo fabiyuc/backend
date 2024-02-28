@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import com.guardias.backend.entity.DistribucionGuardia;
 
 @Repository
@@ -28,4 +27,6 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
     boolean existsByEfectorId(Long efectorId);
 
     boolean existsByPersonaId(Long personaId);
+
+    List<DistribucionGuardia> findByActivo(boolean activo);
 }

@@ -29,7 +29,13 @@ public class TipoLeyController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLey>> list() {
-        List<TipoLey> list = tipoLeyService.list();
+        List<TipoLey> list = tipoLeyService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<TipoLey>> listAll() {
+        List<TipoLey> list = tipoLeyService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

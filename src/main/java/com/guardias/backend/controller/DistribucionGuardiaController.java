@@ -28,7 +28,13 @@ public class DistribucionGuardiaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
-        List<DistribucionGuardia> list = distribucionGuardiaService.list();
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivo(true);
+        return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
+    }
+    
+    @GetMapping("/listAll")
+    public ResponseEntity<List<DistribucionGuardia>> listAll() {
+        List<DistribucionGuardia> list = distribucionGuardiaService.findAll();
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 

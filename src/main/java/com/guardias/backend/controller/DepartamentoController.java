@@ -28,7 +28,13 @@ public class DepartamentoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Departamento>> list() {
-        List<Departamento> list = departamentoService.list();
+        List<Departamento> list = departamentoService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Departamento>> listAll() {
+        List<Departamento> list = departamentoService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

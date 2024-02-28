@@ -1,9 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-
 import com.guardias.backend.enums.TipoFeriadoEnum;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

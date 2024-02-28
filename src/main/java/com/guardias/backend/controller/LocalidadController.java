@@ -29,7 +29,13 @@ public class LocalidadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Localidad>> list() {
-        List<Localidad> list = localidadService.list();
+        List<Localidad> list = localidadService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Localidad>> listAll() {
+        List<Localidad> list = localidadService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

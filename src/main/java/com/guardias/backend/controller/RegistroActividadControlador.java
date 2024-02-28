@@ -29,8 +29,13 @@ public class RegistroActividadControlador {
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
-        // System.out.println("entra######################");
-        List<RegistroActividad> list = registroActividadServicio.list();
+        List<RegistroActividad> list = registroActividadServicio.findByActivo(true);
+        return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<RegistroActividad>> listAll() {
+        List<RegistroActividad> list = registroActividadServicio.findAll();
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
 

@@ -28,7 +28,13 @@ public class LegajoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.list();
+        List<Legajo> list = legajoService.findByActivo(true);
+        return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Legajo>> listAll() {
+        List<Legajo> list = legajoService.findAll();
         return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
     }
 

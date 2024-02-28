@@ -30,7 +30,13 @@ public class AdicionalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
-        List<Adicional> list = adicionalService.list();
+        List<Adicional> list = adicionalService.findByActivo(true);
+        return new ResponseEntity<List<Adicional>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Adicional>> listAll() {
+        List<Adicional> list = adicionalService.findAll();
         return new ResponseEntity<List<Adicional>>(list, HttpStatus.OK);
     }
 
@@ -81,7 +87,7 @@ public class AdicionalController {
             adicionalService.save(adicional);
             return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 

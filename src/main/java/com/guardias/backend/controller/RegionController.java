@@ -29,7 +29,13 @@ public class RegionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Region>> list() {
-        List<Region> list = regionService.list();
+        List<Region> list = regionService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Region>> listAll() {
+        List<Region> list = regionService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

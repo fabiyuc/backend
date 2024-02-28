@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Pais;
 import com.guardias.backend.repository.PaisRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,7 +15,11 @@ public class PaisService {
     @Autowired
     PaisRepository paisRepository;
 
-    public List<Pais> list() {
+    public List<Pais> findByActivo(boolean activo) {
+        return paisRepository.findByActivo(activo);
+    }
+
+    public List<Pais> findAll() {
         return paisRepository.findAll();
     }
 

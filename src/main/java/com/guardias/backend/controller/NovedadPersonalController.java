@@ -27,7 +27,13 @@ public class NovedadPersonalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
-        List<NovedadPersonal> list = novedadPersonalService.list();
+        List<NovedadPersonal> list = novedadPersonalService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<NovedadPersonal>> listAll() {
+        List<NovedadPersonal> list = novedadPersonalService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

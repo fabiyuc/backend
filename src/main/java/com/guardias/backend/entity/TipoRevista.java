@@ -1,7 +1,6 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "tiposRevistas")
 @Data
-// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class TipoRevista {

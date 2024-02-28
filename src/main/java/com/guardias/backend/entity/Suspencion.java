@@ -1,9 +1,7 @@
 package com.guardias.backend.entity;
 
-//import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Set;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +16,6 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "suspenciones")
 @Data
-// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Suspencion {
@@ -27,13 +24,8 @@ public class Suspencion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "VARCHAR(80)")
-
     private String descripcion;
-
-    // @Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
-
-    // @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;

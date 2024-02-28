@@ -16,7 +16,11 @@ public class GiraMedicaService {
     @Autowired
     GiraMedicaRepository giraMedicaRepository;
 
-    public List<GiraMedica> list() {
+    public List<GiraMedica> findByActivo(boolean activo) {
+        return giraMedicaRepository.findByActivo(activo);
+    }
+
+    public List<GiraMedica> findAll() {
         return giraMedicaRepository.findAll();
     }
 

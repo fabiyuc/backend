@@ -30,7 +30,13 @@ public class SuspencionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Suspencion>> list() {
-        List<Suspencion> list = suspencionService.list();
+        List<Suspencion> list = suspencionService.findByActivo(true);
+        return new ResponseEntity<List<Suspencion>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Suspencion>> listAll() {
+        List<Suspencion> list = suspencionService.findAll();
         return new ResponseEntity<List<Suspencion>>(list, HttpStatus.OK);
     }
 

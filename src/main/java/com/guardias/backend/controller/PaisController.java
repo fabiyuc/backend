@@ -29,7 +29,13 @@ public class PaisController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Pais>> list() {
-        List<Pais> list = paisService.list();
+        List<Pais> list = paisService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Pais>> listAll() {
+        List<Pais> list = paisService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

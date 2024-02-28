@@ -3,9 +3,7 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +22,6 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "legajos")
 @Data
-// @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
 public class Legajo {
@@ -32,13 +29,8 @@ public class Legajo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
-  // @Temporal(TemporalType.DATE)
   private LocalDate fechaInicio;
-
-  // @Temporal(TemporalType.DATE)
   private LocalDate fechaFinal;
-
   private Boolean actual;
   private Boolean legal;
   @Column(columnDefinition = "BIT DEFAULT 1")
