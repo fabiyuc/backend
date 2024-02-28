@@ -15,7 +15,11 @@ public class EspecialidadService {
     @Autowired
     EspecialidadRepository especialidadRepository;
 
-    public List<Especialidad> list() {
+    public List<Especialidad> findByActivo(boolean activo) {
+        return especialidadRepository.findByActivo(activo);
+    }
+
+    public List<Especialidad> findAll() {
         return especialidadRepository.findAll();
     }
 

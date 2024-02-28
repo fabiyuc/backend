@@ -31,7 +31,13 @@ public class IncisoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Inciso>> list() {
-        List<Inciso> list = incisoService.list();
+        List<Inciso> list = incisoService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Inciso>> listAll() {
+        List<Inciso> list = incisoService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

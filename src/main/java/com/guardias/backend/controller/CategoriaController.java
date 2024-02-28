@@ -31,7 +31,13 @@ public class CategoriaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Categoria>> list() {
-        List<Categoria> list = categoriaService.list();
+        List<Categoria> list = categoriaService.findByActivo(true);
+        return new ResponseEntity<List<Categoria>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Categoria>> listAll() {
+        List<Categoria> list = categoriaService.findAll();
         return new ResponseEntity<List<Categoria>>(list, HttpStatus.OK);
     }
 

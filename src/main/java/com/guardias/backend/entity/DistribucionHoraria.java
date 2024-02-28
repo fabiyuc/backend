@@ -3,10 +3,8 @@ package com.guardias.backend.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.DiasEnum;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

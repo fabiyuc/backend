@@ -31,7 +31,13 @@ public class CargaHorariaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<CargaHoraria>> list() {
-        List<CargaHoraria> list = cargaHorariaService.list();
+        List<CargaHoraria> list = cargaHorariaService.findByActivo(true);
+        return new ResponseEntity<List<CargaHoraria>>(list, HttpStatus.OK);
+    }
+    
+    @GetMapping("/listAll")
+    public ResponseEntity<List<CargaHoraria>> listAll() {
+        List<CargaHoraria> list = cargaHorariaService.findAll();
         return new ResponseEntity<List<CargaHoraria>>(list, HttpStatus.OK);
     }
 

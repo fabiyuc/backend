@@ -15,7 +15,11 @@ public class TipoLeyService {
     @Autowired
     TipoLeyRepository tipoLeyRepository;
 
-    public List<TipoLey> list() {
+    public List<TipoLey> findByActivo(boolean activo) {
+        return tipoLeyRepository.findByActivo( activo);
+    }
+
+    public List<TipoLey> findAll() {
         return tipoLeyRepository.findAll();
     }
 

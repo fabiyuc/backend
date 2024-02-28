@@ -15,7 +15,11 @@ public class ServiceService {
     @Autowired
     ServicioRepository servicioRepositorio;
 
-    public List<Servicio> list() {
+    public List<Servicio> findByActivo(boolean activo) {
+        return servicioRepositorio.findByActivo(activo);
+    }
+
+    public List<Servicio> findAll() {
         return servicioRepositorio.findAll();
     }
 

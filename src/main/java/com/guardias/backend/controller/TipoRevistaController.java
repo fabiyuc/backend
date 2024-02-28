@@ -31,7 +31,13 @@ public class TipoRevistaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoRevista>> list() {
-        List<TipoRevista> list = tipoRevistaService.list();
+        List<TipoRevista> list = tipoRevistaService.findByActivo(true);
+        return new ResponseEntity<List<TipoRevista>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<TipoRevista>> listAll() {
+        List<TipoRevista> list = tipoRevistaService.findAll();
         return new ResponseEntity<List<TipoRevista>>(list, HttpStatus.OK);
     }
 

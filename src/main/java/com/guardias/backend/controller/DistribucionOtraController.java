@@ -31,7 +31,13 @@ public class DistribucionOtraController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionOtra>> list() {
-        List<DistribucionOtra> list = distribucionOtraService.list();
+        List<DistribucionOtra> list = distribucionOtraService.findByActivo(true);
+        return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<DistribucionOtra>> listAll() {
+        List<DistribucionOtra> list = distribucionOtraService.findAll();
         return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
     }
 

@@ -32,7 +32,13 @@ public class AutoridadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Autoridad>> list() {
-        List<Autoridad> list = autoridadService.list();
+        List<Autoridad> list = autoridadService.findByActivo(true);
+        return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Autoridad>> listAll() {
+        List<Autoridad> list = autoridadService.findAll();
         return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
     }
 

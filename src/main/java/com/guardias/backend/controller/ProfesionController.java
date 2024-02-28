@@ -31,7 +31,13 @@ public class ProfesionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Profesion>> list() {
-        List<Profesion> list = profesionService.list();
+        List<Profesion> list = profesionService.findByActivo(true);
+        return new ResponseEntity<List<Profesion>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Profesion>> listAll() {
+        List<Profesion> list = profesionService.findAll();
         return new ResponseEntity<List<Profesion>>(list, HttpStatus.OK);
     }
 

@@ -14,4 +14,6 @@ public interface GiraMedicaRepository extends JpaRepository<GiraMedica, Long> {
 
     boolean existsByFecha(LocalDate fecha);
 
+    List<GiraMedica> findByActivo(boolean activo);
+
 }

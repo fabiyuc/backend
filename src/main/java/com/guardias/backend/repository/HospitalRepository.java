@@ -16,4 +16,6 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     List<Hospital> findByAdmitePasiva();
 
     boolean existsByNombre(String nombre);
+
+    List<Hospital> findByActivo(boolean activo);
 }

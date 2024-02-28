@@ -32,7 +32,13 @@ public class EspecialidadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Especialidad>> list() {
-        List<Especialidad> list = especialidadService.list();
+        List<Especialidad> list = especialidadService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Especialidad>> listAll() {
+        List<Especialidad> list = especialidadService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

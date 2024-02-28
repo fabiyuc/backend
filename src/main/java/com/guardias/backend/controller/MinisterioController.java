@@ -32,7 +32,13 @@ public class MinisterioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.list();
+        List<Ministerio> list = ministerioService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Ministerio>> listAll() {
+        List<Ministerio> list = ministerioService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

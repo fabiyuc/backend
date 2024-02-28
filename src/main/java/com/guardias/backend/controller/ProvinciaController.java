@@ -32,7 +32,13 @@ public class ProvinciaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Provincia>> list() {
-        List<Provincia> list = provinciaService.list();
+        List<Provincia> list = provinciaService.findByActivo(true);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Provincia>> listAll() {
+        List<Provincia> list = provinciaService.findAll();
         return ResponseEntity.ok(list);
     }
 

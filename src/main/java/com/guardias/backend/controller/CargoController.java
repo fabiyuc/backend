@@ -31,9 +31,14 @@ public class CargoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Cargo>> list() {
-        List<Cargo> list = cargoService.list();
+        List<Cargo> list = cargoService.findByActivo(true);
         return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
+    }
 
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Cargo>> listAll() {
+        List<Cargo> list = cargoService.findAll();
+        return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

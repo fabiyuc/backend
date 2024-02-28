@@ -15,7 +15,11 @@ public class CapsService {
     @Autowired
     CapsRepository capsRepository;
 
-    public List<Caps> list() {
+    public List<Caps> findByActivo(boolean activo) {
+        return capsRepository.findByActivo( activo);
+    }
+
+    public List<Caps> findAll() {
         return capsRepository.findAll();
     }
 

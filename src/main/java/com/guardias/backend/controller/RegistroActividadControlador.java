@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
@@ -32,8 +30,13 @@ public class RegistroActividadControlador {
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
-        // System.out.println("entra######################");
-        List<RegistroActividad> list = registroActividadServicie.list();
+        List<RegistroActividad> list = registroActividadServicio.findByActivo(true);
+        return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<RegistroActividad>> listAll() {
+        List<RegistroActividad> list = registroActividadServicio.findAll();
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
 

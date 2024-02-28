@@ -32,7 +32,13 @@ public class CapsController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
-        List<Caps> list = capsService.list();
+        List<Caps> list = capsService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Caps>> listAll() {
+        List<Caps> list = capsService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
