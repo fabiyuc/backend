@@ -169,6 +169,22 @@ public class AsistencialController {
         }
     }
 
+    @PostMapping("/{idPersona}/addAutoridad/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarAutoridad(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idDistribucionHoraria") Long idAutoridad) {
+        try {
+            personservice.agregarAutoridad(idPersona, idAutoridad);
+            return new ResponseEntity<>(new Mensaje("Autoridad agregada a la persona correctamente"),
+                    HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Autoridad a la persona"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!asistencialService.existsById(id))

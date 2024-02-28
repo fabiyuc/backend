@@ -119,12 +119,12 @@ public class NoAsistencialController {
             @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
         try {
             personservice.agregarNovedadPersonal(idPersona, idNovedadPersonal);
-            return new ResponseEntity<>(new Mensaje("Novedad agregada al articulo correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Novedad agregada a la persona correctamente"), HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
                     HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad al articulo "),
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad a la persona correctamente"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -134,13 +134,29 @@ public class NoAsistencialController {
             @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
         try {
             personservice.agregarDistribucionHoraria(idPersona, idDistribucionHoraria);
-            return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada al articulo correctamente"),
+            return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada a la persona correctamente"),
                     HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
                     HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion horaria al articulo "),
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion horaria a la persona"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/{idPersona}/addAutoridad/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarAutoridad(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idDistribucionHoraria") Long idAutoridad) {
+        try {
+            personservice.agregarAutoridad(idPersona, idAutoridad);
+            return new ResponseEntity<>(new Mensaje("Autoridad agregada a la persona correctamente"),
+                    HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar la Autoridad a la persona"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
