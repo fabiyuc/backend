@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.service.HospitalService;
 
@@ -28,6 +28,9 @@ public class HospitalController {
 
     @Autowired
     HospitalService hospitalService;
+
+    @Autowired
+    EfectorController efectorController;
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
@@ -57,31 +60,28 @@ public class HospitalController {
         return new ResponseEntity(hospital, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody HospitalDto hospitalDto) {
-        if (StringUtils.isBlank(hospitalDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(hospitalDto.getDomicilio()))
-            return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+    private Hospital createUpdate(Hospital hospital, HospitalDto hospitalDto) {
+        Efector efector = efectorController.createUpdate(hospital, hospitalDto);
+        hospital = (Hospital) efector;
 
-        if (hospitalService.existsByNombre(hospitalDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        Hospital hospital = new Hospital();
-        hospital.setNombre(hospitalDto.getNombre());
-        hospital.setDomicilio(hospitalDto.getDomicilio());
-        hospital.setTelefono(hospitalDto.getTelefono());
-        hospital.setEstado(hospitalDto.isEstado());
-        hospital.setRegion(hospitalDto.getRegion());
-        hospital.setLocalidad(hospitalDto.getLocalidad());
-        hospital.setObservacion(hospitalDto.getObservacion());
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
         hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
+        hospital.setNivelComplejidad(hospitalDto.getNivelComplejidad());
 
-        hospitalService.save(hospital);
-        return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
+        return hospital;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody HospitalDto hospitalDto) {
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Hospital hospital = createUpdate(new Hospital(), hospitalDto);
+            hospitalService.save(hospital);
+            return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/update/{id}")
@@ -89,51 +89,15 @@ public class HospitalController {
         if (!hospitalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
 
-        // if (hospitalService.existsByNombre(hospitalDto.getNombre()) &&
-        // hospitalService.getHospitalByNombre(hospitalDto.getNombre()).get().getId() ==
-        // id)
-        // return new ResponseEntity(new Mensaje("ese hospital ya existe"),
-        // HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto);
 
-        if (StringUtils.isBlank(hospitalDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        Hospital hospital = hospitalService.findById(id).get();
-
-        if (hospital.getNombre() != hospitalDto.getNombre() && hospitalDto.getNombre() != null
-                && !hospitalDto.getNombre().isEmpty())
-            hospital.setNombre(hospitalDto.getNombre());
-
-        if (hospital.getDomicilio() != hospitalDto.getDomicilio() && hospitalDto.getDomicilio() != null
-                && !hospitalDto.getDomicilio().isEmpty())
-            hospital.setDomicilio(hospitalDto.getDomicilio());
-
-        if (hospital.getTelefono() != hospitalDto.getTelefono() && hospitalDto.getTelefono() != null
-                && !hospitalDto.getTelefono().isEmpty())
-            hospital.setTelefono(hospitalDto.getTelefono());
-
-        if (hospital.isEstado() != hospitalDto.isEstado())
-            hospital.setEstado(hospitalDto.isEstado());
-
-        if (!hospitalDto.getRegion().equals(hospital.getRegion())) {
-            hospital.setRegion(hospitalDto.getRegion());
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Hospital hospital = createUpdate(hospitalService.findById(id).get(), hospitalDto);
+            hospitalService.save(hospital);
+            return new ResponseEntity(new Mensaje("Hospital modificado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
         }
-        if (!hospitalDto.getLocalidad().equals(hospital.getLocalidad())) {
-            hospital.setLocalidad(hospitalDto.getLocalidad());
-        }
-
-        if (hospital.getObservacion() != hospitalDto.getObservacion() && hospitalDto.getObservacion() != null
-                && !hospitalDto.getObservacion().isEmpty())
-            hospital.setObservacion(hospitalDto.getObservacion());
-
-        if (hospital.isEsCabecera() != hospitalDto.isEsCabecera())
-            hospital.setEsCabecera(hospitalDto.isEsCabecera());
-
-        if (hospital.isAdmitePasiva() != hospitalDto.isAdmitePasiva())
-            hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
-
-        hospitalService.save(hospital);
-        return new ResponseEntity(new Mensaje("Hospital actualizado"), HttpStatus.OK);
     }
 
     @PutMapping("/delete/{id}")

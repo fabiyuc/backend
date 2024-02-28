@@ -35,6 +35,18 @@ public class EfectorService {
         return efector;
     }
 
+    public boolean existsByName(String nombre) {
+        boolean exists = capsService.existsByNombre(nombre);
+
+        if (exists == false)
+            exists = hospitalService.existsByNombre(nombre);
+
+        if (exists == false)
+            exists = ministerioService.existsByNombre(nombre);
+
+        return exists;
+    }
+
     private void saveEfector(Efector efector) {
         if (efector instanceof Caps) {
             Caps caps = (Caps) efector;
