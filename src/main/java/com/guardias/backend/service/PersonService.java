@@ -2,7 +2,6 @@ package com.guardias.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Legajo;
@@ -14,7 +13,6 @@ import com.guardias.backend.repository.DistribucionHorariaRepository;
 import com.guardias.backend.repository.LegajoRepository;
 import com.guardias.backend.repository.NoAsistencialRepository;
 import com.guardias.backend.repository.NovedadPersonalRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service

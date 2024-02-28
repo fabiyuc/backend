@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import com.guardias.backend.enums.TipoGuardiaEnum;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

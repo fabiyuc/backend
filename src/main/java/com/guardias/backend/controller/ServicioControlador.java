@@ -29,13 +29,13 @@ public class ServicioControlador {
 
     @GetMapping("/list")
     public ResponseEntity<List<Servicio>> list() {
-        List<Servicio> list = serviceServicio.findByActivo(true);
+        List<Servicio> list = servicioService.findByActivo(true);
         return new ResponseEntity<List<Servicio>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Servicio>> listAll() {
-        List<Servicio> list = serviceServicio.findAll();
+        List<Servicio> list = servicioService.findAll();
         return new ResponseEntity<List<Servicio>>(list, HttpStatus.OK);
     }
 

@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.ArticuloDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.service.ArticuloService;
-
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 

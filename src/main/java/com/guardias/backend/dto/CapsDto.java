@@ -1,7 +1,6 @@
 package com.guardias.backend.dto;
 
 import com.guardias.backend.entity.Hospital;
-
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
