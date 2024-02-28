@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
@@ -24,7 +22,6 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.PersonService;
-
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -41,7 +38,13 @@ public class AsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
-        List<Asistencial> list = asistencialService.list();
+        List<Asistencial> list = asistencialService.findByActivo(true);
+        return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
+    }
+
+     @GetMapping("/listAll")
+    public ResponseEntity<List<Asistencial>> listAll() {
+        List<Asistencial> list = asistencialService.findAll();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 

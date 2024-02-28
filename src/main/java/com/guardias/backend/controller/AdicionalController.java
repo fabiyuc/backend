@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AdicionalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.service.AdicionalService;
-
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
@@ -33,7 +30,13 @@ public class AdicionalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
-        List<Adicional> list = adicionalService.list();
+        List<Adicional> list = adicionalService.findByActivo(true);
+        return new ResponseEntity<List<Adicional>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Adicional>> listAll() {
+        List<Adicional> list = adicionalService.findAll();
         return new ResponseEntity<List<Adicional>>(list, HttpStatus.OK);
     }
 
@@ -84,7 +87,7 @@ public class AdicionalController {
             adicionalService.save(adicional);
             return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
@@ -99,7 +102,7 @@ public class AdicionalController {
             adicionalService.save(adicional);
             return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(new Mensaje("Error al crear el elemento"), HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 

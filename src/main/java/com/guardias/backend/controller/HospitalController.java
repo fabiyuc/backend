@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Hospital;
@@ -31,7 +29,13 @@ public class HospitalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
-        List<Hospital> list = hospitalService.list();
+        List<Hospital> list = hospitalService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Hospital>> listAll() {
+        List<Hospital> list = hospitalService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

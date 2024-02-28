@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AutoridadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.service.AutoridadService;
+import io.micrometer.common.util.StringUtils;
 
 @RestController
 @RequestMapping("/autoridad")
@@ -30,7 +29,13 @@ public class AutoridadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Autoridad>> list() {
-        List<Autoridad> list = autoridadService.list();
+        List<Autoridad> list = autoridadService.findByActivo(true);
+        return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Autoridad>> listAll() {
+        List<Autoridad> list = autoridadService.findAll();
         return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
     }
 
@@ -44,20 +49,52 @@ public class AutoridadController {
 
     // TODO hacer las validaciones y el createUpdate
     private ResponseEntity<?> validations(AutoridadDto autoridadDto) {
+        if (StringUtils.isBlank(autoridadDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (autoridadDto.getFechaInicio() == null)
+            return new ResponseEntity<>(new Mensaje("La fechad e inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
+        if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
+            autoridad.setNombre(autoridadDto.getNombre());
+
+        if (!autoridadDto.getFechaInicio().equals(autoridad.getFechaInicio()))
+            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
+
+        if (!autoridadDto.getFechaFinal().equals(autoridad.getFechaFinal()))
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (!autoridadDto.getFechaFinal().equals(autoridad.getFechaFinal()))
+            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
+
+        if (!autoridadDto.getEfector().equals(autoridad.getEfector()))
+            autoridad.setEfector(autoridadDto.getEfector());
+
+        if (!autoridadDto.getPersona().equals(autoridad.getPersona()))
+            autoridad.setPersona(autoridadDto.getPersona());
+
+        autoridad.setEsActual(autoridadDto.isEsActual());
+        autoridad.setEsRegional(autoridadDto.isEsRegional());
+
+        return autoridad;
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
 
-        Autoridad autoridad = new Autoridad();
-        autoridad.setNombre(autoridadDto.getNombre());
-        autoridad.setFechaInicio(autoridadDto.getFechaInicio());
-        autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-        autoridad.setEsActual(autoridadDto.isEsActual());
-        autoridad.setEsRegional(autoridadDto.isEsRegional());
-        autoridadService.save(autoridad);
-        return new ResponseEntity(new Mensaje("Autoridad creada"), HttpStatus.OK);
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
+            autoridadService.save(autoridad);
+            return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
@@ -65,24 +102,15 @@ public class AutoridadController {
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        Autoridad autoridad = autoridadService.findById(id).get();
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
 
-        if (!autoridadDto.getNombre().equals(autoridad.getNombre()))
-            autoridad.setNombre(autoridadDto.getNombre());
-
-        if (autoridad.getFechaInicio() != autoridadDto.getFechaInicio() && autoridadDto.getFechaInicio() != null)
-            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
-
-        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
-            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-
-        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
-            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-
-        autoridad.setEsActual(autoridadDto.isEsActual());
-        autoridad.setEsRegional(autoridadDto.isEsRegional());
-        autoridadService.save(autoridad);
-        return new ResponseEntity(new Mensaje("La autoridad ha sido actualizada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);
+            autoridadService.save(autoridad);
+            return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")

@@ -1,10 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-
 import com.guardias.backend.entity.TipoLey;
 import com.guardias.backend.enums.EstadoLey;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

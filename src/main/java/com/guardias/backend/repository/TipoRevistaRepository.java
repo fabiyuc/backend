@@ -1,5 +1,6 @@
 package com.guardias.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,4 +12,5 @@ public interface TipoRevistaRepository extends JpaRepository<TipoRevista, Long> 
 
     boolean existsByNombre(String nombre);
 
+    List<TipoRevista> findByActivo(boolean activo);
 }

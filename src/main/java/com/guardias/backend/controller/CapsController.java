@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.service.CapsService;
-
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -32,7 +29,13 @@ public class CapsController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
-        List<Caps> list = capsService.list();
+        List<Caps> list = capsService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Caps>> listAll() {
+        List<Caps> list = capsService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

@@ -14,7 +14,11 @@ public class RegistroActividadService {
     @Autowired
     RegistroActividadRepository registroActividadRepositorio;
 
-    public List<RegistroActividad> list() {
+    public List<RegistroActividad> findByActivo(boolean activo) {
+        return registroActividadRepositorio.findByActivo(activo);
+    }
+
+    public List<RegistroActividad> findAll() {
         return registroActividadRepositorio.findAll();
     }
 

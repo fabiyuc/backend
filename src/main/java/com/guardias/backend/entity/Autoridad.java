@@ -42,18 +42,6 @@ public class Autoridad {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
 
-        /*
-         * //TODO hacer la relacion N:M con PERSONA
-         * modificar el resto de los elementos de Autoridad
-         * el repositorio debe poder traer el listado de autoridades, el histoirial de
-         * un efector y el historial de una persona
-         */
-
-        // @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-        // @JoinTable(name = "autoridad_efector", joinColumns = @JoinColumn(name =
-        // "id_autoridad"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-        // private Set<Efector> efectores;
-
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_efector")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",

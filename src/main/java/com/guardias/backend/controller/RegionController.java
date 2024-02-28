@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegionDto;
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.service.RegionService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -32,7 +29,13 @@ public class RegionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Region>> list() {
-        List<Region> list = regionService.list();
+        List<Region> list = regionService.findByActivo(true);
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Region>> listAll() {
+        List<Region> list = regionService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
