@@ -100,15 +100,38 @@ public class HospitalController {
         }
     }
 
+    @PostMapping("/{idEfector}/addAutoridad/{idAutoridad}")
+    public ResponseEntity<?> agregarAutoridad(@PathVariable("idEfector") Long idEfector,
+            @PathVariable("idAutoridad") Long idAutoridad) {
+        ResponseEntity<?> respuestaValidaciones = efectorController.agregarAutoridad(idEfector, idAutoridad);
+        return respuestaValidaciones;
+    }
+
+    @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
+    public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long idEfector,
+            @PathVariable("idNotificacion") Long idNotificacion) {
+        ResponseEntity<?> respuestaValidaciones = efectorController.agregarNotificacion(idEfector, idNotificacion);
+        return respuestaValidaciones;
+    }
+
+    @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
+    public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long idEfector,
+            @PathVariable("idLegajo") Long idLegajo) {
+        ResponseEntity<?> respuestaValidaciones = efectorController.agregarLegajo(idEfector, idLegajo);
+        return respuestaValidaciones;
+    }
+
+    @PostMapping("/{idEfector}/addUdo/{idLegajoUdo}")
+    public ResponseEntity<?> agregarLegajoUdo(@PathVariable("idEfector") Long idEfector,
+            @PathVariable("idLegajoUdo") Long idLegajoUdo) {
+        ResponseEntity<?> respuestaValidaciones = efectorController.agregarLegajoUdo(idEfector, idLegajoUdo);
+        return respuestaValidaciones;
+    }
+
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!hospitalService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
-
-        Hospital hospital = hospitalService.findById(id).get();
-        hospital.setActivo(false);
-        hospitalService.save(hospital);
-        return new ResponseEntity(new Mensaje("Hospital eliminado"), HttpStatus.OK);
+        ResponseEntity<?> respuestaValidaciones = efectorController.logicDelete(id);
+        return respuestaValidaciones;
     }
 
     @DeleteMapping("/fisicdelete/{id}")

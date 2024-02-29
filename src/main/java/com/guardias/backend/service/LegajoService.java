@@ -2,10 +2,14 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.repository.LegajoRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,16 +18,18 @@ public class LegajoService {
 
     @Autowired
     LegajoRepository legajoRepository;
+    @Autowired
+    EfectorService efectorService;
 
-    public List<Legajo> list(){
+    public List<Legajo> list() {
         return legajoRepository.findAll();
     }
 
-    public Optional<Legajo> findById(Long id){
+    public Optional<Legajo> findById(Long id) {
         return legajoRepository.findById(id);
     }
 
-     public void save(Legajo legajo) {
+    public void save(Legajo legajo) {
         legajoRepository.save(legajo);
     }
 
@@ -34,5 +40,16 @@ public class LegajoService {
     public boolean existsById(Long id) {
         return legajoRepository.existsById(id);
     }
-    
+
+    @Transactional
+    public void agregarEfector(Long idLegajo, Long idEfector) {
+
+        Legajo legajo = findById(idLegajo).get();
+        Efector efector = efectorService.findEfector(idEfector);
+
+        efectorService.agregarLegajo(idEfector, idLegajo);
+        legajo.getEfectores().add(efector);
+        save(legajo);
+    }
+
 }
