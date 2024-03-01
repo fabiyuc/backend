@@ -29,11 +29,12 @@ public class CargoDto {
     private LocalDate fechainicio;
     @NotNull
     private LocalDate fechafinal;
-    private boolean activo;
+    private Boolean activo = true;
 
     // private Legajo legajo;
 
     private Set<Legajo> legajos;
 
+    @NotNull
     private AgrupacionEnum agrupacion;
 }

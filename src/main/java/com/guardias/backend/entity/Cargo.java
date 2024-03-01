@@ -39,7 +39,7 @@ public class Cargo {
     @Column(columnDefinition = "VARCHAR(10)")
     private String nrodecreto;
     @Column(columnDefinition = "BIT DEFAULT 1")
-    private boolean activo;
+    private Boolean activo;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(columnDefinition = "DATE")
