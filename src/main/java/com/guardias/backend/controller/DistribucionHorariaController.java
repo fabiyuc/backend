@@ -59,6 +59,7 @@ public class DistribucionHorariaController {
             distribucionHoraria.setEfector(distribucionHorariaDto.getEfector());
         if (!distribucionHorariaDto.getCantidadHoras().equals(distribucionHoraria.getCantidadHoras()))
             distribucionHoraria.setCantidadHoras(distribucionHorariaDto.getCantidadHoras());
+        distribucionHoraria.setActivo(distribucionHorariaDto.isActivo());
         return distribucionHoraria;
     }
 }

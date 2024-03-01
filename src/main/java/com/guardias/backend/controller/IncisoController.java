@@ -136,7 +136,7 @@ public class IncisoController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!incisoService.existsById(id))
+        if (!incisoService.activo(id))
             return new ResponseEntity<Mensaje>(new Mensaje("Inciso no encontrado"), HttpStatus.NOT_FOUND);
 
         Inciso inciso = incisoService.findById(id).get();

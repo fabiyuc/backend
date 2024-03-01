@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.repository.IncisoRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -44,6 +47,10 @@ public class IncisoService {
 
     public void save(Inciso inciso) {
         incisoRepository.save(inciso);
+    }
+
+    public boolean activo(Long id) {
+        return (incisoRepository.existsById(id) && incisoRepository.findById(id).get().isActivo());
     }
 
     public void deleteById(Long id) {
