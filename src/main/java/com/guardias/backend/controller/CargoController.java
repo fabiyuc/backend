@@ -114,7 +114,9 @@ public class CargoController {
 
         cargo.setLegajos(cargoDto.getLegajos());
 
-        cargo.setActivo(cargoDto.getActivo() != null ? cargoDto.getActivo() : true);
+        // cargo.setActivo(cargoDto.getActivo() != null ? cargoDto.getActivo() : true);
+
+        cargo.setActivo(cargoDto.isActivo());
 
         if (!cargoDto.getAgrupacion().equals(cargo.getAgrupacion()))
             cargo.setAgrupacion(cargoDto.getAgrupacion());

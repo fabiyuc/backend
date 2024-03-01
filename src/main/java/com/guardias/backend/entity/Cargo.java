@@ -38,8 +38,14 @@ public class Cargo {
     private String nroresolucion;
     @Column(columnDefinition = "VARCHAR(10)")
     private String nrodecreto;
+
+    /*
+     * @Column(columnDefinition = "BIT DEFAULT 1")
+     * private Boolean activo;
+     */
+
     @Column(columnDefinition = "BIT DEFAULT 1")
-    private Boolean activo;
+    private boolean activo;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
     @Column(columnDefinition = "DATE")

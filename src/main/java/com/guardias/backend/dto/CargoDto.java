@@ -29,7 +29,10 @@ public class CargoDto {
     private LocalDate fechainicio;
     @NotNull
     private LocalDate fechafinal;
-    private Boolean activo = true;
+
+    // private Boolean activo = true;
+
+    private boolean activo;
 
     // private Legajo legajo;
 
