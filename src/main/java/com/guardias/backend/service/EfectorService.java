@@ -9,7 +9,6 @@ import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Ministerio;
-import com.guardias.backend.entity.Notificacion;
 
 import jakarta.transaction.Transactional;
 
@@ -24,8 +23,8 @@ public class EfectorService {
     MinisterioService ministerioService;
     @Autowired
     AutoridadService autoridadService;
-    @Autowired
-    NotificacionService notificacionService;
+    // @Autowired
+    // NotificacionService notificacionService;
     @Autowired
     LegajoService legajoService;
 
@@ -80,15 +79,16 @@ public class EfectorService {
 
     // !TODO falta la relacion con distribucionesHorarias
 
-    @Transactional
-    public void agregarNotificacion(Long idEfector, Long idNotificacion) {
-        Efector efector = findEfector(idEfector);
-        Notificacion notificacion = notificacionService.findById(idNotificacion).get();
+    // @Transactional
+    // public void agregarNotificacion(Long idEfector, Long idNotificacion) {
+    // Efector efector = findEfector(idEfector);
+    // Notificacion notificacion =
+    // notificacionService.findById(idNotificacion).get();
 
-        notificacionService.agregarEfector(idNotificacion, idEfector);
-        efector.getNotificaciones().add(notificacion);
-        saveEfector(efector);
-    }
+    // notificacionService.agregarEfector(idNotificacion, idEfector);
+    // efector.getNotificaciones().add(notificacion);
+    // saveEfector(efector);
+    // }
 
     @Transactional
     public void agregarLegajo(Long idEfector, Long idLegajo) {

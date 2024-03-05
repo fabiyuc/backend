@@ -107,12 +107,14 @@ public class HospitalController {
         return respuestaValidaciones;
     }
 
-    @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
-    public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long idEfector,
-            @PathVariable("idNotificacion") Long idNotificacion) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.agregarNotificacion(idEfector, idNotificacion);
-        return respuestaValidaciones;
-    }
+    // @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
+    // public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idNotificacion") Long idNotificacion) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarNotificacion(idEfector, idNotificacion);
+    // return respuestaValidaciones;
+    // }
 
     @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
     public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long idEfector,

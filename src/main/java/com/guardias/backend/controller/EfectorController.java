@@ -76,18 +76,22 @@ public class EfectorController {
         }
     }
 
-    public ResponseEntity<?> agregarNotificacion(Long idEfector, Long idNotificacion) {
-        try {
-            efectorService.agregarNotificacion(idEfector, idNotificacion);
-            return new ResponseEntity<>(new Mensaje("Notificacion agregada al Efector correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la notificacion al Efector"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarNotificacion(Long idEfector, Long
+    // idNotificacion) {
+    // try {
+    // efectorService.agregarNotificacion(idEfector, idNotificacion);
+    // return new ResponseEntity<>(new Mensaje("Notificacion agregada al Efector
+    // correctamente"), HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar la notificacion al
+    // Efector"),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
     public ResponseEntity<?> agregarLegajo(Long idEfector, Long idLegajo) {
         try {
