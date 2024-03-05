@@ -46,9 +46,8 @@ public class LegajoService {
 
         Legajo legajo = findById(idLegajo).get();
         Efector efector = efectorService.findEfector(idEfector);
-
-        efectorService.agregarLegajo(idEfector, idLegajo);
         legajo.getEfectores().add(efector);
+        efector.getLegajos().add(legajo);
         save(legajo);
     }
 

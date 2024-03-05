@@ -95,9 +95,10 @@ public class EfectorService {
         Legajo legajo = legajoService.findById(idLegajo).get();
         Efector efector = findEfector(idEfector);
 
-        legajoService.agregarEfector(idEfector, idLegajo);
+        legajo.getEfectores().add(efector);
         efector.getLegajos().add(legajo);
         saveEfector(efector);
+
     }
 
     @Transactional
