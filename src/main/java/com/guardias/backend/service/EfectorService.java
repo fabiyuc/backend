@@ -3,11 +3,9 @@ package com.guardias.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
-import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Ministerio;
 
 import jakarta.transaction.Transactional;
@@ -21,8 +19,8 @@ public class EfectorService {
     HospitalService hospitalService;
     @Autowired
     MinisterioService ministerioService;
-    @Autowired
-    AutoridadService autoridadService;
+    // @Autowired
+    // AutoridadService autoridadService;
     // @Autowired
     // NotificacionService notificacionService;
     @Autowired
@@ -90,36 +88,36 @@ public class EfectorService {
     // saveEfector(efector);
     // }
 
-    @Transactional
-    public void agregarLegajo(Long idEfector, Long idLegajo) {
-        Legajo legajo = legajoService.findById(idLegajo).get();
-        Efector efector = findEfector(idEfector);
+    // @Transactional
+    // public void agregarLegajo(Long idEfector, Long idLegajo) {
+    // Legajo legajo = legajoService.findById(idLegajo).get();
+    // Efector efector = findEfector(idEfector);
 
-        legajo.getEfectores().add(efector);
-        efector.getLegajos().add(legajo);
-        saveEfector(efector);
+    // legajo.getEfectores().add(efector);
+    // efector.getLegajos().add(legajo);
+    // saveEfector(efector);
 
-    }
+    // }
 
-    @Transactional
-    public void agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
-        Efector efector = findEfector(idEfector);
+    // @Transactional
+    // public void agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
+    // Efector efector = findEfector(idEfector);
 
-        Legajo legajo = legajoService.findById(idLegajoUdo).get();
-        legajo.setUdo(efector);
-        legajoService.save(legajo);
-        efector.getLegajosUdo().add(legajo);
-        saveEfector(efector);
-    }
+    // Legajo legajo = legajoService.findById(idLegajoUdo).get();
+    // legajo.setUdo(efector);
+    // legajoService.save(legajo);
+    // efector.getLegajosUdo().add(legajo);
+    // saveEfector(efector);
+    // }
 
-    @Transactional
-    public void agregarAutoridad(Long idEfector, Long idAutoridad) {
-        Efector efector = findEfector(idEfector);
-        Autoridad autoridad = autoridadService.findById(idAutoridad).get();
+    // @Transactional
+    // public void agregarAutoridad(Long idEfector, Long idAutoridad) {
+    // Efector efector = findEfector(idEfector);
+    // Autoridad autoridad = autoridadService.findById(idAutoridad).get();
 
-        autoridad.setEfector(efector);
-        autoridadService.save(autoridad);
-        efector.getAutoridades().add(autoridad);
-        saveEfector(efector);
-    }
+    // autoridad.setEfector(efector);
+    // autoridadService.save(autoridad);
+    // efector.getAutoridades().add(autoridad);
+    // saveEfector(efector);
+    // }
 }

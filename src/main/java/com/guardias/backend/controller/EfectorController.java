@@ -11,8 +11,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.service.EfectorService;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @RestController
 public class EfectorController {
 
@@ -63,18 +61,21 @@ public class EfectorController {
 
     // autoridades - notificaciones - legajos - legajosUdo - distribucionesHorarias
 
-    public ResponseEntity<?> agregarAutoridad(Long idEfector, Long idAutoridad) {
-        try {
-            efectorService.agregarAutoridad(idEfector, idAutoridad);
-            return new ResponseEntity<>(new Mensaje("Autoridad agregada al Efector correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la autoridad al Efector"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarAutoridad(Long idEfector, Long idAutoridad) {
+    // try {
+    // efectorService.agregarAutoridad(idEfector, idAutoridad);
+    // return new ResponseEntity<>(new Mensaje("Autoridad agregada al Efector
+    // correctamente"), HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar la autoridad al
+    // Efector"),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
     // public ResponseEntity<?> agregarNotificacion(Long idEfector, Long
     // idNotificacion) {
@@ -91,33 +92,39 @@ public class EfectorController {
     // Efector"),
     // HttpStatus.INTERNAL_SERVER_ERROR);
     // }
+    // // }
+
+    // public ResponseEntity<?> agregarLegajo(Long idEfector, Long idLegajo) {
+    // try {
+    // efectorService.agregarLegajo(idEfector, idLegajo);
+    // return new ResponseEntity<>(new Mensaje("Legajo agregado al Efector
+    // correctamente"), HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al
+    // Efector"),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
     // }
 
-    public ResponseEntity<?> agregarLegajo(Long idEfector, Long idLegajo) {
-        try {
-            efectorService.agregarLegajo(idEfector, idLegajo);
-            return new ResponseEntity<>(new Mensaje("Legajo agregado al Efector correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al Efector"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public ResponseEntity<?> agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
-        try {
-            efectorService.agregarLegajoUdo(idEfector, idLegajoUdo);
-            return new ResponseEntity<>(new Mensaje("UdO agregada al Efector correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el UdO al Efector"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
+    // try {
+    // efectorService.agregarLegajoUdo(idEfector, idLegajoUdo);
+    // return new ResponseEntity<>(new Mensaje("UdO agregada al Efector
+    // correctamente"), HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar el UdO al
+    // Efector"),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
     public ResponseEntity<?> logicDelete(Long id) {
         if (!efectorService.existsById(id))

@@ -11,7 +11,6 @@ import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.PersonService;
 
 import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 public class PersonController {
@@ -76,57 +75,71 @@ public class PersonController {
         return person;
     }
 
-    public ResponseEntity<?> agregarLegajo(Long idPersona, Long idLegajo) {
-        try {
-            personservice.agregarLegajo(idPersona, idLegajo);
-            return new ResponseEntity<>(new Mensaje("Legajo agregado al articulo correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarLegajo(Long idPersona, Long idLegajo) {
+    // try {
+    // personservice.agregarLegajo(idPersona, idLegajo);
+    // return new ResponseEntity<>(new Mensaje("Legajo agregado al articulo
+    // correctamente"), HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al
+    // articulo "),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
-    public ResponseEntity<?> agregarNovedadPersonal(Long idPersona, Long idNovedadPersonal) {
-        try {
-            personservice.agregarNovedadPersonal(idPersona, idNovedadPersonal);
-            return new ResponseEntity<>(new Mensaje("Novedad agregada al articulo correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarNovedadPersonal(Long idPersona, Long
+    // idNovedadPersonal) {
+    // try {
+    // personservice.agregarNovedadPersonal(idPersona, idNovedadPersonal);
+    // return new ResponseEntity<>(new Mensaje("Novedad agregada al articulo
+    // correctamente"), HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad al
+    // articulo "),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
-    public ResponseEntity<?> agregarDistribucionHoraria(Long idPersona, Long idDistribucionHoraria) {
-        try {
-            personservice.agregarDistribucionHoraria(idPersona, idDistribucionHoraria);
-            return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada al articulo correctamente"),
-                    HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion horaria al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarDistribucionHoraria(Long idPersona, Long
+    // idDistribucionHoraria) {
+    // try {
+    // personservice.agregarDistribucionHoraria(idPersona, idDistribucionHoraria);
+    // return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada al
+    // articulo correctamente"),
+    // HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion
+    // horaria al articulo "),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 
-    public ResponseEntity<?> agregarAutoridad(Long idPersona, Long idAutoridad) {
-        try {
-            personservice.agregarAutoridad(idPersona, idAutoridad);
-            return new ResponseEntity<>(new Mensaje("Autoridad agregada a la persona correctamente"),
-                    HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Autoridad a la persona"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // public ResponseEntity<?> agregarAutoridad(Long idPersona, Long idAutoridad) {
+    // try {
+    // personservice.agregarAutoridad(idPersona, idAutoridad);
+    // return new ResponseEntity<>(new Mensaje("Autoridad agregada a la persona
+    // correctamente"),
+    // HttpStatus.OK);
+    // } catch (EntityNotFoundException e) {
+    // return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID
+    // proporcionado"),
+    // HttpStatus.NOT_FOUND);
+    // } catch (Exception e) {
+    // return new ResponseEntity<>(new Mensaje("Error al agregar la Autoridad a la
+    // persona"),
+    // HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+    // }
 }

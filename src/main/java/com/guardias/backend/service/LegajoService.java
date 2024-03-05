@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.repository.LegajoRepository;
 
@@ -18,8 +17,8 @@ public class LegajoService {
 
     @Autowired
     LegajoRepository legajoRepository;
-    @Autowired
-    EfectorService efectorService;
+    // @Autowired
+    // EfectorService efectorService;
 
     public List<Legajo> list() {
         return legajoRepository.findAll();
@@ -41,14 +40,14 @@ public class LegajoService {
         return legajoRepository.existsById(id);
     }
 
-    @Transactional
-    public void agregarEfector(Long idLegajo, Long idEfector) {
+    // @Transactional
+    // public void agregarEfector(Long idLegajo, Long idEfector) {
 
-        Legajo legajo = findById(idLegajo).get();
-        Efector efector = efectorService.findEfector(idEfector);
-        legajo.getEfectores().add(efector);
-        efector.getLegajos().add(legajo);
-        save(legajo);
-    }
+    // Legajo legajo = findById(idLegajo).get();
+    // Efector efector = efectorService.findEfector(idEfector);
+    // legajo.getEfectores().add(efector);
+    // efector.getLegajos().add(legajo);
+    // save(legajo);
+    // }
 
 }

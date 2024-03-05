@@ -98,12 +98,14 @@ public class CapsController {
         }
     }
 
-    @PostMapping("/{idEfector}/addAutoridad/{idAutoridad}")
-    public ResponseEntity<?> agregarAutoridad(@PathVariable("idEfector") Long idEfector,
-            @PathVariable("idAutoridad") Long idAutoridad) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.agregarAutoridad(idEfector, idAutoridad);
-        return respuestaValidaciones;
-    }
+    // @PostMapping("/{idEfector}/addAutoridad/{idAutoridad}")
+    // public ResponseEntity<?> agregarAutoridad(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idAutoridad") Long idAutoridad) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarAutoridad(idEfector, idAutoridad);
+    // return respuestaValidaciones;
+    // }
 
     // @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
     // public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long
@@ -114,19 +116,23 @@ public class CapsController {
     // return respuestaValidaciones;
     // }
 
-    @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
-    public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long idEfector,
-            @PathVariable("idLegajo") Long idLegajo) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.agregarLegajo(idEfector, idLegajo);
-        return respuestaValidaciones;
-    }
+    // @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
+    // public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idLegajo") Long idLegajo) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarLegajo(idEfector, idLegajo);
+    // return respuestaValidaciones;
+    // }
 
-    @PostMapping("/{idEfector}/addUdo/{idLegajoUdo}")
-    public ResponseEntity<?> agregarLegajoUdo(@PathVariable("idEfector") Long idEfector,
-            @PathVariable("idLegajoUdo") Long idLegajoUdo) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.agregarLegajoUdo(idEfector, idLegajoUdo);
-        return respuestaValidaciones;
-    }
+    // @PostMapping("/{idEfector}/addUdo/{idLegajoUdo}")
+    // public ResponseEntity<?> agregarLegajoUdo(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idLegajoUdo") Long idLegajoUdo) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarLegajoUdo(idEfector, idLegajoUdo);
+    // return respuestaValidaciones;
+    // }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
