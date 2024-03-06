@@ -118,46 +118,38 @@ public class AsistencialController {
         }
     }
 
-    // @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
-    // public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long
-    // idPersona,
-    // @PathVariable("idLegajo") Long idLegajo) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // personController.agregarLegajo(idPersona, idLegajo);
-    // return respuestaValidaciones;
-    // }
+    @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
+    public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idLegajo") Long idLegajo) {
+        ResponseEntity<?> respuestaValidaciones = personController.agregarLegajo(idPersona, idLegajo);
+        return respuestaValidaciones;
+    }
 
-    // // utilizar para la novedad y para el suplente
-    // @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
-    // public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona")
-    // Long idPersona,
-    // @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // personController.agregarNovedadPersonal(idPersona,
-    // idNovedadPersonal);
-    // return respuestaValidaciones;
+    // utilizar para la novedad y para el suplente
+    @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
+        ResponseEntity<?> respuestaValidaciones = personController.agregarNovedadPersonal(idPersona,
+                idNovedadPersonal);
+        return respuestaValidaciones;
 
-    // }
+    }
 
-    // @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
-    // public ResponseEntity<?>
-    // agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
-    // @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // personController.agregarDistribucionHoraria(idPersona,
-    // idDistribucionHoraria);
-    // return respuestaValidaciones;
-    // }
+    @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
+        ResponseEntity<?> respuestaValidaciones = personController.agregarDistribucionHoraria(idPersona,
+                idDistribucionHoraria);
+        return respuestaValidaciones;
+    }
 
-    // @PostMapping("/{idPersona}/addAutoridad/{idNovedadPersonal}")
-    // public ResponseEntity<?> agregarAutoridad(@PathVariable("idPersona") Long
-    // idPersona,
-    // @PathVariable("idDistribucionHoraria") Long idAutoridad) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // personController.agregarAutoridad(idPersona,
-    // idAutoridad);
-    // return respuestaValidaciones;
-    // }
+    @PostMapping("/{idPersona}/addAutoridad/{idNovedadPersonal}")
+    public ResponseEntity<?> agregarAutoridad(@PathVariable("idPersona") Long idPersona,
+            @PathVariable("idDistribucionHoraria") Long idAutoridad) {
+        ResponseEntity<?> respuestaValidaciones = personController.agregarAutoridad(idPersona,
+                idAutoridad);
+        return respuestaValidaciones;
+    }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
