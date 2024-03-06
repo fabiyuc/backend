@@ -18,9 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.IncisoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Inciso;
+import com.guardias.backend.entity.Ley;
 import com.guardias.backend.service.IncisoService;
-
-import io.micrometer.common.util.StringUtils;
 
 @Controller
 @RequestMapping("/inciso")
@@ -28,6 +27,8 @@ import io.micrometer.common.util.StringUtils;
 public class IncisoController {
     @Autowired
     IncisoService incisoService;
+    @Autowired
+    LeyController leyController;
 
     @GetMapping("/list")
     public ResponseEntity<List<Inciso>> list() {
@@ -43,95 +44,54 @@ public class IncisoController {
         return new ResponseEntity(inciso, HttpStatus.OK);
     }
 
+    private Inciso createUpdate(Inciso inciso, IncisoDto incisoDto) {
+
+        Ley ley = leyController.createUpdate(inciso, incisoDto);
+        inciso = (Inciso) ley;
+
+        if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
+            inciso.setSubIncisos(incisoDto.getSubIncisos());
+        if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
+            inciso.setSubIncisos(incisoDto.getSubIncisos());
+        if (!incisoDto.getNovedadPersonal().equals(inciso.getNovedadPersonal()))
+            inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
+
+        /*
+         * faltan datos!!!!!!!!!!!!!!!!!!!!!!
+         */
+        return inciso;
+
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody IncisoDto incisoDto) {
-        if (StringUtils.isBlank(incisoDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(incisoDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("La denominacion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (incisoDto.getEstado() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El estado es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (incisoDto.getFechaAlta() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto);
 
-        if (incisoService.existsByNumero(incisoDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Inciso inciso = createUpdate(new Inciso(), incisoDto);
+            incisoService.save(inciso);
+            return new ResponseEntity<Mensaje>(new Mensaje("Inciso creado correctamente"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
                     HttpStatus.BAD_REQUEST);
-
-        if (incisoService.existsByDenominacion(incisoDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        Inciso inciso = new Inciso();
-        inciso.setNumero(incisoDto.getNumero());
-        inciso.setDenominacion(incisoDto.getDenominacion());
-        inciso.setDetalle(incisoDto.getDetalle());
-        inciso.setEstado(incisoDto.getEstado());
-        inciso.setFechaAlta(incisoDto.getFechaAlta());
-        inciso.setFechaBaja(incisoDto.getFechaBaja());
-        inciso.setFechaModificacion(incisoDto.getFechaModificacion());
-        inciso.setMotivoModificacion(incisoDto.getMotivoModificacion());
-        inciso.setSubIncisos(incisoDto.getSubIncisos());
-        inciso.setArticulo(incisoDto.getArticulo());
-        inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
-
-        incisoService.save(inciso);
-        return new ResponseEntity<Mensaje>(new Mensaje("Inciso creado correctamente"), HttpStatus.OK);
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody IncisoDto incisoDto) {
-        if (StringUtils.isBlank(incisoDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(incisoDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("La denominacion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (incisoDto.getEstado() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El estado es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (incisoDto.getFechaAlta() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+        if (!incisoService.existsById(id))
+            return new ResponseEntity(new Mensaje("El inciso no existe"), HttpStatus.NOT_FOUND);
 
-        if (incisoService.existsByNumero(incisoDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Inciso inciso = createUpdate(incisoService.findById(id).get(), incisoDto);
+            incisoService.save(inciso);
+            return new ResponseEntity<Mensaje>(new Mensaje("Inciso modificado correctamente"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
                     HttpStatus.BAD_REQUEST);
-
-        if (incisoService.existsByDenominacion(incisoDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        Inciso inciso = incisoService.findById(id).get();
-        if (!incisoDto.getNumero().equals(inciso.getNumero()))
-            inciso.setNumero(incisoDto.getNumero());
-        if (!incisoDto.getDenominacion().equals(inciso.getDenominacion()))
-            inciso.setDenominacion(incisoDto.getDenominacion());
-        if (!incisoDto.getDetalle().equals(inciso.getDetalle()))
-            inciso.setDetalle(incisoDto.getDetalle());
-        if (!incisoDto.getEstado().equals(inciso.getEstado()))
-            inciso.setEstado(incisoDto.getEstado());
-        if (!incisoDto.getFechaAlta().equals(inciso.getFechaAlta()))
-            inciso.setFechaAlta(incisoDto.getFechaAlta());
-        if (!incisoDto.getFechaBaja().equals(inciso.getFechaBaja()))
-            inciso.setFechaBaja(incisoDto.getFechaBaja());
-        if (!incisoDto.getFechaModificacion().equals(inciso.getFechaModificacion()))
-            inciso.setFechaModificacion(incisoDto.getFechaModificacion());
-        if (!incisoDto.getMotivoModificacion().equals(inciso.getMotivoModificacion()))
-            inciso.setMotivoModificacion(incisoDto.getMotivoModificacion());
-        if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
-            inciso.setSubIncisos(incisoDto.getSubIncisos());
-        if (!incisoDto.getArticulo().equals(inciso.getArticulo()))
-            inciso.setArticulo(incisoDto.getArticulo());
-        if (!incisoDto.getNovedadPersonal().equals(inciso.getNovedadPersonal()))
-            inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
-
-        incisoService.save(inciso);
-        return new ResponseEntity<Mensaje>(new Mensaje("Inciso modificado correctamente"), HttpStatus.OK);
+        }
     }
 
     @PutMapping("/delete/{id}")

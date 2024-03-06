@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.ArticuloDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
+import com.guardias.backend.entity.Ley;
 import com.guardias.backend.service.ArticuloService;
 
-import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 
 @Controller
@@ -29,6 +29,9 @@ import jakarta.persistence.EntityNotFoundException;
 public class ArticuloController {
     @Autowired
     ArticuloService articuloService;
+
+    @Autowired
+    LeyController leyController;
 
     @GetMapping("/list")
     public ResponseEntity<List<Articulo>> list() {
@@ -44,59 +47,29 @@ public class ArticuloController {
         return new ResponseEntity(articulo, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(ArticuloDto articuloDto) {
-
-        if (StringUtils.isBlank(articuloDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(articuloDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("La denominacion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (articuloDto.getEstado() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El estado es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (articuloDto.getFechaAlta() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (articuloService.existsByNumero(articuloDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        if (articuloService.existsByDenominacion(articuloDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
     private Articulo createUpdate(Articulo articulo, ArticuloDto articuloDto) {
-        if (!articuloDto.getNumero().equals(articulo.getNumero()))
-            articulo.setNumero(articuloDto.getNumero());
-        if (!articuloDto.getDenominacion().equals(articulo.getDenominacion()))
-            articulo.setDenominacion(articuloDto.getDenominacion());
-        if (!articuloDto.getDetalle().equals(articulo.getDetalle()))
-            articulo.setDetalle(articuloDto.getDetalle());
-        if (!articuloDto.getEstado().equals(articulo.getEstado()))
-            articulo.setEstado(articuloDto.getEstado());
-        if (!articuloDto.getFechaAlta().equals(articulo.getFechaAlta()))
-            articulo.setFechaAlta(articuloDto.getFechaAlta());
-        if (!articuloDto.getFechaBaja().equals(articulo.getFechaBaja()))
-            articulo.setFechaBaja(articuloDto.getFechaBaja());
-        if (!articuloDto.getFechaModificacion().equals(articulo.getFechaModificacion()))
-            articulo.setFechaModificacion(articuloDto.getFechaModificacion());
-        if (!articuloDto.getMotivoModificacion().equals(articulo.getMotivoModificacion()))
-            articulo.setMotivoModificacion(articuloDto.getMotivoModificacion());
+
+        Ley ley = leyController.createUpdate(articulo, articuloDto);
+        articulo = (Articulo) ley;
+
         if (!articuloDto.getSubArticulos().equals(articulo.getSubArticulos()))
             articulo.setSubArticulos(articuloDto.getSubArticulos());
         if (!articuloDto.getIncisos().equals(articulo.getIncisos()))
             articulo.setIncisos(articuloDto.getIncisos());
         if (!articuloDto.getNovedadPersonal().equals(articulo.getNovedadPersonal()))
             articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
+
+        /*
+         * VER si faltan datos!!!!!!!!!!!!!!!!!!!!!!
+         */
+
         return articulo;
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ArticuloDto articuloDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(articuloDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Articulo articulo = createUpdate(new Articulo(), articuloDto);
@@ -113,7 +86,7 @@ public class ArticuloController {
         if (!articuloService.existsById(id))
             return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(articuloDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Articulo articulo = createUpdate(articuloService.findById(id).get(), articuloDto);
