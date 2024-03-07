@@ -49,6 +49,9 @@ public class IncisoController {
         Ley ley = leyController.createUpdate(inciso, incisoDto);
         inciso = (Inciso) ley;
 
+        // TODO Verificar esto!!!
+        if (!incisoDto.getInciso().equals(inciso.getInciso()))
+            inciso.setInciso(incisoDto.getInciso());
         if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
             inciso.setSubIncisos(incisoDto.getSubIncisos());
         if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
@@ -56,9 +59,6 @@ public class IncisoController {
         if (!incisoDto.getNovedadPersonal().equals(inciso.getNovedadPersonal()))
             inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
 
-        /*
-         * faltan datos!!!!!!!!!!!!!!!!!!!!!!
-         */
         return inciso;
 
     }

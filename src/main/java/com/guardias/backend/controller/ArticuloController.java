@@ -52,16 +52,15 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        if (!articuloDto.getSubArticulos().equals(articulo.getSubArticulos()))
+        // TODO verificar esto!!!
+        if (!articuloDto.getArticulo().equals(articulo.getArticulo()))
+            articulo.setArticulo(articuloDto.getArticulo());
+        if (!articuloDto.getArticulo().equals(articulo.getSubArticulos()))
             articulo.setSubArticulos(articuloDto.getSubArticulos());
         if (!articuloDto.getIncisos().equals(articulo.getIncisos()))
             articulo.setIncisos(articuloDto.getIncisos());
         if (!articuloDto.getNovedadPersonal().equals(articulo.getNovedadPersonal()))
             articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
-
-        /*
-         * VER si faltan datos!!!!!!!!!!!!!!!!!!!!!!
-         */
 
         return articulo;
     }
