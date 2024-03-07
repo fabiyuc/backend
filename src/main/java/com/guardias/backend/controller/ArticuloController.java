@@ -53,13 +53,16 @@ public class ArticuloController {
         articulo = (Articulo) ley;
 
         // TODO verificar esto!!!
-        if (!articuloDto.getArticulo().equals(articulo.getArticulo()))
+        if (articulo.getArticulo() != articuloDto.getArticulo() && articuloDto.getArticulo() != null)
             articulo.setArticulo(articuloDto.getArticulo());
-        if (!articuloDto.getArticulo().equals(articulo.getSubArticulos()))
+        if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null
+                && !articuloDto.getSubArticulos().isEmpty())
             articulo.setSubArticulos(articuloDto.getSubArticulos());
-        if (!articuloDto.getIncisos().equals(articulo.getIncisos()))
+        if (articulo.getIncisos() != articuloDto.getIncisos() && articuloDto.getIncisos() != null
+                && !articuloDto.getIncisos().isEmpty())
             articulo.setIncisos(articuloDto.getIncisos());
-        if (!articuloDto.getNovedadPersonal().equals(articulo.getNovedadPersonal()))
+        if (articulo.getNovedadPersonal() != articuloDto.getNovedadPersonal()
+                && articuloDto.getNovedadPersonal() != null)
             articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
 
         return articulo;
@@ -68,15 +71,14 @@ public class ArticuloController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ArticuloDto articuloDto) {
 
-        ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.createValidations(articuloDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Articulo articulo = createUpdate(new Articulo(), articuloDto);
             articuloService.save(articulo);
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
-                    HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
@@ -92,8 +94,7 @@ public class ArticuloController {
             articuloService.save(articulo);
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
-                    HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 

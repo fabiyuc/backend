@@ -16,6 +16,21 @@ public class LeyController {
     @Autowired
     LeyService leyService;
 
+    // TODO VER que esta validacion debe hacerse en el update teniendo en cuenta q
+    // el id sea diferente!!
+    public ResponseEntity<?> createValidations(LeyDto leyDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(leyDto);
+
+        if (leyService.existsByNumero(leyDto.getNumero()))
+            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+                    HttpStatus.BAD_REQUEST);
+        if (leyService.existsByDenominacion(leyDto.getDenominacion()))
+            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
+        return respuestaValidaciones;
+    }
+
     public ResponseEntity<?> validations(LeyDto leyDto) {
 
         if (leyDto.getNumero() == null)
@@ -29,13 +44,6 @@ public class LeyController {
                     HttpStatus.BAD_REQUEST);
         if (leyDto.getFechaAlta() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (leyService.existsByNumero(leyDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        if (leyService.existsByDenominacion(leyDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -52,11 +60,12 @@ public class LeyController {
             ley.setEstado(leyDto.getEstado());
         if (!leyDto.getFechaAlta().equals(ley.getFechaAlta()))
             ley.setFechaAlta(leyDto.getFechaAlta());
-        if (!leyDto.getFechaBaja().equals(ley.getFechaBaja()))
+        if (ley.getFechaBaja() != leyDto.getFechaBaja() && leyDto.getFechaBaja() != null)
             ley.setFechaBaja(leyDto.getFechaBaja());
-        if (!leyDto.getFechaModificacion().equals(ley.getFechaModificacion()))
+        if (ley.getFechaModificacion() != leyDto.getFechaModificacion() && leyDto.getFechaModificacion() != null)
             ley.setFechaModificacion(leyDto.getFechaModificacion());
-        if (!leyDto.getMotivoModificacion().equals(ley.getMotivoModificacion()))
+        if (ley.getMotivoModificacion() != leyDto.getMotivoModificacion() && leyDto.getMotivoModificacion() != null
+                && !leyDto.getMotivoModificacion().isEmpty())
             ley.setMotivoModificacion(leyDto.getMotivoModificacion());
 
         return ley;
