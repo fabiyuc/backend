@@ -65,7 +65,7 @@ public class IncisoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody IncisoDto incisoDto) {
-        ResponseEntity<?> respuestaValidaciones = leyController.createValidations(incisoDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validationsCreate(incisoDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Inciso inciso = createUpdate(new Inciso(), incisoDto);

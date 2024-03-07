@@ -71,7 +71,7 @@ public class ArticuloController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ArticuloDto articuloDto) {
 
-        ResponseEntity<?> respuestaValidaciones = leyController.createValidations(articuloDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validationsCreate(articuloDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Articulo articulo = createUpdate(new Articulo(), articuloDto);

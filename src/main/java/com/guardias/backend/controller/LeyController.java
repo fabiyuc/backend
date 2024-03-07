@@ -18,7 +18,7 @@ public class LeyController {
 
     // TODO VER que esta validacion debe hacerse en el update teniendo en cuenta q
     // el id sea diferente!!
-    public ResponseEntity<?> createValidations(LeyDto leyDto) {
+    public ResponseEntity<?> validationsCreate(LeyDto leyDto) {
         ResponseEntity<?> respuestaValidaciones = validations(leyDto);
 
         if (leyService.existsByNumero(leyDto.getNumero()))
