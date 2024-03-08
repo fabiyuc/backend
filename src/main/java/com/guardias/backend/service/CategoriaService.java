@@ -15,7 +15,11 @@ public class CategoriaService {
     @Autowired
     CategoriaRepository categoriaRepository;
 
-    public List<Categoria> list() {
+    public List<Categoria> findByActivo(boolean activo) {
+        return categoriaRepository.findByActivo(activo);
+    }
+
+    public List<Categoria> findAll() {
         return categoriaRepository.findAll();
     }
 

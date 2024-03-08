@@ -27,4 +27,6 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
     boolean existsByEfectorId(Long efectorId);
 
     boolean existsByPersonaId(Long personaId);
+
+    List<DistribucionOtra> findByActivo(boolean activo); 
 }

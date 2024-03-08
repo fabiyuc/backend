@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.AutoridadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.service.AutoridadService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -32,7 +29,13 @@ public class AutoridadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Autoridad>> list() {
-        List<Autoridad> list = autoridadService.list();
+        List<Autoridad> list = autoridadService.findByActivo(true);
+        return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Autoridad>> listAll() {
+        List<Autoridad> list = autoridadService.findAll();
         return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
     }
 

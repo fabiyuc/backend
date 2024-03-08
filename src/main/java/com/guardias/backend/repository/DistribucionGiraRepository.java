@@ -27,4 +27,6 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
     boolean existsByEfectorId(Long efectorId);
 
     boolean existsByPersonaId(Long personaId);
+
+    List<DistribucionGira> findByActivo(boolean activo);
 }

@@ -20,7 +20,11 @@ public class LegajoService {
     // @Autowired
     // EfectorService efectorService;
 
-    public List<Legajo> list() {
+    public List<Legajo> findByActivo(boolean activo) {
+        return legajoRepository.findByActivo(activo);
+    }
+
+    public List<Legajo> findAll() {
         return legajoRepository.findAll();
     }
 

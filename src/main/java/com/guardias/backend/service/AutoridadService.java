@@ -15,7 +15,11 @@ public class AutoridadService {
     @Autowired
     AutoridadRepository autoridadRepository;
 
-    public List<Autoridad> list(){
+    public List<Autoridad> findByActivo(boolean activo) {
+        return autoridadRepository.findByActivo(activo);
+    }
+
+    public List<Autoridad> findAll(){
         return autoridadRepository.findAll();
     }
 

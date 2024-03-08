@@ -3,14 +3,12 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
 import com.guardias.backend.entity.Cargo;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.Suspencion;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +38,6 @@ public class LegajoDto {
     private Boolean legal;
 
     private String matriculaNacional;
-
     private String matriculaProvincial;
 
     @NotBlank
@@ -53,7 +50,6 @@ public class LegajoDto {
 
     private String tipoGuardia;
     private String descripcion;
-
     private Cargo cargo;
     private boolean activo;
 

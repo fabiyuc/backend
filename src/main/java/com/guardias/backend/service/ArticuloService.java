@@ -23,7 +23,11 @@ public class ArticuloService {
     @Autowired
     IncisoService incisoService;
 
-    public List<Articulo> list() {
+    public List<Articulo> findByActivo(boolean activo) {
+        return articuloRepository.findByActivo(activo);
+    }
+
+    public List<Articulo> findAll() {
         return articuloRepository.findAll();
     }
 

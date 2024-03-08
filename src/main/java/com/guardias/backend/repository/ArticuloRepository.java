@@ -23,4 +23,5 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
     boolean existsByDenominacion(String denominacion);
 
+    List<Articulo> findByActivo(boolean activo);
 }

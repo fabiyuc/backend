@@ -1,9 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,7 +43,7 @@ public class NovedadPersonal {
     private boolean activo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_novedades")
+    @JoinColumn(name = "id_persona")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "novedades" })
     private Person persona;
 

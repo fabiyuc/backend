@@ -16,7 +16,11 @@ public class DistribucionOtraService {
     @Autowired
     DistribucionOtraRepository distribucionOtraRepository;
 
-    public List<DistribucionOtra> list() {
+    public List<DistribucionOtra> findByActivo(boolean activo) {
+        return distribucionOtraRepository.findByActivo(activo);
+    }
+
+    public List<DistribucionOtra> findAll() {
         return distribucionOtraRepository.findAll();
     }
 

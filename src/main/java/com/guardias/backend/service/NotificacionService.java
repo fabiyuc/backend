@@ -21,9 +21,13 @@ public class NotificacionService {
     // @Autowired
     // EfectorService efectorService;
 
-    public List<Notificacion> list() {
-        return notificacionRepository.findAll();
+    public List<Notificacion> findByActivo(boolean activo) {
+        return notificacionRepository.findByActivo(activo);
 
+    }
+
+    public List<Notificacion> findAll() {
+        return notificacionRepository.findAll();
     }
 
     public Optional<Notificacion> findById(Long id) {

@@ -1,9 +1,7 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-
 import com.guardias.backend.enums.TipoNotificacionEnum;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,7 +18,6 @@ public class NotificacionDto {
     private String categoria;
 
     @NotNull
-    // @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate fechaNotificacion;
 
     @NotBlank
@@ -33,7 +30,6 @@ public class NotificacionDto {
     private boolean activo;
 
     @NotNull
-    // @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate fechaBaja;
 
 }

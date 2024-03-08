@@ -1,9 +1,7 @@
 package com.guardias.backend.dto;
 
 import java.util.List;
-
 import com.guardias.backend.entity.Caps;
-
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
