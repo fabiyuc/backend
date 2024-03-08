@@ -79,7 +79,7 @@ public class IncisoController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody IncisoDto incisoDto) {
-        if (!incisoService.existsById(id))
+        if (!incisoService.activo(id))
             return new ResponseEntity(new Mensaje("El inciso no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto);

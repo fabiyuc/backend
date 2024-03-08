@@ -20,7 +20,6 @@ public class LeyService {
         boolean exists = articuloRepository.existsByNumero(numero);
         if (!exists)
             exists = incisoRepository.existsByNumero(numero);
-
         return exists;
     }
 

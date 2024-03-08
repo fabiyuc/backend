@@ -33,15 +33,21 @@ public class ArticuloController {
     @Autowired
     LeyController leyController;
 
-    @GetMapping("/list")
+    @GetMapping("/listall")
     public ResponseEntity<List<Articulo>> list() {
         List<Articulo> list = articuloService.list();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<List<Articulo>> findAllActivos() {
+        List<Articulo> list = articuloService.findAllActivos();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Articulo>> getById(@PathVariable("id") Long id) {
-        if (!articuloService.existsById(id))
+        if (!articuloService.activo(id))
             return new ResponseEntity(new Mensaje("Articulo no encontrado"), HttpStatus.NOT_FOUND);
         Articulo articulo = articuloService.findById(id).get();
         return new ResponseEntity(articulo, HttpStatus.OK);
@@ -52,7 +58,6 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        // TODO verificar esto!!!
         if (articulo.getArticulo() != articuloDto.getArticulo() && articuloDto.getArticulo() != null)
             articulo.setArticulo(articuloDto.getArticulo());
         if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null
@@ -84,7 +89,7 @@ public class ArticuloController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ArticuloDto articuloDto) {
-        if (!articuloService.existsById(id))
+        if (!articuloService.activo(id))
             return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto);
@@ -132,7 +137,7 @@ public class ArticuloController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!articuloService.existsById(id))
+        if (!articuloService.activo(id))
             return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
         Articulo articulo = articuloService.findById(id).get();
         articulo.setActivo(false);
