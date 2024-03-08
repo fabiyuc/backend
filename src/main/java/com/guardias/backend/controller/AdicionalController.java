@@ -53,11 +53,11 @@ public class AdicionalController {
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<Adicional> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!adicionalService.existsByNombre(nombre))
+    public ResponseEntity<List<Adicional>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!adicionalService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe adicional con ese nombre"), HttpStatus.NOT_FOUND);
-        Adicional adicional = adicionalService.getByNombre(nombre).get();
-        return new ResponseEntity<Adicional>(adicional, HttpStatus.OK);
+        Adicional adicional = adicionalService.findByNombre(nombre).get();
+        return new ResponseEntity(adicional, HttpStatus.OK);
 
     }
 

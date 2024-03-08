@@ -39,6 +39,10 @@ public class AdicionalService {
         return adicionalRepository.findByNombre(nombre);
     }
 
+    public Optional<Adicional> findByNombre(String nombre) {
+        return adicionalRepository.findByNombre(nombre);
+    }
+
     public void save(Adicional adicional) {
         adicionalRepository.save(adicional);
     }
@@ -57,6 +61,11 @@ public class AdicionalService {
 
     public boolean activo(Long id) {
         return (adicionalRepository.existsById(id) && adicionalRepository.findById(id).get().isActivo());
+    }
+
+    public boolean activoByNombre(String nombre) {
+        return (adicionalRepository.existsByNombre(nombre)
+                && adicionalRepository.findByNombre(nombre).get().isActivo());
     }
 
     public void agregarRevista(Long adicionalId, Long idRevista) {
