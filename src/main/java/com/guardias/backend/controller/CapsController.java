@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.service.CapsService;
-import io.micrometer.common.util.StringUtils;
 
 @Controller
 @RequestMapping("/caps")
@@ -26,6 +28,9 @@ public class CapsController {
 
     @Autowired
     CapsService capsService;
+
+    @Autowired
+    EfectorController efectorController;
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
@@ -55,32 +60,32 @@ public class CapsController {
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody CapsDto capsDto) {
-        if (StringUtils.isBlank(capsDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(capsDto.getDomicilio()))
-            return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+    private Caps createUpdate(Caps caps, CapsDto capsDto) {
+        Efector efector = efectorController.createUpdate(caps, capsDto);
+        caps = (Caps) efector;
 
-        if (capsService.existsByNombre(capsDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        Caps caps = new Caps();
-        caps.setNombre(capsDto.getNombre());
-        caps.setDomicilio(capsDto.getDomicilio());
-        caps.setTelefono(capsDto.getTelefono());
-        caps.setEstado(capsDto.isEstado());
-        caps.setRegion(capsDto.getRegion());
-        caps.setLocalidad(capsDto.getLocalidad());
-        caps.setObservacion(capsDto.getObservacion());
-        caps.setCabecera(capsDto.getCabecera());
-        caps.setTipoCaps(capsDto.getTipoCaps());
+        if (!capsDto.getCabecera().equals(caps.getCabecera()))
+            caps.setCabecera(capsDto.getCabecera());
+
+        if (!capsDto.getTipoCaps().equals(caps.getTipoCaps()))
+            caps.setTipoCaps(capsDto.getTipoCaps());
+
         caps.setAreaProgramatica(capsDto.getAreaProgramatica());
 
-        capsService.save(caps);
-        return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
+        return caps;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody CapsDto capsDto) {
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Caps caps = createUpdate(new Caps(), capsDto);
+            capsService.save(caps);
+            return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/update/{id}")
@@ -88,60 +93,57 @@ public class CapsController {
         if (!capsService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
-        if (StringUtils.isBlank(capsDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto);
 
-        Caps caps = capsService.findById(id).get();
-
-        if (caps.getNombre() != capsDto.getNombre() && capsDto.getNombre() != null && !capsDto.getNombre().isEmpty()) {
-            caps.setNombre(capsDto.getNombre());
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Caps caps = createUpdate(capsService.findById(id).get(), capsDto);
+            capsService.save(caps);
+            return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
         }
-        if (caps.getDomicilio() != capsDto.getDomicilio() && capsDto.getDomicilio() != null
-                && !capsDto.getDomicilio().isEmpty()) {
-            caps.setDomicilio(capsDto.getDomicilio());
-        }
-        if (caps.getTelefono() != capsDto.getTelefono() && capsDto.getTelefono() != null
-                && !capsDto.getTelefono().isEmpty()) {
-            caps.setTelefono(capsDto.getTelefono());
-        }
-        if (caps.isEstado() != capsDto.isEstado()) {
-            caps.setEstado(capsDto.isEstado());
-        }
-        if (!capsDto.getRegion().equals(caps.getRegion())) {
-            caps.setRegion(capsDto.getRegion());
-        }
-        if (!capsDto.getLocalidad().equals(caps.getLocalidad())) {
-            caps.setLocalidad(capsDto.getLocalidad());
-        }
-        if (caps.getObservacion() != capsDto.getObservacion() && capsDto.getObservacion() != null
-                && !capsDto.getObservacion().isEmpty()) {
-            caps.setObservacion(capsDto.getObservacion());
-        }
-        if (caps.getCabecera() != capsDto.getCabecera() && capsDto.getCabecera() != null) {
-            caps.setCabecera(capsDto.getCabecera());
-        }
-        if (caps.getTipoCaps() != capsDto.getTipoCaps() && capsDto.getTipoCaps() != null
-                && !capsDto.getTipoCaps().isEmpty()) {
-            caps.setTipoCaps(capsDto.getTipoCaps());
-        }
-
-        if (capsDto.getAreaProgramatica() != caps.getAreaProgramatica()) {
-            caps.setAreaProgramatica(capsDto.getAreaProgramatica());
-        }
-
-        capsService.save(caps);
-        return new ResponseEntity(new Mensaje("Caps actualizado"), HttpStatus.OK);
     }
+
+    // @PostMapping("/{idEfector}/addAutoridad/{idAutoridad}")
+    // public ResponseEntity<?> agregarAutoridad(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idAutoridad") Long idAutoridad) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarAutoridad(idEfector, idAutoridad);
+    // return respuestaValidaciones;
+    // }
+
+    // @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
+    // public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idNotificacion") Long idNotificacion) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarNotificacion(idEfector, idNotificacion);
+    // return respuestaValidaciones;
+    // }
+
+    // @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
+    // public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idLegajo") Long idLegajo) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarLegajo(idEfector, idLegajo);
+    // return respuestaValidaciones;
+    // }
+
+    // @PostMapping("/{idEfector}/addUdo/{idLegajoUdo}")
+    // public ResponseEntity<?> agregarLegajoUdo(@PathVariable("idEfector") Long
+    // idEfector,
+    // @PathVariable("idLegajoUdo") Long idLegajoUdo) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // efectorController.agregarLegajoUdo(idEfector, idLegajoUdo);
+    // return respuestaValidaciones;
+    // }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!capsService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el caps"), HttpStatus.NOT_FOUND);
-        Caps caps = capsService.findById(id).get();
-        caps.setActivo(false);
-        capsService.save(caps);
-        return new ResponseEntity(new Mensaje("caps eliminado correctamente"), HttpStatus.OK);
-
+        ResponseEntity<?> respuestaValidaciones = efectorController.logicDelete(id);
+        return respuestaValidaciones;
     }
 
     @DeleteMapping("/fisicdelete/{id}")

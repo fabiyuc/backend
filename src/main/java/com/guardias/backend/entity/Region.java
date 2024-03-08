@@ -9,7 +9,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,10 +31,6 @@ public class Region {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Efector> efectores;
-
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "regiones")
-    @JsonIgnore
-    private Set<Notificacion> notificaciones;
 
     @Override
     public boolean equals(Object obj) {

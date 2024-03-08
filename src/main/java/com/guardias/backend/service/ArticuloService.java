@@ -2,11 +2,14 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.repository.ArticuloRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
@@ -26,6 +29,10 @@ public class ArticuloService {
 
     public List<Articulo> findAll() {
         return articuloRepository.findAll();
+    }
+
+    public List<Articulo> findAllActivos() {
+        return articuloRepository.findAllActivos();
     }
 
     public Optional<Articulo> findById(Long id) {
@@ -50,6 +57,10 @@ public class ArticuloService {
 
     public boolean existsByDenominacion(String denominacion) {
         return articuloRepository.existsByDenominacion(denominacion);
+    }
+
+    public boolean activo(Long id) {
+        return (articuloRepository.existsById(id) && articuloRepository.findById(id).get().isActivo());
     }
 
     public void save(Articulo articulo) {

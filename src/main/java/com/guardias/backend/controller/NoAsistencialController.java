@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.NoAsistencialService;
-import com.guardias.backend.service.PersonService;
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/noasistencial")
@@ -28,8 +28,7 @@ public class NoAsistencialController {
 
     @Autowired
     NoAsistencialService noAsistencialService;
-    @Autowired
-    PersonService personservice;
+
     @Autowired
     PersonController personController;
 
@@ -101,52 +100,47 @@ public class NoAsistencialController {
         }
     }
 
-    @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
-    public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long idPersona,
-            @PathVariable("idLegajo") Long idLegajo) {
-        try {
-            personservice.agregarLegajo(idPersona, idLegajo);
-            return new ResponseEntity<>(new Mensaje("Legajo agregado al articulo correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // @PostMapping("/{idPersona}/addLegajo/{idLegajo}")
+    // public ResponseEntity<?> agregarLegajo(@PathVariable("idPersona") Long
+    // idPersona,
+    // @PathVariable("idLegajo") Long idLegajo) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // personController.agregarLegajo(idPersona, idLegajo);
+    // return respuestaValidaciones;
+    // }
 
-    // utilizar para la novedad y para el suplente
-    @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
-    public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona") Long idPersona,
-            @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
-        try {
-            personservice.agregarNovedadPersonal(idPersona, idNovedadPersonal);
-            return new ResponseEntity<>(new Mensaje("Novedad agregada al articulo correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Novedad al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // // utilizar para la novedad y para el suplente
+    // @PostMapping("/{idPersona}/addNovedadPersonal/{idNovedadPersonal}")
+    // public ResponseEntity<?> agregarNovedadPersonal(@PathVariable("idPersona")
+    // Long idPersona,
+    // @PathVariable("idNovedadPersonal") Long idNovedadPersonal) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // personController.agregarNovedadPersonal(idPersona,
+    // idNovedadPersonal);
+    // return respuestaValidaciones;
 
-    @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
-    public ResponseEntity<?> agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
-            @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
-        try {
-            personservice.agregarDistribucionHoraria(idPersona, idDistribucionHoraria);
-            return new ResponseEntity<>(new Mensaje("Distribucion horaria agregada al articulo correctamente"),
-                    HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró la persona con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar la Distribucion horaria al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    // }
+
+    // @PostMapping("/{idPersona}/addDistribucionHoraria/{idNovedadPersonal}")
+    // public ResponseEntity<?>
+    // agregarDistribucionHoraria(@PathVariable("idPersona") Long idPersona,
+    // @PathVariable("idDistribucionHoraria") Long idDistribucionHoraria) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // personController.agregarDistribucionHoraria(idPersona,
+    // idDistribucionHoraria);
+    // return respuestaValidaciones;
+    // }
+
+    // @PostMapping("/{idPersona}/addAutoridad/{idNovedadPersonal}")
+    // public ResponseEntity<?> agregarAutoridad(@PathVariable("idPersona") Long
+    // idPersona,
+    // @PathVariable("idDistribucionHoraria") Long idAutoridad) {
+    // ResponseEntity<?> respuestaValidaciones =
+    // personController.agregarAutoridad(idPersona,
+    // idAutoridad);
+    // return respuestaValidaciones;
+
+    // }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {

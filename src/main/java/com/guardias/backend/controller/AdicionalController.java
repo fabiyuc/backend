@@ -87,9 +87,7 @@ public class AdicionalController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Adicional adicional = createUpdate(new Adicional(), adicionalDto);
-
             adicional.setActivo(true);
-
             adicionalService.save(adicional);
 
             return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);

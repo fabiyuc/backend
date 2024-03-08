@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DistribucionOtraDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.DistribucionOtra;
 import com.guardias.backend.service.DistribucionOtraService;
 
@@ -26,6 +27,8 @@ public class DistribucionOtraController {
 
     @Autowired
     DistribucionOtraService distribucionOtraService;
+    @Autowired
+    DistribucionHorariaController distribucionHorariaController;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionOtra>> list() {
@@ -72,105 +75,53 @@ public class DistribucionOtraController {
         return new ResponseEntity<>(distribucionOtra, HttpStatus.OK);
     }
 
+    DistribucionOtra createUpdate(DistribucionOtra distribucionOtra,
+            DistribucionOtraDto distribucionOtraDto) {
+        DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionOtra,
+                distribucionOtraDto);
+        distribucionOtra = (DistribucionOtra) distribucionHoraria;
+
+        if (!distribucionOtraDto.getDescripcion().equals(distribucionOtra.getDescripcion()))
+            distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
+
+        return distribucionOtra;
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionOtraDto distribucionOtraDto) {
 
-        if (distribucionOtraDto.getDia() == null)
-            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionOtraDto);
 
-        if (distribucionOtraDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getCantidadHoras() == null)
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getEfector() == null)
-            return new ResponseEntity(new Mensaje("El efector es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        DistribucionOtra distribucionOtra = new DistribucionOtra();
-        distribucionOtra.setDia(distribucionOtraDto.getDia());
-        distribucionOtra.setFechaInicio(distribucionOtraDto.getFechaInicio());
-        distribucionOtra.setFechaFinalizacion(distribucionOtraDto.getFechaFinalizacion());
-        distribucionOtra.setHoraIngreso(distribucionOtraDto.getHoraIngreso());
-        distribucionOtra.setPersona(distribucionOtraDto.getPersona());
-        distribucionOtra.setEfector(distribucionOtraDto.getEfector());
-        distribucionOtra.setCantidadHoras(distribucionOtraDto.getCantidadHoras());
-
-        distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
-
-        distribucionOtraService.save(distribucionOtra);
-        return new ResponseEntity(new Mensaje("Carga horaria creada"),
-                HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            DistribucionOtra distribucionOtra = createUpdate(new DistribucionOtra(),
+                    distribucionOtraDto);
+            distribucionOtraService.save(distribucionOtra);
+            return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
+                    HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id,
-
             @RequestBody DistribucionOtraDto distribucionOtraDto) {
 
         if (!distribucionOtraService.existsById(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        if (distribucionOtraDto.getDia() == null)
-            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionOtraDto);
 
-        if (distribucionOtraDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getCantidadHoras() == null)
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getEfector() == null)
-            return new ResponseEntity(new Mensaje("El efector es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionOtraDto.getPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        DistribucionOtra distribucionOtra = distribucionOtraService.findById(id).get();
-
-        if (!distribucionOtraDto.getDia().equals(distribucionOtra.getDia()))
-            distribucionOtra.setDia(distribucionOtraDto.getDia());
-        if (!distribucionOtraDto.getFechaInicio().equals(distribucionOtra.getFechaInicio()))
-            distribucionOtra.setFechaInicio(distribucionOtraDto.getFechaInicio());
-        if (!distribucionOtraDto.getFechaFinalizacion().equals(distribucionOtra.getFechaFinalizacion()))
-            distribucionOtra.setFechaFinalizacion(distribucionOtraDto.getFechaFinalizacion());
-        if (!distribucionOtraDto.getHoraIngreso().equals(distribucionOtra.getHoraIngreso()))
-            distribucionOtra.setHoraIngreso(distribucionOtraDto.getHoraIngreso());
-        if (!distribucionOtraDto.getPersona().equals(distribucionOtra.getPersona()))
-            distribucionOtra.setPersona(distribucionOtraDto.getPersona());
-        if (!distribucionOtraDto.getEfector().equals(distribucionOtra.getEfector()))
-            distribucionOtra.setEfector(distribucionOtraDto.getEfector());
-        if (!distribucionOtraDto.getCantidadHoras().equals(distribucionOtra.getCantidadHoras()))
-            distribucionOtra.setCantidadHoras(distribucionOtraDto.getCantidadHoras());
-
-        if (!distribucionOtraDto.getDescripcion().equals(distribucionOtra.getDescripcion()))
-            distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
-
-        distribucionOtraService.save(distribucionOtra);
-
-        return new ResponseEntity(new Mensaje("Carga horaria modificada"),
-                HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            DistribucionOtra distribucionOtra = createUpdate(
+                    distribucionOtraService.findById(id).get(),
+                    distribucionOtraDto);
+            distribucionOtraService.save(distribucionOtra);
+            return new ResponseEntity(new Mensaje("Distribucion horaria modificada correctamente"),
+                    HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
