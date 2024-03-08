@@ -69,7 +69,7 @@ public class MinisterioController {
     }
 
     public ResponseEntity<?> create(@RequestBody MinisterioDto ministerioDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(ministerioDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(new Ministerio(), ministerioDto);
@@ -82,7 +82,7 @@ public class MinisterioController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody MinisterioDto ministerioDto) {
-        if (!ministerioService.existsById(id))
+        if (!ministerioService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto);
@@ -134,8 +134,13 @@ public class MinisterioController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.logicDelete(id);
-        return respuestaValidaciones;
+        if (!ministerioService.activo(id))
+            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+
+        Ministerio ministerio = ministerioService.findById(id).get();
+        ministerio.setActivo(false);
+        ministerioService.save(ministerio);
+        return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
