@@ -34,7 +34,7 @@ public class CapsController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
-        List<Caps> list = capsService.findByActivo();
+        List<Caps> list = capsService.findByActivoTrue();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -46,15 +46,15 @@ public class CapsController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Caps>> getById(@PathVariable("id") Long id) {
-        if (!capsService.existsById(id))
+        if (!capsService.activo(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Caps caps = capsService.findById(id).get();
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<List<Caps>> getById(@PathVariable("nombre") String nombre) {
-        if (!capsService.existsByNombre(nombre))
+    public ResponseEntity<List<Caps>> getByName(@PathVariable("nombre") String nombre) {
+        if (!capsService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Caps caps = capsService.findByNombre(nombre).get();
         return new ResponseEntity(caps, HttpStatus.OK);
@@ -77,7 +77,7 @@ public class CapsController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CapsDto capsDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(capsDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(new Caps(), capsDto);
@@ -90,7 +90,7 @@ public class CapsController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CapsDto capsDto) {
-        if (!capsService.existsById(id))
+        if (!capsService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto);
@@ -142,8 +142,13 @@ public class CapsController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.logicDelete(id);
-        return respuestaValidaciones;
+        if (!capsService.activo(id))
+            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+
+        Caps caps = capsService.findById(id).get();
+        caps.setActivo(false);
+        capsService.save(caps);
+        return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")

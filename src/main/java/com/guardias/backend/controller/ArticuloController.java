@@ -33,9 +33,9 @@ public class ArticuloController {
     @Autowired
     LeyController leyController;
 
-    @GetMapping("/listall")
+    @GetMapping("/list")
     public ResponseEntity<List<Articulo>> list() {
-        List<Articulo> list = articuloService.findByActivo();
+        List<Articulo> list = articuloService.findByActivoTrue();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

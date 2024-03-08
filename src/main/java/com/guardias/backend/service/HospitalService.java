@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.repository.HospitalRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -15,7 +18,7 @@ public class HospitalService {
     @Autowired
     HospitalRepository hospitalRepository;
 
-    public List<Hospital> findByActivo() {
+    public List<Hospital> findByActivoTrue() {
         return hospitalRepository.findByActivoTrue();
     }
 
@@ -49,5 +52,13 @@ public class HospitalService {
 
     public boolean existsByNombre(String nombre) {
         return hospitalRepository.existsByNombre(nombre);
+    }
+
+    public boolean activoByNombre(String nombre) {
+        return (hospitalRepository.existsByNombre(nombre) && hospitalRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    public boolean activo(Long id) {
+        return (hospitalRepository.existsById(id) && hospitalRepository.findById(id).get().isActivo());
     }
 }

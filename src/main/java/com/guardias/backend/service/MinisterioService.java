@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.repository.MinisterioRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -15,7 +18,7 @@ public class MinisterioService {
     @Autowired
     MinisterioRepository ministerioRepository;
 
-    public List<Ministerio> findByActivo() {
+    public List<Ministerio> findByActivoTrue() {
         return ministerioRepository.findByActivoTrue();
     }
 
@@ -47,4 +50,12 @@ public class MinisterioService {
         return ministerioRepository.existsByNombre(nombre);
     }
 
+    public boolean activoByNombre(String nombre) {
+        return (ministerioRepository.existsByNombre(nombre)
+                && ministerioRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    public boolean activo(Long id) {
+        return (ministerioRepository.existsById(id) && ministerioRepository.findById(id).get().isActivo());
+    }
 }

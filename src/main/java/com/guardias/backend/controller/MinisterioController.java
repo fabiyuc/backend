@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.service.MinisterioService;
 
@@ -32,19 +33,19 @@ public class MinisterioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.findByActivo();
+        List<Ministerio> list = ministerioService.findByActivoTrue();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
-    public ResponseEntity<List<Ministerio>> listAll() {
+    public ResponseEntity<List<Hospital>> listAll() {
         List<Ministerio> list = ministerioService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Ministerio>> getById(@PathVariable("id") Long id) {
-        if (!ministerioService.existsById(id))
+        if (!ministerioService.activo(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Ministerio ministerio = ministerioService.findById(id).get();
         return new ResponseEntity(ministerio, HttpStatus.OK);
@@ -52,7 +53,7 @@ public class MinisterioController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Ministerio>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!ministerioService.existsByNombre(nombre))
+        if (!ministerioService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Ministerio ministerio = ministerioService.findByNombre(nombre).get();
         return new ResponseEntity(ministerio, HttpStatus.OK);
@@ -69,7 +70,7 @@ public class MinisterioController {
     }
 
     public ResponseEntity<?> create(@RequestBody MinisterioDto ministerioDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(ministerioDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(new Ministerio(), ministerioDto);
@@ -82,7 +83,7 @@ public class MinisterioController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody MinisterioDto ministerioDto) {
-        if (!ministerioService.existsById(id))
+        if (!ministerioService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto);
@@ -134,8 +135,13 @@ public class MinisterioController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.logicDelete(id);
-        return respuestaValidaciones;
+        if (!ministerioService.activo(id))
+            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+
+        Ministerio ministerio = ministerioService.findById(id).get();
+        ministerio.setActivo(false);
+        ministerioService.save(ministerio);
+        return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
