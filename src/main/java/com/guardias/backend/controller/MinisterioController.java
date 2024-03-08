@@ -32,7 +32,7 @@ public class MinisterioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.findByActivo(true);
+        List<Ministerio> list = ministerioService.findByActivoTrue();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -44,7 +44,7 @@ public class MinisterioController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Ministerio>> getById(@PathVariable("id") Long id) {
-        if (!ministerioService.existsById(id))
+        if (!ministerioService.activo(id))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Ministerio ministerio = ministerioService.findById(id).get();
         return new ResponseEntity(ministerio, HttpStatus.OK);
@@ -52,7 +52,7 @@ public class MinisterioController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Ministerio>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!ministerioService.existsByNombre(nombre))
+        if (!ministerioService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("Efector no encontrado"), HttpStatus.NOT_FOUND);
         Ministerio ministerio = ministerioService.findByNombre(nombre).get();
         return new ResponseEntity(ministerio, HttpStatus.OK);

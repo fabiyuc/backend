@@ -34,7 +34,7 @@ public class HospitalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
-        List<Hospital> list = hospitalService.findByActivo(true);
+        List<Hospital> list = hospitalService.findByActivoTrue();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -52,15 +52,15 @@ public class HospitalController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Hospital>> getById(@PathVariable("id") Long id) {
-        if (!hospitalService.existsById(id))
+        if (!hospitalService.activo(id))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         Hospital hospital = hospitalService.findById(id).get();
         return new ResponseEntity(hospital, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<List<Hospital>> getById(@PathVariable("nombre") String nombre) {
-        if (!hospitalService.existsByNombre(nombre))
+    public ResponseEntity<List<Hospital>> getByNombre(@PathVariable("nombre") String nombre) {
+        if (!hospitalService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         Hospital hospital = hospitalService.findByNombre(nombre).get();
         return new ResponseEntity(hospital, HttpStatus.OK);
@@ -79,7 +79,7 @@ public class HospitalController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody HospitalDto hospitalDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(hospitalDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(new Hospital(), hospitalDto);
@@ -92,7 +92,7 @@ public class HospitalController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody HospitalDto hospitalDto) {
-        if (!hospitalService.existsById(id))
+        if (!hospitalService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto);
@@ -144,8 +144,13 @@ public class HospitalController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.logicDelete(id);
-        return respuestaValidaciones;
+        if (!hospitalService.activo(id))
+            return new ResponseEntity(new Mensaje("efector no encontrado"), HttpStatus.NOT_FOUND);
+
+        Hospital hospital = hospitalService.findById(id).get();
+        hospital.setActivo(false);
+        hospitalService.save(hospital);
+        return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")

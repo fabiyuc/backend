@@ -17,16 +17,22 @@ public class EfectorController {
     @Autowired
     EfectorService efectorService;
 
+    public ResponseEntity<?> validationsCreate(EfectorDto efectorDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(efectorDto);
+
+        if (efectorService.existsByName(efectorDto.getNombre()))
+            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
+        return respuestaValidaciones;
+    }
+
     public ResponseEntity<?> validations(EfectorDto efectorDto) {
         if (StringUtils.isBlank(efectorDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(efectorDto.getDomicilio()))
             return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (efectorService.existsByName(efectorDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
