@@ -32,7 +32,7 @@ public class DistribucionGiraController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGira>> list() {
-        List<DistribucionGira> list = distribucionGiraService.findByActivo(true);
+        List<DistribucionGira> list = distribucionGiraService.findByActivo();
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
     }
 

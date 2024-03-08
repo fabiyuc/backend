@@ -13,5 +13,5 @@ public interface CargaHorariaRepository extends JpaRepository<CargaHoraria, Long
 
     boolean existsByCantidad(int cantidad);
 
-    List<CargaHoraria> findByActivo(boolean activo);
+    List<CargaHoraria> findByActivoTrue();
 }

@@ -23,8 +23,8 @@ public class AdicionalService {
     @Autowired
     RevistaService revistaService;
 
-    public List<Adicional> findByActivo(boolean activo) {
-        return adicionalRepository.findByActivo(activo);
+    public List<Adicional> findByActivo() {
+        return adicionalRepository.findByActivoTrue();
     }
 
     public List<Adicional> findAll() {

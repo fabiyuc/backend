@@ -15,8 +15,8 @@ public class DepartamentoService {
     @Autowired
     DepartamentoRepository departamentoRepository;
 
-    public List<Departamento> findByActivo(boolean activo) {
-        return departamentoRepository.findByActivo(activo);
+    public List<Departamento> findByActivo() {
+        return departamentoRepository.findByActivoTrue();
     }
 
     public List<Departamento> findAll() {

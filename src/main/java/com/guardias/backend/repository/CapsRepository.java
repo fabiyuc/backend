@@ -12,5 +12,5 @@ public interface CapsRepository extends JpaRepository<Caps, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Caps> findByActivo(boolean activo);
+    List<Caps> findByActivoTrue();
 }

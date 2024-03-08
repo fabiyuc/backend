@@ -15,8 +15,8 @@ public class HospitalService {
     @Autowired
     HospitalRepository hospitalRepository;
 
-    public List<Hospital> findByActivo(boolean activo) {
-        return hospitalRepository.findByActivo(activo);
+    public List<Hospital> findByActivo() {
+        return hospitalRepository.findByActivoTrue();
     }
 
     public List<Hospital> findAll() {

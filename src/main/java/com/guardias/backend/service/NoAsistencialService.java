@@ -15,8 +15,8 @@ public class NoAsistencialService {
     @Autowired
     NoAsistencialRepository noAsistencialRepository;
 
-    public List<NoAsistencial> findByActivo(boolean activo) {
-        return noAsistencialRepository.findByActivo(activo);
+    public List<NoAsistencial> findByActivo() {
+        return noAsistencialRepository.findByActivoTrue();
     }
 
     public List<NoAsistencial> findAll() {

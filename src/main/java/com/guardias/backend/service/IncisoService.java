@@ -17,8 +17,8 @@ public class IncisoService {
     @Autowired
     IncisoRepository incisoRepository;
 
-    public List<Inciso> findByActivo(boolean activo) {
-        return incisoRepository.findByActivo(activo);
+    public List<Inciso> findByActivo() {
+        return incisoRepository.findByActivoTrue();
     }
 
     public List<Inciso> findAll() {

@@ -12,5 +12,5 @@ public interface TipoRevistaRepository extends JpaRepository<TipoRevista, Long> 
 
     boolean existsByNombre(String nombre);
 
-    List<TipoRevista> findByActivo(boolean activo);
+    List<TipoRevista> findByActivoTrue();
 }

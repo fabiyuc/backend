@@ -15,6 +15,6 @@ public interface PaisRepository extends JpaRepository<Pais, Long> {
 
     boolean existsByNacionalidad(String nacionalidad);
 
-    List<Pais> findByActivo(boolean activo);
+    List<Pais> findByActivoTrue();
 
 }

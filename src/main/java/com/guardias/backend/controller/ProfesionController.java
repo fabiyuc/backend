@@ -29,7 +29,7 @@ public class ProfesionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Profesion>> list() {
-        List<Profesion> list = profesionService.findByActivo(true);
+        List<Profesion> list = profesionService.findByActivo();
         return new ResponseEntity<List<Profesion>>(list, HttpStatus.OK);
     }
 

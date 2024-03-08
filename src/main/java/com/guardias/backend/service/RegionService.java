@@ -14,8 +14,8 @@ public class RegionService {
     @Autowired
     RegionRepository regionRepository;
 
-    public List<Region> findByActivo(boolean activo) {
-        return regionRepository.findByActivo(activo);
+    public List<Region> findByActivo() {
+        return regionRepository.findByActivoTrue();
     }
 
     public List<Region> findAll() {

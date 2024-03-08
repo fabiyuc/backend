@@ -33,7 +33,7 @@ public class DistribucionConsultorioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionConsultorio>> list() {
-        List<DistribucionConsultorio> list = distribucionConsultorioService.findByActivo(true);
+        List<DistribucionConsultorio> list = distribucionConsultorioService.findByActivo();
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 

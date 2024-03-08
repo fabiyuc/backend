@@ -16,8 +16,8 @@ public class SuspencionService {
     @Autowired
     SuspencionRepository suspencionRepository;
 
-    public List<Suspencion> findByActivo(boolean activo) {
-        return suspencionRepository.findByActivo(activo);
+    public List<Suspencion> findByActivo() {
+        return suspencionRepository.findByActivoTrue();
     }
 
     public List<Suspencion> findAll() {

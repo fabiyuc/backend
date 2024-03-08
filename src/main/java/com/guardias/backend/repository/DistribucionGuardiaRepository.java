@@ -28,5 +28,5 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
 
     boolean existsByPersonaId(Long personaId);
 
-    List<DistribucionGuardia> findByActivo(boolean activo);
+    List<DistribucionGuardia> findByActivoTrue();
 }

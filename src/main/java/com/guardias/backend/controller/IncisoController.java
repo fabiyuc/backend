@@ -32,7 +32,7 @@ public class IncisoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Inciso>> list() {
-        List<Inciso> list = incisoService.findByActivo(true);
+        List<Inciso> list = incisoService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

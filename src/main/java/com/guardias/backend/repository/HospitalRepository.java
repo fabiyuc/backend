@@ -17,5 +17,5 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Hospital> findByActivo(boolean activo);
+    List<Hospital> findByActivoTrue();
 }

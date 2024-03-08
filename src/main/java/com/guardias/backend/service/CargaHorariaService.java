@@ -17,8 +17,8 @@ public class CargaHorariaService {
     @Autowired
     CargaHorariaRepository cargaHorariaRepository;
 
-    public List<CargaHoraria> findByActivo(boolean activo) {
-        return cargaHorariaRepository.findByActivo(activo);
+    public List<CargaHoraria> findByActivo() {
+        return cargaHorariaRepository.findByActivoTrue();
     }
 
     public List<CargaHoraria> findAll() {

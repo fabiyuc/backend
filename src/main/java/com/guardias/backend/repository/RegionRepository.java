@@ -13,6 +13,6 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Region> findByActivo(boolean activo);
+    List<Region> findByActivoTrue();
 
 }

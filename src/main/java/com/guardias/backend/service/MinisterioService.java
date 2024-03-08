@@ -15,8 +15,8 @@ public class MinisterioService {
     @Autowired
     MinisterioRepository ministerioRepository;
 
-    public List<Ministerio> findByActivo(boolean activo) {
-        return ministerioRepository.findByActivo(activo);
+    public List<Ministerio> findByActivo() {
+        return ministerioRepository.findByActivoTrue();
     }
 
     public List<Ministerio> findAll() {

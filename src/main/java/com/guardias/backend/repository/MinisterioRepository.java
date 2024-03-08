@@ -14,5 +14,5 @@ public interface MinisterioRepository extends JpaRepository<Ministerio, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Ministerio> findByActivo(boolean activo);
+    List<Ministerio> findByActivoTrue();
 }

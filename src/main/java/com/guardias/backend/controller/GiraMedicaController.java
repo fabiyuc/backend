@@ -30,7 +30,7 @@ public class GiraMedicaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<GiraMedica>> list() {
-        List<GiraMedica> list = giraMedicaService.findByActivo(true);
+        List<GiraMedica> list = giraMedicaService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

@@ -15,8 +15,8 @@ public class CargoService {
     @Autowired
     CargoRepository cargoRepository;
 
-    public List<Cargo> findByActivo(boolean activo) {
-        return cargoRepository.findByActivo(activo);
+    public List<Cargo> findByActivo() {
+        return cargoRepository.findByActivoTrue();
     }
 
     public List<Cargo> findAll() {

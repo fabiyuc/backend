@@ -15,8 +15,8 @@ public class ProvinciaService {
     @Autowired
     ProvinciaRepository ProvinciaRepository;
 
-    public List<Provincia> findByActivo(boolean activo) {
-        return ProvinciaRepository.findByActivo(activo);
+    public List<Provincia> findByActivo() {
+        return ProvinciaRepository.findByActivoTrue();
     }
 
     public List<Provincia> findAll() {

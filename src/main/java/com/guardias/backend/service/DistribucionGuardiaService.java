@@ -16,8 +16,8 @@ public class DistribucionGuardiaService {
     @Autowired
     DistribucionGuardiaRepository distribucionGuardiaRepository;
 
-    public List<DistribucionGuardia> findByActivo(boolean activo) {
-        return distribucionGuardiaRepository.findByActivo(activo);
+    public List<DistribucionGuardia> findByActivo() {
+        return distribucionGuardiaRepository.findByActivoTrue();
     }
 
     public List<DistribucionGuardia> findAll() {
