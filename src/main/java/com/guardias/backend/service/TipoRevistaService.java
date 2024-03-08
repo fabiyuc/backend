@@ -15,8 +15,8 @@ public class TipoRevistaService {
     @Autowired
     TipoRevistaRepository tipoRevistaRepository;
 
-    public List<TipoRevista> findByActivo(boolean activo) {
-        return tipoRevistaRepository.findByActivo( activo);
+    public List<TipoRevista> findByActivo() {
+        return tipoRevistaRepository.findByActivoTrue();
     }
 
     public List<TipoRevista> findAll() {

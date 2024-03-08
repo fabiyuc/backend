@@ -16,8 +16,8 @@ public class NovedadPersonalService {
     @Autowired
     NovedadPersonalRepository novedadPersonalRepository;
 
-    public List<NovedadPersonal> findByActivo(boolean activo) {
-        return novedadPersonalRepository.findByActivo(activo);
+    public List<NovedadPersonal> findByActivo() {
+        return novedadPersonalRepository.findByActivoTrue();
     }
 
     public List<NovedadPersonal> findAll() {

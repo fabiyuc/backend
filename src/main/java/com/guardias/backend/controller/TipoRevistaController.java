@@ -29,7 +29,7 @@ public class TipoRevistaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoRevista>> list() {
-        List<TipoRevista> list = tipoRevistaService.findByActivo(true);
+        List<TipoRevista> list = tipoRevistaService.findByActivo();
         return new ResponseEntity<List<TipoRevista>>(list, HttpStatus.OK);
     }
 

@@ -15,8 +15,8 @@ public class LegajoService {
     @Autowired
     LegajoRepository legajoRepository;
 
-    public List<Legajo> findByActivo(boolean activo){
-        return legajoRepository.findByActivo(activo);
+    public List<Legajo> findByActivo(){
+        return legajoRepository.findByActivoTrue();
     }
 
     public List<Legajo> findAll(){

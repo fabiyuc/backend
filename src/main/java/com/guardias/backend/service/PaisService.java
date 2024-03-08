@@ -15,8 +15,8 @@ public class PaisService {
     @Autowired
     PaisRepository paisRepository;
 
-    public List<Pais> findByActivo(boolean activo) {
-        return paisRepository.findByActivo(activo);
+    public List<Pais> findByActivo() {
+        return paisRepository.findByActivoTrue();
     }
 
     public List<Pais> findAll() {

@@ -13,5 +13,5 @@ public interface NotificacionRepository extends JpaRepository<Notificacion, Long
 
     Boolean findByTipoAndActivo(String tipo, boolean activo);
 
-    List<Notificacion> findByActivo(boolean activo);
+    List<Notificacion> findByActivoTrue();
 }

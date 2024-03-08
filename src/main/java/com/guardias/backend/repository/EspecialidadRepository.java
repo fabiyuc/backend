@@ -13,5 +13,5 @@ public interface EspecialidadRepository extends JpaRepository<Especialidad, Long
 
     boolean existsByNombre(String nombre);
 
-    List<Especialidad> findByActivo(boolean activo);
+    List<Especialidad> findByActivoTrue();
 }

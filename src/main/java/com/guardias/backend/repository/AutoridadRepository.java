@@ -13,5 +13,5 @@ public interface AutoridadRepository extends JpaRepository<Autoridad,Long> {
 
     boolean existsById(Long id);
 
-    List<Autoridad> findByActivo(boolean activo);
+    List<Autoridad> findByActivoTrue();
 }

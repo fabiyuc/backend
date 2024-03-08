@@ -29,7 +29,7 @@ public class ArticuloController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Articulo>> list() {
-        List<Articulo> list = articuloService.findByActivo(true);
+        List<Articulo> list = articuloService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

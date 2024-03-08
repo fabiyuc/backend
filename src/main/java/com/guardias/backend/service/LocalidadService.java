@@ -15,8 +15,8 @@ public class LocalidadService {
     @Autowired
     LocalidadRepository localidadRepository;
 
-    public List<Localidad> findByActivo(boolean activo) {
-        return localidadRepository.findByActivo(activo);
+    public List<Localidad> findByActivo() {
+        return localidadRepository.findByActivoTrue();
     }
 
     public List<Localidad> findAll() {

@@ -18,5 +18,5 @@ public interface IncisoRepository extends JpaRepository<Inciso, Long> {
 
     boolean existsByDenominacion(String denominacion);
 
-    List<Inciso> findByActivo(boolean activo);
+    List<Inciso> findByActivoTrue();
 }

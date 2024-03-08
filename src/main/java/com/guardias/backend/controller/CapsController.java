@@ -29,7 +29,7 @@ public class CapsController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
-        List<Caps> list = capsService.findByActivo(true);
+        List<Caps> list = capsService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

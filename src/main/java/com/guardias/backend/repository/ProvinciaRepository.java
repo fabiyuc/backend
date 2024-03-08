@@ -13,5 +13,5 @@ public interface ProvinciaRepository extends JpaRepository<Provincia, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Provincia> findByActivo(boolean activo);
+    List<Provincia> findByActivoTrue();
 }

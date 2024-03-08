@@ -19,5 +19,5 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
 
     List<NoAsistencial> findByEstado(Boolean estado);
 
-    List<NoAsistencial> findByActivo(boolean activo);
+    List<NoAsistencial> findByActivoTrue();
 }

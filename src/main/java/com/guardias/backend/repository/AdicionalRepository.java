@@ -13,5 +13,5 @@ public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Adicional> findByActivo(boolean activo);
+    List<Adicional> findByActivoTrue();
 }

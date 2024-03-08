@@ -16,8 +16,8 @@ public class NotificacionService {
     @Autowired
     NotificacionRepository notificacionRepository;
 
-    public List<Notificacion> findByActivo(boolean activo) {
-        return notificacionRepository.findByActivo(activo);
+    public List<Notificacion> findByActivo() {
+        return notificacionRepository.findByActivoTrue();
 
     }
     public List<Notificacion> findAll() {

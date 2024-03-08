@@ -17,5 +17,5 @@ public interface DepartamentoRepository extends JpaRepository<Departamento, Long
     
     boolean existsByCodigoPostal(String codigoPostal);
 
-    List<Departamento> findByActivo(boolean activo);
+    List<Departamento> findByActivoTrue();
 }

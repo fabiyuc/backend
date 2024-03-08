@@ -16,8 +16,8 @@ public class DistribucionGiraService {
     @Autowired
     DistribucionGiraRepository distribucionGiraRepository;
 
-    public List<DistribucionGira> findByActivo(boolean activo) {
-        return distribucionGiraRepository.findByActivo(activo);
+    public List<DistribucionGira> findByActivo() {
+        return distribucionGiraRepository.findByActivoTrue();
     }
 
     public List<DistribucionGira> findAll() {

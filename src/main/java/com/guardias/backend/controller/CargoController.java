@@ -29,7 +29,7 @@ public class CargoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Cargo>> list() {
-        List<Cargo> list = cargoService.findByActivo(true);
+        List<Cargo> list = cargoService.findByActivo();
         return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
     }
 

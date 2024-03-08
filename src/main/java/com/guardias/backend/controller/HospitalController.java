@@ -29,7 +29,7 @@ public class HospitalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
-        List<Hospital> list = hospitalService.findByActivo(true);
+        List<Hospital> list = hospitalService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

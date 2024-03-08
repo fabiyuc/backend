@@ -30,7 +30,7 @@ public class FeriadoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Feriado>> list() {
-        List<Feriado> list = feriadoService.findByActivo(true);
+        List<Feriado> list = feriadoService.findByActivo();
         return new ResponseEntity<List<Feriado>>(list, HttpStatus.OK);
     }
 

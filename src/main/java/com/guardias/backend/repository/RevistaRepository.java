@@ -13,5 +13,5 @@ public interface RevistaRepository extends JpaRepository<Revista, Long> {
 
     boolean existsById(Long id);
 
-    List<Revista> findByActivo(boolean activo);
+    List<Revista> findByActivoTrue();
 }
