@@ -87,9 +87,14 @@ public class AdicionalController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Adicional adicional = createUpdate(new Adicional(), adicionalDto);
+
+            adicional.setActivo(true);
+
             adicionalService.save(adicional);
+
             return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
         } else {
+
             return respuestaValidaciones;
         }
     }
@@ -125,7 +130,7 @@ public class AdicionalController {
     }
 
     // BORRADO LOGICO
-    @PutMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);

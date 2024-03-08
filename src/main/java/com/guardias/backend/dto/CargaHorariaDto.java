@@ -13,5 +13,6 @@ public class CargaHorariaDto {
     @NotBlank
     private int cantidad;
     private boolean activo;
+    private String descripcion;
 
 }

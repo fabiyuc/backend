@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.CargaHorariaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.CargaHoraria;
@@ -32,7 +34,7 @@ public class CargaHorariaController {
         List<CargaHoraria> list = cargaHorariaService.findByActivo(true);
         return new ResponseEntity<List<CargaHoraria>>(list, HttpStatus.OK);
     }
-    
+
     @GetMapping("/listAll")
     public ResponseEntity<List<CargaHoraria>> listAll() {
         List<CargaHoraria> list = cargaHorariaService.findAll();
@@ -55,20 +57,63 @@ public class CargaHorariaController {
         return new ResponseEntity<CargaHoraria>(cargaHoraria, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
-
+    private ResponseEntity<?> validations(CargaHorariaDto cargaHorariaDto) {
         if (cargaHorariaDto.getCantidad() < 1)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
                     HttpStatus.BAD_REQUEST);
         if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad()))
             return new ResponseEntity(new Mensaje("esa cantidad ya existe"),
                     HttpStatus.BAD_REQUEST);
-        CargaHoraria cargaHoraria = new CargaHoraria();
-        cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
-        cargaHorariaService.save(cargaHoraria);
-        return new ResponseEntity(new Mensaje("Carga horaria creada"), HttpStatus.OK);
+        if (StringUtils.isBlank(cargaHorariaDto.getDescripcion()) || cargaHorariaDto.getDescripcion().length() < 3)
+            return new ResponseEntity(new Mensaje("la descripcion es obligatoria y debe tener al menos 3 caracteres"),
+                    HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
+
+    private CargaHoraria createUpdate(CargaHoraria cargaHoraria, CargaHorariaDto cargaHorariaDto) {
+        if (!Integer.valueOf(cargaHorariaDto.getCantidad()).equals(cargaHoraria.getCantidad()))
+            cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
+
+        if (!StringUtils.isBlank(cargaHorariaDto.getDescripcion()))
+            cargaHoraria.setDescripcion(cargaHorariaDto.getDescripcion());
+        return cargaHoraria;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            CargaHoraria cargaHoraria = createUpdate(new CargaHoraria(), cargaHorariaDto);
+
+            cargaHoraria.setActivo(true);
+            cargaHorariaService.save(cargaHoraria);
+            return new ResponseEntity(new Mensaje("Carga horaria creada"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
+    }
+
+    /*
+     * @PostMapping("/create")
+     * public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto)
+     * {
+     * 
+     * if (cargaHorariaDto.getCantidad() < 1)
+     * return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
+     * HttpStatus.BAD_REQUEST);
+     * if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad()))
+     * return new ResponseEntity(new Mensaje("esa cantidad ya existe"),
+     * HttpStatus.BAD_REQUEST);
+     * CargaHoraria cargaHoraria = new CargaHoraria();
+     * cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
+     * cargaHoraria.setDescripcion(cargaHorariaDto.getDescripcion());
+     * cargaHorariaService.save(cargaHoraria);
+     * return new ResponseEntity(new Mensaje("Carga horaria creada"),
+     * HttpStatus.OK);
+     * }
+     */
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargaHorariaDto cargaHorariaDto) {
