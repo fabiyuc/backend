@@ -37,7 +37,7 @@ public class AsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
-        List<Asistencial> list = asistencialService.findByActivo(true);
+        List<Asistencial> list = asistencialService.findByActivoTrue();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 
@@ -49,7 +49,7 @@ public class AsistencialController {
 
     @GetMapping("/legajos/{id}")
     public ResponseEntity<?> getLegajosByAsistencial(@PathVariable("id") Long id) {
-        if (!asistencialService.existsById(id))
+        if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
 
         Asistencial asistencial = asistencialService.findById(id).get();
@@ -58,8 +58,6 @@ public class AsistencialController {
         return new ResponseEntity<>(legajos, HttpStatus.OK);
     }
 
-    // *** POSTMAN: /asistencial/listaestado?estado=true o
-    // /asistencial/lista?estado=false
     @GetMapping("/listestado")
     public ResponseEntity<List<Asistencial>> list(@RequestParam("estado") Boolean estado) {
         List<Asistencial> list = asistencialService.findByEstado(estado);
@@ -68,7 +66,7 @@ public class AsistencialController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Asistencial> getById(@PathVariable("id") Long id) {
-        if (!asistencialService.existsById(id))
+        if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la persona tipo asistencial"), HttpStatus.NOT_FOUND);
         Asistencial asistencial = asistencialService.findById(id).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
@@ -76,7 +74,7 @@ public class AsistencialController {
 
     @GetMapping("/detaildni/{dni}")
     public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
-        if (!asistencialService.existsByDni(dni))
+        if (!asistencialService.activoDni(dni))
             return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
         Asistencial asistencial = asistencialService.findByDni(dni).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
@@ -97,7 +95,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validationsCreate(asistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
@@ -110,7 +108,7 @@ public class AsistencialController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody AsistencialDto asistencialDto) {
-        if (!asistencialService.existsById(id))
+        if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
@@ -159,7 +157,7 @@ public class AsistencialController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!asistencialService.existsById(id))
+        if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
         Asistencial asistencial = asistencialService.findById(id).get();
         asistencial.setActivo(false);

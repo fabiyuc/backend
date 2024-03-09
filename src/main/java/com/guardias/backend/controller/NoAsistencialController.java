@@ -34,7 +34,7 @@ public class NoAsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<NoAsistencial>> list() {
-        List<NoAsistencial> list = noAsistencialService.findByActivo(true);
+        List<NoAsistencial> list = noAsistencialService.findByActivoTrue();
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
 
@@ -46,7 +46,7 @@ public class NoAsistencialController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<NoAsistencial> getById(@PathVariable("id") Long id) {
-        if (!noAsistencialService.existsById(id))
+        if (!noAsistencialService.activo(id))
             return new ResponseEntity(new Mensaje("Profesional no entontrado"), HttpStatus.NOT_FOUND);
         NoAsistencial noAsistencial = noAsistencialService.findById(id).get();
         return new ResponseEntity<NoAsistencial>(noAsistencial, HttpStatus.OK);
@@ -54,7 +54,7 @@ public class NoAsistencialController {
 
     @GetMapping("/detailDni/{dni}")
     public ResponseEntity<NoAsistencial> getById(@PathVariable("dni") int dni) {
-        if (!noAsistencialService.existsByDni(dni))
+        if (!noAsistencialService.activoDni(dni))
             return new ResponseEntity(new Mensaje("Profesional no entontrado"), HttpStatus.NOT_FOUND);
         NoAsistencial noAsistencial = noAsistencialService.findByDni(dni).get();
         return new ResponseEntity<NoAsistencial>(noAsistencial, HttpStatus.OK);
@@ -73,7 +73,7 @@ public class NoAsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NoAsistencialDto noAsistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validationsCreate(noAsistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             NoAsistencial noAsistencial = createUpdate(new NoAsistencial(), noAsistencialDto);
@@ -86,7 +86,7 @@ public class NoAsistencialController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody NoAsistencialDto noAsistencialDto) {
-        if (!noAsistencialService.existsById(id))
+        if (!noAsistencialService.activo(id))
             return new ResponseEntity(new Mensaje("La persona no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto);
@@ -144,7 +144,7 @@ public class NoAsistencialController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!noAsistencialService.existsById(id))
+        if (!noAsistencialService.activo(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
         NoAsistencial noNoAsistencial = noAsistencialService.findById(id).get();
         noNoAsistencial.setActivo(false);

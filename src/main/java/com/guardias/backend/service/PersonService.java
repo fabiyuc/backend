@@ -10,7 +10,9 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.DistribucionHorariaRepository;
+import com.guardias.backend.repository.NoAsistencialRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -21,6 +23,10 @@ public class PersonService {
     AsistencialService asistencialService;
     @Autowired
     NoAsistencialService noAsistencialService;
+    @Autowired
+    AsistencialRepository asistencialRepository;
+    @Autowired
+    NoAsistencialRepository noAsistencialRepository;
 
     @Autowired
     LegajoService legajoService;
@@ -38,6 +44,20 @@ public class PersonService {
             persona = noAsistencialService.findById(idPersona).orElse(null);
         }
         return persona;
+    }
+
+    public boolean existsByDni(int dni) {
+        boolean exists = asistencialRepository.existsByDni(dni);
+        if (!exists)
+            exists = noAsistencialRepository.existsByDni(dni);
+        return exists;
+    }
+
+    public boolean existsByCui(String cuil) {
+        boolean exists = asistencialRepository.existsByCuil(cuil);
+        if (!exists)
+            exists = noAsistencialRepository.existsByCuil(cuil);
+        return exists;
     }
 
     private void savePersona(Person persona) {
