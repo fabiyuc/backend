@@ -1,8 +1,10 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +29,7 @@ public class Asistencial extends Person {
     private TipoGuardiaEnum tipoGuardia;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistencial" })
+    @JsonIgnore
     private Set<RegistroActividad> registrosActividades;
 
 }
