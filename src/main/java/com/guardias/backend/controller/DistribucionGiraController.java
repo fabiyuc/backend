@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DistribucionGiraDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGira;
@@ -32,7 +34,7 @@ public class DistribucionGiraController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGira>> list() {
-        List<DistribucionGira> list = distribucionGiraService.findByActivo(true);
+        List<DistribucionGira> list = distribucionGiraService.findByActivoTrue().get();
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
     }
 

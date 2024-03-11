@@ -3,10 +3,13 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.DistribucionOtra;
 import com.guardias.backend.repository.DistribucionOtraRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -16,8 +19,8 @@ public class DistribucionOtraService {
     @Autowired
     DistribucionOtraRepository distribucionOtraRepository;
 
-    public List<DistribucionOtra> findByActivo(boolean activo) {
-        return distribucionOtraRepository.findByActivo(activo);
+    public Optional<List<DistribucionOtra>> findByActivoTrue() {
+        return distribucionOtraRepository.findByActivoTrue();
     }
 
     public List<DistribucionOtra> findAll() {

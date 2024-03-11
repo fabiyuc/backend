@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
@@ -30,12 +32,21 @@ public class DistribucionGuardiaController {
     @Autowired
     DistribucionHorariaController distribucionHorariaController;
 
+    /*
+     * @GetMapping("/list")
+     * public ResponseEntity<List<DistribucionConsultorio>> list() {
+     * List<DistribucionConsultorio> list =
+     * distribucionConsultorioService.findByActivoTrue().get();
+     * return new ResponseEntity<List<DistribucionConsultorio>>(list,
+     * HttpStatus.OK);
+     * }
+     */
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
-        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivo(true);
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoTrue();
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
-    
+
     @GetMapping("/listAll")
     public ResponseEntity<List<DistribucionGuardia>> listAll() {
         List<DistribucionGuardia> list = distribucionGuardiaService.findAll();

@@ -3,16 +3,18 @@ package com.guardias.backend.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import com.guardias.backend.entity.DistribucionConsultorio;
 
 @Repository
 public interface DistribucionConsultorioRepository extends JpaRepository<DistribucionConsultorio, Long> {
 
-    Optional<DistribucionConsultorio> findById(Long id);
+    Optional<List<DistribucionConsultorio>> findByActivoTrue();
 
     List<DistribucionConsultorio> findByFechaInicio(LocalDate fechaInicio);
 
