@@ -32,18 +32,9 @@ public class DistribucionGuardiaController {
     @Autowired
     DistribucionHorariaController distribucionHorariaController;
 
-    /*
-     * @GetMapping("/list")
-     * public ResponseEntity<List<DistribucionConsultorio>> list() {
-     * List<DistribucionConsultorio> list =
-     * distribucionConsultorioService.findByActivoTrue().get();
-     * return new ResponseEntity<List<DistribucionConsultorio>>(list,
-     * HttpStatus.OK);
-     * }
-     */
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
-        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoTrue();
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoTrue().get();
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 
@@ -55,7 +46,7 @@ public class DistribucionGuardiaController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<DistribucionGuardia> getById(@PathVariable("id") Long id) {
-        if (!distribucionGuardiaService.existsById(id))
+        if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         DistribucionGuardia distribucionGuardia = distribucionGuardiaService.findById(id).get();
         return new ResponseEntity<DistribucionGuardia>(distribucionGuardia, HttpStatus.OK);
@@ -118,7 +109,7 @@ public class DistribucionGuardiaController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
-        if (!distribucionGuardiaService.existsById(id))
+        if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGuardiaDto);
@@ -137,7 +128,7 @@ public class DistribucionGuardiaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!distribucionGuardiaService.existsById(id))
+        if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
 
         DistribucionGuardia distribucionGuardia = distribucionGuardiaService.findById(id).get();

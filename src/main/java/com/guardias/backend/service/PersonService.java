@@ -46,6 +46,13 @@ public class PersonService {
         return persona;
     }
 
+    public boolean activoById(Long id) {
+        boolean exists = asistencialRepository.existsById(id);
+        if (!exists)
+            exists = noAsistencialRepository.existsById(id);
+        return exists;
+    }
+
     public boolean existsByDni(int dni) {
         boolean exists = asistencialRepository.existsByDni(dni);
         if (!exists)

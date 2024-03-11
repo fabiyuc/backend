@@ -19,6 +19,12 @@ public class DistribucionGiraService {
     @Autowired
     DistribucionGiraRepository distribucionGiraRepository;
 
+    @Autowired
+    EfectorService efectorService;
+
+    @Autowired
+    PersonService personService;
+
     public Optional<List<DistribucionGira>> findByActivoTrue() {
         return distribucionGiraRepository.findByActivoTrue();
     }
@@ -47,12 +53,17 @@ public class DistribucionGiraService {
         return distribucionGiraRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (distribucionGiraRepository.existsById(id)
+                && distribucionGiraRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByEfectorId(Long efectorId) {
-        return distribucionGiraRepository.existsByEfectorId(efectorId);
+        return distribucionGiraRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
     public boolean existsByPersonaId(Long personaId) {
-        return distribucionGiraRepository.existsByPersonaId(personaId);
+        return distribucionGiraRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
     public void save(DistribucionGira distribucionGira) {

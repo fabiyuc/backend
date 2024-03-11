@@ -19,7 +19,13 @@ public class DistribucionGuardiaService {
     @Autowired
     DistribucionGuardiaRepository distribucionGuardiaRepository;
 
-    public List<DistribucionGuardia> findByActivoTrue() {
+    @Autowired
+    EfectorService efectorService;
+
+    @Autowired
+    PersonService personService;
+
+    public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
     }
 
@@ -47,12 +53,17 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (distribucionGuardiaRepository.existsById(id)
+                && distribucionGuardiaRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByEfectorId(Long efectorId) {
-        return distribucionGuardiaRepository.existsByEfectorId(efectorId);
+        return distribucionGuardiaRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
     public boolean existsByPersonaId(Long personaId) {
-        return distribucionGuardiaRepository.existsByPersonaId(personaId);
+        return distribucionGuardiaRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
     public void save(DistribucionGuardia distribucionGuardia) {

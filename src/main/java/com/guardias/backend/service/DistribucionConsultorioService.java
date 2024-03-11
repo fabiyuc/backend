@@ -19,6 +19,12 @@ public class DistribucionConsultorioService {
     @Autowired
     DistribucionConsultorioRepository distribucionConsultorioRepository;
 
+    @Autowired
+    EfectorService efectorService;
+
+    @Autowired
+    PersonService personService;
+
     public Optional<List<DistribucionConsultorio>> findByActivoTrue() {
         return distribucionConsultorioRepository.findByActivoTrue();
     }
@@ -53,11 +59,11 @@ public class DistribucionConsultorioService {
     }
 
     public boolean existsByEfectorId(Long efectorId) {
-        return distribucionConsultorioRepository.existsByEfectorId(efectorId);
+        return distribucionConsultorioRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
     public boolean existsByPersonaId(Long personaId) {
-        return distribucionConsultorioRepository.existsByPersonaId(personaId);
+        return distribucionConsultorioRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
     public void save(DistribucionConsultorio distribucionConsultorio) {

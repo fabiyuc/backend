@@ -46,7 +46,7 @@ public class DistribucionOtraController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<DistribucionOtra> getById(@PathVariable("id") Long id) {
-        if (!distribucionOtraService.existsById(id))
+        if (!distribucionOtraService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         DistribucionOtra distribucionOtra = distribucionOtraService.findById(id).get();
         return new ResponseEntity<DistribucionOtra>(distribucionOtra, HttpStatus.OK);
@@ -109,7 +109,7 @@ public class DistribucionOtraController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionOtraDto distribucionOtraDto) {
 
-        if (!distribucionOtraService.existsById(id))
+        if (!distribucionOtraService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionOtraDto);
@@ -128,7 +128,7 @@ public class DistribucionOtraController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!distribucionOtraService.existsById(id))
+        if (!distribucionOtraService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
 
         DistribucionOtra distribucionOtra = distribucionOtraService.findById(id).get();
