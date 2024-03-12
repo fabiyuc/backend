@@ -37,7 +37,7 @@ public class PersonService {
     @Autowired
     AutoridadService autoridadService;
 
-    private Person findPerson(Long idPersona) {
+    public Person findPerson(Long idPersona) {
         Person persona = asistencialService.findById(idPersona).orElse(null);
 
         if (persona == null) {

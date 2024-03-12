@@ -83,7 +83,8 @@ public class DistribucionOtraController {
                 distribucionOtraDto);
         distribucionOtra = (DistribucionOtra) distribucionHoraria;
 
-        if (!distribucionOtraDto.getDescripcion().equals(distribucionOtra.getDescripcion()))
+        if (distribucionOtraDto.getDescripcion() != (distribucionOtra.getDescripcion())
+                && distribucionOtraDto.getDescripcion() != null)
             distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
 
         return distribucionOtra;

@@ -83,7 +83,8 @@ public class DistribucionGuardiaController {
                 distribucionGuardiaDto);
         distribucionGuardia = (DistribucionGuardia) distribucionHoraria;
 
-        if (!distribucionGuardiaDto.getTipoGuardia().equals(distribucionGuardia.getTipoGuardia()))
+        if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
+                && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
 
         return distribucionGuardia;

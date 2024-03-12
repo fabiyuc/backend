@@ -87,9 +87,11 @@ public class DistribucionConsultorioController {
 
         distribucionConsultorio = (DistribucionConsultorio) distribucionHoraria;
 
-        if (!distribucionConsultorioDto.getLugar().equals(distribucionConsultorio.getLugar()))
+        if (distribucionConsultorioDto.getLugar() != distribucionConsultorio.getLugar()
+                && distribucionConsultorioDto.getLugar() != null)
             distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
-        if (!distribucionConsultorioDto.getEspecialidad().equals(distribucionConsultorio.getEspecialidad()))
+        if (distribucionConsultorioDto.getEspecialidad() != distribucionConsultorio.getEspecialidad()
+                && distribucionConsultorioDto.getEspecialidad() != null)
             distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
         if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
             distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
