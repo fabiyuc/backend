@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
 import com.guardias.backend.entity.Efector;
-import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.service.MinisterioService;
 
@@ -38,7 +37,7 @@ public class MinisterioController {
     }
 
     @GetMapping("/listAll")
-    public ResponseEntity<List<Hospital>> listAll() {
+    public ResponseEntity<List<Ministerio>> listAll() {
         List<Ministerio> list = ministerioService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }

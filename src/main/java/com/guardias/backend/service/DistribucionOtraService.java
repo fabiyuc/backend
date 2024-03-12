@@ -3,10 +3,13 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.DistribucionOtra;
 import com.guardias.backend.repository.DistribucionOtraRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -16,7 +19,13 @@ public class DistribucionOtraService {
     @Autowired
     DistribucionOtraRepository distribucionOtraRepository;
 
-    public List<DistribucionOtra> findByActivo() {
+    @Autowired
+    EfectorService efectorService;
+
+    @Autowired
+    PersonService personService;
+
+    public Optional<List<DistribucionOtra>> findByActivoTrue() {
         return distribucionOtraRepository.findByActivoTrue();
     }
 
@@ -44,12 +53,17 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (distribucionOtraRepository.existsById(id)
+                && distribucionOtraRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByEfectorId(Long efectorId) {
-        return distribucionOtraRepository.existsByEfectorId(efectorId);
+        return distribucionOtraRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
     public boolean existsByPersonaId(Long personaId) {
-        return distribucionOtraRepository.existsByPersonaId(personaId);
+        return distribucionOtraRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
     public void save(DistribucionOtra distribucionOtra) {

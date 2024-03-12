@@ -19,6 +19,18 @@ public class PersonController {
     @Autowired
     PersonService personService;
 
+    public ResponseEntity<?> validationsCreate(PersonDto personDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(personDto);
+
+        if (personService.existsByDni(personDto.getDni()))
+            return new ResponseEntity<>(new Mensaje("El DNI ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (personService.existsByCui(personDto.getCuil()))
+            return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
+
+        return respuestaValidaciones;
+    }
+
     public ResponseEntity<?> validations(PersonDto personDto) {
         if (StringUtils.isBlank(personDto.getNombre())) {
             return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);

@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
@@ -32,10 +34,10 @@ public class DistribucionGuardiaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
-        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivo();
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoTrue().get();
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
-    
+
     @GetMapping("/listAll")
     public ResponseEntity<List<DistribucionGuardia>> listAll() {
         List<DistribucionGuardia> list = distribucionGuardiaService.findAll();
@@ -44,7 +46,7 @@ public class DistribucionGuardiaController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<DistribucionGuardia> getById(@PathVariable("id") Long id) {
-        if (!distribucionGuardiaService.existsById(id))
+        if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         DistribucionGuardia distribucionGuardia = distribucionGuardiaService.findById(id).get();
         return new ResponseEntity<DistribucionGuardia>(distribucionGuardia, HttpStatus.OK);
@@ -81,7 +83,8 @@ public class DistribucionGuardiaController {
                 distribucionGuardiaDto);
         distribucionGuardia = (DistribucionGuardia) distribucionHoraria;
 
-        if (!distribucionGuardiaDto.getTipoGuardia().equals(distribucionGuardia.getTipoGuardia()))
+        if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
+                && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
 
         return distribucionGuardia;
@@ -107,7 +110,7 @@ public class DistribucionGuardiaController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
-        if (!distribucionGuardiaService.existsById(id))
+        if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGuardiaDto);
@@ -126,7 +129,7 @@ public class DistribucionGuardiaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!distribucionGuardiaService.existsById(id))
+        if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
 
         DistribucionGuardia distribucionGuardia = distribucionGuardiaService.findById(id).get();

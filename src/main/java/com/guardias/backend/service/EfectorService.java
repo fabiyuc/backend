@@ -62,6 +62,18 @@ public class EfectorService {
         return exists;
     }
 
+    public boolean activoById(Long id) {
+        boolean exists = capsService.activo(id);
+
+        if (exists == false)
+            exists = hospitalService.activo(id);
+
+        if (exists == false)
+            exists = ministerioService.activo(id);
+
+        return exists;
+    }
+
     public void saveEfector(Efector efector) {
         if (efector instanceof Caps) {
             Caps caps = (Caps) efector;

@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionConsultorio;
@@ -33,7 +35,7 @@ public class DistribucionConsultorioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionConsultorio>> list() {
-        List<DistribucionConsultorio> list = distribucionConsultorioService.findByActivo();
+        List<DistribucionConsultorio> list = distribucionConsultorioService.findByActivoTrue().get();
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
@@ -52,7 +54,7 @@ public class DistribucionConsultorioController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<DistribucionConsultorio> getById(@PathVariable("id") Long id) {
-        if (!distribucionConsultorioService.existsById(id))
+        if (!distribucionConsultorioService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.findById(id).get();
         return new ResponseEntity<DistribucionConsultorio>(distribucionConsultorio, HttpStatus.OK);
@@ -85,9 +87,11 @@ public class DistribucionConsultorioController {
 
         distribucionConsultorio = (DistribucionConsultorio) distribucionHoraria;
 
-        if (!distribucionConsultorioDto.getLugar().equals(distribucionConsultorio.getLugar()))
+        if (distribucionConsultorioDto.getLugar() != distribucionConsultorio.getLugar()
+                && distribucionConsultorioDto.getLugar() != null)
             distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
-        if (!distribucionConsultorioDto.getEspecialidad().equals(distribucionConsultorio.getEspecialidad()))
+        if (distribucionConsultorioDto.getEspecialidad() != distribucionConsultorio.getEspecialidad()
+                && distribucionConsultorioDto.getEspecialidad() != null)
             distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
         if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
             distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
