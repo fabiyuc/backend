@@ -32,5 +32,5 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
 
     boolean existsByPersonaId(Long personaId);
 
-    List<DistribucionGira> findByActivoTrue();
+    List<DistribucionGira> findByActivo(boolean activo);
 }
