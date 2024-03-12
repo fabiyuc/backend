@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,19 +61,18 @@ public class AdicionalController {
 
     }
 
-    /*
-     * private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
-     * if (StringUtils.isBlank(adicionalDto.getNombre()))
-     * return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (adicionalService.existsByNombre(adicionalDto.getNombre()))
-     * return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-     * }
-     */
+    private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
+        if (StringUtils.isBlank(adicionalDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (adicionalService.existsByNombre(adicionalDto.getNombre()))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
     /*
      * rivate Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto)
      * {
@@ -89,10 +89,10 @@ public class AdicionalController {
 
         if (adicional.getNombre() != adicionalDto.getNombre() && adicionalDto.getNombre() != null)
             adicional.setNombre(adicionalDto.getNombre());
+
         if (adicional.getRevistas() != adicionalDto.getRevistas() && adicionalDto.getRevistas() != null)
             adicional.setRevistas(adicionalDto.getRevistas());
-        if (adicional.getActivo() != adicionalDto.getActivo() && adicionalDto.getActivo() != null)
-            adicional.setActivo(adicionalDto.getActivo());
+
         return adicional;
 
     }
@@ -116,7 +116,7 @@ public class AdicionalController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AdicionalDto adicionalDto) {
-        if (!adicionalService.existsById(id))
+        if (!adicionalService.activo(id))
             return new ResponseEntity(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);

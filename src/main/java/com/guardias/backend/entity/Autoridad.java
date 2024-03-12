@@ -48,6 +48,10 @@ public class Autoridad {
                         "observacion", "region", "esCabecera", "admitePasiva", "caps" })
         private Efector efector;
 
+        public Efector getEfector() {
+                return efector;
+        }
+
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_persona")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "novedadesPersonales", "suplentes",

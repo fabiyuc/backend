@@ -21,10 +21,8 @@ public class AutoridadDto {
 
     private LocalDate fechaFinal;
 
-    @NotBlank
     private boolean esActual;
 
-    @NotBlank
     private boolean esRegional;
 
     private boolean activo;
