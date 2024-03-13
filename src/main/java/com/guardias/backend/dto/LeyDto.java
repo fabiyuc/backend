@@ -1,8 +1,9 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-import com.guardias.backend.entity.TipoLey;
+
 import com.guardias.backend.enums.EstadoLey;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,19 +15,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeyDto {
     @NotEmpty
-    String numero;
+    private String numero;
     @NotEmpty
-    String denominacion;
-    String detalle;
+    private String denominacion;
+    private String detalle;
     @NotEmpty
-    EstadoLey estado;
+    private EstadoLey estado;
     @NotEmpty
-    LocalDate fechaAlta;
-    LocalDate fechaBaja;
-    LocalDate fechaModificacion;
-    String motivoModificacion;
+    private LocalDate fechaAlta;
+    private LocalDate fechaBaja;
+    private LocalDate fechaModificacion;
+    private String motivoModificacion;
     private boolean activo;
+    private Long idNovedadPersonal;
 
     @NotNull
-    TipoLey ley;
+    Long idTipoLey;
 }

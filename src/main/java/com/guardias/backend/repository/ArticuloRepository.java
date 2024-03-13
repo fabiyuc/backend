@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Articulo;
+import com.guardias.backend.entity.TipoLey;
 
 @Repository
 public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
@@ -19,9 +20,12 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
     Optional<Articulo> findByDenominacion(String denominacion);
 
+    Optional<Articulo> findByTipoLey(TipoLey tipoLey);
+
     boolean existsByNumero(String numero);
 
     boolean existsByDenominacion(String denominacion);
 
     List<Articulo> findByActivoTrue();
+
 }

@@ -60,15 +60,14 @@ public class ArticuloController {
 
         if (articulo.getArticulo() != articuloDto.getArticulo() && articuloDto.getArticulo() != null)
             articulo.setArticulo(articuloDto.getArticulo());
+
         if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null
                 && !articuloDto.getSubArticulos().isEmpty())
             articulo.setSubArticulos(articuloDto.getSubArticulos());
+
         if (articulo.getIncisos() != articuloDto.getIncisos() && articuloDto.getIncisos() != null
                 && !articuloDto.getIncisos().isEmpty())
             articulo.setIncisos(articuloDto.getIncisos());
-        if (articulo.getNovedadPersonal() != articuloDto.getNovedadPersonal()
-                && articuloDto.getNovedadPersonal() != null)
-            articulo.setNovedadPersonal(articuloDto.getNovedadPersonal());
 
         return articulo;
     }
