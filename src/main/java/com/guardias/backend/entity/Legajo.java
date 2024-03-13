@@ -44,7 +44,7 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_profesion")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "especialidades" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
   private Profesion profesion;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -59,25 +59,22 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_udo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo", "domicilio", "telefono", "estado",
-      "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo"})
   private Efector udo;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
+  private Set<Efector> efectores = new HashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_persona")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades", "especialidades",
-      "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
   private Person persona;
 
   @OneToOne(mappedBy = "legajo")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
   private Cargo cargo;
-
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "domicilio", "telefono", "estado",
-      "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
-  private Set<Efector> efectores = new HashSet<>();
 
   @Override
   public boolean equals(Object obj) {

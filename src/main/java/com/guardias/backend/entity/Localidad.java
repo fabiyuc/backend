@@ -36,11 +36,11 @@ public class Localidad {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_departamento")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades"})
     Departamento departamento;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "localidad", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidad" })
     private Set<Efector> efectores;
 
     @Override

@@ -1,6 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.util.List;
+import java.util.Set;
+
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.NovedadPersonal;
@@ -14,7 +16,7 @@ import lombok.EqualsAndHashCode;
 public class IncisoDto extends LeyDto {
 
     Inciso inciso;
-    List<Inciso> subIncisos;
+    Set<Inciso> subIncisos;
     Articulo articulo;
     NovedadPersonal novedadPersonal;
 }

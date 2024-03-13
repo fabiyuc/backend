@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -27,11 +28,11 @@ public class Ministerio extends Efector {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_cabecera")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ministerios", "localidad", "cabecera" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ministerios"})
     Ministerio cabecera;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "ministerios", "localidad", "cabecera" })
-    List<Ministerio> ministerios;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera"})
+    private Set<Ministerio> ministerios;
 
 }

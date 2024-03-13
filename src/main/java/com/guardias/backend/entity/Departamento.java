@@ -38,7 +38,7 @@ public class Departamento {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_provincia")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamentos", "gentilicio" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamentos"})
     Provincia provincia;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)

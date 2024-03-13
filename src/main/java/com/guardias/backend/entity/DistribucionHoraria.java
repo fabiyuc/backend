@@ -52,8 +52,7 @@ public abstract class DistribucionHoraria {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias", "dni", "cuil",
-            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias"})
     private Person persona;
 
     @Override

@@ -49,33 +49,38 @@ public abstract class Efector {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores"})
     private Region region;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_localidad")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "departamento" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private Localidad localidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
     private Set<DistribucionHoraria> distribucionesHorarias;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "udo" })
     private Set<Legajo> legajosUdo = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private Set<Legajo> legajos = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private Set<Notificacion> notificaciones;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
     private Set<Autoridad> autoridades;
+
+    /* por alguna razon no estaba la siguiente relacion? */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
+    private Set<RegistroActividad> registrosActividades;
 
     @Override
     public boolean equals(Object obj) {

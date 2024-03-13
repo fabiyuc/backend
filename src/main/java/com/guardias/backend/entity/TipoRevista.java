@@ -1,6 +1,9 @@
 package com.guardias.backend.entity;
 
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,5 +32,6 @@ public class TipoRevista {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoRevista", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tipoRevista" })
     private Set<Revista> revistas;
 }

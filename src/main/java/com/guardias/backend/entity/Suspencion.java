@@ -2,6 +2,9 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,5 +34,6 @@ public class Suspencion {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "suspencion", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suspencion" })
     private Set<Legajo> legajos;
 }

@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -27,20 +28,21 @@ public class Inciso extends Ley {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_inciso")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subIncisos", "inciso" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subIncisos"})
     private Inciso inciso;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso" })
-    private List<Inciso> subIncisos;
+    private Set<Inciso> subIncisos;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_articulo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos", "articulo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos"})
     private Articulo articulo;
 
     @OneToOne
     @JoinColumn(name = "id_novedad_personal")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso" })
     private NovedadPersonal novedadPersonal;
 
 }
