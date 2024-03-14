@@ -2,10 +2,8 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
-import com.guardias.backend.entity.Efector;
-import com.guardias.backend.entity.Person;
-
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -16,9 +14,9 @@ public class AutoridadDto {
     @NotBlank
     private String nombre;
 
-    @NotBlank
+    @NotNull
     private LocalDate fechaInicio;
-
+    @NotNull
     private LocalDate fechaFinal;
 
     private boolean esActual;
@@ -27,9 +25,12 @@ public class AutoridadDto {
 
     private boolean activo;
 
-    @NotBlank
-    private Efector efector;
+    @NotNull
+    private Long idEfector;
+    // private Efector efector;
 
-    private Person persona;
+    @NotNull
+    private Long idPersona;
+    // private Person persona;
 
 }
