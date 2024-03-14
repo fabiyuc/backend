@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.ArticuloDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
+import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
 import com.guardias.backend.service.ArticuloService;
-
-import jakarta.persistence.EntityNotFoundException;
+import com.guardias.backend.service.IncisoService;
 
 @Controller
 @RequestMapping("/articulo")
@@ -30,6 +32,9 @@ import jakarta.persistence.EntityNotFoundException;
 public class ArticuloController {
     @Autowired
     ArticuloService articuloService;
+
+    @Autowired
+    IncisoService incisoService;
 
     @Autowired
     LeyController leyController;
@@ -73,22 +78,39 @@ public class ArticuloController {
             articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
         }
 
-        if (articulo.getSubArticulos() != null) {
-            for (Articulo suarArticulo : articulo.getSubArticulos()) {
-                // Recorrer el DTO ver que no esten repetidos
+        if (articulo.getSubArticulos() == null || articuloDto.getIdSubArticulos() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            for (Articulo articuloList : articulo.getSubArticulos()) {
+                for (Long id : articuloDto.getIdSubArticulos()) {
+                    if (!articuloList.getId().equals(id)) {
+                        idList.add(id);
+                    }
+                }
             }
-        } else if (articuloDto.getIdArticulo() != null) {
-            // poner subarticulos en
+
+            Set<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
+            for (Long id : idsToAdd) {
+                articulo.getSubArticulos().add(articuloService.findById(id).get());
+                articuloService.findById(id).get().setArticulo(articulo);
+            }
         }
 
-        if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null
-                && !articuloDto.getSubArticulos().isEmpty())
-            articulo.setSubArticulos(articuloDto.getSubArticulos());
+        if (articulo.getIncisos() == null || articuloDto.getIdIncisos() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            for (Inciso incisoList : articulo.getIncisos()) {
+                for (Long id : articuloDto.getIdIncisos()) {
+                    if (!incisoList.getId().equals(id)) {
+                        idList.add(id);
+                    }
+                }
+            }
 
-        if (articulo.getIncisos() != articuloDto.getIncisos() && articuloDto.getIncisos() != null
-                && !articuloDto.getIncisos().isEmpty())
-            articulo.setIncisos(articuloDto.getIncisos());
-
+            Set<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdIncisos() : idList;
+            for (Long id : idsToAdd) {
+                articulo.getIncisos().add(incisoService.findById(id).get());
+                incisoService.findById(id).get().setArticulo(articulo);
+            }
+        }
         return articulo;
     }
 
@@ -119,38 +141,6 @@ public class ArticuloController {
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
-        }
-    }
-
-    @PostMapping("/{idArticulo}/agregarInciso/{idInciso}")
-    public ResponseEntity<?> agregarInciso(@PathVariable("idArticulo") Long idArticulo,
-            @PathVariable("idInciso") Long idInciso) {
-        try {
-            articuloService.agregarInciso(idArticulo, idInciso);
-
-            return new ResponseEntity<>(new Mensaje("Inciso agregado al articulo correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el articlo con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el inciso agregado al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PostMapping("/{idArticulo}/addSubArticulo/{idSubArticulo}")
-    public ResponseEntity<?> agregarSubArticulo(@PathVariable("idArticulo") Long idArticulo,
-            @PathVariable("idSubArticulo") Long idSubArticulo) {
-        try {
-            articuloService.agregarSubArticulo(idArticulo, idSubArticulo);
-
-            return new ResponseEntity<>(new Mensaje("SubArticulo agregado al articulo correctamente"), HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el articlo con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el SubArticulo al articulo "),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -1,6 +1,6 @@
 package com.guardias.backend.entity;
 
-import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -31,9 +31,9 @@ public class Articulo extends Ley {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subArticulos" })
-    private List<Articulo> subArticulos;
+    private Set<Articulo> subArticulos;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos" })
-    private List<Inciso> incisos;
+    private Set<Inciso> incisos;
 }

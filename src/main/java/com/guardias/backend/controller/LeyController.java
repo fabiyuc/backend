@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -86,21 +87,21 @@ public class LeyController {
         }
 
         if (ley.getNovedadesPersonales() == null || leyDto.getIdNovedadesPersonales() != null) {
-            if (!existeNovedadPersonal(ley.getNovedadesPersonales(), leyDto.getIdTipoLey()))
-                for (Long idNovedadPersonal : leyDto.getIdNovedadesPersonales()) {
-                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(idNovedadPersonal).get());
+            Set<Long> idList = new HashSet<Long>();
+            for (NovedadPersonal novedadPersonal : ley.getNovedadesPersonales()) {
+                for (Long id : leyDto.getIdNovedadesPersonales()) {
+                    if (!novedadPersonal.getId().equals(id)) {
+                        idList.add(id);
+                    }
                 }
+            }
+
+            Set<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
+            for (Long id : idsToAdd) {
+                ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                novedadPersonalService.findById(id).get().setLey(ley);
+            }
         }
         return ley;
     }
-
-    public boolean existeNovedadPersonal(Set<NovedadPersonal> novedadesPersonales, Long idBuscado) {
-        for (NovedadPersonal novedadPersonal : novedadesPersonales) {
-            if (novedadPersonal.getId().equals(idBuscado)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
