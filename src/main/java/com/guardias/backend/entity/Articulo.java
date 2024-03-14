@@ -29,6 +29,7 @@ public class Articulo extends Ley {
     private Articulo articulo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
+    //si lo quito al ignore trae igualmente pero si hago igual en ministerio da error
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "articulo" })
     private List<Articulo> subArticulos;
 

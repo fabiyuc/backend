@@ -31,7 +31,8 @@ public class Region {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region"})
+    /* @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region", "localidad", "distribucionesHorarias", "legajosUdo","autoridades","legajos", "notificaciones" }) */
+    @JsonIgnore
     private Set<Efector> efectores;
 
     @Override

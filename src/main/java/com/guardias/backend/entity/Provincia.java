@@ -38,7 +38,7 @@ public class Provincia {
     Pais pais;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "provincia", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "provincia", "localidades"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "provincia"})
     List<Departamento> departamentos;
 
 }
