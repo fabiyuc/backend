@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,10 +77,16 @@ public class ArticuloController {
 
         if (articulo.getSubArticulos() != null) {
             for (Articulo suarArticulo : articulo.getSubArticulos()) {
-                // Recorrer el DTO ver que no esten repetidos
+                Set<Articulo> listArticulos = new HashSet<Articulo>();
+
+                // Recorrer el DTO ver que no esten repetidos, si no estan, agregarlos a una
+                // lista auxiliar para
+                // luego meterlos en la lista de getSubArticulos
             }
         } else if (articuloDto.getIdArticulo() != null) {
-            // poner subarticulos en
+            for (iterable_type iterable_element : iterable) {
+                // recorrer el getIdArticulo agregando los elementos a getSubArticulos
+            }
         }
 
         if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null

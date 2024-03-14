@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -86,10 +87,20 @@ public class LeyController {
         }
 
         if (ley.getNovedadesPersonales() == null || leyDto.getIdNovedadesPersonales() != null) {
-            if (!existeNovedadPersonal(ley.getNovedadesPersonales(), leyDto.getIdTipoLey()))
-                for (Long idNovedadPersonal : leyDto.getIdNovedadesPersonales()) {
-                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(idNovedadPersonal).get());
+            Set<Long> idList = new HashSet<Long>();
+            for (NovedadPersonal novedadPersonal : ley.getNovedadesPersonales()) {
+                for (Long id : leyDto.getIdNovedadesPersonales()) {
+                    if (!novedadPersonal.getId().equals(id)) {
+                        idList.add(id);
+                    }
                 }
+
+                if (idList.size() > 0) {
+                    for (Long id : idList) {
+                        ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                    }
+                }
+            }
         }
         return ley;
     }
