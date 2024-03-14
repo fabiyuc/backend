@@ -1,5 +1,6 @@
 package com.guardias.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoCaps;
 
@@ -25,7 +26,20 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
 public class Caps extends Efector {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cabecera")
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "caps" })
+    @JsonBackReference
+    private Hospital cabecera;
+
+    @Column(columnDefinition = "int default 1")
+    private int areaProgramatica;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_caps", columnDefinition = "VARCHAR(25)")
+    private TipoCaps tipoCaps;
+
+   /*  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_cabecera")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "caps" })
     private Hospital cabecera;
@@ -36,5 +50,5 @@ public class Caps extends Efector {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_caps", columnDefinition = "VARCHAR(25)")
     private TipoCaps tipoCaps;
-
+ */
 }

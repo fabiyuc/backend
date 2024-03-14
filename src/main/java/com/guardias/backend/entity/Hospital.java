@@ -3,7 +3,9 @@ package com.guardias.backend.entity;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -28,7 +30,17 @@ public class Hospital extends Efector {
     private int nivelComplejidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })
+    //@JsonIgnoreProperties("cabecera")
+    //@JsonManagedReference
+    @JsonIgnore
     private Set<Caps> caps;
+
+    /* private boolean esCabecera;
+    private boolean admitePasiva;
+    private int nivelComplejidad;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })
+    private Set<Caps> caps; */
 
 }

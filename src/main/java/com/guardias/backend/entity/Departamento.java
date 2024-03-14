@@ -41,8 +41,56 @@ public class Departamento {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamentos"})
     Provincia provincia;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
+    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamento", "efectores" })
-    List<Localidad> localidades;
+    List<Localidad> localidades; */
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Departamento other = (Departamento) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (nombre == null) {
+            if (other.nombre != null)
+                return false;
+        } else if (!nombre.equals(other.nombre))
+            return false;
+        if (codigoPostal == null) {
+            if (other.codigoPostal != null)
+                return false;
+        } else if (!codigoPostal.equals(other.codigoPostal))
+            return false;
+        if (provincia == null) {
+            if (other.provincia != null)
+                return false;
+        } else if (!provincia.equals(other.provincia))
+            return false;
+        /* if (localidades == null) {
+            if (other.localidades != null)
+                return false;
+        } else if (!localidades.equals(other.localidades))
+            return false; */
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
+        result = prime * result + ((provincia == null) ? 0 : provincia.hashCode());
+        return result;
+    }
 
 }

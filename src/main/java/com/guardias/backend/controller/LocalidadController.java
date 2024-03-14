@@ -70,7 +70,7 @@ public class LocalidadController {
 
         Localidad localidad = new Localidad();
         localidad.setNombre(localidadDto.getNombre());
-        localidad.setDepartamento(localidadDto.getDepartamento());
+        //localidad.setDepartamento(localidadDto.getDepartamento());
 
         localidadService.save(localidad);
         return new ResponseEntity(new Mensaje("Localidad creada"), HttpStatus.OK);
@@ -98,9 +98,9 @@ public class LocalidadController {
 
         if (!localidadDto.getNombre().equals(localidad.getNombre()))
             localidad.setNombre(localidadDto.getNombre());
-        if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
+        /* if (!localidadDto.getDepartamento().equals(localidad.getDepartamento()))
             localidad.setDepartamento(localidadDto.getDepartamento());
-
+ */
         localidadService.save(localidad);
         return new ResponseEntity(new Mensaje("Localidad modificada"), HttpStatus.OK);
     }

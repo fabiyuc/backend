@@ -3,6 +3,8 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
@@ -66,7 +68,9 @@ public class RegistroActividad {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades"})
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades"})
+    //@JsonBackReference
+    @JsonIgnore
     private Efector efector;
 
 }

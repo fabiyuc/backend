@@ -64,8 +64,8 @@ public class Legajo {
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
-  private Set<Efector> efectores = new HashSet<>();
+  @JsonIgnoreProperties({ "legajos"})
+  private Set<Efector> efectores ;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_persona")

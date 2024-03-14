@@ -1,11 +1,19 @@
 package com.guardias.backend.entity;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +28,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Region {
+@JsonIdentityInfo(
+    generator= ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
+public class Region implements java.io.Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,41 +41,17 @@ public class Region {
     private String nombre;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @OneToMany( mappedBy = "region")
     /* @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region", "localidad", "distribucionesHorarias", "legajosUdo","autoridades","legajos", "notificaciones" }) */
-    @JsonIgnore
-    private Set<Efector> efectores;
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region"})
+    //@JsonIgnore
+    
+    //@JsonIgnoreProperties("efectores")
+    //@JsonIgnore
+    
+    private List<Efector> efectoresSet = new ArrayList<Efector>();
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Region other = (Region) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (nombre == null) {
-            if (other.nombre != null)
-                return false;
-        } else if (!nombre.equals(other.nombre))
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-        return result;
-    }
+      
 
 }

@@ -57,6 +57,6 @@ public class Notificacion {
     @JoinTable(
         name = "notificacion_efector", 
         joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "efector_id"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "notificaciones"})
+    @JsonIgnoreProperties("notificaciones")
     private Set<Efector> efectores;
 }

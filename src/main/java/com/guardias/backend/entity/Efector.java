@@ -3,8 +3,15 @@ package com.guardias.backend.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.ManyToAny;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerator;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -30,7 +37,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @SequenceGenerator(name = "efector_sequence", sequenceName = "efector_sequence", allocationSize = 1)
-public abstract class Efector {
+@JsonIdentityInfo(
+    generator= ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
+public abstract class Efector implements java.io.Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "efector_sequence")
@@ -46,77 +57,49 @@ public abstract class Efector {
     private boolean activo;
 
     private String observacion;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "id_region")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores"})
+    /* @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores"}) */
+    
     private Region region;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "id_localidad")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private Localidad localidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
+    //@JsonIgnoreProperties({ "efector" })
+    @JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "udo" })
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "udo" })
+    @JsonIgnore
     private Set<Legajo> legajosUdo = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
-    private Set<Legajo> legajos = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
+    //@JsonIgnoreProperties({ "efectores" })
+    @JsonIgnore
+    private Set<Legajo> legajos;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
+    @JsonIgnore
     private Set<Notificacion> notificaciones;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
+    @JsonIgnore
     private Set<Autoridad> autoridades;
 
     /* por alguna razon no estaba la siguiente relacion? */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
+    //@JsonManagedReference
+    @JsonIgnore
     private Set<RegistroActividad> registrosActividades;
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Efector other = (Efector) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (nombre == null) {
-            if (other.nombre != null)
-                return false;
-        } else if (!nombre.equals(other.nombre))
-            return false;
-        if (domicilio == null) {
-            if (other.domicilio != null)
-                return false;
-        } else if (!domicilio.equals(other.domicilio))
-            return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-        result = prime * result + ((domicilio == null) ? 0 : domicilio.hashCode());
-        return result;
-    }
+    
 
 }

@@ -1,5 +1,6 @@
 package com.guardias.backend.dto;
 
+import java.util.List;
 import java.util.Set;
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.entity.Efector;
@@ -17,6 +18,6 @@ public class LocalidadDto {
     Departamento departamento;
     private boolean activo;
 
-    private Set<Efector> efectores;
+    private List<Efector> efectores;
 
 }
