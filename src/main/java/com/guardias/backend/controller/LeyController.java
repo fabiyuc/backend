@@ -1,5 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.Objects;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,13 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.LeyDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Ley;
+import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.LeyService;
+import com.guardias.backend.service.NovedadPersonalService;
+import com.guardias.backend.service.TipoLeyService;
 
 @RestController
 public class LeyController {
 
     @Autowired
     LeyService leyService;
+    @Autowired
+    TipoLeyService tipoLeyService;
+    @Autowired
+    NovedadPersonalService novedadPersonalService;
 
     // TODO VER que esta validacion debe hacerse en el update teniendo en cuenta q
     // el id sea diferente!!
@@ -68,7 +78,29 @@ public class LeyController {
                 && !leyDto.getMotivoModificacion().isEmpty())
             ley.setMotivoModificacion(leyDto.getMotivoModificacion());
 
+        if (ley.getTipoLey() == null ||
+                (leyDto.getIdTipoLey() != null &&
+                        !Objects.equals(ley.getTipoLey().getId(),
+                                leyDto.getIdTipoLey()))) {
+            ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
+        }
+
+        if (ley.getNovedadesPersonales() == null || leyDto.getIdNovedadesPersonales() != null) {
+            if (!existeNovedadPersonal(ley.getNovedadesPersonales(), leyDto.getIdTipoLey()))
+                for (Long idNovedadPersonal : leyDto.getIdNovedadesPersonales()) {
+                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(idNovedadPersonal).get());
+                }
+        }
         return ley;
+    }
+
+    public boolean existeNovedadPersonal(Set<NovedadPersonal> novedadesPersonales, Long idBuscado) {
+        for (NovedadPersonal novedadPersonal : novedadesPersonales) {
+            if (novedadPersonal.getId().equals(idBuscado)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -23,16 +23,6 @@ public class DistribucionHorariaController {
     @Autowired
     PersonService personService;
 
-    public ResponseEntity<?> validationsCreate(DistribucionHorariaDto distribucionHorariaDto) {
-        // validaciones propias del create
-        return validations(distribucionHorariaDto);
-    }
-
-    public ResponseEntity<?> validationsUpdate(DistribucionHorariaDto distribucionHorariaDto) {
-        // validaciones propias del update
-        return validations(distribucionHorariaDto);
-    }
-
     public ResponseEntity<?> validations(DistribucionHorariaDto distribucionHorariaDto) {
         if (distribucionHorariaDto.getDia() == null)
             return new ResponseEntity(new Mensaje("El dia es obligatorio"),

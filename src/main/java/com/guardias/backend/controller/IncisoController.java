@@ -62,9 +62,6 @@ public class IncisoController {
             inciso.setSubIncisos(incisoDto.getSubIncisos());
         if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
             inciso.setSubIncisos(incisoDto.getSubIncisos());
-        if (!incisoDto.getNovedadPersonal().equals(inciso.getNovedadPersonal()))
-            inciso.setNovedadPersonal(incisoDto.getNovedadPersonal());
-
         return inciso;
 
     }

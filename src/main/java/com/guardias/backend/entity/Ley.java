@@ -1,8 +1,12 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.EstadoLey;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +20,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -55,14 +59,14 @@ public abstract class Ley {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @OneToOne
-    @JoinColumn(name = "id_novedad_personal")
-    private NovedadPersonal novedadPersonal;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ley", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<NovedadPersonal> novedadesPersonales;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_ley")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes" })
-    private TipoLey ley;
+    private TipoLey tipoLey;
 
     @Override
     public boolean equals(Object obj) {

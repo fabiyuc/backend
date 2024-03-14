@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
 import com.guardias.backend.entity.NovedadPersonal;
@@ -147,7 +149,7 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("La novedad no exixte"), HttpStatus.NOT_FOUND);
 
         NovedadPersonal novedadPersonal = novedadPersonalService.findById(id).get();
-        novedadPersonal.setActiva(false);
+        novedadPersonal.setActual(false);
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity<>(new Mensaje("novedad eliminada correctamente"), HttpStatus.OK);
     }
