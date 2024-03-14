@@ -85,9 +85,11 @@ public class LeyController {
             ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
         }
 
-        if (ley.getNovedadesPersonales() == null || leyDto.getIdNovedadPersonal() != null) {
+        if (ley.getNovedadesPersonales() == null || leyDto.getIdNovedadesPersonales() != null) {
             if (!existeNovedadPersonal(ley.getNovedadesPersonales(), leyDto.getIdTipoLey()))
-                ley.getNovedadesPersonales().add(novedadPersonalService.findById(leyDto.getIdTipoLey()).get());
+                for (Long idNovedadPersonal : leyDto.getIdNovedadesPersonales()) {
+                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(idNovedadPersonal).get());
+                }
         }
         return ley;
     }

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -58,8 +59,27 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        if (articulo.getArticulo() != articuloDto.getArticulo() && articuloDto.getArticulo() != null)
-            articulo.setArticulo(articuloDto.getArticulo());
+        /*
+         * if (ley.getTipoLey() == null ||
+         * (leyDto.getIdTipoLey() != null &&
+         * !Objects.equals(ley.getTipoLey().getId(),
+         * leyDto.getIdTipoLey()))) {
+         * ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
+         * }
+         */
+
+        if (articulo.getArticulo() == null || (articuloDto.getIdArticulo() == null
+                && !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo()))) {
+            articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
+        }
+
+        if (articulo.getSubArticulos() != null) {
+            for (Articulo suarArticulo : articulo.getSubArticulos()) {
+                // Recorrer el DTO ver que no esten repetidos
+            }
+        } else if (articuloDto.getIdArticulo() != null) {
+            // poner subarticulos en
+        }
 
         if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null
                 && !articuloDto.getSubArticulos().isEmpty())
