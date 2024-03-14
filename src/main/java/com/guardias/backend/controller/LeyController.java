@@ -94,11 +94,15 @@ public class LeyController {
                         idList.add(id);
                     }
                 }
+            }
 
-                if (idList.size() > 0) {
-                    for (Long id : idList) {
-                        ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                    }
+            if (idList.size() > 0) {
+                for (Long id : idList) {
+                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                }
+            } else {
+                for (Long id : leyDto.getIdNovedadesPersonales()) {
+                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
                 }
             }
         }
