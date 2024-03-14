@@ -99,10 +99,12 @@ public class LeyController {
             if (idList.size() > 0) {
                 for (Long id : idList) {
                     ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                    novedadPersonalService.findById(id).get().setLey(ley);
                 }
             } else {
                 for (Long id : leyDto.getIdNovedadesPersonales()) {
                     ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                    novedadPersonalService.findById(id).get().setLey(ley);
                 }
             }
         }

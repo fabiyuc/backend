@@ -75,23 +75,25 @@ public class ArticuloController {
             articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
         }
 
-        if (articulo.getSubArticulos() != null) {
-            for (Articulo suarArticulo : articulo.getSubArticulos()) {
-                Set<Articulo> listArticulos = new HashSet<Articulo>();
-
-                // Recorrer el DTO ver que no esten repetidos, si no estan, agregarlos a una
-                // lista auxiliar para
-                // luego meterlos en la lista de getSubArticulos
+        if (articulo.getSubArticulos() == null || articuloDto.getIdSubArticulos() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            for (Articulo articuloList : articulo.getSubArticulos()) {
+                for (Long id : articuloDto.getIdSubArticulos()) {
+                    if (!articuloList.getId().equals(id)) {
+                        idList.add(id);
+                    }
+                }
             }
-        } else if (articuloDto.getIdArticulo() != null) {
-            for (iterable_type iterable_element : iterable) {
-                // recorrer el getIdArticulo agregando los elementos a getSubArticulos
+            if (idList.size() > 0) {
+                for (Long id : idList) {
+                    articulo.getSubArticulos().add(articuloService.findById(id).get());
+                }
+            } else {
+                for (Long id : articuloDto.getIdSubArticulos()) {
+                    articulo.getSubArticulos().add(articuloService.findById(id).get());
+                }
             }
         }
-
-        if (articulo.getSubArticulos() != articuloDto.getSubArticulos() && articuloDto.getSubArticulos() != null
-                && !articuloDto.getSubArticulos().isEmpty())
-            articulo.setSubArticulos(articuloDto.getSubArticulos());
 
         if (articulo.getIncisos() != articuloDto.getIncisos() && articuloDto.getIncisos() != null
                 && !articuloDto.getIncisos().isEmpty())
