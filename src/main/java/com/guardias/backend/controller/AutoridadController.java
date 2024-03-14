@@ -167,9 +167,9 @@ public class AutoridadController {
         if (autoridadDto.getFechaFinal() != autoridad.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
 
-        autoridadDto.setEsActual(autoridadDto.isEsActual());
+        autoridad.setEsActual(autoridadDto.isEsActual());
 
-        autoridadDto.setEsRegional(autoridadDto.isEsRegional());
+        autoridad.setEsRegional(autoridadDto.isEsRegional());
 
         if (autoridad.getEfector() == null ||
                 (autoridadDto.getIdEfector() != null &&
@@ -194,6 +194,7 @@ public class AutoridadController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
+            autoridad.setEsActual(true);
             autoridad.setActivo(true);
             autoridadService.save(autoridad);
 
