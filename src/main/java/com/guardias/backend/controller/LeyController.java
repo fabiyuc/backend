@@ -108,14 +108,4 @@ public class LeyController {
         }
         return ley;
     }
-
-    public boolean existeNovedadPersonal(Set<NovedadPersonal> novedadesPersonales, Long idBuscado) {
-        for (NovedadPersonal novedadPersonal : novedadesPersonales) {
-            if (novedadPersonal.getId().equals(idBuscado)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
