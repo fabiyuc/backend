@@ -15,7 +15,6 @@ import lombok.EqualsAndHashCode;
 public class IncisoDto extends LeyDto {
 
     private Inciso inciso;
-    private Set<Inciso> subIncisos;
+    private Set<Long> idSubIncisos;
     private Articulo articulo;
-    private Long idNovedadPersonal;
 }

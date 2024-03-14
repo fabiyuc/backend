@@ -96,16 +96,10 @@ public class LeyController {
                 }
             }
 
-            if (idList.size() > 0) {
-                for (Long id : idList) {
-                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                    novedadPersonalService.findById(id).get().setLey(ley);
-                }
-            } else {
-                for (Long id : leyDto.getIdNovedadesPersonales()) {
-                    ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                    novedadPersonalService.findById(id).get().setLey(ley);
-                }
+            Set<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
+            for (Long id : idsToAdd) {
+                ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                novedadPersonalService.findById(id).get().setLey(ley);
             }
         }
         return ley;

@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,14 +58,27 @@ public class IncisoController {
         inciso = (Inciso) ley;
 
         // TODO Verificar esto!!!
-        if (!incisoDto.getInciso().equals(inciso.getInciso()))
-            inciso.setInciso(incisoDto.getInciso());
-        if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
-            inciso.setSubIncisos(incisoDto.getSubIncisos());
-        if (!incisoDto.getSubIncisos().equals(inciso.getSubIncisos()))
-            inciso.setSubIncisos(incisoDto.getSubIncisos());
-        return inciso;
+        if ((inciso.getArticulo() != incisoDto.getArticulo()) && incisoDto.getArticulo() != null) {
+            incisoDto.setArticulo(incisoDto.getArticulo());
+        }
 
+        if (inciso.getSubIncisos() == null || incisoDto.getIdSubIncisos() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            for (Inciso incisoList : inciso.getSubIncisos()) {
+                for (Long id : incisoDto.getIdSubIncisos()) {
+                    if (!incisoList.getId().equals(id)) {
+                        idList.add(id);
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
+            for (Long id : idsToAdd) {
+                incisoService.findById(id).get().setInciso(inciso);
+                inciso.getSubIncisos().add(incisoService.findById(id).get());
+            }
+        }
+
+        return inciso;
     }
 
     @PostMapping("/create")
