@@ -1,8 +1,12 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,6 +26,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(
+    generator= ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
 public class Departamento {
 
     @Id
@@ -41,9 +49,10 @@ public class Departamento {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamentos"})
     Provincia provincia;
 
-    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamento", "efectores" })
-    List<Localidad> localidades; */
+    @OneToMany(mappedBy = "departamento")
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamento", "efectores" })
+    @JsonManagedReference
+    List<Localidad> localidades = new ArrayList<Localidad>();
 
 
     @Override

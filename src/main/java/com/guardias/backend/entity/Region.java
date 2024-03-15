@@ -41,6 +41,8 @@ public class Region implements java.io.Serializable{
     private String nombre;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
+
+    
     @JsonManagedReference
     @OneToMany( mappedBy = "region")
     /* @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region", "localidad", "distribucionesHorarias", "legajosUdo","autoridades","legajos", "notificaciones" }) */

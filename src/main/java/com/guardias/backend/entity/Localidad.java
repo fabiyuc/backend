@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,7 +28,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Localidad {
+@JsonIdentityInfo(
+    generator= ObjectIdGenerators.PropertyGenerator.class,
+    property = "id"
+)
+public class Localidad implements java.io.Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,13 +43,14 @@ public class Localidad {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "id_departamento")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades"})
-    Departamento departamento; */
+    @JsonBackReference
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades"})
+    Departamento departamento;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "localidad", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidad" })
+    //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidad" })
     private List<Efector> efectores = new ArrayList<Efector>();
 
     
