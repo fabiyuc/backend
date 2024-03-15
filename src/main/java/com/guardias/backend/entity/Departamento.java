@@ -51,7 +51,7 @@ public class Departamento {
 
     @OneToMany(mappedBy = "departamento")
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamento", "efectores" })
-    @JsonManagedReference
+    //@JsonManagedReference
     List<Localidad> localidades = new ArrayList<Localidad>();
 
 

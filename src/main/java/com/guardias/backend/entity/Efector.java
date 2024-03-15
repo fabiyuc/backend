@@ -41,7 +41,7 @@ import lombok.NoArgsConstructor;
     generator= ObjectIdGenerators.PropertyGenerator.class,
     property = "id"
 )
-public abstract class Efector implements java.io.Serializable{
+public abstract class Efector {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "efector_sequence")
@@ -57,7 +57,7 @@ public abstract class Efector implements java.io.Serializable{
     private boolean activo;
 
     private String observacion;
-    @JsonBackReference
+    //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "id_region")
     /* @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores"}) */

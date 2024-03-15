@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
     generator= ObjectIdGenerators.PropertyGenerator.class,
     property = "id"
 )
-public class Localidad implements java.io.Serializable{
+public class Localidad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +45,7 @@ public class Localidad implements java.io.Serializable{
 
     @ManyToOne
     @JoinColumn(name = "id_departamento")
-    @JsonBackReference
+    //@JsonBackReference
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades"})
     Departamento departamento;
 

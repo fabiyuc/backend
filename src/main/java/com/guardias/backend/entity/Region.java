@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
     generator= ObjectIdGenerators.PropertyGenerator.class,
     property = "id"
 )
-public class Region implements java.io.Serializable{
+public class Region {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,8 +42,8 @@ public class Region implements java.io.Serializable{
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    
-    @JsonManagedReference
+
+    //@JsonManagedReference
     @OneToMany( mappedBy = "region")
     /* @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region", "localidad", "distribucionesHorarias", "legajosUdo","autoridades","legajos", "notificaciones" }) */
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region"})
