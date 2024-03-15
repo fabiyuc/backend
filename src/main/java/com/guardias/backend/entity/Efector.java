@@ -69,35 +69,36 @@ public abstract class Efector implements java.io.Serializable{
     private Localidad localidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    //@JsonIgnoreProperties({ "efector" })
-    @JsonIgnore
+    //puede estar el JsonIgnoreProperties de esta manera y no da error, ver si se puede usar para ignorar otros atriburos y traer menos datos
+    @JsonIgnoreProperties({ "efector" })
+    //@JsonIgnore
     private Set<DistribucionHoraria> distribucionesHorarias;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "udo" })
-    @JsonIgnore
+    //@JsonIgnore
     private Set<Legajo> legajosUdo = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores")
     //@JsonIgnoreProperties({ "efectores" })
-    @JsonIgnore
+    //@JsonIgnore
     private Set<Legajo> legajos;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
-    @JsonIgnore
+    //@JsonIgnore
     private Set<Notificacion> notificaciones;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
-    @JsonIgnore
+    //@JsonIgnore
     private Set<Autoridad> autoridades;
 
     /* por alguna razon no estaba la siguiente relacion? */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     //@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector" })
     //@JsonManagedReference
-    @JsonIgnore
+    //@JsonIgnore
     private Set<RegistroActividad> registrosActividades;
 
     
