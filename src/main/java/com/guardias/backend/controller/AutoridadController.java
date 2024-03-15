@@ -184,6 +184,7 @@ public class AutoridadController {
                                 autoridadDto.getIdPersona()))) {
             autoridad.setPersona(personService.findPerson(autoridadDto.getIdPersona()));
         }
+
         return autoridad;
     }
 
