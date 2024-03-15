@@ -60,19 +60,23 @@ public class IncisoController {
         Ley ley = leyController.createUpdate(inciso, incisoDto);
         inciso = (Inciso) ley;
 
-        if ((inciso.getArticulo().getId() != incisoDto.getIdArticulo()) && incisoDto.getIdArticulo() != null) {
+        if (inciso.getArticulo() != null && (inciso.getArticulo().getId() != incisoDto.getIdArticulo())
+                && incisoDto.getIdArticulo() != null) {
             inciso.setArticulo(articuloService.findById(incisoDto.getIdArticulo()).get());
         }
 
-        if (inciso.getSubIncisos() == null || incisoDto.getIdSubIncisos() != null) {
+        if (incisoDto.getIdSubIncisos() != null) {
             Set<Long> idList = new HashSet<Long>();
-            for (Inciso incisoList : inciso.getSubIncisos()) {
-                for (Long id : incisoDto.getIdSubIncisos()) {
-                    if (!incisoList.getId().equals(id)) {
-                        idList.add(id);
+            if (inciso.getSubIncisos() == null) {
+                for (Inciso incisoList : inciso.getSubIncisos()) {
+                    for (Long id : incisoDto.getIdSubIncisos()) {
+                        if (!incisoList.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
             }
+
             Set<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
             for (Long id : idsToAdd) {
                 incisoService.findById(id).get().setInciso(inciso);
