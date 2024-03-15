@@ -2,9 +2,6 @@ package com.guardias.backend.dto;
 
 import java.util.Set;
 
-import com.guardias.backend.entity.Articulo;
-import com.guardias.backend.entity.Inciso;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class IncisoDto extends LeyDto {
 
-    private Inciso inciso;
+    private Long idInciso;
     private Set<Long> idSubIncisos;
-    private Articulo articulo;
+    private Long idArticulo;
 }

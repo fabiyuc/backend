@@ -21,6 +21,7 @@ import com.guardias.backend.dto.IncisoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
+import com.guardias.backend.service.ArticuloService;
 import com.guardias.backend.service.IncisoService;
 
 @Controller
@@ -29,6 +30,8 @@ import com.guardias.backend.service.IncisoService;
 public class IncisoController {
     @Autowired
     IncisoService incisoService;
+    @Autowired
+    ArticuloService articuloService;
     @Autowired
     LeyController leyController;
 
@@ -57,9 +60,8 @@ public class IncisoController {
         Ley ley = leyController.createUpdate(inciso, incisoDto);
         inciso = (Inciso) ley;
 
-        // TODO Verificar esto!!!
-        if ((inciso.getArticulo() != incisoDto.getArticulo()) && incisoDto.getArticulo() != null) {
-            incisoDto.setArticulo(incisoDto.getArticulo());
+        if ((inciso.getArticulo().getId() != incisoDto.getIdArticulo()) && incisoDto.getIdArticulo() != null) {
+            inciso.setArticulo(articuloService.findById(incisoDto.getIdArticulo()).get());
         }
 
         if (inciso.getSubIncisos() == null || incisoDto.getIdSubIncisos() != null) {
