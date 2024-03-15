@@ -30,7 +30,8 @@ public class Inciso extends Ley {
     private Inciso inciso;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso", "subIncisos", "articulo", "denominacion",
+            "detalle", "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "tipoLey" })
     private Set<Inciso> subIncisos;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
