@@ -64,15 +64,6 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        /*
-         * if (ley.getTipoLey() == null ||
-         * (leyDto.getIdTipoLey() != null &&
-         * !Objects.equals(ley.getTipoLey().getId(),
-         * leyDto.getIdTipoLey()))) {
-         * ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
-         * }
-         */
-
         if (articulo.getArticulo() == null || (articuloDto.getIdArticulo() == null
                 && !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo()))) {
             articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
