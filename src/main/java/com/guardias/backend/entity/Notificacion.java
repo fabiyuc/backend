@@ -2,6 +2,9 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.guardias.backend.enums.TipoNotificacionEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -51,11 +54,9 @@ public class Notificacion {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaBaja;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "notificacion_region", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "region_id"))
-    private Set<Region> regiones;
-
+    @JsonManagedReference
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "notificacion_efector", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "efector_id"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "notificaciones"})
     private Set<Efector> efectores;
 }
