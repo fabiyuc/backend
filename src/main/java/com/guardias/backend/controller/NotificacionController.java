@@ -65,7 +65,7 @@ public class NotificacionController {
     public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto) {
         // Validaciones
 
-        if (StringUtils.isBlank(notificacionDto.getCategoria())) {
+        /* if (StringUtils.isBlank(notificacionDto.getCategoria())) {
             return new ResponseEntity<>(new Mensaje("La Categoria es obligatoria"), HttpStatus.BAD_REQUEST);
         }
 
@@ -83,7 +83,7 @@ public class NotificacionController {
         }
 
         if (notificacionDto.getUrl() == null)
-            return new ResponseEntity(new Mensaje("El Url es obligatorio"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El Url es obligatorio"), HttpStatus.BAD_REQUEST); */
 
         Notificacion notificacion = new Notificacion();
         notificacion.setTipo(notificacionDto.getTipo());
@@ -92,7 +92,7 @@ public class NotificacionController {
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
         notificacion.setActivo(notificacionDto.isActivo());
-        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+        //notificacion.setFechaBaja(notificacionDto.getFechaBaja());
 
         notificacionService.save(notificacion);
 
@@ -102,7 +102,7 @@ public class NotificacionController {
     // Método update
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody NotificacionDto notificacionDto) {
-        if (!notificacionService.existsById(id))
+        /* if (!notificacionService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         if (notificacionDto.getTipo() == null)
@@ -121,7 +121,7 @@ public class NotificacionController {
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (notificacionDto.getUrl() == null)
-            return new ResponseEntity(new Mensaje("El Url es obligatorio"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El Url es obligatorio"), HttpStatus.BAD_REQUEST); */
 
         Notificacion notificacion = notificacionService.findById(id).get();
         notificacion.setTipo(notificacionDto.getTipo());
@@ -130,7 +130,7 @@ public class NotificacionController {
         notificacion.setDetalle(notificacionDto.getDetalle());
         notificacion.setUrl(notificacionDto.getUrl());
         notificacion.setActivo(notificacionDto.isActivo());
-        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+        //notificacion.setFechaBaja(notificacionDto.getFechaBaja());
 
         notificacionService.save(notificacion);
 
