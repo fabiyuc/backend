@@ -78,12 +78,14 @@ public class ArticuloController {
             articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
         }
 
-        if (articulo.getSubArticulos() == null || articuloDto.getIdSubArticulos() != null) {
+        if (articuloDto.getIdSubArticulos() != null) {
             Set<Long> idList = new HashSet<Long>();
-            for (Articulo articuloList : articulo.getSubArticulos()) {
-                for (Long id : articuloDto.getIdSubArticulos()) {
-                    if (!articuloList.getId().equals(id)) {
-                        idList.add(id);
+            if (articulo.getSubArticulos() == null) {
+                for (Articulo articuloList : articulo.getSubArticulos()) {
+                    for (Long id : articuloDto.getIdSubArticulos()) {
+                        if (!articuloList.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
             }
@@ -95,12 +97,14 @@ public class ArticuloController {
             }
         }
 
-        if (articulo.getIncisos() == null || articuloDto.getIdIncisos() != null) {
+        if (articuloDto.getIdIncisos() != null) {
             Set<Long> idList = new HashSet<Long>();
-            for (Inciso incisoList : articulo.getIncisos()) {
-                for (Long id : articuloDto.getIdIncisos()) {
-                    if (!incisoList.getId().equals(id)) {
-                        idList.add(id);
+            if (articulo.getIncisos() == null) {
+                for (Inciso incisoList : articulo.getIncisos()) {
+                    for (Long id : articuloDto.getIdIncisos()) {
+                        if (!incisoList.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
             }
