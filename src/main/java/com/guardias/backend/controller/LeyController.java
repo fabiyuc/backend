@@ -86,12 +86,14 @@ public class LeyController {
             ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
         }
 
-        if (ley.getNovedadesPersonales() == null || leyDto.getIdNovedadesPersonales() != null) {
+        if (leyDto.getIdNovedadesPersonales() != null) {
             Set<Long> idList = new HashSet<Long>();
-            for (NovedadPersonal novedadPersonal : ley.getNovedadesPersonales()) {
-                for (Long id : leyDto.getIdNovedadesPersonales()) {
-                    if (!novedadPersonal.getId().equals(id)) {
-                        idList.add(id);
+            if (ley.getNovedadesPersonales() != null) {
+                for (NovedadPersonal novedadPersonal : ley.getNovedadesPersonales()) {
+                    for (Long id : leyDto.getIdNovedadesPersonales()) {
+                        if (!novedadPersonal.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
             }
@@ -102,6 +104,7 @@ public class LeyController {
                 novedadPersonalService.findById(id).get().setLey(ley);
             }
         }
+        ley.setActivo(true);
         return ley;
     }
 }

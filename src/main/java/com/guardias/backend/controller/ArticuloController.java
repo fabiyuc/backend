@@ -64,26 +64,19 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        /*
-         * if (ley.getTipoLey() == null ||
-         * (leyDto.getIdTipoLey() != null &&
-         * !Objects.equals(ley.getTipoLey().getId(),
-         * leyDto.getIdTipoLey()))) {
-         * ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
-         * }
-         */
-
         if (articulo.getArticulo() == null || (articuloDto.getIdArticulo() == null
                 && !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo()))) {
             articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
         }
 
-        if (articulo.getSubArticulos() == null || articuloDto.getIdSubArticulos() != null) {
+        if (articuloDto.getIdSubArticulos() != null) {
             Set<Long> idList = new HashSet<Long>();
-            for (Articulo articuloList : articulo.getSubArticulos()) {
-                for (Long id : articuloDto.getIdSubArticulos()) {
-                    if (!articuloList.getId().equals(id)) {
-                        idList.add(id);
+            if (articulo.getSubArticulos() == null) {
+                for (Articulo articuloList : articulo.getSubArticulos()) {
+                    for (Long id : articuloDto.getIdSubArticulos()) {
+                        if (!articuloList.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
             }
@@ -95,12 +88,14 @@ public class ArticuloController {
             }
         }
 
-        if (articulo.getIncisos() == null || articuloDto.getIdIncisos() != null) {
+        if (articuloDto.getIdIncisos() != null) {
             Set<Long> idList = new HashSet<Long>();
-            for (Inciso incisoList : articulo.getIncisos()) {
-                for (Long id : articuloDto.getIdIncisos()) {
-                    if (!incisoList.getId().equals(id)) {
-                        idList.add(id);
+            if (articulo.getIncisos() == null) {
+                for (Inciso incisoList : articulo.getIncisos()) {
+                    for (Long id : articuloDto.getIdIncisos()) {
+                        if (!incisoList.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
             }
