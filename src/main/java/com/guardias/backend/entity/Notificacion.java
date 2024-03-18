@@ -2,7 +2,6 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.guardias.backend.enums.TipoNotificacionEnum;
