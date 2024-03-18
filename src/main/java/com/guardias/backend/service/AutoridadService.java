@@ -55,6 +55,10 @@ public class AutoridadService {
         return autoridadRepository.findByNombre(nombre);
     }
 
+    public boolean existsByNombreAndIdNot(String nombre, Long id) {
+        return autoridadRepository.existsByNombreAndIdNot(nombre, id);
+    }
+
     public boolean existsById(Long id) {
         return autoridadRepository.existsById((Long) id);
     }

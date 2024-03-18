@@ -46,6 +46,8 @@ public interface AutoridadRepository extends JpaRepository<Autoridad, Long> {
 
     boolean existsByNombre(String nombre);
 
+    boolean existsByNombreAndIdNot(String nombre, Long id);
+
     List<Autoridad> findByActivo(boolean activo);
 
 }

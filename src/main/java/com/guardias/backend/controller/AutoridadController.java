@@ -135,39 +135,67 @@ public class AutoridadController {
      * }
      */
 
-    public ResponseEntity<?> validations(AutoridadDto autoridadDto) {
-        if (autoridadDto.getNombre() == null)
-            return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> validationsCreate(AutoridadDto autoridadDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
 
         if (autoridadService.existsByNombre(autoridadDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("El Nombre ya existe"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Mensaje>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
+        return respuestaValidaciones;
+    }
+
+    public ResponseEntity<?> validationsUpdate(AutoridadDto autoridadDto) {
+
+        // Verificar si la fecha de finalización es nula
+        if (autoridadDto.getFechaFinal() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de finalización es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        // Verificar si el ID del efector es nulo
+        if (autoridadDto.getIdEfector() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("El efector es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        // Verificar si el ID de la persona es nulo
+        if (autoridadDto.getIdPersona() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("La persona es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        // Todas las validaciones pasaron, retornar OK
+        return new ResponseEntity<>(new Mensaje("Validación exitosa"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> validations(AutoridadDto autoridadDto) {
+        if (autoridadDto.getNombre() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (autoridadService.existsByNombre(autoridadDto.getNombre()))
+            return new ResponseEntity<Mensaje>(new Mensaje("El Nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (autoridadDto.getFechaInicio() == null)
-            return new ResponseEntity<>(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de inicio es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
 
         if (autoridadDto.getFechaFinal() == null)
-            return new ResponseEntity<>(new Mensaje("La fecha de finalización es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de finalización es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
 
         if (autoridadDto.getIdEfector() == null)
-            return new ResponseEntity<>(new Mensaje("El efector es obligatorio"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Mensaje>(new Mensaje("El efector es obligatorio"), HttpStatus.BAD_REQUEST);
 
         if (autoridadDto.getIdPersona() == null)
-            return new ResponseEntity<>(new Mensaje("la persona es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Mensaje>(new Mensaje("la persona es obligatoria"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
-        if (autoridadDto.getNombre() != autoridad.getNombre() && autoridadDto.getNombre() != null)
+        if (!Objects.equals(autoridadDto.getNombre(), autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
 
-        if (autoridadDto.getFechaInicio() != autoridad.getFechaInicio() && autoridadDto.getFechaInicio() != null)
-            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
+        if (autoridad.getFechaInicio() != null)
+            autoridadDto.setFechaInicio(autoridad.getFechaInicio());
 
-        if (autoridadDto.getFechaFinal() != autoridad.getFechaFinal() && autoridadDto.getFechaFinal() != null)
+        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-
-        autoridad.setEsActual(autoridadDto.isEsActual());
 
         autoridad.setEsRegional(autoridadDto.isEsRegional());
 
@@ -205,20 +233,48 @@ public class AutoridadController {
         }
     }
 
-    @PutMapping(("/update/{id}"))
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AutoridadDto autoridadDto) {
+        // Verificar si la autoridad existe y está activa
         if (!autoridadService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("No existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
+        // Obtener la autoridad a actualizar
+        Autoridad autoridadExistente = autoridadService.findById(id).orElse(null);
+        if (autoridadExistente == null) {
+            return new ResponseEntity(new Mensaje("No se encontró la autoridad a actualizar"), HttpStatus.NOT_FOUND);
+        }
 
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);
-            autoridadService.save(autoridad);
-            return new ResponseEntity<>(new Mensaje("asistencial actualizado "), HttpStatus.OK);
+        // Verificar si el nombre enviado es null, si es así, mantener el nombre actual
+        String nuevoNombre = autoridadDto.getNombre();
+        if (nuevoNombre == null) {
+            nuevoNombre = autoridadExistente.getNombre();
         } else {
+            // Verificar si el nuevo nombre ya está siendo utilizado por otra autoridad
+            // activa
+            if (autoridadService.existsByNombreAndIdNot(nuevoNombre, id)) {
+                return new ResponseEntity(new Mensaje("El nombre ya está siendo utilizado por otra autoridad"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        // Validar el formato de la fecha de finalización, y la existencia de efector y
+        // persona
+        ResponseEntity<?> respuestaValidaciones = validationsUpdate(autoridadDto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
             return respuestaValidaciones;
         }
+
+        // Actualizar la autoridad con el nombre actualizado
+        autoridadDto.setNombre(nuevoNombre);
+        Autoridad autoridadActualizada = createUpdate(autoridadExistente, autoridadDto);
+
+        // Mantener la fecha de inicio existente
+        autoridadActualizada.setFechaInicio(autoridadExistente.getFechaInicio());
+
+        autoridadService.save(autoridadActualizada);
+
+        return new ResponseEntity<>(new Mensaje("Autoridad actualizada"), HttpStatus.OK);
     }
 
     /*
