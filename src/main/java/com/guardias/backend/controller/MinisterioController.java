@@ -1,6 +1,9 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,8 +65,30 @@ public class MinisterioController {
         Efector efector = efectorController.createUpdate(ministerio, ministerioDto);
         ministerio = (Ministerio) efector;
 
-        if (!ministerioDto.getCabecera().equals(ministerio.getCabecera()))
-            ministerio.setCabecera(ministerioDto.getCabecera());
+        if (ministerio.getCabecera() == null ||
+                (ministerioDto.getIdCabecera() != null &&
+                        !Objects.equals(ministerio.getCabecera().getId(),
+                                ministerioDto.getIdRegion()))) {
+            ministerio.setCabecera(ministerioService.findById(ministerioDto.getIdCabecera()).get());
+        }
+
+        if (ministerioDto.getIdMinisterios() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (ministerio.getMinisterios() != null) {
+                for (Ministerio ministerios : ministerio.getMinisterios()) {
+                    for (Long id : ministerioDto.getIdMinisterios()) {
+                        if (!ministerios.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? ministerioDto.getIdMinisterios() : idList;
+            for (Long id : idsToAdd) {
+                ministerio.getMinisterios().add(ministerioService.findById(id).get());
+                ministerioService.findById(id).get().setCabecera(ministerio);
+            }
+        }
 
         return ministerio;
     }
@@ -95,42 +120,6 @@ public class MinisterioController {
             return respuestaValidaciones;
         }
     }
-
-    // @PostMapping("/{idEfector}/addAutoridad/{idAutoridad}")
-    // public ResponseEntity<?> agregarAutoridad(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idAutoridad") Long idAutoridad) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarAutoridad(idEfector, idAutoridad);
-    // return respuestaValidaciones;
-    // }
-
-    // @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
-    // public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idNotificacion") Long idNotificacion) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarNotificacion(idEfector, idNotificacion);
-    // return respuestaValidaciones;
-    // }
-
-    // @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
-    // public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idLegajo") Long idLegajo) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarLegajo(idEfector, idLegajo);
-    // return respuestaValidaciones;
-    // }
-
-    // @PostMapping("/{idEfector}/addUdo/{idLegajoUdo}")
-    // public ResponseEntity<?> agregarLegajoUdo(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idLegajoUdo") Long idLegajoUdo) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarLegajoUdo(idEfector, idLegajoUdo);
-    // return respuestaValidaciones;
-    // }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {

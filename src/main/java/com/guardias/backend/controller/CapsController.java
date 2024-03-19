@@ -69,10 +69,10 @@ public class CapsController {
         caps = (Caps) efector;
 
         if (caps.getCabecera() == null ||
-                (capsDto.getCabecera() != null &&
+                (capsDto.getIdCabecera() != null &&
                         !Objects.equals(caps.getCabecera().getId(),
                                 capsDto.getIdRegion()))) {
-            caps.setCabecera(hospitalService.findById(capsDto.getCabecera());
+            caps.setCabecera(hospitalService.findById(capsDto.getIdCabecera()).get());
         }
 
         if (!capsDto.getTipoCaps().equals(caps.getTipoCaps()))

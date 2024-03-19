@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
+import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 
 @Controller
@@ -28,6 +32,9 @@ public class HospitalController {
 
     @Autowired
     HospitalService hospitalService;
+
+    @Autowired
+    CapsService capsService;
 
     @Autowired
     EfectorController efectorController;
@@ -73,6 +80,24 @@ public class HospitalController {
         hospital.setEsCabecera(hospitalDto.isEsCabecera());
         hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
         hospital.setNivelComplejidad(hospitalDto.getNivelComplejidad());
+
+        if (hospitalDto.getIdCaps() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (hospital.getCaps() != null) {
+                for (Caps caps : hospital.getCaps()) {
+                    for (Long id : hospitalDto.getIdCaps()) {
+                        if (!caps.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? hospitalDto.getIdCaps() : idList;
+            for (Long id : idsToAdd) {
+                hospital.getCaps().add(capsService.findById(id).get());
+                capsService.findById(id).get().setCabecera(hospital);
+            }
+        }
 
         return hospital;
     }
