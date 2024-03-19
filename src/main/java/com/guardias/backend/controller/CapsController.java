@@ -75,10 +75,12 @@ public class CapsController {
             caps.setCabecera(hospitalService.findById(capsDto.getIdCabecera()).get());
         }
 
-        if (!capsDto.getTipoCaps().equals(caps.getTipoCaps()))
+        if (caps.getTipoCaps() == null
+                || (capsDto.getTipoCaps() != null && !Objects.equals(caps.getTipoCaps(), capsDto.getTipoCaps())))
             caps.setTipoCaps(capsDto.getTipoCaps());
 
-        caps.setAreaProgramatica(capsDto.getAreaProgramatica());
+        if (!Objects.equals(caps.getAreaProgramatica(), capsDto.getAreaProgramatica()))
+            caps.setAreaProgramatica(capsDto.getAreaProgramatica());
 
         return caps;
     }
