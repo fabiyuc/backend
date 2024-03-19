@@ -19,10 +19,6 @@ public class EfectorService {
     HospitalService hospitalService;
     @Autowired
     MinisterioService ministerioService;
-    // @Autowired
-    // AutoridadService autoridadService;
-    // @Autowired
-    // NotificacionService notificacionService;
     @Autowired
     LegajoService legajoService;
 

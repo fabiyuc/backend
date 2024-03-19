@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +21,15 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.service.CapsService;
+import com.guardias.backend.service.HospitalService;
 
 @Controller
 @RequestMapping("/caps")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CapsController {
 
+    @Autowired
+    HospitalService hospitalService;
     @Autowired
     CapsService capsService;
 
@@ -64,8 +68,12 @@ public class CapsController {
         Efector efector = efectorController.createUpdate(caps, capsDto);
         caps = (Caps) efector;
 
-        if (!capsDto.getCabecera().equals(caps.getCabecera()))
-            caps.setCabecera(capsDto.getCabecera());
+        if (caps.getCabecera() == null ||
+                (capsDto.getCabecera() != null &&
+                        !Objects.equals(caps.getCabecera().getId(),
+                                capsDto.getIdRegion()))) {
+            caps.setCabecera(hospitalService.findById(capsDto.getCabecera());
+        }
 
         if (!capsDto.getTipoCaps().equals(caps.getTipoCaps()))
             caps.setTipoCaps(capsDto.getTipoCaps());
@@ -103,42 +111,6 @@ public class CapsController {
             return respuestaValidaciones;
         }
     }
-
-    // @PostMapping("/{idEfector}/addAutoridad/{idAutoridad}")
-    // public ResponseEntity<?> agregarAutoridad(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idAutoridad") Long idAutoridad) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarAutoridad(idEfector, idAutoridad);
-    // return respuestaValidaciones;
-    // }
-
-    // @PostMapping("/{idEfector}/addNotificacion/{idNotificacion}")
-    // public ResponseEntity<?> agregarNotificacion(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idNotificacion") Long idNotificacion) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarNotificacion(idEfector, idNotificacion);
-    // return respuestaValidaciones;
-    // }
-
-    // @PostMapping("/{idEfector}/addLegajo/{idLegajo}")
-    // public ResponseEntity<?> agregarLegajo(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idLegajo") Long idLegajo) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarLegajo(idEfector, idLegajo);
-    // return respuestaValidaciones;
-    // }
-
-    // @PostMapping("/{idEfector}/addUdo/{idLegajoUdo}")
-    // public ResponseEntity<?> agregarLegajoUdo(@PathVariable("idEfector") Long
-    // idEfector,
-    // @PathVariable("idLegajoUdo") Long idLegajoUdo) {
-    // ResponseEntity<?> respuestaValidaciones =
-    // efectorController.agregarLegajoUdo(idEfector, idLegajoUdo);
-    // return respuestaValidaciones;
-    // }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {

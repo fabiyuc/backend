@@ -1,8 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.List;
-
-import com.guardias.backend.entity.Ministerio;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +11,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class MinisterioDto extends EfectorDto {
 
-    Ministerio cabecera;
-    List<Ministerio> ministerios;
+    Long idCabecera;
+    Set<Long> idMinisterios;
 
 }
