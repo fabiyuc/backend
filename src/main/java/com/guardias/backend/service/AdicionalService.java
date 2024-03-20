@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.Adicional;
-import com.guardias.backend.entity.Revista;
 import com.guardias.backend.repository.AdicionalRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -19,9 +16,6 @@ public class AdicionalService {
 
     @Autowired
     AdicionalRepository adicionalRepository;
-
-    @Autowired
-    RevistaService revistaService;
 
     public List<Adicional> findByActivoTrue() {
         return adicionalRepository.findByActivoTrue();
@@ -32,27 +26,15 @@ public class AdicionalService {
     }
 
     public Optional<Adicional> findById(Long id) {
-        return adicionalRepository.findById((Long) id);
-    }
-
-    public Optional<Adicional> getByNombre(String nombre) {
-        return adicionalRepository.findByNombre(nombre);
+        return adicionalRepository.findById(id);
     }
 
     public Optional<Adicional> findByNombre(String nombre) {
         return adicionalRepository.findByNombre(nombre);
     }
 
-    public void save(Adicional adicional) {
-        adicionalRepository.save(adicional);
-    }
-
-    public void deleteById(Long id) {
-        adicionalRepository.deleteById((Long) id);
-    }
-
     public boolean existsById(Long id) {
-        return adicionalRepository.existsById((Long) id);
+        return adicionalRepository.existsById(id);
     }
 
     public boolean existsByNombre(String nombre) {
@@ -60,25 +42,19 @@ public class AdicionalService {
     }
 
     public boolean activo(Long id) {
-        return (adicionalRepository.existsById(id) && adicionalRepository.findById(id).get().isActivo());
+        Optional<Adicional> adicionalOptional = adicionalRepository.findById(id);
+        return adicionalOptional.isPresent() && adicionalOptional.get().isActivo();
     }
 
-    public boolean activoByNombre(String nombre) {
-        return (adicionalRepository.existsByNombre(nombre)
-                && adicionalRepository.findByNombre(nombre).get().isActivo());
+    public boolean existsByNombreAndIdNot(String nombre, Long id) {
+        return adicionalRepository.existsByNombreAndIdNot(nombre, id);
     }
 
-    public void agregarRevista(Long adicionalId, Long idRevista) {
-        Adicional adicional = adicionalRepository.findById(adicionalId)
-                .orElseThrow(
-                        () -> new EntityNotFoundException("No se encontró el adicional con el ID: " + adicionalId));
-
-        Revista revista = revistaService.findById(idRevista).get();
-        revista.setAdicional(adicional);
-        revistaService.save(revista);
-
-        adicional.getRevistas().add(revista);
-
+    public void save(Adicional adicional) {
         adicionalRepository.save(adicional);
+    }
+
+    public void deleteById(Long id) {
+        adicionalRepository.deleteById(id);
     }
 }

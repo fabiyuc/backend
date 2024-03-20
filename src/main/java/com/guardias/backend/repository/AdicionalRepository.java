@@ -15,5 +15,9 @@ public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
 
     boolean existsByNombre(String nombre);
 
+    boolean existsById(Long id);
+
+    boolean existsByNombreAndIdNot(String nombre, Long id);
+
     List<Adicional> findByActivoTrue();
 }
