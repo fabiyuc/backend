@@ -90,8 +90,8 @@ public class AsistencialController {
         if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
             asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
 
-        if (!asistencialDto.getRegistrosActividades().equals(asistencial.getRegistrosActividades()))
-            asistencial.setRegistrosActividades(asistencialDto.getRegistrosActividades());
+        /* if (!asistencialDto.getRegistrosActividades().equals(asistencial.getRegistrosActividades()))
+            asistencial.setRegistrosActividades(asistencialDto.getRegistrosActividades()); */
         return asistencial;
     }
 
@@ -102,6 +102,7 @@ public class AsistencialController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
+            asistencial.setActivo(true);
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
         } else {

@@ -39,16 +39,16 @@ public class PersonController {
     public Person createUpdate(Person person, PersonDto personDto) {
         if (!personDto.getTelefono().equals(person.getTelefono()))
             person.setTelefono(personDto.getTelefono());
-        if (!personDto.getSuplentes().equals(person.getSuplentes()))
-            person.setSuplentes(personDto.getSuplentes());
+        /* if (!personDto.getSuplentes().equals(person.getSuplentes()))
+            person.setSuplentes(personDto.getSuplentes()); */
         if (!personDto.getSexo().equals(person.getSexo()))
             person.setSexo(personDto.getSexo());
-        if (!personDto.getNovedadesPersonales().equals(person.getNovedadesPersonales()))
-            person.setNovedadesPersonales(personDto.getNovedadesPersonales());
+        /* if (!personDto.getNovedadesPersonales().equals(person.getNovedadesPersonales()))
+            person.setNovedadesPersonales(personDto.getNovedadesPersonales()); */
         if (!personDto.getNombre().equals(person.getNombre()))
             person.setNombre(personDto.getNombre());
-        if (!personDto.getLegajos().equals(person.getLegajos()))
-            person.setLegajos(personDto.getLegajos());
+        /* if (!personDto.getLegajos().equals(person.getLegajos()))
+            person.setLegajos(personDto.getLegajos()); */
         if (!personDto.getFechaNacimiento().equals(person.getFechaNacimiento()))
             person.setFechaNacimiento(personDto.getFechaNacimiento());
         if (!personDto.getEstado().equals(person.getEstado()))
@@ -59,8 +59,8 @@ public class PersonController {
             person.setDomicilio(personDto.getDomicilio());
         if (personDto.getDni() != person.getDni())
             person.setDni(personDto.getDni());
-        if (!personDto.getDistribucionesHorarias().equals(person.getDistribucionesHorarias()))
-            person.setDistribucionesHorarias(personDto.getDistribucionesHorarias());
+        /* if (!personDto.getDistribucionesHorarias().equals(person.getDistribucionesHorarias()))
+            person.setDistribucionesHorarias(personDto.getDistribucionesHorarias()); */
         if (!personDto.getCuil().equals(person.getCuil()))
             person.setCuil(personDto.getCuil());
         if (!personDto.getApellido().equals(person.getApellido()))
