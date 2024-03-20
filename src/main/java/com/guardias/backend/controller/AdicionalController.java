@@ -68,6 +68,9 @@ public class AdicionalController {
             return new ResponseEntity<>(respuestaValidaciones, HttpStatus.BAD_REQUEST);
         Adicional adicional = createUpdate(new Adicional(), adicionalDto);
 
+        if (adicionalService.existsByNombre(adicionalDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
+
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
     }
@@ -135,8 +138,7 @@ public class AdicionalController {
     private Mensaje validations(AdicionalDto adicionalDto) {
         if (adicionalDto.getNombre() == null)
             return new Mensaje("El nombre es obligatorio");
-        if (adicionalService.existsByNombre(adicionalDto.getNombre()))
-            return new Mensaje("Ese nombre ya existe");
+
         if (adicionalDto.getIdRevistas() == null)
             return new Mensaje("La revista es obligatorio");
         return null;
