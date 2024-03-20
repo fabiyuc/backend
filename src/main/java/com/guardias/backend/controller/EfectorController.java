@@ -1,5 +1,9 @@
 package com.guardias.backend.controller;
 
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,20 +12,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Autoridad;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Notificacion;
+import com.guardias.backend.service.AutoridadService;
+import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.LegajoService;
+import com.guardias.backend.service.NotificacionService;
+import com.guardias.backend.service.RegionService;
 
 @RestController
 public class EfectorController {
 
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    RegionService regionService;
+    @Autowired
+    DistribucionHorariaService distribucionHorariaService;
+    @Autowired
+    AutoridadService autoridadService;
+    @Autowired
+    LegajoService legajoService;
+    @Autowired
+    NotificacionService notificacionService;
 
     public ResponseEntity<?> validationsCreate(EfectorDto efectorDto) {
         ResponseEntity<?> respuestaValidaciones = validations(efectorDto);
 
         if (efectorService.existsByName(efectorDto.getNombre()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+            return new ResponseEntity<Mensaje>(new Mensaje("Ese nombre ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         return respuestaValidaciones;
@@ -40,97 +63,125 @@ public class EfectorController {
 
     public Efector createUpdate(Efector efector, EfectorDto efectorDto) {
 
-        if (!efectorDto.getNombre().equals(efector.getNombre()))
+        if (efector.getNombre() == null
+                || (efectorDto.getNombre() != null && !Objects.equals(efector.getNombre(), efectorDto.getNombre())))
             efector.setNombre(efectorDto.getNombre());
 
-        if (!efectorDto.getDomicilio().equals(efector.getDomicilio()))
+        if (efector.getDomicilio() == null || (efectorDto.getDomicilio() != null
+                && !Objects.equals(efector.getDomicilio(), efectorDto.getDomicilio())))
             efector.setDomicilio(efectorDto.getDomicilio());
 
-        if (!efectorDto.getTelefono().equals(efector.getTelefono()))
+        if (efector.getTelefono() == null || (efectorDto.getTelefono() != null
+                && !Objects.equals(efector.getTelefono(), efectorDto.getTelefono())))
             efector.setTelefono(efectorDto.getTelefono());
 
         efector.setEstado(efectorDto.isEstado());
 
-        if (!efectorDto.getRegion().equals(efector.getRegion()))
-            efector.setRegion(efectorDto.getRegion());
-
-        if (!efectorDto.getLocalidad().equals(efector.getLocalidad()))
-            efector.setLocalidad(efectorDto.getLocalidad());
-
-        if (!efectorDto.getObservacion().equals(efector.getObservacion()))
+        if (efector.getObservacion() == null || (efectorDto.getObservacion() != null
+                && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
 
-        efector.setActivo(efectorDto.isActivo());
+        if (efector.getRegion() == null ||
+                (efectorDto.getIdRegion() != null &&
+                        !Objects.equals(efector.getRegion().getId(),
+                                efectorDto.getIdRegion()))) {
+            efector.setRegion(regionService.findById(efectorDto.getIdRegion()).get());
+        }
+
+        if (efectorDto.getIdDistribucionesHorarias() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (efector.getDistribucionesHorarias() != null) {
+                for (DistribucionHoraria distribucionHoraria : efector.getDistribucionesHorarias()) {
+                    for (Long id : efectorDto.getIdDistribucionesHorarias()) {
+                        if (!distribucionHoraria.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdDistribucionesHorarias() : idList;
+            for (Long id : idsToAdd) {
+                efector.getDistribucionesHorarias().add(distribucionHorariaService.findById(id));
+                distribucionHorariaService.findById(id).setEfector(efector);
+            }
+        }
+
+        if (efectorDto.getIdAutoridades() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (efector.getAutoridades() != null) {
+                for (Autoridad autoridad : efector.getAutoridades()) {
+                    for (Long id : efectorDto.getIdAutoridades()) {
+                        if (!autoridad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdAutoridades() : idList;
+            for (Long id : idsToAdd) {
+                efector.getAutoridades().add(autoridadService.findById(id).get());
+                autoridadService.findById(id).get().setEfector(efector);
+            }
+        }
+
+        if (efectorDto.getIdLegajosUdo() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (efector.getLegajosUdo() != null) {
+                for (Legajo LegajoUdo : efector.getLegajosUdo()) {
+                    for (Long id : efectorDto.getIdLegajosUdo()) {
+                        if (!LegajoUdo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajosUdo() : idList;
+            for (Long id : idsToAdd) {
+                efector.getLegajosUdo().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().setUdo(efector);
+            }
+        }
+
+        if (efectorDto.getIdLegajos() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (efector.getLegajos() != null) {
+                for (Legajo legajo : efector.getLegajos()) {
+                    for (Long id : efectorDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajos() : idList;
+            for (Long id : idsToAdd) {
+                efector.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().getEfectores().add(efector);
+            }
+        }
+
+        if (efectorDto.getIdNotificaciones() != null) {
+            Set<Long> idList = new HashSet<Long>();
+            if (efector.getNotificaciones() != null) {
+                for (Notificacion notificacion : efector.getNotificaciones()) {
+                    for (Long id : efectorDto.getIdNotificaciones()) {
+                        if (!notificacion.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdNotificaciones() : idList;
+            for (Long id : idsToAdd) {
+                efector.getNotificaciones().add(notificacionService.findById(id).get());
+                notificacionService.findById(id).get().getEfectores().add(efector);
+            }
+        }
+
+        efector.setActivo(true);
 
         return efector;
     }
-
-    // autoridades - notificaciones - legajos - legajosUdo - distribucionesHorarias
-
-    // public ResponseEntity<?> agregarAutoridad(Long idEfector, Long idAutoridad) {
-    // try {
-    // efectorService.agregarAutoridad(idEfector, idAutoridad);
-    // return new ResponseEntity<>(new Mensaje("Autoridad agregada al Efector
-    // correctamente"), HttpStatus.OK);
-    // } catch (EntityNotFoundException e) {
-    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
-    // proporcionado"),
-    // HttpStatus.NOT_FOUND);
-    // } catch (Exception e) {
-    // return new ResponseEntity<>(new Mensaje("Error al agregar la autoridad al
-    // Efector"),
-    // HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
-
-    // public ResponseEntity<?> agregarNotificacion(Long idEfector, Long
-    // idNotificacion) {
-    // try {
-    // efectorService.agregarNotificacion(idEfector, idNotificacion);
-    // return new ResponseEntity<>(new Mensaje("Notificacion agregada al Efector
-    // correctamente"), HttpStatus.OK);
-    // } catch (EntityNotFoundException e) {
-    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
-    // proporcionado"),
-    // HttpStatus.NOT_FOUND);
-    // } catch (Exception e) {
-    // return new ResponseEntity<>(new Mensaje("Error al agregar la notificacion al
-    // Efector"),
-    // HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // // }
-
-    // public ResponseEntity<?> agregarLegajo(Long idEfector, Long idLegajo) {
-    // try {
-    // efectorService.agregarLegajo(idEfector, idLegajo);
-    // return new ResponseEntity<>(new Mensaje("Legajo agregado al Efector
-    // correctamente"), HttpStatus.OK);
-    // } catch (EntityNotFoundException e) {
-    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
-    // proporcionado"),
-    // HttpStatus.NOT_FOUND);
-    // } catch (Exception e) {
-    // return new ResponseEntity<>(new Mensaje("Error al agregar el Legajo al
-    // Efector"),
-    // HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
-
-    // public ResponseEntity<?> agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
-    // try {
-    // efectorService.agregarLegajoUdo(idEfector, idLegajoUdo);
-    // return new ResponseEntity<>(new Mensaje("UdO agregada al Efector
-    // correctamente"), HttpStatus.OK);
-    // } catch (EntityNotFoundException e) {
-    // return new ResponseEntity<>(new Mensaje("No se encontró el Efector con el ID
-    // proporcionado"),
-    // HttpStatus.NOT_FOUND);
-    // } catch (Exception e) {
-    // return new ResponseEntity<>(new Mensaje("Error al agregar el UdO al
-    // Efector"),
-    // HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
-    // }
 
     public ResponseEntity<?> logicDelete(Long id) {
         if (!efectorService.existsById(id))

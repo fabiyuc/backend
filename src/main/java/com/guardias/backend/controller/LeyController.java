@@ -97,7 +97,6 @@ public class LeyController {
                     }
                 }
             }
-
             Set<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
             for (Long id : idsToAdd) {
                 ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
