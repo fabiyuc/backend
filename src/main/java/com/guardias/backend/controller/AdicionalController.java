@@ -158,9 +158,6 @@ public class AdicionalController {
         if (adicionalDto.getNombre() != null && !adicionalDto.getNombre().isEmpty()
                 && !adicionalDto.getNombre().equals(adicional.getNombre())) {
             adicional.setNombre(adicionalDto.getNombre());
-        } else if (adicionalDto.getNombre() == null || adicionalDto.getNombre().isEmpty()) {
-            // Conservar el nombre existente si no se proporciona uno nuevo
-            adicionalDto.setNombre(adicional.getNombre());
         }
 
         // Verificar si se proporciona un conjunto de revistas
