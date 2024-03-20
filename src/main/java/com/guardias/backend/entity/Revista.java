@@ -56,7 +56,7 @@ public class Revista {
   private Set<Legajo> legajos;
 
   @Enumerated(EnumType.STRING)
-  @Column(columnDefinition = "VARCHAR(30)")
+  @Column(columnDefinition = "VARCHAR(40)")
   private AgrupacionEnum agrupacion;
 
   @Override

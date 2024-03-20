@@ -67,7 +67,7 @@ public class PersonService {
         return exists;
     }
 
-    private void savePersona(Person persona) {
+    public void savePersona(Person persona) {
         if (persona instanceof Asistencial) {
             Asistencial asistencial = (Asistencial) persona;
             asistencialService.save(asistencial);

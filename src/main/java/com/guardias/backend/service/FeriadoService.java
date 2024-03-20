@@ -15,8 +15,8 @@ public class FeriadoService {
     @Autowired
     FeriadoRepository feriadoRepository;
 
-    public List<Feriado> findByActivo(boolean activo) {
-        return feriadoRepository.findByActivo(activo);
+    public List<Feriado> findByActivo() {
+        return feriadoRepository.findByActivoTrue();
     }
     public List<Feriado> findAll() {
         return feriadoRepository.findAll();

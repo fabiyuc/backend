@@ -30,7 +30,7 @@ public class TipoLeyController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLey>> list() {
-        List<TipoLey> list = tipoLeyService.findByActivo(true);
+        List<TipoLey> list = tipoLeyService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

@@ -18,11 +18,8 @@ public class NotificacionService {
     @Autowired
     NotificacionRepository notificacionRepository;
 
-    // @Autowired
-    // EfectorService efectorService;
-
-    public List<Notificacion> findByActivo(boolean activo) {
-        return notificacionRepository.findByActivo(activo);
+    public List<Notificacion> findByActivo() {
+        return notificacionRepository.findByActivoTrue();
 
     }
 
@@ -31,7 +28,7 @@ public class NotificacionService {
     }
 
     public Optional<Notificacion> findById(Long id) {
-        return notificacionRepository.findById(id);
+        return notificacionRepository.findById((Long) id);
     }
 
     public List<Notificacion> findByTipoAndActivo(TipoNotificacionEnum tipo, boolean activo) {
@@ -49,16 +46,5 @@ public class NotificacionService {
     public boolean existsById(Long id) {
         return notificacionRepository.existsById(id);
     }
-
-    // @Transactional
-    // public void agregarEfector(Long idNotificacion, Long idEfector) {
-
-    // Notificacion notificacion = findById(idNotificacion).get();
-    // Efector efector = efectorService.findEfector(idEfector);
-
-    // efectorService.agregarAutoridad(idEfector, idNotificacion);
-    // notificacion.getEfectores().add(efector);
-    // save(notificacion);
-    // }
 
 }

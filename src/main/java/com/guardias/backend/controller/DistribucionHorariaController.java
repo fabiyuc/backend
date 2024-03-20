@@ -55,12 +55,15 @@ public class DistribucionHorariaController {
             DistribucionHorariaDto distribucionHorariaDto) {
         if (distribucionHorariaDto.getDia() != distribucionHoraria.getDia() && distribucionHorariaDto.getDia() != null)
             distribucionHoraria.setDia(distribucionHorariaDto.getDia());
+
         if (distribucionHorariaDto.getFechaInicio() != distribucionHoraria.getFechaInicio()
                 && distribucionHorariaDto.getFechaInicio() != null)
             distribucionHoraria.setFechaInicio(distribucionHorariaDto.getFechaInicio());
+
         if (distribucionHorariaDto.getFechaFinalizacion() != distribucionHoraria.getFechaFinalizacion()
                 && distribucionHorariaDto.getFechaFinalizacion() != null)
             distribucionHoraria.setFechaFinalizacion(distribucionHorariaDto.getFechaFinalizacion());
+
         if (distribucionHorariaDto.getHoraIngreso() != distribucionHoraria.getHoraIngreso()
                 && distribucionHorariaDto.getHoraIngreso() != null)
             distribucionHoraria.setHoraIngreso(distribucionHorariaDto.getHoraIngreso());

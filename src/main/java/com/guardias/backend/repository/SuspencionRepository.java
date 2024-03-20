@@ -22,6 +22,6 @@ public interface SuspencionRepository extends JpaRepository<Suspencion,Long> {
     
     Optional<Suspencion> findByFechaFin(LocalDate fechaFin);
 
-    List<Suspencion> findByActivo(boolean activo);
+    List<Suspencion> findByActivoTrue();
 
 }

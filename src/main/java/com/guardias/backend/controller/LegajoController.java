@@ -28,7 +28,7 @@ public class LegajoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.findByActivo(true);
+        List<Legajo> list = legajoService.findByActivo();
         return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
     }
 

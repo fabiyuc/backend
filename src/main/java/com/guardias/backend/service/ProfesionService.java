@@ -15,8 +15,8 @@ public class ProfesionService {
     @Autowired
     ProfesionRepository profesionRepository;
 
-    public List<Profesion> findByActivo(boolean activo) {
-        return profesionRepository.findByActivo(activo);
+    public List<Profesion> findByActivo() {
+        return profesionRepository.findByActivoTrue();
     }
 
     public List<Profesion> findAll() {

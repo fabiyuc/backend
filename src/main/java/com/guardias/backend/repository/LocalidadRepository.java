@@ -14,5 +14,5 @@ public interface LocalidadRepository extends JpaRepository<Localidad, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Localidad> findByActivo(boolean activo);
+    List<Localidad> findByActivoTrue();
 }

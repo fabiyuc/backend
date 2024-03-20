@@ -12,5 +12,5 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
 
     boolean existsByNombre(String nombre);
 
-    List<Cargo> findByActivo(boolean activo);
+    List<Cargo> findByActivoTrue();
 }
