@@ -17,7 +17,7 @@ public class CargaHorariaService {
     @Autowired
     CargaHorariaRepository cargaHorariaRepository;
 
-    public List<CargaHoraria> findByActivo() {
+    public List<CargaHoraria> findByActivoTrue() {
         return cargaHorariaRepository.findByActivoTrue();
     }
 
@@ -29,28 +29,35 @@ public class CargaHorariaService {
         return cargaHorariaRepository.findById(id);
     }
 
-    public void save(CargaHoraria cargaHoraria) {
-        cargaHorariaRepository.save(cargaHoraria);
-    }
-
-    public void deleteById(Long id) {
-        cargaHorariaRepository.deleteById(id);
+    public Optional<CargaHoraria> findByCantidad(int cantidad) {
+        return cargaHorariaRepository.findByCantidad(cantidad);
     }
 
     public boolean existsById(Long id) {
         return cargaHorariaRepository.existsById(id);
     }
 
-    public boolean activo(Long id) {
-        return (cargaHorariaRepository.existsById(id) && cargaHorariaRepository.findById(id).get().isActivo());
-    }
-
-    public Optional<CargaHoraria> getByCantidad(int cantidad) {
-        return cargaHorariaRepository.findByCantidad(cantidad);
-    }
-
     public boolean existsByCantidad(int cantidad) {
         return cargaHorariaRepository.existsByCantidad(cantidad);
+    }
+
+    public boolean activo(Long id) {
+        Optional<CargaHoraria> cargaHorariaOptional = cargaHorariaRepository.findById(id);
+        return cargaHorariaOptional.isPresent() && cargaHorariaOptional.get().isActivo();
+    }
+
+    /*
+     * public Optional<CargaHoraria> getByCantidad(int cantidad) {
+     * return cargaHorariaRepository.findByCantidad(cantidad);
+     * }
+     */
+
+    public void save(CargaHoraria cargaHoraria) {
+        cargaHorariaRepository.save(cargaHoraria);
+    }
+
+    public void deleteById(Long id) {
+        cargaHorariaRepository.deleteById(id);
     }
 
 }

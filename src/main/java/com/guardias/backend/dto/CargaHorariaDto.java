@@ -1,5 +1,7 @@
 package com.guardias.backend.dto;
 
+import java.util.Set;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +14,8 @@ public class CargaHorariaDto {
 
     @NotBlank
     private int cantidad;
-    private boolean activo;
     private String descripcion;
+    Set<Long> idRevistas;
+    private boolean activo;
 
 }

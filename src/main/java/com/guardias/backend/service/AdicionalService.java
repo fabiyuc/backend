@@ -46,9 +46,11 @@ public class AdicionalService {
         return adicionalOptional.isPresent() && adicionalOptional.get().isActivo();
     }
 
-    public boolean existsByNombreAndIdNot(String nombre, Long id) {
-        return adicionalRepository.existsByNombreAndIdNot(nombre, id);
-    }
+    /*
+     * public boolean existsByNombreAndIdNot(String nombre, Long id) {
+     * return adicionalRepository.existsByNombreAndIdNot(nombre, id);
+     * }
+     */
 
     public void save(Adicional adicional) {
         adicionalRepository.save(adicional);
