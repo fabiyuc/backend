@@ -1,7 +1,7 @@
 package com.guardias.backend.entity;
 
-import java.util.ArrayList;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -43,6 +43,6 @@ public class Departamento {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "departamento", "efectores" })
-    List<Localidad> localidades = new ArrayList<Localidad>();
+    List<Localidad> localidades;
 
 }
