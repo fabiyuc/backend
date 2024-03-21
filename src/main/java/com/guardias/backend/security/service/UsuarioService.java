@@ -1,11 +1,13 @@
 package com.guardias.backend.security.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.modelo.Usuarios;
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.repository.UsuarioRepository;
 
@@ -27,5 +29,9 @@ public class UsuarioService {
     }
     public void save(Usuario usuario){
         usuarioRepository.save(usuario);
+    }
+
+    public List<Usuario> findAll() {
+        return usuarioRepository.findAll();
     }
 }

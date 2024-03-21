@@ -1,4 +1,4 @@
-package com.guardias.backend.controlador;
+/* package com.guardias.backend.controlador;
 
 import java.util.List;
 
@@ -23,3 +23,4 @@ public class ProfesionalControlador {
 	}
 
 }
+ */
