@@ -67,7 +67,9 @@ public class Cargo {
     // private Legajo legajo;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
     // @JoinColumn(name = "id_legajo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo", "cargo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "persona", "cargo", "efectores" })
     private List<Legajo> legajos;
 
     @Enumerated(EnumType.STRING)
