@@ -51,16 +51,17 @@ public class CargoService {
     }
 
     public boolean existsByNombre(String nombre) {
-        return cargoRepository.existsByNombre(nombre);
+        return (cargoRepository.existsByNombre(nombre) && cargoRepository.findByNombre(nombre).get().isActivo());
     }
 
     public boolean activo(Long id) {
-        Optional<Cargo> cargoOptional = cargoRepository.findById((Long) id);
-        return cargoOptional.isPresent() && cargoOptional.get().isActivo();
+        return (cargoRepository.existsById(id) && cargoRepository.findById(id).get().isActivo());
+
     }
 
     public boolean existsByAgrupacion(AgrupacionEnum agrupacion) {
-        return cargoRepository.existsByAgrupacion(agrupacion);
+        return (cargoRepository.existsByAgrupacion(agrupacion)
+                && cargoRepository.findByAgrupacion(agrupacion).get().isActivo());
     }
 
     public void save(Cargo cargo) {
