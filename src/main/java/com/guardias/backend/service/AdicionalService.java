@@ -42,8 +42,7 @@ public class AdicionalService {
     }
 
     public boolean activo(Long id) {
-        Optional<Adicional> adicionalOptional = adicionalRepository.findById(id);
-        return adicionalOptional.isPresent() && adicionalOptional.get().isActivo();
+        return (adicionalRepository.existsById(id) && adicionalRepository.findById(id).get().isActivo());
     }
 
     /*
