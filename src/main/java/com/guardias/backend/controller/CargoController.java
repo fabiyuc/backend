@@ -97,16 +97,16 @@ public class CargoController {
         if (StringUtils.isNotBlank(cargoDto.getNombre()))
             cargo.setNombre(cargoDto.getNombre());
 
-        if (!cargoDto.getNombre().equals(cargo.getNombre()))
+        if (cargoDto.getNombre() != null && cargo.getNombre() != cargoDto.getNombre())
             cargo.setNombre(cargoDto.getNombre());
         if (StringUtils.isNotBlank(cargoDto.getNombre()))
             cargo.setNombre(cargoDto.getNombre());
 
-        if (!cargoDto.getDescripcion().equals(cargo.getDescripcion()))
+        if (cargoDto.getDescripcion() != null && cargo.getDescripcion() != cargoDto.getDescripcion())
             cargo.setDescripcion(cargoDto.getDescripcion());
-        if (!cargoDto.getNroresolucion().equals(cargo.getNroresolucion()))
+        if (cargoDto.getNroresolucion() != null && cargo.getNroresolucion() != cargoDto.getNroresolucion())
             cargo.setNroresolucion(cargoDto.getNroresolucion());
-        if (!cargoDto.getNrodecreto().equals(cargo.getNrodecreto()))
+        if (cargoDto.getNrodecreto() != null && cargo.getNrodecreto() != cargoDto.getNrodecreto())
             cargo.setNrodecreto(cargoDto.getNrodecreto());
         /*
          * if (!cargoDto.getFecharesolucion().equals(cargo.getFechaResolucion()))
@@ -122,7 +122,7 @@ public class CargoController {
 
         // cargo.setActivo(cargoDto.getActivo() != null ? cargoDto.getActivo() : true);
 
-        if (!cargoDto.getAgrupacion().equals(cargo.getAgrupacion()))
+        if (cargoDto.getAgrupacion() != null && cargo.getAgrupacion() != cargoDto.getAgrupacion())
             cargo.setAgrupacion(cargoDto.getAgrupacion());
 
         if (cargoDto.getIdLegajos() != null) {
