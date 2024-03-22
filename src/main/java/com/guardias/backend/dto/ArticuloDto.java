@@ -1,6 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +12,6 @@ import lombok.EqualsAndHashCode;
 public class ArticuloDto extends LeyDto {
 
     Long idArticulo;
-    Set<Long> idSubArticulos;
-    Set<Long> idIncisos;
+    List<Long> idSubArticulos;
+    List<Long> idIncisos;
 }

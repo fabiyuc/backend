@@ -97,25 +97,6 @@ public class AdicionalController {
 
         return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
     }
-    /*
-     * Adicional adicional = adicionalService.findById(id).orElse(null);
-     * if (adicional == null) {
-     * return new ResponseEntity<>(new Mensaje("El adicional no existe"),
-     * HttpStatus.NOT_FOUND);
-     * }
-     * // Verificar si se proporciona un nuevo nombre y si es diferente al actual
-     * if (adicionalDto.getNombre() != null && !adicionalDto.getNombre().isEmpty()
-     * && !adicionalDto.getNombre().equals(adicional.getNombre())
-     * && adicionalService.existsByNombre(adicionalDto.getNombre())) {
-     * return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"),
-     * HttpStatus.BAD_REQUEST);
-     * }
-     * 
-     * adicional = createUpdate(adicional, adicionalDto);
-     * adicionalService.save(adicional);
-     * return new ResponseEntity<>(new Mensaje("Adicional actualizado"),
-     * HttpStatus.OK);
-     */
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Mensaje> logicDelete(@PathVariable("id") long id) {
@@ -143,15 +124,6 @@ public class AdicionalController {
             return new Mensaje("La revista es obligatorio");
         return null;
     }
-
-    /*
-     * private Mensaje validationsUpdate(AdicionalDto adicionalDto) {
-     * if (adicionalDto.getIdRevistas() == null) {
-     * return new Mensaje("La revista es obligatoria");
-     * }
-     * return null;
-     * }
-     */
 
     private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
         // Verificar si se proporciona un nuevo nombre y si es diferente al actual

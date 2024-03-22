@@ -1,10 +1,7 @@
 package com.guardias.backend.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,10 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity(name = "regiones")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "regiones")
 public class Region {
 
     @Id
@@ -32,9 +29,8 @@ public class Region {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
-    // si quito el JsonIgnoreProperties igual funciona
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "region" })
-    private List<Efector> efectores = new ArrayList<Efector>();
+    @JsonIgnore
+    private Set<Efector> efectores;
 
     @Override
     public boolean equals(Object obj) {

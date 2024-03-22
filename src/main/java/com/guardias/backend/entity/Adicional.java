@@ -1,7 +1,6 @@
 package com.guardias.backend.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -34,8 +33,9 @@ public class Adicional {
 
     // Inicializar el conjunto de revistas
     @OneToMany(mappedBy = "adicional", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "adicional" })
-    private Set<Revista> revistas = new HashSet<>();
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista", "categoria", "adicional", "cargaHoraria",
+            "legajos", "agrupacion", "activo" })
+    private List<Revista> revistas;
 
     @Override
     public boolean equals(Object obj) {

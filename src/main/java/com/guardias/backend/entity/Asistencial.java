@@ -1,6 +1,6 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -30,6 +30,6 @@ public class Asistencial extends Person {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<RegistroActividad> registrosActividades;
+    private List<RegistroActividad> registrosActividades;
 
 }

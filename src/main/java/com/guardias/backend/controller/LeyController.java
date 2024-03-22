@@ -1,8 +1,8 @@
 package com.guardias.backend.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -87,7 +87,7 @@ public class LeyController {
         }
 
         if (leyDto.getIdNovedadesPersonales() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList<Long>();
             if (ley.getNovedadesPersonales() != null) {
                 for (NovedadPersonal novedadPersonal : ley.getNovedadesPersonales()) {
                     for (Long id : leyDto.getIdNovedadesPersonales()) {
@@ -97,7 +97,7 @@ public class LeyController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
             for (Long id : idsToAdd) {
                 ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
                 novedadPersonalService.findById(id).get().setLey(ley);

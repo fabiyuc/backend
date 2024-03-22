@@ -1,6 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +15,7 @@ public class AdicionalDto {
 
     @NotBlank
     private String nombre;
-    Set<Long> idRevistas;
+    List<Long> idRevistas;
     @NotNull
     private boolean activo;
 }

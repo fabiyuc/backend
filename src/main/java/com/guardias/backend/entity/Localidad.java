@@ -1,8 +1,11 @@
 package com.guardias.backend.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;import jakarta.persistence.CascadeType;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,7 +40,8 @@ public class Localidad {
     Departamento departamento;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "localidad", cascade = CascadeType.ALL)
-    private List<Efector> efectores= new ArrayList<Efector>();
+    @JsonIgnore
+    private Set<Efector> efectores;
 
     @Override
     public boolean equals(Object obj) {
@@ -57,6 +61,11 @@ public class Localidad {
             if (other.nombre != null)
                 return false;
         } else if (!nombre.equals(other.nombre))
+            return false;
+        if (departamento == null) {
+            if (other.departamento != null)
+                return false;
+        } else if (!departamento.equals(other.departamento))
             return false;
         return true;
     }

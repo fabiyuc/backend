@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.FeriadoDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.Feriado;
 import com.guardias.backend.service.FeriadoService;
 import io.micrometer.common.util.StringUtils;
@@ -42,12 +41,11 @@ public class FeriadoController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Feriado> getById(@PathVariable("id") Long id) {
-        
+    public ResponseEntity<List<Feriado>> getById(@PathVariable("id") Long id) {
         if (!feriadoService.existsById(id))
-            return new ResponseEntity(new Mensaje("Feriado no encontrada"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
         Feriado feriado = feriadoService.findById(id).get();
-        return new ResponseEntity<Feriado>(feriado, HttpStatus.OK);
+        return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
     @GetMapping("/detailmotivo/{motivo}")
@@ -58,7 +56,7 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detailByFecha/{fecha}")
+    @GetMapping("/detail/{fecha}")
     public ResponseEntity<List<Feriado>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
         if (!feriadoService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
@@ -99,7 +97,6 @@ public class FeriadoController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Feriado feriado = createUpdate(new Feriado(), feriadoDto);
-            feriado.setActivo(true);
             feriadoService.save(feriado);
         }
         return respuestaValidaciones;
