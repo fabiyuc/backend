@@ -30,7 +30,9 @@ public class TipoLey {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLey", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tipoLey" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
+            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private List<Ley> leyes;
 
     @Override

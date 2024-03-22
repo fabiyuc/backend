@@ -1,9 +1,8 @@
 package com.guardias.backend.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -70,7 +69,7 @@ public class ArticuloController {
         }
 
         if (articuloDto.getIdSubArticulos() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList<Long>();
             if (articulo.getSubArticulos() == null) {
                 for (Articulo articuloList : articulo.getSubArticulos()) {
                     for (Long id : articuloDto.getIdSubArticulos()) {
@@ -81,7 +80,7 @@ public class ArticuloController {
                 }
             }
 
-            Set<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
             for (Long id : idsToAdd) {
                 articulo.getSubArticulos().add(articuloService.findById(id).get());
                 articuloService.findById(id).get().setArticulo(articulo);
@@ -89,7 +88,7 @@ public class ArticuloController {
         }
 
         if (articuloDto.getIdIncisos() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList<Long>();
             if (articulo.getIncisos() == null) {
                 for (Inciso incisoList : articulo.getIncisos()) {
                     for (Long id : articuloDto.getIdIncisos()) {
@@ -100,7 +99,7 @@ public class ArticuloController {
                 }
             }
 
-            Set<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdIncisos() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdIncisos() : idList;
             for (Long id : idsToAdd) {
                 articulo.getIncisos().add(incisoService.findById(id).get());
                 incisoService.findById(id).get().setArticulo(articulo);

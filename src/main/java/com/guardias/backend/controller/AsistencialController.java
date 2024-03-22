@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +24,9 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.RegistroActividadService;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -32,6 +35,8 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     @Autowired
     @Lazy
@@ -89,8 +94,26 @@ public class AsistencialController {
         if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
             asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
 
-        if (!asistencialDto.getRegistrosActividades().equals(asistencial.getRegistrosActividades()))
-            asistencial.setRegistrosActividades(asistencialDto.getRegistrosActividades());
+        if (asistencialDto.getIdRegistrosActividades() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (asistencial.getRegistrosActividades() != null) {
+                for (RegistroActividad registro : asistencial.getRegistrosActividades()) {
+                    for (Long id : asistencialDto.getIdRegistrosActividades()) {
+                        if (!registro.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? asistencialDto.getIdRegistrosActividades() : idList;
+            for (Long id : idsToAdd) {
+                asistencial.getRegistrosActividades().add(registroActividadService.findById(id).get());
+                registroActividadService.findById(id).get().setAsistencial(asistencial);
+            }
+        }
+
+        // falta especialidad
+
         return asistencial;
     }
 

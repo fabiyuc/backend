@@ -1,8 +1,10 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.AgrupacionEnum;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,7 +45,7 @@ public class Revista {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_adicional")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "revistas" })
   private Adicional adicional;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -53,7 +55,7 @@ public class Revista {
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "revista", cascade = CascadeType.ALL)
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
-  private Set<Legajo> legajos;
+  private List<Legajo> legajos;
 
   @Enumerated(EnumType.STRING)
   @Column(columnDefinition = "VARCHAR(40)")
