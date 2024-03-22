@@ -135,15 +135,6 @@ public class AutoridadController {
      * }
      */
 
-    public ResponseEntity<?> validationsCreate(AutoridadDto autoridadDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
-
-        if (autoridadService.existsByNombre(autoridadDto.getNombre()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        return respuestaValidaciones;
-    }
-
     public ResponseEntity<?> validationsUpdate(AutoridadDto autoridadDto) {
 
         // Verificar si la fecha de finalización es nula
@@ -192,7 +183,7 @@ public class AutoridadController {
             autoridad.setNombre(autoridadDto.getNombre());
 
         if (autoridad.getFechaInicio() != null)
-            autoridadDto.setFechaInicio(autoridad.getFechaInicio());
+            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
 
         if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
             autoridad.setFechaFinal(autoridadDto.getFechaFinal());
@@ -277,42 +268,6 @@ public class AutoridadController {
         return new ResponseEntity<>(new Mensaje("Autoridad actualizada"), HttpStatus.OK);
     }
 
-    /*
-     * @PostMapping("/{idAutoridad}/addEfector/{idEfector}")
-     * public ResponseEntity<?> agregarEfector(@PathVariable("idAutoridad") Long
-     * idAutoridad,
-     * 
-     * @PathVariable("idEfector") Long idEfector) {
-     * try {
-     * autoridadService.agregarEfector(idAutoridad, idEfector);
-     * return new ResponseEntity<>(new Mensaje("Efector agregado"), HttpStatus.OK);
-     * } catch (EntityNotFoundException e) {
-     * return new ResponseEntity<>(new Mensaje("No se pudo agregar el efector"),
-     * HttpStatus.NOT_FOUND);
-     * } catch (Exception e) {
-     * e.printStackTrace();
-     * return new ResponseEntity<>(new Mensaje("Error al agregar el efector"),
-     * HttpStatus.BAD_REQUEST);
-     * }
-     * }
-     * 
-     * @PostMapping("/{idAutoridad}/addPersona/{idPersona}")
-     * public ResponseEntity<?> agregarPersona(@PathVariable("idAutoridad") Long
-     * idAutoridad,
-     * 
-     * @PathVariable("idPersona") Long idPersona) {
-     * try {
-     * autoridadService.agregarPersona(idAutoridad, idPersona);
-     * return new ResponseEntity<>(new Mensaje("Persona agregada"), HttpStatus.OK);
-     * } catch (EntityNotFoundException e) {
-     * return new ResponseEntity<>(new Mensaje("No se pudo agregar la persona"),
-     * HttpStatus.NOT_FOUND);
-     * } catch (Exception e) {
-     * return new ResponseEntity<>(new Mensaje("Error al agregar la persona"),
-     * HttpStatus.BAD_REQUEST);
-     * }
-     * }
-     */
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!autoridadService.existsById(id))

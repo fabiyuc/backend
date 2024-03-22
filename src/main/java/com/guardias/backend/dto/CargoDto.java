@@ -1,9 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
-import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.validation.constraints.NotBlank;
@@ -36,7 +35,7 @@ public class CargoDto {
 
     // private Legajo legajo;
 
-    private Set<Legajo> legajos;
+    List<Long> idLegajos;
 
     @NotNull
     private AgrupacionEnum agrupacion;

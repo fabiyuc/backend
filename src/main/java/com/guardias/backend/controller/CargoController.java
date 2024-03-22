@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.CargoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Cargo;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.CargoService;
+import com.guardias.backend.service.LegajoService;
 
 @RestController
 @RequestMapping("/cargo")
@@ -29,21 +32,24 @@ public class CargoController {
     @Autowired
     CargoService cargoService;
 
+    @Autowired
+    LegajoService legajoService;
+
     @GetMapping("/list")
     public ResponseEntity<List<Cargo>> list() {
-        List<Cargo> list = cargoService.findByActivo();
-        return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
+        List<Cargo> list = cargoService.findByActivoTrue();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Cargo>> listAll() {
         List<Cargo> list = cargoService.findAll();
-        return new ResponseEntity<List<Cargo>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Cargo>> getById(@PathVariable("id") Long id) {
-        if (!cargoService.existsById(id))
+        if (!cargoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         Cargo cargo = cargoService.findById(id).get();
         return new ResponseEntity(cargo, HttpStatus.OK);
@@ -53,18 +59,13 @@ public class CargoController {
     public ResponseEntity<List<Cargo>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!cargoService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Cargo cargo = cargoService.getByNombre(nombre).get();
+        Cargo cargo = cargoService.findByNombre(nombre).get();
         return new ResponseEntity(cargo, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(Long id, CargoDto cargoDto) {
-        if (StringUtils.isBlank(cargoDto.getNombre()))
+    private ResponseEntity<?> validations(CargoDto cargoDto) {
+        if (cargoDto.getNombre() == null)
             return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isNotBlank(cargoDto.getNombre()))
-            if (cargoService.existsByNombre(cargoDto.getNombre())
-                    && cargoService.getByNombre(cargoDto.getNombre()).get().getId() != id)
-                return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (cargoDto.getDescripcion() == null)
             return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -91,36 +92,58 @@ public class CargoController {
 
     }
 
-    // PREGUNTAR LAS VALIDACIONES PARA EL UPDATE
-
     private Cargo createUpdate(Cargo cargo, CargoDto cargoDto) {
+
+        if (StringUtils.isNotBlank(cargoDto.getNombre()))
+            cargo.setNombre(cargoDto.getNombre());
+
         if (!cargoDto.getNombre().equals(cargo.getNombre()))
             cargo.setNombre(cargoDto.getNombre());
-        if (StringUtils.isNotBlank(cargoDto.getNombre())) {
+        if (StringUtils.isNotBlank(cargoDto.getNombre()))
             cargo.setNombre(cargoDto.getNombre());
-        }
+
         if (!cargoDto.getDescripcion().equals(cargo.getDescripcion()))
             cargo.setDescripcion(cargoDto.getDescripcion());
         if (!cargoDto.getNroresolucion().equals(cargo.getNroresolucion()))
             cargo.setNroresolucion(cargoDto.getNroresolucion());
         if (!cargoDto.getNrodecreto().equals(cargo.getNrodecreto()))
             cargo.setNrodecreto(cargoDto.getNrodecreto());
-        if (!cargoDto.getFecharesolucion().equals(cargo.getFecharesolucion()))
-            cargo.setFecharesolucion(cargoDto.getFecharesolucion());
-        if (!cargoDto.getFechainicio().equals(cargo.getFechainicio()))
-            cargo.setFechainicio(cargoDto.getFechainicio());
-        if (!cargoDto.getFechafinal().equals(cargo.getFechafinal()))
-            cargo.setFechafinal(cargoDto.getFechafinal());
+        /*
+         * if (!cargoDto.getFecharesolucion().equals(cargo.getFechaResolucion()))
+         * cargo.setFechaResolucion(cargoDto.getFecharesolucion());
+         */
+        if (cargoDto.getFecharesolucion() != null && cargo.getFechaResolucion() != cargoDto.getFecharesolucion())
+            cargo.setFechaResolucion(cargoDto.getFecharesolucion());
 
-        cargo.setLegajos(cargoDto.getLegajos());
+        if (cargoDto.getFechainicio() != null && cargo.getFechaInicio() != cargoDto.getFechainicio())
+            cargo.setFechaInicio(cargoDto.getFechainicio());
+        if (cargoDto.getFechafinal() != null && cargo.getFechaFinal() != cargoDto.getFechafinal())
+            cargo.setFechaFinal(cargoDto.getFechafinal());
 
         // cargo.setActivo(cargoDto.getActivo() != null ? cargoDto.getActivo() : true);
-
-        cargo.setActivo(true);
 
         if (!cargoDto.getAgrupacion().equals(cargo.getAgrupacion()))
             cargo.setAgrupacion(cargoDto.getAgrupacion());
 
+        if (cargoDto.getIdLegajos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (cargo.getLegajos() != null) {
+                for (Legajo legajo : cargo.getLegajos()) {
+                    for (Long id : cargoDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? cargoDto.getIdLegajos() : idList;
+            for (Long id : idsToAdd) {
+                cargo.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().setCargo(cargo);
+            }
+        }
+
+        cargo.setActivo(true);
         return cargo;
 
     }
@@ -179,35 +202,43 @@ public class CargoController {
      * }
      */
 
-    /*
-     * @PostMapping("/create")
-     * public ResponseEntity<?> create(@RequestBody CargoDto cargoDto) {
-     * ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
-     * 
-     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-     * Cargo cargo = createUpdate(new Cargo(), cargoDto);
-     * cargoService.save(cargo);
-     * return new ResponseEntity<Mensaje>(new Mensaje("Cargo creado correctamente"),
-     * HttpStatus.OK);
-     * }
-     * return respuestaValidaciones;
-     * }
-     */
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargoDto cargoDto) {
 
-        Cargo cargo = new Cargo();
-        ResponseEntity<?> respuestaValidaciones = validations(cargo.getId(), cargoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
 
+        if (cargoService.existsByNombre(cargoDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
+        /*
+         * if (cargoDto.getNombre() == null)
+         * return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            createUpdate(cargo, cargoDto);
+            Cargo cargo = createUpdate(new Cargo(), cargoDto);
+            cargo = createUpdate(cargo, cargoDto);
             cargoService.save(cargo);
-            return new ResponseEntity<Mensaje>(new Mensaje("Cargo creado correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Cargo creado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
+
     }
+
+    /*
+     * ResponseEntity<?> respuestaValidaciones = validations(cargoDto
+     * 
+     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+     * createUpdate(cargo, cargoDto);
+     * cargoService.save(cargo);
+     * return new ResponseEntity<Mensaje>(new Mensaje("Cargo creado correctamente"),
+     * HttpStatus.OK);
+     * } else {
+     * return respuestaValidaciones;
+     * }
+     * }
+     */
 
     /*
      * @PutMapping("/update/{id}")
@@ -238,13 +269,18 @@ public class CargoController {
         if (!cargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(id, cargoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Cargo cargo = createUpdate(cargoService.findById(id).get(), cargoDto);
+            Cargo cargo = cargoService.findById(id).orElse(null);
+            if (cargo == null) {
+                return new ResponseEntity(new Mensaje("El cargo no pudo ser encontrado"), HttpStatus.NOT_FOUND);
+            }
+            cargo = createUpdate(cargo, cargoDto);
             cargoService.save(cargo);
-            return new ResponseEntity<Mensaje>(new Mensaje("Cargo actualizado correctamente"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Cargo actualizado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
         }
-        return respuestaValidaciones;
     }
 
     @PutMapping("/delete/{id}")
@@ -255,7 +291,7 @@ public class CargoController {
         Cargo cargo = cargoService.findById(id).get();
         cargo.setActivo(false);
         cargoService.save(cargo);
-        return new ResponseEntity<>(new Mensaje("Cargo eliminado correctamente"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Cargo eliminado correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -263,7 +299,7 @@ public class CargoController {
         if (!cargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         cargoService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Cargo eliminado FISICAMENTE"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Cargo eliminado FISICAMENTE"), HttpStatus.OK);
 
     }
 }

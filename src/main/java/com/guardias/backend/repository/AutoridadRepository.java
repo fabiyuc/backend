@@ -30,6 +30,7 @@ public interface AutoridadRepository extends JpaRepository<Autoridad, Long> {
 
     Optional<Autoridad> findByNombre(String nombre);
 
+    @Query("SELECT a FROM autoridades a WHERE a.fechaInicio = :fechaInicio")
     List<Autoridad> findByFechaInicio(LocalDate fechaInicio);
 
     @Query("SELECT a FROM autoridades a WHERE a.persona.id = :personaId")
