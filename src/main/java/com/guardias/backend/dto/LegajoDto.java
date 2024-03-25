@@ -3,8 +3,6 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.guardias.backend.entity.Efector;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,5 +47,5 @@ public class LegajoDto {
     private Long idCargo;
     private boolean activo;
 
-    private List<Efector> efectores;
+    private List<Long> idEfectores;
 }

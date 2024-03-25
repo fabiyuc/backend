@@ -187,7 +187,7 @@ public class EfectorController {
         if (!efectorService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
-        Efector efector = efectorService.findEfector(id);
+        Efector efector = efectorService.findById(id);
         efector.setActivo(false);
         efectorService.saveEfector(efector);
         return new ResponseEntity(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);

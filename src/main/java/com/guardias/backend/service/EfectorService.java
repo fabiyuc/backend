@@ -22,7 +22,7 @@ public class EfectorService {
     @Autowired
     LegajoService legajoService;
 
-    public Efector findEfector(Long idEfector) {
+    public Efector findById(Long idEfector) {
         Efector efector = capsService.findById(idEfector).orElse(null);
 
         if (efector == null)

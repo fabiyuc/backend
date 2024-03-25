@@ -122,14 +122,14 @@ public class AutoridadController {
                 (autoridadDto.getIdEfector() != null &&
                         !Objects.equals(autoridad.getEfector().getId(),
                                 autoridadDto.getIdEfector()))) {
-            autoridad.setEfector(efectorService.findEfector(autoridadDto.getIdEfector()));
+            autoridad.setEfector(efectorService.findById(autoridadDto.getIdEfector()));
         }
 
         if (autoridad.getPersona() == null ||
                 (autoridadDto.getIdPersona() != null &&
                         !Objects.equals(autoridad.getPersona().getId(),
                                 autoridadDto.getIdPersona()))) {
-            autoridad.setPersona(personService.findPerson(autoridadDto.getIdPersona()));
+            autoridad.setPersona(personService.findById(autoridadDto.getIdPersona()));
         }
         autoridad.setActivo(true);
 
