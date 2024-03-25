@@ -77,6 +77,17 @@ public abstract class Efector {
     @JsonIgnore
     private Set<Autoridad> autoridades;
 
+    /*
+     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+     * "autoridades", "domicilio", "telefono",
+     * "estado", "activo",
+     * "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+     * "legajos",
+     * "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+     * "areaProgramatica",
+     * "tipoCaps", "nivelComplejidad", "cabecera", "ministerios" })
+     */
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

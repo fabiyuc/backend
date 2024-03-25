@@ -58,7 +58,7 @@ public class RevistaController {
             return new ResponseEntity<Mensaje>(new Mensaje("La agrupacion es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getIdtipoRevista() == null)
+        if (revistaDto.getIdTipoRevista() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El tipo de revista es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
@@ -87,12 +87,12 @@ public class RevistaController {
             revista.setAgrupacion(revistaDto.getAgrupacion());
 
         // Verificar si el tipo de revista se proporciona en el RevistaDto
-        if (revistaDto.getIdtipoRevista() != null) {
+        if (revistaDto.getIdTipoRevista() != null) {
             // Si el tipo de revista ya está establecido o es diferente al proporcionado,
             // actualizar el tipo de revista
             if (revista.getTipoRevista() == null
-                    || !Objects.equals(revista.getTipoRevista().getId(), revistaDto.getIdtipoRevista())) {
-                revista.setTipoRevista(tipoRevistaService.findTipoRevista(revistaDto.getIdtipoRevista()));
+                    || !Objects.equals(revista.getTipoRevista().getId(), revistaDto.getIdTipoRevista())) {
+                revista.setTipoRevista(tipoRevistaService.findTipoRevista(revistaDto.getIdTipoRevista()));
             }
         }
 

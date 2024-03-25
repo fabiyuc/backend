@@ -1,6 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -25,9 +25,9 @@ public class EfectorDto {
     private boolean activo;
 
     private Long idRegion;
-    private Set<Long> idDistribucionesHorarias;
-    private Set<Long> idAutoridades;
-    private Set<Long> idLegajosUdo;
-    private Set<Long> idLegajos;
-    private Set<Long> idNotificaciones;
+    private List<Long> idDistribucionesHorarias;
+    private List<Long> idAutoridades;
+    private List<Long> idLegajosUdo;
+    private List<Long> idLegajos;
+    private List<Long> idNotificaciones;
 }

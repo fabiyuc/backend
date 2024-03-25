@@ -27,7 +27,10 @@ public class Caps extends Efector {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_cabecera")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera", "caps" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
+            "nivelComplejidad", "cabecera", "ministerios" })
     Hospital cabecera;
 
     @Column(columnDefinition = "int default 1")
@@ -36,5 +39,4 @@ public class Caps extends Efector {
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_caps", columnDefinition = "VARCHAR(25)")
     private TipoCaps tipoCaps;
-
 }

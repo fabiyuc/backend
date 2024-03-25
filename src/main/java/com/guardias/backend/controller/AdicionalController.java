@@ -55,74 +55,22 @@ public class AdicionalController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Adicional> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!adicionalService.existsByNombre(nombre))
+        if (!adicionalService.activoByNombre(nombre))
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         Adicional adicional = adicionalService.findByNombre(nombre).get();
         return new ResponseEntity<>(adicional, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Mensaje> create(@RequestBody AdicionalDto adicionalDto) {
-        Mensaje respuestaValidaciones = validations(adicionalDto);
-        if (respuestaValidaciones != null)
-            return new ResponseEntity<>(respuestaValidaciones, HttpStatus.BAD_REQUEST);
-        Adicional adicional = createUpdate(new Adicional(), adicionalDto);
-
-        if (adicionalService.existsByNombre(adicionalDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
-
-        adicionalService.save(adicional);
-        return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AdicionalDto adicionalDto) {
-        // Verificar si el adicional existe
-        if (!adicionalService.existsById(id)) {
-            return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
-        }
-
-        // obtener el adicional a actualizar
-        Adicional adicionalExistente = adicionalService.findById(id).orElse(null);
-        if (adicionalExistente == null) {
-            return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
-        }
-
-        // Verificar si el adicional está activo
-        if (!adicionalExistente.isActivo()) {
-            return new ResponseEntity<>(new Mensaje("El adicional no está activo"), HttpStatus.BAD_REQUEST);
-        }
-
-        // Realizar otras validaciones y lógica de actualización aquí
-
-        return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Mensaje> logicDelete(@PathVariable("id") long id) {
-        if (!adicionalService.activo(id))
-            return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Adicional adicional = adicionalService.findById(id).get();
-        adicional.setActivo(false);
-        adicionalService.save(adicional);
-        return new ResponseEntity<>(new Mensaje("Adicional eliminado correctamente"), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/fisicdelete/{id}")
-    public ResponseEntity<Mensaje> fisicDelete(@PathVariable("id") long id) {
-        if (!adicionalService.existsById(id))
-            return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        adicionalService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Adicional eliminado FISICAMENTE"), HttpStatus.OK);
-    }
-
-    private Mensaje validations(AdicionalDto adicionalDto) {
+    private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
         if (adicionalDto.getNombre() == null)
-            return new Mensaje("El nombre es obligatorio");
+            return new ResponseEntity<Mensaje>(new Mensaje("El nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
 
         if (adicionalDto.getIdRevistas() == null)
-            return new Mensaje("La revista es obligatorio");
-        return null;
+            return new ResponseEntity<Mensaje>(new Mensaje("La situacion de revista es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
@@ -152,4 +100,55 @@ public class AdicionalController {
 
         return adicional;
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody AdicionalDto adicionalDto) {
+        if (adicionalService.activoByNombre(adicionalDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Adicional adicional = createUpdate(new Adicional(), adicionalDto);
+            adicionalService.save(adicional);
+            return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AdicionalDto adicionalDto) {
+        // Verificar si el adicional existe
+        if (!adicionalService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
+        }
+
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Adicional adicional = createUpdate(adicionalService.findById(id).get(), adicionalDto);
+            adicionalService.save(adicional);
+            return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Mensaje> logicDelete(@PathVariable("id") long id) {
+        if (!adicionalService.activo(id))
+            return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        Adicional adicional = adicionalService.findById(id).get();
+        adicional.setActivo(false);
+        adicionalService.save(adicional);
+        return new ResponseEntity<>(new Mensaje("Adicional eliminado correctamente"), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/fisicdelete/{id}")
+    public ResponseEntity<Mensaje> fisicDelete(@PathVariable("id") long id) {
+        if (!adicionalService.existsById(id))
+            return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        adicionalService.deleteById(id);
+        return new ResponseEntity<>(new Mensaje("Adicional eliminado FISICAMENTE"), HttpStatus.OK);
+    }
+
 }

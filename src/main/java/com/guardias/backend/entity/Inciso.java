@@ -26,16 +26,21 @@ public class Inciso extends Ley {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_inciso")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subIncisos", "inciso" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
+            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private Inciso inciso;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso", "subIncisos", "articulo", "denominacion",
-            "detalle", "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "tipoLey" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
+            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private Set<Inciso> subIncisos;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_articulo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos", "articulo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
+            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private Articulo articulo;
 }

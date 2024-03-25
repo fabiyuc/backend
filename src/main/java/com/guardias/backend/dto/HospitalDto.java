@@ -1,6 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -20,6 +20,6 @@ public class HospitalDto extends EfectorDto {
     @Min(value = 1)
     private int nivelComplejidad;
 
-    private Set<Long> idCaps;
+    private List<Long> idCaps;
 
 }

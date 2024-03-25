@@ -44,15 +44,19 @@ public class Autoridad {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_efector")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",
-                        "observacion", "region", "esCabecera", "admitePasiva", "caps" })
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+                        "estado", "activo",
+                        "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+                        "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
+                        "tipoCaps", "nivelComplejidad", "cabecera", "ministerios" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_persona")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "novedadesPersonales", "suplentes",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "apellido", "dni", "cuil", "legajos",
+                        "novedadesPersonales", "suplentes",
                         "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio",
-                        "estado" })
+                        "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion" })
         private Person persona;
 
         @Override

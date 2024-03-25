@@ -61,16 +61,25 @@ public class LeyController {
     }
 
     public Ley createUpdate(Ley ley, LeyDto leyDto) {
-        if (!leyDto.getNumero().equals(ley.getNumero()))
+
+        if (leyDto.getNumero() != null && !leyDto.getNumero().isEmpty()
+                && !leyDto.getNumero().equals(ley.getNumero()))
             ley.setNumero(leyDto.getNumero());
-        if (!leyDto.getDenominacion().equals(ley.getDenominacion()))
+
+        if (leyDto.getDenominacion() != null && !leyDto.getDenominacion().isEmpty()
+                && !leyDto.getDenominacion().equals(ley.getDenominacion()))
             ley.setDenominacion(leyDto.getDenominacion());
-        if (!leyDto.getDetalle().equals(ley.getDetalle()))
+
+        if (leyDto.getDetalle() != null && !leyDto.getDetalle().isEmpty()
+                && !leyDto.getDetalle().equals(ley.getDetalle()))
             ley.setDetalle(leyDto.getDetalle());
-        if (!leyDto.getEstado().equals(ley.getEstado()))
+
+        if (leyDto.getEstado() != null && !leyDto.getEstado().equals(ley.getEstado()))
             ley.setEstado(leyDto.getEstado());
-        if (!leyDto.getFechaAlta().equals(ley.getFechaAlta()))
+
+        if (leyDto.getFechaAlta() != null && !leyDto.getFechaAlta().equals(ley.getFechaAlta()))
             ley.setFechaAlta(leyDto.getFechaAlta());
+
         if (ley.getFechaBaja() != leyDto.getFechaBaja() && leyDto.getFechaBaja() != null)
             ley.setFechaBaja(leyDto.getFechaBaja());
         if (ley.getFechaModificacion() != leyDto.getFechaModificacion() && leyDto.getFechaModificacion() != null)

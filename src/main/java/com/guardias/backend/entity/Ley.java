@@ -68,6 +68,14 @@ public abstract class Ley {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes" })
     private TipoLey tipoLey;
 
+    /*
+     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero",
+     * "denominacion", "detalle", "estado",
+     * "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion",
+     * "activo", "novedadesPersonales",
+     * "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+     */
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
