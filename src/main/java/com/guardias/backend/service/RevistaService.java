@@ -5,11 +5,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.repository.RevistaRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
@@ -18,7 +17,7 @@ public class RevistaService {
     @Autowired
     RevistaRepository revistaRepository;
 
-    public List<Revista> findByActivo() {
+    public List<Revista> findByActivoTrue() {
         return revistaRepository.findByActivoTrue();
     }
 
@@ -30,16 +29,20 @@ public class RevistaService {
         return revistaRepository.findById(id);
     }
 
+    public boolean existsById(Long id) {
+        return revistaRepository.existsById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (revistaRepository.existsById(id) && revistaRepository.findById(id).get().isActivo());
+    }
+
     public void save(Revista revista) {
         revistaRepository.save(revista);
     }
 
     public void deleteById(Long id) {
         revistaRepository.deleteById(id);
-    }
-
-    public boolean existsById(Long id) {
-        return revistaRepository.existsById(id);
     }
 
 }

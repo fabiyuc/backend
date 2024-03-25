@@ -75,8 +75,7 @@ public class Revista {
         return false;
     } else if (!id.equals(other.id))
       return false;
-    if (agrupacion != other.agrupacion)
-      return false;
+
     return true;
   }
 
@@ -85,7 +84,6 @@ public class Revista {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((agrupacion == null) ? 0 : agrupacion.hashCode());
     return result;
   }
 
