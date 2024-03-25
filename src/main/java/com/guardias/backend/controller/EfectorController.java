@@ -1,8 +1,8 @@
 package com.guardias.backend.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +89,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdDistribucionesHorarias() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList();
             if (efector.getDistribucionesHorarias() != null) {
                 for (DistribucionHoraria distribucionHoraria : efector.getDistribucionesHorarias()) {
                     for (Long id : efectorDto.getIdDistribucionesHorarias()) {
@@ -99,7 +99,7 @@ public class EfectorController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdDistribucionesHorarias() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdDistribucionesHorarias() : idList;
             for (Long id : idsToAdd) {
                 efector.getDistribucionesHorarias().add(distribucionHorariaService.findById(id));
                 distribucionHorariaService.findById(id).setEfector(efector);
@@ -107,7 +107,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdAutoridades() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList();
             if (efector.getAutoridades() != null) {
                 for (Autoridad autoridad : efector.getAutoridades()) {
                     for (Long id : efectorDto.getIdAutoridades()) {
@@ -117,7 +117,7 @@ public class EfectorController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdAutoridades() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdAutoridades() : idList;
             for (Long id : idsToAdd) {
                 efector.getAutoridades().add(autoridadService.findById(id).get());
                 autoridadService.findById(id).get().setEfector(efector);
@@ -125,7 +125,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdLegajosUdo() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList();
             if (efector.getLegajosUdo() != null) {
                 for (Legajo LegajoUdo : efector.getLegajosUdo()) {
                     for (Long id : efectorDto.getIdLegajosUdo()) {
@@ -135,7 +135,7 @@ public class EfectorController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajosUdo() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajosUdo() : idList;
             for (Long id : idsToAdd) {
                 efector.getLegajosUdo().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setUdo(efector);
@@ -143,7 +143,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdLegajos() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList();
             if (efector.getLegajos() != null) {
                 for (Legajo legajo : efector.getLegajos()) {
                     for (Long id : efectorDto.getIdLegajos()) {
@@ -153,7 +153,7 @@ public class EfectorController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajos() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajos() : idList;
             for (Long id : idsToAdd) {
                 efector.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().getEfectores().add(efector);
@@ -161,7 +161,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdNotificaciones() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList();
             if (efector.getNotificaciones() != null) {
                 for (Notificacion notificacion : efector.getNotificaciones()) {
                     for (Long id : efectorDto.getIdNotificaciones()) {
@@ -171,7 +171,7 @@ public class EfectorController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdNotificaciones() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdNotificaciones() : idList;
             for (Long id : idsToAdd) {
                 efector.getNotificaciones().add(notificacionService.findById(id).get());
                 notificacionService.findById(id).get().getEfectores().add(efector);
