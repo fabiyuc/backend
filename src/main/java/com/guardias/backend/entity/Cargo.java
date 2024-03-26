@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -70,7 +71,7 @@ public class Cargo {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
             "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
             "persona", "cargo", "efectores" })
-    private List<Legajo> legajos;
+    private List<Legajo> legajos = new ArrayList<>();;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(40)")

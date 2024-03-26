@@ -88,6 +88,9 @@ public class CargoController {
         if (cargoDto.getAgrupacion() == null)
             return new ResponseEntity(new Mensaje("Agrupación obligatoria"), HttpStatus.BAD_REQUEST);
 
+        if (cargoDto.getIdLegajos() == null)
+            return new ResponseEntity(new Mensaje("Legajos obligatorios"), HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
 
     }

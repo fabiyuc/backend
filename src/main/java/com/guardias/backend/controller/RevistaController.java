@@ -73,7 +73,7 @@ public class RevistaController {
                     HttpStatus.BAD_REQUEST);
 
         if (revistaDto.getIdTipoRevista() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El tipo de revista es obligatorio"),
+            return new ResponseEntity(new Mensaje("El tipo de revista es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
         if (revistaDto.getIdcategoria() == null)
@@ -149,23 +149,23 @@ public class RevistaController {
         }
 
         if (revistaDto.getIdLegajos() != null) {
-            List<Long> idlist = new ArrayList<Long>();
+            List<Long> idList = new ArrayList<Long>();
             if (revista.getLegajos() != null) {
                 for (Legajo legajo : revista.getLegajos()) {
                     for (Long id : revistaDto.getIdLegajos()) {
                         if (!legajo.getId().equals(id)) {
-                            idlist.add(id);
+                            idList.add(id);
                         }
                     }
                 }
             }
-            List<Long> idsToAdd = idlist.isEmpty() ? revistaDto.getIdLegajos() : idlist;
+            List<Long> idsToAdd = idList.isEmpty() ? revistaDto.getIdLegajos() : idList;
             for (Long id : idsToAdd) {
                 revista.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setRevista(revista);
             }
-        }
 
+        }
         revista.setActivo(true);
         return revista;
     }
@@ -173,12 +173,6 @@ public class RevistaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RevistaDto revistaDto) {
         ResponseEntity<?> respuestaValidaciones = validationsCreate(revistaDto);
-
-        /*
-         * if (revistaService.existsByAgrupacion(revistaDto.getAgrupacion()))
-         * return new ResponseEntity<Mensaje>(new Mensaje("Esa agrupacion ya existe"),
-         * HttpStatus.BAD_REQUEST);
-         */
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
