@@ -98,21 +98,6 @@ public class CategoriaController {
         return categoria;
     }
 
-    private ResponseEntity<?> validations(CategoriaDto categoriaDto) {
-        if (StringUtils.isBlank(categoriaDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private Categoria createUpdate(Categoria categoria, CategoriaDto categoriaDto) {
-        if (categoriaDto.getNombre() != null && !categoriaDto.getNombre().equals(categoria.getNombre())
-                && !categoriaDto.getNombre().isEmpty())
-            categoria.setNombre(categoriaDto.getNombre());
-        categoria.setActivo(true);
-        return categoria;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CategoriaDto categoriaDto) {
         ResponseEntity<?> respuestaValidaciones = validations(categoriaDto);
