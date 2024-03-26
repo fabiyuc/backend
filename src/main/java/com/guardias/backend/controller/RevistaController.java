@@ -80,11 +80,11 @@ public class RevistaController {
             return new ResponseEntity<Mensaje>(new Mensaje("La categoria es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getIdadicional() == null)
+        if (revistaDto.getIdAdicional() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El adicional es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getIdcargaHoraria() == null)
+        if (revistaDto.getIdCargaHoraria() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La carga horaria es obligatoria"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -132,34 +132,34 @@ public class RevistaController {
             }
         }
 
-        if (revistaDto.getIdadicional() != null) {
+        if (revistaDto.getIdAdicional() != null) {
             // Si el adicional ya está establecido o es diferente al proporcionado,
             // actualizar
             // el adicional
             if (revista.getAdicional() == null
-                    || !Objects.equals(revista.getAdicional().getId(), revistaDto.getIdadicional())) {
-                revista.setAdicional(adicionalService.findAdicional(revistaDto.getIdadicional()));
+                    || !Objects.equals(revista.getAdicional().getId(), revistaDto.getIdAdicional())) {
+                revista.setAdicional(adicionalService.findAdicional(revistaDto.getIdAdicional()));
             }
         }
-        if (revistaDto.getIdcargaHoraria() != null) {
+        if (revistaDto.getIdCargaHoraria() != null) {
             if (revista.getCargaHoraria() == null
-                    || !Objects.equals(revista.getCargaHoraria().getId(), revistaDto.getIdcargaHoraria())) {
-                revista.setCargaHoraria(cargaHorariaService.findCargaHoraria(revistaDto.getIdcargaHoraria()));
+                    || !Objects.equals(revista.getCargaHoraria().getId(), revistaDto.getIdCargaHoraria())) {
+                revista.setCargaHoraria(cargaHorariaService.findCargaHoraria(revistaDto.getIdCargaHoraria()));
             }
         }
 
-        if (revistaDto.getIdlegajos() != null) {
+        if (revistaDto.getIdLegajos() != null) {
             List<Long> idlist = new ArrayList<Long>();
             if (revista.getLegajos() != null) {
                 for (Legajo legajo : revista.getLegajos()) {
-                    for (Long id : revistaDto.getIdlegajos()) {
+                    for (Long id : revistaDto.getIdLegajos()) {
                         if (!legajo.getId().equals(id)) {
                             idlist.add(id);
                         }
                     }
                 }
             }
-            List<Long> idsToAdd = idlist.isEmpty() ? revistaDto.getIdlegajos() : idlist;
+            List<Long> idsToAdd = idlist.isEmpty() ? revistaDto.getIdLegajos() : idlist;
             for (Long id : idsToAdd) {
                 revista.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setRevista(revista);
