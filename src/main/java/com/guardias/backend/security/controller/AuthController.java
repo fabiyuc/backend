@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 @CrossOrigin
 public class AuthController {
+    
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -51,7 +52,7 @@ public class AuthController {
 
     @Autowired
     JwtProvider jwtProvider;
-    @PostMapping("/nuevo")
+    @PostMapping("/create")
     public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult){
         if(bindingResult.hasErrors())
             return new ResponseEntity(new Mensaje("campos mal puestos o email invaldo"), HttpStatus.BAD_REQUEST);
