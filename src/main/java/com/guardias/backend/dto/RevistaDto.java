@@ -20,8 +20,6 @@ public class RevistaDto {
 
     @NotBlank
     private Long idcategoria;
-    private boolean activo;
-
     @NotBlank
     private Long idAdicional;
 

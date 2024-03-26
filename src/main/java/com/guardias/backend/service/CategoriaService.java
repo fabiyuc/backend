@@ -16,8 +16,14 @@ public class CategoriaService {
 
     @Autowired
     CategoriaRepository categoriaRepository;
+    @Autowired
+    RevistaService revistaService;
 
-    public List<Categoria> findByActivo() {
+    public Categoria findCategoria(Long idCategoria) {
+        return categoriaRepository.findById(idCategoria).orElse(null);
+    }
+
+    public List<Categoria> findByActivoTrue() {
         return categoriaRepository.findByActivoTrue();
     }
 
@@ -29,8 +35,21 @@ public class CategoriaService {
         return categoriaRepository.findById(id);
     }
 
-    public Optional<Categoria> getByNombre(String nombre) {
+    public Optional<Categoria> findByNombre(String nombre) {
         return categoriaRepository.findByNombre(nombre);
+    }
+
+    public boolean existsById(Long id) {
+        return categoriaRepository.existsById(id);
+    }
+
+    public boolean existsByNombre(String nombre) {
+        return categoriaRepository.existsByNombre(nombre)
+                && categoriaRepository.findByNombre(nombre).get().isActivo();
+    }
+
+    public boolean activo(Long id) {
+        return categoriaRepository.existsById(id) && categoriaRepository.findById(id).get().isActivo();
     }
 
     public void save(Categoria adicional) {
@@ -39,18 +58,6 @@ public class CategoriaService {
 
     public void deleteById(Long id) {
         categoriaRepository.deleteById(id);
-    }
-
-    public boolean existsById(Long id) {
-        return categoriaRepository.existsById(id);
-    }
-
-    public boolean activo(Long id) {
-        return (categoriaRepository.existsById(id) && categoriaRepository.findById(id).get().isActivo());
-    }
-
-    public boolean existsByNombre(String nombre) {
-        return categoriaRepository.existsByNombre(nombre);
     }
 
     public boolean activoByNombre(String nombre) {

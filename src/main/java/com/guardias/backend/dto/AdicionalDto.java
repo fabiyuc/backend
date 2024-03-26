@@ -15,7 +15,8 @@ public class AdicionalDto {
 
     @NotBlank
     private String nombre;
-    List<Long> idRevistas;
+
     @NotNull
     private boolean activo;
+    List<Long> idRevistas;
 }

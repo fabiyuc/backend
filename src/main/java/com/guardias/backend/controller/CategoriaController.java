@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.CategoriaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Categoria;
+import com.guardias.backend.entity.Revista;
 import com.guardias.backend.service.CategoriaService;
+import com.guardias.backend.service.RevistaService;
 
 @RestController
 @RequestMapping("/categoria")
@@ -29,32 +32,70 @@ public class CategoriaController {
     @Autowired
     CategoriaService categoriaService;
 
+    @Autowired
+    RevistaService revistaService;
+
     @GetMapping("/list")
     public ResponseEntity<List<Categoria>> list() {
-        List<Categoria> list = categoriaService.findByActivo();
-        return new ResponseEntity<List<Categoria>>(list, HttpStatus.OK);
+        List<Categoria> list = categoriaService.findByActivoTrue();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Categoria>> listAll() {
         List<Categoria> list = categoriaService.findAll();
-        return new ResponseEntity<List<Categoria>>(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Categoria> getById(@PathVariable("id") Long id) {
         if (!categoriaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
+            if (!categoriaService.activo(id))
+                return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
         Categoria categoria = categoriaService.findById(id).get();
-        return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
+        return new ResponseEntity(categoria, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Categoria> getByNombre(@PathVariable("nombre") String nombre) {
         if (!categoriaService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe categoria con ese nombre"), HttpStatus.NOT_FOUND);
-        Categoria categoria = categoriaService.getByNombre(nombre).get();
-        return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
+        Categoria categoria = categoriaService.findByNombre(nombre).get();
+        return new ResponseEntity(categoria, HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> validations(CategoriaDto categoriaDto) {
+        if (categoriaDto.getNombre() == null)
+            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Categoria createUpdate(Categoria categoria, CategoriaDto categoriaDto) {
+        if (StringUtils.isNotBlank(categoriaDto.getNombre()))
+            categoria.setNombre(categoriaDto.getNombre());
+        if (categoriaDto.getNombre() != null && categoria.getNombre() != categoriaDto.getNombre())
+            categoria.setNombre(categoriaDto.getNombre());
+
+        if (categoriaDto.getIdRevista() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (categoria.getRevistas() != null) {
+                for (Revista revista : categoria.getRevistas()) {
+                    for (Long id : categoriaDto.getIdRevista()) {
+                        if (!revista.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? categoriaDto.getIdRevista() : idList;
+            for (Long id : idsToAdd) {
+                categoria.getRevistas().add(revistaService.findById(id).get());
+                revistaService.findById(id).get().setCategoria(categoria);
+            }
+        }
+        categoria.setActivo(true);
+        return categoria;
     }
 
     private ResponseEntity<?> validations(CategoriaDto categoriaDto) {
