@@ -50,8 +50,12 @@ public class CargoService {
         return cargoRepository.existsById(id);
     }
 
-    public boolean existsByNombre(String nombre) {
+    public boolean activoByNombre(String nombre) {
         return (cargoRepository.existsByNombre(nombre) && cargoRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    public boolean existsByNombre(String nombre) {
+        return cargoRepository.existsByNombre(nombre);
     }
 
     public boolean activo(Long id) {

@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication
-@EntityScan(basePackages = { "com.guardias.backend.entity" })
+@EntityScan(basePackages = { "com.guardias.backend.entity" ,"com.guardias.backend.security.entity" })
 public class BackendApplication {
 
 	public static void main(String[] args) {

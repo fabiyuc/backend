@@ -60,4 +60,9 @@ public class CategoriaService {
         categoriaRepository.deleteById(id);
     }
 
+    public boolean activoByNombre(String nombre) {
+        return (categoriaRepository.existsByNombre(nombre)
+                && categoriaRepository.findByNombre(nombre).get().isActivo());
+    }
+
 }

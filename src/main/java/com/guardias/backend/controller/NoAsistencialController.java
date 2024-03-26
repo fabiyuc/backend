@@ -77,6 +77,7 @@ public class NoAsistencialController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             NoAsistencial noAsistencial = createUpdate(new NoAsistencial(), noAsistencialDto);
+            noAsistencial.setActivo(true);
             noAsistencialService.save(noAsistencial);
             return new ResponseEntity(new Mensaje("Presona creada correctamente"), HttpStatus.OK);
         } else {
