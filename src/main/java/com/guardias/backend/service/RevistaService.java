@@ -17,6 +17,13 @@ public class RevistaService {
     @Autowired
     RevistaRepository revistaRepository;
 
+    @Autowired
+    LegajoService legajoService;
+
+    public Revista findRevista(Long idRevista) {
+        return revistaRepository.findById(idRevista).orElse(null);
+    }
+
     public List<Revista> findByActivoTrue() {
         return revistaRepository.findByActivoTrue();
     }
