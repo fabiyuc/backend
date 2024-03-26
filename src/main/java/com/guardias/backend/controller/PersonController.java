@@ -72,7 +72,9 @@ public class PersonController {
     }
 
     public Person createUpdate(Person person, PersonDto personDto) {
-        if (!personDto.getTelefono().equals(person.getTelefono()))
+
+        if (personDto.getTelefono() != null && !personDto.getTelefono().equals(person.getTelefono())
+                && !personDto.getTelefono().isEmpty())
             person.setTelefono(personDto.getTelefono());
 
         if (personDto.getIdSuplentes() != null) {
@@ -113,10 +115,12 @@ public class PersonController {
             }
         }
 
-        if (!personDto.getSexo().equals(person.getSexo()))
+        if (personDto.getSexo() != null && !personDto.getSexo().equals(person.getSexo())
+                && !personDto.getSexo().isEmpty())
             person.setSexo(personDto.getSexo());
 
-        if (!personDto.getNombre().equals(person.getNombre()))
+        if (personDto.getNombre() != null && !personDto.getNombre().equals(person.getNombre())
+                && !personDto.getNombre().isEmpty())
             person.setNombre(personDto.getNombre());
 
         if (personDto.getIdLegajos() != null) {
@@ -139,13 +143,19 @@ public class PersonController {
         }
 
         if (!personDto.getFechaNacimiento().equals(person.getFechaNacimiento()))
-            person.setFechaNacimiento(personDto.getFechaNacimiento());
-        if (!personDto.getEstado().equals(person.getEstado()))
-            person.setEstado(personDto.getEstado());
-        if (!personDto.getEmail().equals(person.getEmail()))
+            if (personDto.getFechaNacimiento() != null && personDto.getFechaNacimiento() != person.getFechaNacimiento())
+                person.setFechaNacimiento(personDto.getFechaNacimiento());
+
+        person.setEstado(personDto.getEstado());
+
+        if (personDto.getEmail() != null && !personDto.getEmail().equals(person.getEmail())
+                && !personDto.getEmail().isEmpty())
             person.setEmail(personDto.getEmail());
-        if (!personDto.getDomicilio().equals(person.getDomicilio()))
+
+        if (personDto.getDomicilio() != null && !personDto.getDomicilio().equals(person.getDomicilio())
+                && !personDto.getDomicilio().isEmpty())
             person.setDomicilio(personDto.getDomicilio());
+
         if (personDto.getDni() != person.getDni())
             person.setDni(personDto.getDni());
 
@@ -168,9 +178,12 @@ public class PersonController {
             }
         }
 
-        if (!personDto.getCuil().equals(person.getCuil()))
+        if (personDto.getCuil() != null && !personDto.getCuil().equals(person.getCuil())
+                && !personDto.getCuil().isEmpty())
             person.setCuil(personDto.getCuil());
-        if (!personDto.getApellido().equals(person.getApellido()))
+
+        if (personDto.getApellido() != null && !personDto.getApellido().equals(person.getApellido())
+                && !personDto.getApellido().isEmpty())
             person.setApellido(personDto.getApellido());
         return person;
     }

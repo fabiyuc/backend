@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.repository.DepartamentoRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -31,7 +34,7 @@ public class DepartamentoService {
         return departamentoRepository.findByNombre(nombre);
     }
 
-    public Optional<Departamento>getByCodigoPostal(String codigoPostal){
+    public Optional<Departamento> getByCodigoPostal(String codigoPostal) {
         return departamentoRepository.findByCodigoPostal(codigoPostal);
     }
 
@@ -47,11 +50,20 @@ public class DepartamentoService {
         return departamentoRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (departamentoRepository.existsById(id) && departamentoRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByNombre(String nombre) {
         return departamentoRepository.existsByNombre(nombre);
     }
 
-    public boolean existsByCodigoPostal(String codigoPostal){
+    public boolean activoByNombre(String nombre) {
+        return (departamentoRepository.existsByNombre(nombre)
+                && departamentoRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    public boolean existsByCodigoPostal(String codigoPostal) {
         return departamentoRepository.existsByCodigoPostal(codigoPostal);
     }
 }

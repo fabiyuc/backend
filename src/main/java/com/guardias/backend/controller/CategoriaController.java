@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.CategoriaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Categoria;
@@ -41,7 +43,7 @@ public class CategoriaController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Categoria> getById(@PathVariable("id") Long id) {
-        if (!categoriaService.existsById(id))
+        if (!categoriaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
         Categoria categoria = categoriaService.findById(id).get();
         return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
@@ -49,47 +51,65 @@ public class CategoriaController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Categoria> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!categoriaService.existsByNombre(nombre))
+        if (!categoriaService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe categoria con ese nombre"), HttpStatus.NOT_FOUND);
         Categoria categoria = categoriaService.getByNombre(nombre).get();
         return new ResponseEntity<Categoria>(categoria, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody CategoriaDto categoriaDto) {
+    private ResponseEntity<?> validations(CategoriaDto categoriaDto) {
         if (StringUtils.isBlank(categoriaDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Categoria createUpdate(Categoria categoria, CategoriaDto categoriaDto) {
+        if (categoriaDto.getNombre() != null && !categoriaDto.getNombre().equals(categoria.getNombre())
+                && !categoriaDto.getNombre().isEmpty())
+            categoria.setNombre(categoriaDto.getNombre());
+        categoria.setActivo(true);
+        return categoria;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody CategoriaDto categoriaDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(categoriaDto);
+
         if (categoriaService.existsByNombre(categoriaDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-        Categoria categoria = new Categoria();
-        categoria.setNombre(categoriaDto.getNombre());
-        categoriaService.save(categoria);
-        return new ResponseEntity<>(new Mensaje("Categoria creada"), HttpStatus.OK);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Categoria categoria = createUpdate(new Categoria(), categoriaDto);
+            categoriaService.save(categoria);
+            return new ResponseEntity<>(new Mensaje("Categoria creada correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CategoriaDto categoriaDto) {
-        if (!categoriaService.existsById(id))
+        if (!categoriaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
 
-        if (categoriaService.existsByNombre(categoriaDto.getNombre())
-                && categoriaService.getByNombre(categoriaDto.getNombre()).get().getId() == id)
+        ResponseEntity<?> respuestaValidaciones = validations(categoriaDto);
+
+        if (categoriaService.existsByNombre(categoriaDto.getNombre()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(categoriaDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        Categoria categoria = categoriaService.findById(id).get();
-        categoria.setNombre(categoriaDto.getNombre());
-        categoriaService.save(categoria);
-
-        return new ResponseEntity<>(new Mensaje("Categoria Actualizada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Categoria categoria = createUpdate(categoriaService.findById(id).get(), categoriaDto);
+            categoriaService.save(categoria);
+            return new ResponseEntity<>(new Mensaje("Categoria creada correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!categoriaService.existsById(id))
+        if (!categoriaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
         Categoria categoria = categoriaService.findById(id).get();
         categoria.setActivo(false);

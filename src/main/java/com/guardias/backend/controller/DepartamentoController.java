@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DepartamentoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.service.DepartamentoService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -40,7 +43,7 @@ public class DepartamentoController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Departamento>> getById(@PathVariable("id") Long id) {
-        if (!departamentoService.existsById(id))
+        if (!departamentoService.activo(id))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
         Departamento departamento = departamentoService.findById(id).get();
         return new ResponseEntity(departamento, HttpStatus.OK);
@@ -48,45 +51,58 @@ public class DepartamentoController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Departamento>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!departamentoService.existsByNombre(nombre))
+        if (!departamentoService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("departamento no existe"), HttpStatus.NOT_FOUND);
         Departamento departamento = departamentoService.getByNombre(nombre).get();
         return new ResponseEntity(departamento, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody DepartamentoDto departamentoDto) {
+    private ResponseEntity<?> validations(DepartamentoDto departamentoDto) {
+
         if (StringUtils.isBlank(departamentoDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (departamentoService.existsByNombre(departamentoDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
             return new ResponseEntity(new Mensaje("el codigo postal es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
+        if (departamentoDto.getProvincia() == null)
+            return new ResponseEntity(new Mensaje("la provincia es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    // private Adicional createUpdate(Adicional adicional, AdicionalDto
+    // adicionalDto)
+
+    private Departamento createUpdate(Departamento departamento, DepartamentoDto departamentoDto) {
+
+        departamento.setNombre(departamentoDto.getNombre());
+        departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
+        departamento.setProvincia(departamentoDto.getProvincia());
+        departamento.setActivo(true);
+        return departamento;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody DepartamentoDto departamentoDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(departamentoDto);
+
+        if (departamentoService.existsByNombre(departamentoDto.getNombre()))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
         if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal()))
             return new ResponseEntity(new Mensaje("ese CP ya existe"),
                     HttpStatus.BAD_REQUEST);
 
-        // ******************** el control de provincia valida es necesario???? lo
-        // obtiene de un select al valor
-        if (departamentoDto.getProvincia() == null)
-            return new ResponseEntity(new Mensaje("la provincia  es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        Departamento departamento = new Departamento();
-        departamento.setNombre(departamentoDto.getNombre());
-        departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
-
-        // ******* no necesito guardar ni modificar la listas */
-        // departamento.setLocalidades(departamentoDto.getLocalidades());
-
-        departamento.setProvincia(departamentoDto.getProvincia());
-
-        departamentoService.save(departamento);
-        return new ResponseEntity(new Mensaje("Departamento creado"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Departamento departamento = createUpdate(new Departamento(), departamentoDto);
+            departamentoService.save(departamento);
+            return new ResponseEntity<>(new Mensaje("Departamento creado correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
     }
 
     @PutMapping(("/update/{id}"))
@@ -94,50 +110,20 @@ public class DepartamentoController {
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("El departamento no existe"), HttpStatus.NOT_FOUND);
 
-        if (departamentoService.existsByNombre(departamentoDto.getNombre()) &&
-                departamentoService.getByNombre(departamentoDto.getNombre()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(departamentoDto);
 
-        if (StringUtils.isBlank(departamentoDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Departamento departamento = createUpdate(departamentoService.findById(id).get(), departamentoDto);
+            departamentoService.save(departamento);
+            return new ResponseEntity<>(new Mensaje("Departamento creado correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
 
-        if (StringUtils.isBlank(departamentoDto.getCodigoPostal()))
-            return new ResponseEntity(new Mensaje("el CP es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal())
-                && departamentoService.getByCodigoPostal(departamentoDto.getCodigoPostal()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("ese CP ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (departamentoDto.getProvincia() == null)
-            return new ResponseEntity(new Mensaje("indicar la provincia"),
-                    HttpStatus.BAD_REQUEST);
-
-        Departamento departamento = departamentoService.findById(id).get();
-
-        // ******* La validacion antes de setear los valores me gusta que sea en la
-        // misma linea pero no muestra mensajes de error
-
-        // ******* Ahora está mostrando los msjs de error por la validacion previa, ver
-        // como queda para limpiar el codigo */
-
-        if (!departamentoDto.getNombre().equals(departamento.getNombre()))
-            departamento.setNombre(departamentoDto.getNombre());
-        if (!departamentoDto.getCodigoPostal().equals(departamento.getCodigoPostal()))
-            departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
-        if (!departamentoDto.getProvincia().equals(departamento.getProvincia()))
-            departamento.setProvincia(departamentoDto.getProvincia());
-
-        // ******* no necesito guardar ni modificar la listas */
-        // if (!departamentoDto.getLocalidades().equals(departamento.getLocalidades()))
-        // departamento.setLocalidades(departamentoDto.getLocalidades());
-
-        departamentoService.save(departamento);
-        return new ResponseEntity(new Mensaje("Departamento actualizado"), HttpStatus.OK);
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!departamentoService.existsById(id))
+        if (!departamentoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el departamento"), HttpStatus.NOT_FOUND);
 
         Departamento departamento = departamentoService.findById(id).get();

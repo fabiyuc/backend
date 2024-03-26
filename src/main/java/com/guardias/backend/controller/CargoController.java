@@ -57,7 +57,7 @@ public class CargoController {
 
     @GetMapping("/detailname/{nombre}")
     public ResponseEntity<List<Cargo>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!cargoService.existsByNombre(nombre))
+        if (!cargoService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         Cargo cargo = cargoService.findByNombre(nombre).get();
         return new ResponseEntity(cargo, HttpStatus.OK);
@@ -108,10 +108,7 @@ public class CargoController {
             cargo.setNroresolucion(cargoDto.getNroresolucion());
         if (cargoDto.getNrodecreto() != null && cargo.getNrodecreto() != cargoDto.getNrodecreto())
             cargo.setNrodecreto(cargoDto.getNrodecreto());
-        /*
-         * if (!cargoDto.getFecharesolucion().equals(cargo.getFechaResolucion()))
-         * cargo.setFechaResolucion(cargoDto.getFecharesolucion());
-         */
+
         if (cargoDto.getFecharesolucion() != null && cargo.getFechaResolucion() != cargoDto.getFecharesolucion())
             cargo.setFechaResolucion(cargoDto.getFecharesolucion());
 
@@ -119,8 +116,6 @@ public class CargoController {
             cargo.setFechaInicio(cargoDto.getFechainicio());
         if (cargoDto.getFechafinal() != null && cargo.getFechaFinal() != cargoDto.getFechafinal())
             cargo.setFechaFinal(cargoDto.getFechafinal());
-
-        // cargo.setActivo(cargoDto.getActivo() != null ? cargoDto.getActivo() : true);
 
         if (cargoDto.getAgrupacion() != null && cargo.getAgrupacion() != cargoDto.getAgrupacion())
             cargo.setAgrupacion(cargoDto.getAgrupacion());
@@ -145,79 +140,18 @@ public class CargoController {
 
         cargo.setActivo(true);
         return cargo;
-
     }
-
-    /*
-     * @PostMapping("/create")
-     * public ResponseEntity<?> create(@RequestBody CargoDto cargoDto) {
-     * // Validaciones
-     * if (StringUtils.isBlank(cargoDto.getNombre()))
-     * return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoService.existsByNombre(cargoDto.getNombre()))
-     * return new ResponseEntity(new Mensaje("Ese nombre ya existe"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoDto.getDescripcion() == null)
-     * return new ResponseEntity(new Mensaje("La descripción es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoDto.getNroresolucion() == null)
-     * return new ResponseEntity(new
-     * Mensaje("El número de resolución es obligatorio"), HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoDto.getNrodecreto() == null)
-     * return new ResponseEntity(new Mensaje("El número de decreto es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoDto.getFecharesolucion() == null)
-     * return new ResponseEntity(new Mensaje("Fecha de resolución obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoDto.getFechainicio() == null)
-     * return new ResponseEntity(new Mensaje("Fecha de inicio obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (cargoDto.getFechafinal() == null)
-     * return new ResponseEntity(new Mensaje("Fecha final obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * Cargo cargo = new Cargo();
-     * cargo.setNombre(cargoDto.getNombre());
-     * cargo.setDescripcion(cargoDto.getDescripcion());
-     * cargo.setNroresolucion(cargoDto.getNroresolucion());
-     * cargo.setNrodecreto(cargoDto.getNrodecreto());
-     * cargo.setFecharesolucion(cargoDto.getFecharesolucion());
-     * cargo.setFechainicio(cargoDto.getFechainicio());
-     * cargo.setFechafinal(cargoDto.getFechafinal());
-     * 
-     * cargo.setLegajos(cargoDto.getLegajos());
-     * cargo.setAgrupacion(cargoDto.getAgrupacion());
-     * 
-     * cargoService.save(cargo);
-     * 
-     * return new ResponseEntity<>(new Mensaje("Cargo creado"), HttpStatus.OK);
-     * }
-     */
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargoDto cargoDto) {
 
         ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
 
-        if (cargoService.existsByNombre(cargoDto.getNombre()))
+        if (cargoService.activoByNombre(cargoDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
-        /*
-         * if (cargoDto.getNombre() == null)
-         * return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"),
-         * HttpStatus.BAD_REQUEST);
-         */
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Cargo cargo = createUpdate(new Cargo(), cargoDto);
-            cargo = createUpdate(cargo, cargoDto);
             cargoService.save(cargo);
             return new ResponseEntity<>(new Mensaje("Cargo creado correctamente"), HttpStatus.OK);
         } else {
@@ -226,44 +160,6 @@ public class CargoController {
 
     }
 
-    /*
-     * ResponseEntity<?> respuestaValidaciones = validations(cargoDto
-     * 
-     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-     * createUpdate(cargo, cargoDto);
-     * cargoService.save(cargo);
-     * return new ResponseEntity<Mensaje>(new Mensaje("Cargo creado correctamente"),
-     * HttpStatus.OK);
-     * } else {
-     * return respuestaValidaciones;
-     * }
-     * }
-     */
-
-    /*
-     * @PutMapping("/update/{id}")
-     * public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody
-     * CargoDto cargoDto) {
-     * if (!cargoService.existsById(id))
-     * return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-     * 
-     * if (cargoService.existsByNombre(cargoDto.getNombre())
-     * && cargoService.getByNombre(cargoDto.getNombre()).get().getId() != id)
-     * return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
-     * 
-     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-     * Cargo cargo = createUpdate(cargoService.findById(id).get(), cargoDto);
-     * cargoService.save(cargo);
-     * return new ResponseEntity<Mensaje>(new
-     * Mensaje("Cargo actualizado correctamente"), HttpStatus.OK);
-     * }
-     * return respuestaValidaciones;
-     * }
-     */
-
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargoDto cargoDto) {
         if (!cargoService.existsById(id))
@@ -271,11 +167,7 @@ public class CargoController {
 
         ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Cargo cargo = cargoService.findById(id).orElse(null);
-            if (cargo == null) {
-                return new ResponseEntity(new Mensaje("El cargo no pudo ser encontrado"), HttpStatus.NOT_FOUND);
-            }
-            cargo = createUpdate(cargo, cargoDto);
+            Cargo cargo = createUpdate(cargoService.findById(id).get(), cargoDto);
             cargoService.save(cargo);
             return new ResponseEntity(new Mensaje("Cargo actualizado correctamente"), HttpStatus.OK);
         } else {
@@ -285,7 +177,7 @@ public class CargoController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!cargoService.existsById(id))
+        if (!cargoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         Cargo cargo = cargoService.findById(id).get();
