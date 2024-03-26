@@ -1,8 +1,10 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,23 +57,33 @@ public abstract class Person {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Legajo> legajos;
+    private List<Legajo> legajos;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<NovedadPersonal> novedadesPersonales;
+    private List<NovedadPersonal> novedadesPersonales;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<NovedadPersonal> suplentes;
+    private List<NovedadPersonal> suplentes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<DistribucionHoraria> distribucionesHorarias;
+    private List<DistribucionHoraria> distribucionesHorarias;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Autoridad> autoridades;
+    private List<Autoridad> autoridades;
+
+    /*
+     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+     * "apellido", "dni", "cuil", "legajos",
+     * "novedadesPersonales", "suplentes",
+     * "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+     * "domicilio",
+     * "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+     * "descripcion" })
+     */
 
     @Override
     public boolean equals(Object obj) {

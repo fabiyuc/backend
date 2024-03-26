@@ -72,14 +72,14 @@ public class DistribucionHorariaController {
                 (distribucionHorariaDto.getIdPersona() != null &&
                         !Objects.equals(distribucionHoraria.getPersona().getId(),
                                 distribucionHorariaDto.getIdPersona()))) {
-            distribucionHoraria.setPersona(personService.findPerson(distribucionHorariaDto.getIdPersona()));
+            distribucionHoraria.setPersona(personService.findById(distribucionHorariaDto.getIdPersona()));
         }
 
         if (distribucionHoraria.getEfector() == null ||
                 (distribucionHorariaDto.getIdEfector() != null &&
                         !Objects.equals(distribucionHoraria.getEfector().getId(),
                                 distribucionHorariaDto.getIdEfector()))) {
-            distribucionHoraria.setEfector(efectorService.findEfector(distribucionHorariaDto.getIdEfector()));
+            distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto.getIdEfector()));
         }
 
         if (distribucionHorariaDto.getCantidadHoras() != distribucionHoraria.getCantidadHoras()

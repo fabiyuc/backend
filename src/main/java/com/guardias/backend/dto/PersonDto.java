@@ -1,10 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
-import com.guardias.backend.entity.DistribucionHoraria;
-import com.guardias.backend.entity.Legajo;
-import com.guardias.backend.entity.NovedadPersonal;
+import java.util.List;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -33,14 +31,10 @@ public class PersonDto {
     private Boolean estado;
     private boolean activo;
 
-    private Set<NovedadPersonal> novedadesPersonales;
-
-    private Set<NovedadPersonal> suplentes;
-
-    private Set<DistribucionHoraria> distribucionesHorarias;
-
-    private Set<AutoridadDto> autoridades;
-
-    private Set<Legajo> legajos;
+    private List<Long> idNovedadesPersonales;
+    private List<Long> idSuplentes;
+    private List<Long> idDistribucionesHorarias;
+    private List<Long> idAutoridades;
+    private List<Long> idLegajos;
 
 }

@@ -43,12 +43,18 @@ public class CargaHorariaService {
         return cargaHorariaRepository.existsById(id);
     }
 
+    public boolean activoByCantidad(int cantidad) {
+        return (cargaHorariaRepository.existsByCantidad(cantidad)
+                && cargaHorariaRepository.findByCantidad(cantidad).get().isActivo());
+    }
+
     public boolean existsByCantidad(int cantidad) {
         return cargaHorariaRepository.existsByCantidad(cantidad);
     }
 
     public boolean activo(Long id) {
-        return cargaHorariaRepository.existsById(id) && cargaHorariaRepository.findById(id).get().isActivo();
+        Optional<CargaHoraria> cargaHorariaOptional = cargaHorariaRepository.findById(id);
+        return cargaHorariaOptional.isPresent() && cargaHorariaOptional.get().isActivo();
     }
 
     public void save(CargaHoraria cargaHoraria) {

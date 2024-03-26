@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +17,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.SuspencionDto;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Suspencion;
+import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.SuspencionService;
 
 @RestController
@@ -27,6 +32,8 @@ public class SuspencionController {
 
     @Autowired
     SuspencionService suspencionService;
+    @Autowired
+    LegajoService legajoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Suspencion>> list() {
@@ -80,7 +87,26 @@ public class SuspencionController {
         suspencion.setDescripcion(suspencionDto.getDescripcion());
         suspencion.setFechaInicio(suspencionDto.getFechaInicio());
         suspencion.setFechaFin(suspencionDto.getFechaFin());
-        suspencion.setLegajos(suspencionDto.getLegajos());
+
+        if (suspencionDto.getIdLegajos() != null) {
+            List<Long> idList = new ArrayList();
+            if (suspencion.getLegajos() != null) {
+                for (Legajo legajo : suspencion.getLegajos()) {
+                    for (Long id : suspencionDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? suspencionDto.getIdLegajos() : idList;
+            for (Long id : idsToAdd) {
+                suspencion.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().setSuspencion(suspencion);
+            }
+        }
+
         suspencionService.save(suspencion);
         return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
     }

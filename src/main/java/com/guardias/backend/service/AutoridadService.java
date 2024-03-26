@@ -43,7 +43,7 @@ public class AutoridadService {
         return autoridadRepository.findByPersonaId(personaId);
     }
 
-    public List<Autoridad> findByFechaInicio(LocalDate fechaInicio) {
+    public Optional<List<Autoridad>> findByFechaInicio(LocalDate fechaInicio) {
         return autoridadRepository.findByFechaInicio(fechaInicio);
     }
 
@@ -80,7 +80,15 @@ public class AutoridadService {
         return autoridadRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
+    public boolean activoByEfectorId(Long efectorId) {
+        return autoridadRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
+    }
+
     public boolean existsByPersonaId(Long personaId) {
+        return autoridadRepository.existsByPersonaId(personaId);
+    }
+
+    public boolean activoByPersonaId(Long personaId) {
         return autoridadRepository.existsByPersonaId(personaId) && personaService.activoById(personaId);
     }
 

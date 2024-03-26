@@ -61,6 +61,12 @@ public class Revista {
   @Column(columnDefinition = "VARCHAR(40)")
   private AgrupacionEnum agrupacion;
 
+  /*
+   * @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista",
+   * "categoria", "adicional", "cargaHoraria",
+   * "legajos", "agrupacion", "activo" })
+   */
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

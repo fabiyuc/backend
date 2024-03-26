@@ -3,16 +3,16 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.guardias.backend.entity.Asistencial;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RegistroActividadDto {
 
     @NotBlank
@@ -32,7 +32,7 @@ public class RegistroActividadDto {
     @NotBlank
     private TipoGuardiaEnum tipoGuardia;
 
-    private Asistencial asistencial;
-    private Efector efector;
+    private Long idAsistencial;
+    private Long idEfector;
 
 }

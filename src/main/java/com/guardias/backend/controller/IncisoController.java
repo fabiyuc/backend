@@ -1,8 +1,7 @@
 package com.guardias.backend.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,7 +65,7 @@ public class IncisoController {
         }
 
         if (incisoDto.getIdSubIncisos() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList();
             if (inciso.getSubIncisos() == null) {
                 for (Inciso incisoList : inciso.getSubIncisos()) {
                     for (Long id : incisoDto.getIdSubIncisos()) {
@@ -77,7 +76,7 @@ public class IncisoController {
                 }
             }
 
-            Set<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
             for (Long id : idsToAdd) {
                 incisoService.findById(id).get().setInciso(inciso);
                 inciso.getSubIncisos().add(incisoService.findById(id).get());

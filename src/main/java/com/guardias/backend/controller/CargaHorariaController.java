@@ -57,10 +57,23 @@ public class CargaHorariaController {
 
     @GetMapping("/detailcantidad/{cantidad}")
     public ResponseEntity<List<CargaHoraria>> getByCantidad(@PathVariable("cantidad") int cantidad) {
-        if (!cargaHorariaService.existsByCantidad(cantidad))
+        if (!cargaHorariaService.activoByCantidad(cantidad))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
         CargaHoraria cargaHoraria = cargaHorariaService.findByCantidad(cantidad).get();
         return new ResponseEntity(cargaHoraria, HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> validations(CargaHorariaDto cargaHorariaDto) {
+
+        if (cargaHorariaDto.getCantidad() < 1)
+            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (StringUtils.isBlank(cargaHorariaDto.getDescripcion()))
+            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
+        if (cargaHorariaDto.getIdRevistas() == null)
+            return new ResponseEntity(new Mensaje("La revista es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     private CargaHoraria createUpdate(CargaHoraria cargaHoraria, CargaHorariaDto cargaHorariaDto) {
@@ -72,7 +85,7 @@ public class CargaHorariaController {
             cargaHoraria.setDescripcion(cargaHorariaDto.getDescripcion());
         }
         if (cargaHorariaDto.getIdRevistas() != null) {
-            List<Long> idList = new ArrayList<Long>();
+            List<Long> idList = new ArrayList<>();
             if (cargaHoraria.getRevistas() != null) {
                 for (Revista revista : cargaHoraria.getRevistas()) {
                     for (Long id : cargaHorariaDto.getIdRevistas()) {
@@ -93,24 +106,18 @@ public class CargaHorariaController {
 
     }
 
-    private ResponseEntity<?> validations(CargaHorariaDto cargaHorariaDto) {
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
         ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto);
 
-        if (cargaHorariaDto.getCantidad() < 1) {
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
+        if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad()))
+            return new ResponseEntity(new Mensaje("esa cantidad ya existe"), HttpStatus.BAD_REQUEST);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             CargaHoraria cargaHoraria = createUpdate(new CargaHoraria(), cargaHorariaDto);
             cargaHoraria = createUpdate(cargaHoraria, cargaHorariaDto);
             cargaHorariaService.save(cargaHoraria);
-            return new ResponseEntity<>(new Mensaje("Carga horaria creada correctamente"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Carga horaria creada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -118,18 +125,16 @@ public class CargaHorariaController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargaHorariaDto cargaHorariaDto) {
-        if (!cargaHorariaService.existsById(id))
+
+        // Busca por ID
+        if (!cargaHorariaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            CargaHoraria cargaHoraria = cargaHorariaService.findById(id).orElse(null);
-            if (cargaHoraria == null) {
-                return new ResponseEntity(new Mensaje("La carga horaria no pudo ser encontrada"), HttpStatus.NOT_FOUND);
-            }
-            cargaHoraria = createUpdate(cargaHoraria, cargaHorariaDto);
+            CargaHoraria cargaHoraria = createUpdate(cargaHorariaService.findById(id).get(), cargaHorariaDto);
             cargaHorariaService.save(cargaHoraria);
-            return new ResponseEntity(new Mensaje("Carga horaria actualizada"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Carga horaria modificada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -164,7 +169,7 @@ public class CargaHorariaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!cargaHorariaService.existsById(id))
+        if (!cargaHorariaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
 
         CargaHoraria cargaHoraria = cargaHorariaService.findById(id).get();
@@ -181,5 +186,4 @@ public class CargaHorariaController {
         cargaHorariaService.deleteById(id);
         return new ResponseEntity(new Mensaje("carga horaria eliminada FISICAMENTE"), HttpStatus.OK);
     }
-
 }

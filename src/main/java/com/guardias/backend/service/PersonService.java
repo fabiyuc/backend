@@ -37,7 +37,7 @@ public class PersonService {
     @Autowired
     AutoridadService autoridadService;
 
-    public Person findPerson(Long idPersona) {
+    public Person findById(Long idPersona) {
         Person persona = asistencialService.findById(idPersona).orElse(null);
 
         if (persona == null) {
@@ -79,7 +79,7 @@ public class PersonService {
 
     @Transactional
     public void agregarLegajo(Long idPersona, Long idLegajo) {
-        Person persona = findPerson(idPersona);
+        Person persona = findById(idPersona);
 
         Legajo legajo = legajoService.findById(idLegajo).get();
         legajo.setPersona(persona);
@@ -92,7 +92,7 @@ public class PersonService {
     // Para NovedadPersonal y para suplente!!!!!!!!!!!!!!!!!
     @Transactional
     public void agregarNovedadPersonal(Long idPersona, Long idNovedadPersonal) {
-        Person persona = findPerson(idPersona);
+        Person persona = findById(idPersona);
 
         NovedadPersonal novedadPersonal = novedadPersonalService.findById(idNovedadPersonal).get();
         novedadPersonal.setPersona(persona);
@@ -105,7 +105,7 @@ public class PersonService {
     @Transactional
     public void agregarDistribucionHoraria(Long idPersona, Long idDistribucionHoraria) {
 
-        Person persona = findPerson(idPersona);
+        Person persona = findById(idPersona);
 
         DistribucionHoraria distribucionHoraria = distribucionHorariaService.findById(idDistribucionHoraria).get();
         distribucionHoraria.setPersona(persona);
@@ -118,7 +118,7 @@ public class PersonService {
     @Transactional
     public void agregarAutoridad(Long idPersona, Long idAutoridad) {
 
-        Person persona = findPerson(idPersona);
+        Person persona = findById(idPersona);
 
         Autoridad autoridad = autoridadService.findById(idAutoridad).get();
         autoridad.setPersona(persona);

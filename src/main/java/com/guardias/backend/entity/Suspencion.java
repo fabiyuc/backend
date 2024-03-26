@@ -1,7 +1,8 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,5 +32,5 @@ public class Suspencion {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "suspencion", cascade = CascadeType.ALL)
-    private Set<Legajo> legajos;
+    private List<Legajo> legajos;
 }

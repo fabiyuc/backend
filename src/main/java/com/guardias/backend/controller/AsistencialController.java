@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -60,7 +59,7 @@ public class AsistencialController {
             return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
 
         Asistencial asistencial = asistencialService.findById(id).get();
-        Set<Legajo> legajos = asistencial.getLegajos();
+        List<Legajo> legajos = asistencial.getLegajos();
 
         return new ResponseEntity<>(legajos, HttpStatus.OK);
     }

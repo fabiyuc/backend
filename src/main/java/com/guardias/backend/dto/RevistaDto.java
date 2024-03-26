@@ -16,18 +16,16 @@ import lombok.NoArgsConstructor;
 public class RevistaDto {
 
     @NotBlank
-    private Long idtipoRevista;
+    private Long idTipoRevista;
+
+    @NotBlank
     private Long idcategoria;
     @NotBlank
-    private Long idadicional;
+    private Long idAdicional;
 
     @NotBlank
-    private Long idcargaHoraria;
-    private List<Long> idlegajos;
-
-    @NotBlank
-    private boolean activo;
-
+    private Long idCargaHoraria;
+    private List<Long> idLegajos;
     @NotNull
     private AgrupacionEnum agrupacion;
 
