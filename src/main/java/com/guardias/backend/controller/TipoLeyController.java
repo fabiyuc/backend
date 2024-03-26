@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLeyDto;
+import com.guardias.backend.entity.Ley;
 import com.guardias.backend.entity.TipoLey;
+import com.guardias.backend.service.LeyService;
 import com.guardias.backend.service.TipoLeyService;
 
 import io.micrometer.common.util.StringUtils;
@@ -27,6 +32,8 @@ public class TipoLeyController {
 
     @Autowired
     TipoLeyService tipoLeyService;
+    @Autowired
+    LeyService leyService;
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLey>> list() {
@@ -59,7 +66,25 @@ public class TipoLeyController {
 
         TipoLey tipoLey = new TipoLey();
         tipoLey.setDescripcion(tipoLeyDto.getDescripcion());
-        tipoLey.setLeyes(tipoLeyDto.getLeyes());
+
+        if (tipoLeyDto.getIdLeyes() != null) {
+            List<Long> idList = new ArrayList();
+            if (tipoLey.getLeyes() != null) {
+                for (Ley ley : tipoLey.getLeyes()) {
+                    for (Long id : tipoLeyDto.getIdLeyes()) {
+                        if (!ley.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? tipoLeyDto.getIdLeyes() : idList;
+            for (Long id : idsToAdd) {
+                tipoLey.getLeyes().add(leyService.findById(id));
+                leyService.findById(id).setTipoLey(tipoLey);
+            }
+        }
 
         tipoLeyService.save(tipoLey);
         return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley creada correctamente"), HttpStatus.OK);
@@ -76,7 +101,7 @@ public class TipoLeyController {
 
         TipoLey tipoLey = tipoLeyService.findById(id).get();
         tipoLey.setDescripcion(tipoLeyDto.getDescripcion());
-        tipoLey.setLeyes(tipoLeyDto.getLeyes());
+        // tipoLey.setLeyes(tipoLeyDto.getLeyes());
 
         tipoLeyService.save(tipoLey);
         return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley modificada correctamente"), HttpStatus.OK);
