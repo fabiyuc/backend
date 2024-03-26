@@ -1,6 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ public class CargaHorariaDto {
     @NotBlank
     private int cantidad;
     private String descripcion;
-    Set<Long> idRevistas;
+    List<Long> idRevistas;
     private boolean activo;
 
 }

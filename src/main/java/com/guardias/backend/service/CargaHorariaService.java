@@ -16,6 +16,12 @@ public class CargaHorariaService {
 
     @Autowired
     CargaHorariaRepository cargaHorariaRepository;
+    @Autowired
+    RevistaService revistaService;
+
+    public CargaHoraria findCargaHoraria(Long idCargaHoraria) {
+        return cargaHorariaRepository.findById(idCargaHoraria).orElse(null);
+    }
 
     public List<CargaHoraria> findByActivoTrue() {
         return cargaHorariaRepository.findByActivoTrue();
@@ -42,15 +48,8 @@ public class CargaHorariaService {
     }
 
     public boolean activo(Long id) {
-        Optional<CargaHoraria> cargaHorariaOptional = cargaHorariaRepository.findById(id);
-        return cargaHorariaOptional.isPresent() && cargaHorariaOptional.get().isActivo();
+        return cargaHorariaRepository.existsById(id) && cargaHorariaRepository.findById(id).get().isActivo();
     }
-
-    /*
-     * public Optional<CargaHoraria> getByCantidad(int cantidad) {
-     * return cargaHorariaRepository.findByCantidad(cantidad);
-     * }
-     */
 
     public void save(CargaHoraria cargaHoraria) {
         cargaHorariaRepository.save(cargaHoraria);

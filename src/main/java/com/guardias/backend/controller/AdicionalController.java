@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.service.AdicionalService;
 import com.guardias.backend.service.RevistaService;
+
+import io.micrometer.common.util.StringUtils;
 
 @RestController
 @RequestMapping("/adicional")
@@ -48,60 +51,125 @@ public class AdicionalController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<Adicional> getById(@PathVariable("id") Long id) {
         if (!adicionalService.activo(id))
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("No existe el adicional"), HttpStatus.NOT_FOUND);
         Adicional adicional = adicionalService.findById(id).get();
-        return new ResponseEntity<>(adicional, HttpStatus.OK);
+        return new ResponseEntity(adicional, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<Adicional> getByNombre(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<List<Adicional>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!adicionalService.existsByNombre(nombre))
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("No existe el adicional"), HttpStatus.NOT_FOUND);
         Adicional adicional = adicionalService.findByNombre(nombre).get();
-        return new ResponseEntity<>(adicional, HttpStatus.OK);
+        return new ResponseEntity(adicional, HttpStatus.OK);
     }
 
+    private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
+        if (adicionalDto.getNombre() == null)
+            return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("Valido"), HttpStatus.OK);
+    }
+
+    private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
+        if (StringUtils.isNotBlank(adicionalDto.getNombre()))
+            adicional.setNombre(adicionalDto.getNombre());
+        if (adicionalDto.getNombre() != null && adicional.getNombre() != adicionalDto.getNombre())
+            adicional.setNombre(adicionalDto.getNombre());
+
+        if (adicionalDto.getIdRevistas() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (adicional.getRevistas() != null) {
+                for (Revista revista : adicional.getRevistas()) {
+                    for (Long id : adicionalDto.getIdRevistas()) {
+                        if (!revista.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? adicionalDto.getIdRevistas() : idList;
+            for (Long id : idsToAdd) {
+                adicional.getRevistas().add(revistaService.findById(id).get());
+                revistaService.findById(id).get().setAdicional(adicional);
+            }
+        }
+        adicional.setActivo(true);
+        return adicional;
+    }
+
+    /*
+     * private Adicional createUpdate(Adicional adicional, AdicionalDto
+     * adicionalDto) {
+     * // Verificar si se proporciona un nuevo nombre y si es diferente al actual
+     * if (adicionalDto.getNombre() != null && !adicionalDto.getNombre().isEmpty()
+     * && !adicionalDto.getNombre().equals(adicional.getNombre())) {
+     * adicional.setNombre(adicionalDto.getNombre());
+     * }
+     * 
+     * // Verificar si se proporciona un conjunto de revistas
+     * if (adicionalDto.getIdRevistas() != null) {
+     * // Agregar las revistas proporcionadas sin limpiar las existentes
+     * for (Long id : adicionalDto.getIdRevistas()) {
+     * Revista revista = revistaService.findById(id).orElse(null);
+     * if (revista != null) {
+     * // Verificar si la revista ya está asociada al adicional
+     * boolean revistaExistente = adicional.getRevistas().stream()
+     * .anyMatch(r -> r.getId().equals(id));
+     * if (!revistaExistente) {
+     * adicional.getRevistas().add(revista);
+     * revista.setAdicional(adicional);
+     * }
+     * }
+     * }
+     * }
+     * adicional.setActivo(true);
+     * 
+     * return adicional;
+     * }
+     */
+
     @PostMapping("/create")
-    public ResponseEntity<Mensaje> create(@RequestBody AdicionalDto adicionalDto) {
-        Mensaje respuestaValidaciones = validations(adicionalDto);
-        if (respuestaValidaciones != null)
-            return new ResponseEntity<>(respuestaValidaciones, HttpStatus.BAD_REQUEST);
-        Adicional adicional = createUpdate(new Adicional(), adicionalDto);
+    public ResponseEntity<?> create(@RequestBody AdicionalDto adicionalDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
 
         if (adicionalService.existsByNombre(adicionalDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
-        adicionalService.save(adicional);
-        return new ResponseEntity<>(new Mensaje("Adicional creado"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Adicional adicional = createUpdate(new Adicional(), adicionalDto);
+            adicional = createUpdate(adicional, adicionalDto);
+            adicionalService.save(adicional);
+            return new ResponseEntity<>(new Mensaje("Adicional creado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AdicionalDto adicionalDto) {
-        // Verificar si el adicional existe
-        if (!adicionalService.existsById(id)) {
-            return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
+        if (!adicionalService.existsById(id))
+            return new ResponseEntity(new Mensaje("No existe el adicional"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Adicional adicional = adicionalService.findById(id).orElse(null);
+            if (adicional == null) {
+                return new ResponseEntity(new Mensaje("No existe el adicional"), HttpStatus.NOT_FOUND);
+            }
+            adicional = createUpdate(adicional, adicionalDto);
+            adicionalService.save(adicional);
+            return new ResponseEntity(new Mensaje("Adicional actualizado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
         }
-
-        // obtener el adicional a actualizar
-        Adicional adicionalExistente = adicionalService.findById(id).orElse(null);
-        if (adicionalExistente == null) {
-            return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
-        }
-
-        // Verificar si el adicional está activo
-        if (!adicionalExistente.isActivo()) {
-            return new ResponseEntity<>(new Mensaje("El adicional no está activo"), HttpStatus.BAD_REQUEST);
-        }
-
-        // Realizar otras validaciones y lógica de actualización aquí
-
-        return new ResponseEntity<>(new Mensaje("Adicional actualizado"), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Mensaje> logicDelete(@PathVariable("id") long id) {
-        if (!adicionalService.activo(id))
-            return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> logicDelete(@PathVariable("id") long id) {
+        if (!adicionalService.existsById(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
         Adicional adicional = adicionalService.findById(id).get();
         adicional.setActivo(false);
         adicionalService.save(adicional);
@@ -109,47 +177,11 @@ public class AdicionalController {
     }
 
     @DeleteMapping("/fisicdelete/{id}")
-    public ResponseEntity<Mensaje> fisicDelete(@PathVariable("id") long id) {
+    public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!adicionalService.existsById(id))
             return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         adicionalService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Adicional eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
-    private Mensaje validations(AdicionalDto adicionalDto) {
-        if (adicionalDto.getNombre() == null)
-            return new Mensaje("El nombre es obligatorio");
-
-        if (adicionalDto.getIdRevistas() == null)
-            return new Mensaje("La revista es obligatorio");
-        return null;
-    }
-
-    private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
-        // Verificar si se proporciona un nuevo nombre y si es diferente al actual
-        if (adicionalDto.getNombre() != null && !adicionalDto.getNombre().isEmpty()
-                && !adicionalDto.getNombre().equals(adicional.getNombre())) {
-            adicional.setNombre(adicionalDto.getNombre());
-        }
-
-        // Verificar si se proporciona un conjunto de revistas
-        if (adicionalDto.getIdRevistas() != null) {
-            // Agregar las revistas proporcionadas sin limpiar las existentes
-            for (Long id : adicionalDto.getIdRevistas()) {
-                Revista revista = revistaService.findById(id).orElse(null);
-                if (revista != null) {
-                    // Verificar si la revista ya está asociada al adicional
-                    boolean revistaExistente = adicional.getRevistas().stream()
-                            .anyMatch(r -> r.getId().equals(id));
-                    if (!revistaExistente) {
-                        adicional.getRevistas().add(revista);
-                        revista.setAdicional(adicional);
-                    }
-                }
-            }
-        }
-        adicional.setActivo(true);
-
-        return adicional;
-    }
 }

@@ -16,6 +16,12 @@ public class AdicionalService {
 
     @Autowired
     AdicionalRepository adicionalRepository;
+    @Autowired
+    RegionService regionService;
+
+    public Adicional findAdicional(Long idAdicional) {
+        return adicionalRepository.findById(idAdicional).orElse(null);
+    }
 
     public List<Adicional> findByActivoTrue() {
         return adicionalRepository.findByActivoTrue();
@@ -38,11 +44,12 @@ public class AdicionalService {
     }
 
     public boolean existsByNombre(String nombre) {
-        return adicionalRepository.existsByNombre(nombre);
+        return adicionalRepository.existsByNombre(nombre)
+                && adicionalRepository.findByNombre(nombre).get().isActivo();
     }
 
     public boolean activo(Long id) {
-        return (adicionalRepository.existsById(id) && adicionalRepository.findById(id).get().isActivo());
+        return adicionalRepository.existsById(id) && adicionalRepository.findById(id).get().isActivo();
     }
 
     /*

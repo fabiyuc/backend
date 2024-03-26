@@ -13,6 +13,8 @@ public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
 
     Optional<Adicional> findByNombre(String nombre);
 
+    Optional<Adicional> findById(Long id);
+
     boolean existsByNombre(String nombre);
 
     boolean existsById(Long id);

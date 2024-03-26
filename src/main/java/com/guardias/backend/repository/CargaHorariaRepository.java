@@ -19,6 +19,8 @@ public interface CargaHorariaRepository extends JpaRepository<CargaHoraria, Long
      * List<CargaHoraria> findByActivoTrue();
      */
 
+    Optional<CargaHoraria> findById(Long id);
+
     Optional<CargaHoraria> findByCantidad(int cantidad);
 
     boolean existsByCantidad(int cantidad);
