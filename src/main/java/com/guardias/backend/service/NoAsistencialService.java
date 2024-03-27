@@ -42,10 +42,6 @@ public class NoAsistencialService {
         return noAsistencialRepository.existsByCuil(cuil);
     }
 
-    public List<NoAsistencial> findByEstado(boolean estado) {
-        return noAsistencialRepository.findByEstado(estado);
-    }
-
     public Optional<NoAsistencial> findByDni(int dni) {
         return noAsistencialRepository.findByDni(dni);
     }
