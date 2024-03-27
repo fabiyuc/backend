@@ -160,10 +160,13 @@ public class RevistaController {
                 }
             }
             List<Long> idsToAdd = idList.isEmpty() ? revistaDto.getIdLegajos() : idList;
+            
             for (Long id : idsToAdd) {
                 revista.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setRevista(revista);
             }
+            //if(revista.getLegajos().isEmpty()){
+                    //}
 
         }
         revista.setActivo(true);
