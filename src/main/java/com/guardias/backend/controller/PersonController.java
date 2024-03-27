@@ -66,8 +66,6 @@ public class PersonController {
             return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
         }
 
-        if (personDto.getEstado() == null)
-            return new ResponseEntity(new Mensaje("indicar si el estado es True o False"), HttpStatus.BAD_REQUEST);
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -146,7 +144,7 @@ public class PersonController {
             if (personDto.getFechaNacimiento() != null && personDto.getFechaNacimiento() != person.getFechaNacimiento())
                 person.setFechaNacimiento(personDto.getFechaNacimiento());
 
-        person.setEstado(personDto.getEstado());
+        person.setEsAsistencial(personDto.getEsAsistencial());
 
         if (personDto.getEmail() != null && !personDto.getEmail().equals(person.getEmail())
                 && !personDto.getEmail().isEmpty())

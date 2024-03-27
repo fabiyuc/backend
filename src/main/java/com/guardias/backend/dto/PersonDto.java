@@ -28,7 +28,7 @@ public class PersonDto {
     private String telefono;
     private String email;
     private String domicilio;
-    private Boolean estado;
+    private Boolean esAsistencial;
     private boolean activo;
 
     private List<Long> idNovedadesPersonales;

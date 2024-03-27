@@ -51,7 +51,7 @@ public abstract class Person {
     @Column(columnDefinition = "VARCHAR(50)")
     private String domicilio;
     @Column(columnDefinition = "BIT DEFAULT 1")
-    private Boolean estado;
+    private boolean esAsistencial;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
