@@ -42,10 +42,6 @@ public class AsistencialService {
         return asistencialRepository.existsByCuil(cuil);
     }
 
-    public List<Asistencial> findByEstado(boolean estado) {
-        return asistencialRepository.findByEstado(estado);
-    }
-
     public Optional<Asistencial> findByDni(int dni) {
         return asistencialRepository.findByDni(dni);
     }

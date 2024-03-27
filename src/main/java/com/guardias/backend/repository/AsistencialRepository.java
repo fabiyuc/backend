@@ -21,8 +21,6 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     boolean existsByCuil(String cuil);
 
-    List<Asistencial> findByEstado(Boolean estado);
-
     List<Asistencial> findByActivoTrue();
 
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
@@ -62,12 +61,6 @@ public class AsistencialController {
         List<Legajo> legajos = asistencial.getLegajos();
 
         return new ResponseEntity<>(legajos, HttpStatus.OK);
-    }
-
-    @GetMapping("/listestado")
-    public ResponseEntity<List<Asistencial>> list(@RequestParam("estado") Boolean estado) {
-        List<Asistencial> list = asistencialService.findByEstado(estado);
-        return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
