@@ -19,10 +19,6 @@ public class AdicionalService {
     @Autowired
     RegionService regionService;
 
-    public Adicional findAdicional(Long idAdicional) {
-        return adicionalRepository.findById(idAdicional).orElse(null);
-    }
-
     public List<Adicional> findByActivoTrue() {
         return adicionalRepository.findByActivoTrue();
     }

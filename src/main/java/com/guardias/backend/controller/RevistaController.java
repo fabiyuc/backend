@@ -60,13 +60,13 @@ public class RevistaController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Revista>> getById(@PathVariable("id") Long id) {
-        if (!revistaService.existsById(id))
+        if (!revistaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la revista con ese ID"), HttpStatus.NOT_FOUND);
         Revista revista = revistaService.findById(id).get();
         return new ResponseEntity(revista, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> validationsCreate(RevistaDto revistaDto) {
+    public ResponseEntity<?> validations(RevistaDto revistaDto) {
 
         if (revistaDto.getAgrupacion() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La agrupacion es obligatoria"),
@@ -76,7 +76,7 @@ public class RevistaController {
             return new ResponseEntity(new Mensaje("El tipo de revista es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getIdcategoria() == null)
+        if (revistaDto.getIdCategoria() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La categoria es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
@@ -91,23 +91,6 @@ public class RevistaController {
 
     }
 
-    public ResponseEntity<?> validationsUpdate(RevistaDto revistaDto) {
-
-        /*
-         * if (revistaDto.getAgrupacion() == null)
-         * return new ResponseEntity<Mensaje>(new
-         * Mensaje("La agrupacion es obligatoria"),
-         * HttpStatus.BAD_REQUEST);
-         * 
-         * if (revistaDto.getIdtipoRevista() == null)
-         * return new ResponseEntity<Mensaje>(new
-         * Mensaje("El tipo de revista es obligatorio"),
-         * HttpStatus.BAD_REQUEST);
-         */
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
     public Revista createUpdate(Revista revista, RevistaDto revistaDto) {
         if (revistaDto.getAgrupacion() != null && revista.getAgrupacion() != revistaDto.getAgrupacion())
             revista.setAgrupacion(revistaDto.getAgrupacion());
@@ -118,17 +101,17 @@ public class RevistaController {
             // actualizar el tipo de revista
             if (revista.getTipoRevista() == null
                     || !Objects.equals(revista.getTipoRevista().getId(), revistaDto.getIdTipoRevista())) {
-                revista.setTipoRevista(tipoRevistaService.findTipoRevista(revistaDto.getIdTipoRevista()));
+                revista.setTipoRevista(tipoRevistaService.findById(revistaDto.getIdTipoRevista()).get());
             }
         }
 
         // Verificar si la categoría se proporciona en el RevistaDto
-        if (revistaDto.getIdcategoria() != null) {
+        if (revistaDto.getIdCategoria() != null) {
             // Si la categoría ya está establecida o es diferente a la proporcionada,
             // actualizar la categoría
             if (revista.getCategoria() == null
-                    || !Objects.equals(revista.getCategoria().getId(), revistaDto.getIdcategoria())) {
-                revista.setCategoria(categoriaService.findCategoria(revistaDto.getIdcategoria()));
+                    || !Objects.equals(revista.getCategoria().getId(), revistaDto.getIdCategoria())) {
+                revista.setCategoria(categoriaService.findById(revistaDto.getIdCategoria()).get());
             }
         }
 
@@ -138,13 +121,13 @@ public class RevistaController {
             // el adicional
             if (revista.getAdicional() == null
                     || !Objects.equals(revista.getAdicional().getId(), revistaDto.getIdAdicional())) {
-                revista.setAdicional(adicionalService.findAdicional(revistaDto.getIdAdicional()));
+                revista.setAdicional(adicionalService.findById(revistaDto.getIdAdicional()).get());
             }
         }
         if (revistaDto.getIdCargaHoraria() != null) {
             if (revista.getCargaHoraria() == null
                     || !Objects.equals(revista.getCargaHoraria().getId(), revistaDto.getIdCargaHoraria())) {
-                revista.setCargaHoraria(cargaHorariaService.findCargaHoraria(revistaDto.getIdCargaHoraria()));
+                revista.setCargaHoraria(cargaHorariaService.findById(revistaDto.getIdCargaHoraria()).get());
             }
         }
 
@@ -158,6 +141,8 @@ public class RevistaController {
                         }
                     }
                 }
+            } else {
+                revista.setLegajos(new ArrayList<>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? revistaDto.getIdLegajos() : idList;
             for (Long id : idsToAdd) {
@@ -172,12 +157,11 @@ public class RevistaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RevistaDto revistaDto) {
-        ResponseEntity<?> respuestaValidaciones = validationsCreate(revistaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(revistaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
             Revista revista = createUpdate(new Revista(), revistaDto);
-            revista = createUpdate(revista, revistaDto);
             revistaService.save(revista);
             return new ResponseEntity<>(new Mensaje("Revista creada correctamente"), HttpStatus.OK);
         } else {
@@ -187,17 +171,14 @@ public class RevistaController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody RevistaDto revistaDto) {
-        if (!revistaService.existsById(id))
+        if (!revistaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
-        ResponseEntity<?> respuestaValidaciones = validationsUpdate(revistaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(revistaDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Revista revista = revistaService.findById(id).orElse(null);
-            if (revista == null) {
-                return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
-            }
-            revista = createUpdate(revista, revistaDto);
+
+            Revista revista = createUpdate(revistaService.findById(id).get(), revistaDto);
             revistaService.save(revista);
-            return new ResponseEntity(new Mensaje("revista actualizada"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("revista actualizada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -205,7 +186,7 @@ public class RevistaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!revistaService.existsById(id))
+        if (!revistaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
 
         Revista revista = revistaService.findById(id).get();

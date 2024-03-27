@@ -19,7 +19,7 @@ public class RevistaDto {
     private Long idTipoRevista;
 
     @NotBlank
-    private Long idcategoria;
+    private Long idCategoria;
     @NotBlank
     private Long idAdicional;
 

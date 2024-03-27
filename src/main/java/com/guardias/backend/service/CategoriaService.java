@@ -19,10 +19,6 @@ public class CategoriaService {
     @Autowired
     RevistaService revistaService;
 
-    public Categoria findCategoria(Long idCategoria) {
-        return categoriaRepository.findById(idCategoria).orElse(null);
-    }
-
     public List<Categoria> findByActivoTrue() {
         return categoriaRepository.findByActivoTrue();
     }
