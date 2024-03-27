@@ -1,8 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -84,7 +83,7 @@ public class Legajo {
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "domicilio", "telefono", "estado",
       "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
-  private Set<Efector> efectores = new HashSet<>();
+  private List<Efector> efectores;
 
   @Override
   public boolean equals(Object obj) {

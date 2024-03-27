@@ -1,7 +1,9 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +32,7 @@ public class Region {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Efector> efectores;
+    private List<Efector> efectores;
 
     @Override
     public boolean equals(Object obj) {
