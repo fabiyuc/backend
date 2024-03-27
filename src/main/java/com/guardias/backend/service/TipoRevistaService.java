@@ -19,10 +19,6 @@ public class TipoRevistaService {
     @Autowired
     RevistaService revistaService;
 
-    public TipoRevista findTipoRevista(Long idTipoRevista) {
-        return tipoRevistaRepository.findById(idTipoRevista).orElse(null);
-    }
-
     public List<TipoRevista> findByActivoTrue() {
         return tipoRevistaRepository.findByActivoTrue();
     }

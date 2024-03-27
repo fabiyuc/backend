@@ -19,10 +19,6 @@ public class CargaHorariaService {
     @Autowired
     RevistaService revistaService;
 
-    public CargaHoraria findCargaHoraria(Long idCargaHoraria) {
-        return cargaHorariaRepository.findById(idCargaHoraria).orElse(null);
-    }
-
     public List<CargaHoraria> findByActivoTrue() {
         return cargaHorariaRepository.findByActivoTrue();
     }
