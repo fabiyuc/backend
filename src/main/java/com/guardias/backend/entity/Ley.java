@@ -1,9 +1,9 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.EstadoLey;
 
@@ -60,21 +60,20 @@ public abstract class Ley {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ley", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<NovedadPersonal> novedadesPersonales;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia",
+            "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "activo" })
+    private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_ley")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "leyes", "activo" })
     private TipoLey tipoLey;
 
-    /*
-     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero",
-     * "denominacion", "detalle", "estado",
-     * "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion",
-     * "activo", "novedadesPersonales",
-     * "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
-     */
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+    // "numero","denominacion", "detalle", "estado","fechaAlta", "fechaBaja",
+    // "fechaModificacion", "motivoModificacion","activo",
+    // "novedadesPersonales","tipoLey", "articulo", "inciso", "incisos",
+    // "subIncisos", "subArticulos" })
 
     @Override
     public boolean equals(Object obj) {

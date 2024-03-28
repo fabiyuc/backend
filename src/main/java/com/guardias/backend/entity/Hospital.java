@@ -1,5 +1,6 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,6 +29,6 @@ public class Hospital extends Efector {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })
-    List<Caps> caps;
+    List<Caps> caps = new ArrayList<>();
 
 }

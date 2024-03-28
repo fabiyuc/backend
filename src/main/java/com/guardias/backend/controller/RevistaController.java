@@ -142,7 +142,7 @@ public class RevistaController {
                     }
                 }
             } else {
-                revista.setLegajos(new ArrayList<>());
+                revista.setLegajos(new ArrayList<Legajo>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? revistaDto.getIdLegajos() : idList;
             

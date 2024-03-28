@@ -1,6 +1,6 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class MinisterioDto extends EfectorDto {
 
     Long idCabecera;
-    Set<Long> idMinisterios;
+    List<Long> idMinisterios;
 
 }

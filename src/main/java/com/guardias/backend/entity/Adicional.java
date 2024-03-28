@@ -1,5 +1,6 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -35,7 +36,10 @@ public class Adicional {
     @OneToMany(mappedBy = "adicional", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista", "categoria", "adicional", "cargaHoraria",
             "legajos", "agrupacion", "activo" })
-    private List<Revista> revistas;
+    private List<Revista> revistas = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "activo", "revistas" })
 
     @Override
     public boolean equals(Object obj) {

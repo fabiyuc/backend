@@ -1,9 +1,10 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,24 +57,31 @@ public abstract class Person {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Legajo> legajos;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "persona", "cargo", "efectores" })
+    private List<Legajo> legajos = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<NovedadPersonal> novedadesPersonales;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia",
+            "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "activo" })
+    private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<NovedadPersonal> suplentes;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia",
+            "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "activo" })
+    private List<NovedadPersonal> suplentes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<DistribucionHoraria> distribucionesHorarias;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dia", "fechaInicio", "fechaFinalizacion",
+            "horaIngreso", "cantidadHoras", "activo", "efector", "persona", "lugar", "especialidad", "cantidadTurnos",
+            "destino", "descripcion", "tipoGuardia" })
+    private List<DistribucionHoraria> distribucionesHorarias = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Autoridad> autoridades;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "fechaInicio", "fechaFinal", "esActual",
+            "esRegional", "activo", "efector", "persona" })
+    private List<Autoridad> autoridades = new ArrayList<>();
 
     /*
      * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",

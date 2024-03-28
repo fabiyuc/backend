@@ -61,21 +61,18 @@ public class Cargo {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFinal;
 
-    // @OneToOne
-    // @JoinColumn(name = "id_legajo")
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo",
-    // "cargo" })
-    // private Legajo legajo;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
-    // @JoinColumn(name = "id_legajo")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
             "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
             "persona", "cargo", "efectores" })
-    private List<Legajo> legajos = new ArrayList<>();;
+    private List<Legajo> legajos = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(40)")
     private AgrupacionEnum agrupacion;
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+    // "nombre","descripcion","nroresolucion","nrodecreto","activo","fechaResolucion","fechaInicio","fechaFinal","legajos","agrupacion"})
 
     @Override
     public boolean equals(Object obj) {
