@@ -1,9 +1,8 @@
 package com.guardias.backend.controller;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,7 +72,7 @@ public class MinisterioController {
         }
 
         if (ministerioDto.getIdMinisterios() != null) {
-            Set<Long> idList = new HashSet<Long>();
+            List<Long> idList = new ArrayList<Long>();
             if (ministerio.getMinisterios() != null) {
                 for (Ministerio ministerios : ministerio.getMinisterios()) {
                     for (Long id : ministerioDto.getIdMinisterios()) {
@@ -83,7 +82,7 @@ public class MinisterioController {
                     }
                 }
             }
-            Set<Long> idsToAdd = idList.isEmpty() ? ministerioDto.getIdMinisterios() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? ministerioDto.getIdMinisterios() : idList;
             for (Long id : idsToAdd) {
                 ministerio.getMinisterios().add(ministerioService.findById(id).get());
                 ministerioService.findById(id).get().setCabecera(ministerio);

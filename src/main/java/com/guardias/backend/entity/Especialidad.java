@@ -1,7 +1,9 @@
 package com.guardias.backend.entity;
 
 import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +35,12 @@ public class Especialidad {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_profesion")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "especialidades", "asistencial", "legajos" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "asistencial", "especialidades",
+            "legajos" })
     private Profesion profesion;
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "esPasiva","activo","profesion" })
 
     @Override
     public boolean equals(Object o) {

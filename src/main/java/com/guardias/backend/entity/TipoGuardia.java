@@ -34,6 +34,8 @@ public class TipoGuardia {
      * @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
      * private Set<Asistencial> asistenciales;
      */
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
+    // "nombre", "activo" })
 
     @Override
     public boolean equals(Object obj) {

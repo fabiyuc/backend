@@ -44,11 +44,14 @@ public class Autoridad {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_efector")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+                        "autoridades", "domicilio", "telefono",
                         "estado", "activo",
-                        "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
-                        "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
-                        "tipoCaps", "nivelComplejidad", "cabecera", "ministerios" })
+                        "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+                        "legajos",
+                        "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+                        "areaProgramatica",
+                        "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -59,6 +62,9 @@ public class Autoridad {
                         "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion" })
         private Person persona;
 
+        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+        // "fechaInicio","fechaFinal","esActual","esRegional","activo","efector","persona"
+        // })
         @Override
         public boolean equals(Object obj) {
                 if (this == obj) {
