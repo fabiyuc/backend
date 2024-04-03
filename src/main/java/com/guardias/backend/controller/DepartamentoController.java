@@ -79,8 +79,19 @@ public class DepartamentoController {
     private Departamento createUpdate(Departamento departamento, DepartamentoDto departamentoDto) {
 
         departamento.setNombre(departamentoDto.getNombre());
-        departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
+
+        if (departamentoDto.getNombre() != null && departamento.getNombre() != departamentoDto.getNombre()
+                && !departamentoDto.getNombre().isEmpty())
+            departamento.setNombre(departamentoDto.getNombre());
+
+        if (departamentoDto.getCodigoPostal() != null
+                && departamento.getCodigoPostal() != departamentoDto.getCodigoPostal()
+                && !departamentoDto.getCodigoPostal().isEmpty())
+            departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
+
+        // VER PROVINCIAS!!!!!!!!!!!!!!!!
         departamento.setProvincia(departamentoDto.getProvincia());
+
         departamento.setActivo(true);
         return departamento;
     }
@@ -89,13 +100,6 @@ public class DepartamentoController {
     public ResponseEntity<?> create(@RequestBody DepartamentoDto departamentoDto) {
 
         ResponseEntity<?> respuestaValidaciones = validations(departamentoDto);
-
-        if (departamentoService.existsByNombre(departamentoDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (departamentoService.existsByCodigoPostal(departamentoDto.getCodigoPostal()))
-            return new ResponseEntity(new Mensaje("ese CP ya existe"),
-                    HttpStatus.BAD_REQUEST);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Departamento departamento = createUpdate(new Departamento(), departamentoDto);
@@ -107,7 +111,7 @@ public class DepartamentoController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody DepartamentoDto departamentoDto) {
-        if (!departamentoService.existsById(id))
+        if (!departamentoService.activo(id))
             return new ResponseEntity(new Mensaje("El departamento no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(departamentoDto);

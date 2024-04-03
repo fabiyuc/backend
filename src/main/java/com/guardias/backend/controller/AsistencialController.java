@@ -104,8 +104,7 @@ public class AsistencialController {
             }
         }
 
-        // falta especialidad
-
+        asistencial.setActivo(true);
         return asistencial;
     }
 
@@ -116,7 +115,6 @@ public class AsistencialController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
-            asistencial.setActivo(true);
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
         } else {
