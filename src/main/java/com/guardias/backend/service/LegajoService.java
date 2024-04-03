@@ -44,6 +44,10 @@ public class LegajoService {
         return legajoRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (legajoRepository.existsById(id) && legajoRepository.findById(id).get().isActivo());
+    }
+
     // @Transactional
     // public void agregarEfector(Long idLegajo, Long idEfector) {
 

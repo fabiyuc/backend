@@ -63,7 +63,7 @@ public class LegajoController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
-        if (!legajoService.existsById(id))
+        if (!legajoService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el legajo"),
                     HttpStatus.NOT_FOUND);
         Legajo legajo = legajoService.findById(id).get();
@@ -195,8 +195,7 @@ public class LegajoController {
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity(new Mensaje("error al guardar los cambios"),
-                    HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
@@ -212,8 +211,7 @@ public class LegajoController {
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
-            return new ResponseEntity(new Mensaje("error al guardar los cambios"),
-                    HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 

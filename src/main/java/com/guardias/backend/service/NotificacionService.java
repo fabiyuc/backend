@@ -47,4 +47,8 @@ public class NotificacionService {
         return notificacionRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (notificacionRepository.existsById(id) && notificacionRepository.findById(id).get().isActivo());
+    }
+
 }

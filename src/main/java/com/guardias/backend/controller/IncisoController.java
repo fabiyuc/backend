@@ -48,7 +48,7 @@ public class IncisoController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Inciso>> getById(@PathVariable("id") Long id) {
-        if (!incisoService.existsById(id))
+        if (!incisoService.activo(id))
             return new ResponseEntity(new Mensaje("Inciso no encontrado"), HttpStatus.NOT_FOUND);
         Inciso inciso = incisoService.findById(id).get();
         return new ResponseEntity(inciso, HttpStatus.OK);
@@ -95,8 +95,7 @@ public class IncisoController {
             incisoService.save(inciso);
             return new ResponseEntity<Mensaje>(new Mensaje("Inciso creado correctamente"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
-                    HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 
@@ -112,8 +111,7 @@ public class IncisoController {
             incisoService.save(inciso);
             return new ResponseEntity<Mensaje>(new Mensaje("Inciso modificado correctamente"), HttpStatus.OK);
         } else {
-            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
-                    HttpStatus.BAD_REQUEST);
+            return respuestaValidaciones;
         }
     }
 

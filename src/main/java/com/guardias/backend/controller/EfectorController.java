@@ -63,22 +63,22 @@ public class EfectorController {
 
     public Efector createUpdate(Efector efector, EfectorDto efectorDto) {
 
-        if (efector.getNombre() == null
-                || (efectorDto.getNombre() != null && !Objects.equals(efector.getNombre(), efectorDto.getNombre())))
+        if (efectorDto.getNombre() != null && !efectorDto.getNombre().equals(efector.getNombre())
+                && !efectorDto.getNombre().isEmpty())
             efector.setNombre(efectorDto.getNombre());
 
-        if (efector.getDomicilio() == null || (efectorDto.getDomicilio() != null
-                && !Objects.equals(efector.getDomicilio(), efectorDto.getDomicilio())))
+        if (efectorDto.getDomicilio() != null && !efectorDto.getDomicilio().equals(efector.getDomicilio())
+                && !efectorDto.getDomicilio().isEmpty())
             efector.setDomicilio(efectorDto.getDomicilio());
 
-        if (efector.getTelefono() == null || (efectorDto.getTelefono() != null
-                && !Objects.equals(efector.getTelefono(), efectorDto.getTelefono())))
+        if (efectorDto.getTelefono() != null && !efectorDto.getTelefono().equals(efector.getTelefono())
+                && !efectorDto.getTelefono().isEmpty())
             efector.setTelefono(efectorDto.getTelefono());
 
         efector.setEstado(efectorDto.isEstado());
 
-        if (efector.getObservacion() == null || (efectorDto.getObservacion() != null
-                && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
+        if (efectorDto.getObservacion() != null && !efectorDto.getObservacion().equals(efector.getObservacion())
+                && !efectorDto.getObservacion().isEmpty())
             efector.setObservacion(efectorDto.getObservacion());
 
         if (efector.getRegion() == null ||
