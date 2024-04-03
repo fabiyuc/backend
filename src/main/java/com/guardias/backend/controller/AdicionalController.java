@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class AdicionalController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Adicional>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!adicionalService.existsByNombre(nombre))
+        if (!adicionalService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("No existe el adicional"), HttpStatus.NOT_FOUND);
         Adicional adicional = adicionalService.findByNombre(nombre).get();
         return new ResponseEntity(adicional, HttpStatus.OK);
@@ -68,53 +69,6 @@ public class AdicionalController {
         return new ResponseEntity(new Mensaje("Valido"), HttpStatus.OK);
     }
 
-    /*
-     * private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
-     * if (adicionalDto.getNombre() == null)
-     * return new ResponseEntity<Mensaje>(new Mensaje("El nombre es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (adicionalDto.getIdRevistas() == null)
-     * return new ResponseEntity<Mensaje>(new
-     * Mensaje("La situacion de revista es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-     * }
-     */
-
-    /*
-     * private Adicional createUpdate(Adicional adicional, AdicionalDto
-     * adicionalDto) {
-     * if (StringUtils.isNotBlank(adicionalDto.getNombre()))
-     * adicional.setNombre(adicionalDto.getNombre());
-     * if (adicionalDto.getNombre() != null && adicional.getNombre() !=
-     * adicionalDto.getNombre())
-     * adicional.setNombre(adicionalDto.getNombre());
-     * 
-     * if (adicionalDto.getIdRevistas() != null) {
-     * List<Long> idList = new ArrayList<Long>();
-     * if (adicional.getRevistas() != null) {
-     * for (Revista revista : adicional.getRevistas()) {
-     * for (Long id : adicionalDto.getIdRevistas()) {
-     * if (!revista.getId().equals(id)) {
-     * idList.add(id);
-     * }
-     * }
-     * }
-     * }
-     * List<Long> idsToAdd = idList.isEmpty() ? adicionalDto.getIdRevistas() :
-     * idList;
-     * for (Long id : idsToAdd) {
-     * adicional.getRevistas().add(revistaService.findById(id).get());
-     * revistaService.findById(id).get().setAdicional(adicional);
-     * }
-     * }
-     * adicional.setActivo(true);
-     * return adicional;
-     * }
-     */
-
     private Adicional createUpdate(Adicional adicional, AdicionalDto adicionalDto) {
         // Verificar si se proporciona un nuevo nombre y si es diferente al actual
         if (adicionalDto.getNombre() != null && !adicionalDto.getNombre().isEmpty()
@@ -124,20 +78,26 @@ public class AdicionalController {
 
         // Verificar si se proporciona un conjunto de revistas
         if (adicionalDto.getIdRevistas() != null) {
-            // Agregar las revistas proporcionadas sin limpiar las existentes
-            for (Long id : adicionalDto.getIdRevistas()) {
-                Revista revista = revistaService.findById(id).orElse(null);
-                if (revista != null) {
-                    // Verificar si la revista ya está asociada al adicional
-                    boolean revistaExistente = adicional.getRevistas().stream()
-                            .anyMatch(r -> r.getId().equals(id));
-                    if (!revistaExistente) {
-                        adicional.getRevistas().add(revista);
-                        revista.setAdicional(adicional);
+            List<Long> idList = new ArrayList<Long>();
+            if (adicional.getRevistas() != null) {
+                for (Revista revista : adicional.getRevistas()) {
+                    for (Long id : adicionalDto.getIdRevistas()) {
+                        if (!revista.getId().equals(id)) {
+                            idList.add(id);
+                        }
                     }
                 }
+            } else {
+                adicional.setRevistas(new ArrayList<>());
             }
+            List<Long> idsToAdd = idList.isEmpty() ? adicionalDto.getIdRevistas() : idList;
+            for (Long id : idsToAdd) {
+                adicional.getRevistas().add(revistaService.findById(id).get());
+                revistaService.findById(id).get().setAdicional(adicional);
+            }
+
         }
+
         adicional.setActivo(true);
 
         return adicional;

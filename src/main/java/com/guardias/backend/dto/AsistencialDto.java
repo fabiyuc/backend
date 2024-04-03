@@ -21,6 +21,5 @@ public class AsistencialDto extends PersonDto {
 
     @NotBlank
     private TipoGuardiaEnum tipoGuardia;
-    private List<Long> idEspecialidades;
     private List<Long> idRegistrosActividades;
 }

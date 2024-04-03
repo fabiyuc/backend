@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,17 +96,16 @@ public class CargoController {
 
     private Cargo createUpdate(Cargo cargo, CargoDto cargoDto) {
 
-        if (StringUtils.isNotBlank(cargoDto.getNombre()))
+        if (cargoDto.getNombre() != null && !cargoDto.getNombre().isEmpty()
+                && !cargoDto.getNombre().equals(cargo.getNombre()))
             cargo.setNombre(cargoDto.getNombre());
 
-        if (cargoDto.getNombre() != null && cargo.getNombre() != cargoDto.getNombre())
-            cargo.setNombre(cargoDto.getNombre());
-        if (StringUtils.isNotBlank(cargoDto.getNombre()))
-            cargo.setNombre(cargoDto.getNombre());
-
-        if (cargoDto.getDescripcion() != null && cargo.getDescripcion() != cargoDto.getDescripcion())
+        if (cargoDto.getDescripcion() != null && !cargoDto.getDescripcion().isEmpty()
+                && !cargoDto.getDescripcion().equals(cargo.getDescripcion()))
             cargo.setDescripcion(cargoDto.getDescripcion());
-        if (cargoDto.getNroresolucion() != null && cargo.getNroresolucion() != cargoDto.getNroresolucion())
+
+        if (cargoDto.getNroresolucion() != null && cargo.getNroresolucion() != cargoDto.getNroresolucion()
+                && !cargoDto.getNroresolucion().isEmpty())
             cargo.setNroresolucion(cargoDto.getNroresolucion());
         if (cargoDto.getNrodecreto() != null && cargo.getNrodecreto() != cargoDto.getNrodecreto())
             cargo.setNrodecreto(cargoDto.getNrodecreto());
@@ -166,7 +164,7 @@ public class CargoController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargoDto cargoDto) {
         if (!cargoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El cargo no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
@@ -181,7 +179,7 @@ public class CargoController {
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!cargoService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Eel cargo no existe"), HttpStatus.NOT_FOUND);
 
         Cargo cargo = cargoService.findById(id).get();
         cargo.setActivo(false);
@@ -195,6 +193,5 @@ public class CargoController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         cargoService.deleteById(id);
         return new ResponseEntity(new Mensaje("Cargo eliminado FISICAMENTE"), HttpStatus.OK);
-
     }
 }

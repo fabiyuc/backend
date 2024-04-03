@@ -77,13 +77,15 @@ public class CargaHorariaController {
     }
 
     private CargaHoraria createUpdate(CargaHoraria cargaHoraria, CargaHorariaDto cargaHorariaDto) {
-        if (cargaHorariaDto.getCantidad() > 0) {
+        if (cargaHorariaDto.getCantidad() > 0 && cargaHorariaDto.getCantidad() != cargaHoraria.getCantidad()) {
             cargaHoraria.setCantidad(cargaHorariaDto.getCantidad());
         }
 
-        if (StringUtils.isNotBlank(cargaHorariaDto.getDescripcion())) {
+        if (cargaHorariaDto.getDescripcion() != null && !cargaHorariaDto.getDescripcion().isEmpty()
+                && !cargaHorariaDto.getDescripcion().equals(cargaHoraria.getDescripcion())) {
             cargaHoraria.setDescripcion(cargaHorariaDto.getDescripcion());
         }
+
         if (cargaHorariaDto.getIdRevistas() != null) {
             List<Long> idList = new ArrayList<>();
             if (cargaHoraria.getRevistas() != null) {
@@ -139,33 +141,6 @@ public class CargaHorariaController {
             return respuestaValidaciones;
         }
     }
-    /*
-     * @PutMapping(("/update/{id}"))
-     * public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody
-     * CargaHorariaDto cargaHorariaDto) {
-     * 
-     * // Busca por ID
-     * if (!cargaHorariaService.existsById(id))
-     * return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-     * HttpStatus.NOT_FOUND);
-     * 
-     * ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto);
-     * 
-     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-     * CargaHoraria cargaHoraria = cargaHorariaService.findById(id).orElse(null);
-     * if (cargaHoraria == null) {
-     * return new ResponseEntity(new
-     * Mensaje("La carga horaria no pudo ser encontrada"), HttpStatus.NOT_FOUND);
-     * }
-     * cargaHoraria = createUpdate(cargaHoraria, cargaHorariaDto);
-     * cargaHorariaService.save(cargaHoraria);
-     * return new ResponseEntity(new Mensaje("Carga horaria actualizada"),
-     * HttpStatus.OK);
-     * } else {
-     * return respuestaValidaciones;
-     * }
-     * }
-     */
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {

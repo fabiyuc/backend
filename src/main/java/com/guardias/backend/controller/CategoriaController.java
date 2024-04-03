@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,8 +49,7 @@ public class CategoriaController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<Categoria> getById(@PathVariable("id") Long id) {
         if (!categoriaService.activo(id))
-            if (!categoriaService.activo(id))
-                return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe categoria"), HttpStatus.NOT_FOUND);
         Categoria categoria = categoriaService.findById(id).get();
         return new ResponseEntity(categoria, HttpStatus.OK);
     }
@@ -72,8 +70,7 @@ public class CategoriaController {
     }
 
     private Categoria createUpdate(Categoria categoria, CategoriaDto categoriaDto) {
-        if (StringUtils.isNotBlank(categoriaDto.getNombre()))
-            categoria.setNombre(categoriaDto.getNombre());
+
         if (categoriaDto.getNombre() != null && categoria.getNombre() != categoriaDto.getNombre())
             categoria.setNombre(categoriaDto.getNombre());
 
@@ -117,17 +114,14 @@ public class CategoriaController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CategoriaDto categoriaDto) {
         if (!categoriaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe categoria"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(categoriaDto);
-
-        if (categoriaService.existsByNombre(categoriaDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Categoria categoria = createUpdate(categoriaService.findById(id).get(), categoriaDto);
             categoriaService.save(categoria);
-            return new ResponseEntity<>(new Mensaje("Categoria creada correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Categoria actualizada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
