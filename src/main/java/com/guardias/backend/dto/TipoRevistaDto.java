@@ -16,6 +16,6 @@ public class TipoRevistaDto {
     private String nombre;
     private boolean activo;
 
-    List<Long> idRevista;
+    private List<Long> idRevista;
 
 }

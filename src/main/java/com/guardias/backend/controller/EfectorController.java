@@ -89,7 +89,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdDistribucionesHorarias() != null) {
-            List<Long> idList = new ArrayList();
+            List<Long> idList = new ArrayList<Long>();
             if (efector.getDistribucionesHorarias() != null) {
                 for (DistribucionHoraria distribucionHoraria : efector.getDistribucionesHorarias()) {
                     for (Long id : efectorDto.getIdDistribucionesHorarias()) {
@@ -98,8 +98,11 @@ public class EfectorController {
                         }
                     }
                 }
+            } else {
+                efector.setDistribucionesHorarias(new ArrayList<DistribucionHoraria>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdDistribucionesHorarias() : idList;
+
             for (Long id : idsToAdd) {
                 efector.getDistribucionesHorarias().add(distribucionHorariaService.findById(id));
                 distribucionHorariaService.findById(id).setEfector(efector);

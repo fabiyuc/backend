@@ -86,8 +86,11 @@ public class TipoRevistaController {
                         }
                     }
                 }
+            } else {
+                tipoRevista.setRevistas(new ArrayList<Revista>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? tipoRevistaDto.getIdRevista() : idList;
+
             for (Long id : idsToAdd) {
                 tipoRevista.getRevistas().add(revistaService.findById(id).get());
                 revistaService.findById(id).get().setTipoRevista(tipoRevista);
@@ -95,6 +98,7 @@ public class TipoRevistaController {
         }
         tipoRevista.setActivo(true);
         return tipoRevista;
+
     }
 
     @PostMapping("/create")
@@ -106,7 +110,6 @@ public class TipoRevistaController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoRevista tipoRevista = createUpdate(new TipoRevista(), tipoRevistaDto);
-            tipoRevista = createUpdate(tipoRevista, tipoRevistaDto);
             tipoRevistaService.save(tipoRevista);
             return new ResponseEntity<>(new Mensaje("Tipo de revista creado correctamente"), HttpStatus.OK);
         } else {

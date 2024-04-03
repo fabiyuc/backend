@@ -17,10 +17,11 @@ public class LegajoService {
 
     @Autowired
     LegajoRepository legajoRepository;
+
     // @Autowired
     // EfectorService efectorService;
 
-    public List<Legajo> findByActivo() {
+    public List<Legajo> findByActivoTrue() {
         return legajoRepository.findByActivoTrue();
     }
 
@@ -32,16 +33,20 @@ public class LegajoService {
         return legajoRepository.findById(id);
     }
 
+    public boolean existsById(Long id) {
+        return legajoRepository.existsById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (legajoRepository.existsById(id) && legajoRepository.findById(id).get().isActivo());
+    }
+
     public void save(Legajo legajo) {
         legajoRepository.save(legajo);
     }
 
     public void deleteById(Long id) {
         legajoRepository.deleteById(id);
-    }
-
-    public boolean existsById(Long id) {
-        return legajoRepository.existsById(id);
     }
 
     // @Transactional

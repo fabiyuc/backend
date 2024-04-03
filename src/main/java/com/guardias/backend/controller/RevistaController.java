@@ -105,10 +105,7 @@ public class RevistaController {
             }
         }
 
-        // Verificar si la categoría se proporciona en el RevistaDto
         if (revistaDto.getIdCategoria() != null) {
-            // Si la categoría ya está establecida o es diferente a la proporcionada,
-            // actualizar la categoría
             if (revista.getCategoria() == null
                     || !Objects.equals(revista.getCategoria().getId(), revistaDto.getIdCategoria())) {
                 revista.setCategoria(categoriaService.findById(revistaDto.getIdCategoria()).get());
@@ -145,13 +142,13 @@ public class RevistaController {
                 revista.setLegajos(new ArrayList<Legajo>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? revistaDto.getIdLegajos() : idList;
-            
+
             for (Long id : idsToAdd) {
                 revista.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setRevista(revista);
             }
-            //if(revista.getLegajos().isEmpty()){
-                    //}
+            // if(revista.getLegajos().isEmpty()){
+            // }
 
         }
         revista.setActivo(true);
