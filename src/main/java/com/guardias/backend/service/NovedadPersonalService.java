@@ -18,6 +18,8 @@ public class NovedadPersonalService {
 
     @Autowired
     NovedadPersonalRepository novedadPersonalRepository;
+    @Autowired
+    PersonService personaService;
 
     public List<NovedadPersonal> findByActivoTrue() {
         return novedadPersonalRepository.findByActivoTrue();
@@ -33,6 +35,11 @@ public class NovedadPersonalService {
 
     public Optional<List<NovedadPersonal>> findByPersona(Long idPersona) {
         return novedadPersonalRepository.findByPersona(idPersona);
+    }
+
+    public boolean activoByPersona(Long idPersona) {
+        return novedadPersonalRepository.existsByPersona(idPersona)
+                && personaService.activoById(idPersona);
     }
 
     public Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fecha) {
@@ -61,6 +68,10 @@ public class NovedadPersonalService {
 
     public boolean existsById(Long id) {
         return novedadPersonalRepository.existsById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (novedadPersonalRepository.existsById(id) && novedadPersonalRepository.findById(id).get().isActivo());
     }
 
 }

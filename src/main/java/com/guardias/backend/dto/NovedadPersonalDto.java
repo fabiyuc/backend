@@ -21,12 +21,11 @@ public class NovedadPersonalDto {
     private boolean necesitaReemplazo;
     private boolean actual;
     private String descripcion;
-
     private boolean activo;
 
     @NotEmpty
     private Long idPersona;
-    private Long idReemplazante;
+    private Long idSuplente;
     private Long idArticulo;
     private Long idInciso;
     private Long idExtensionLicencia;

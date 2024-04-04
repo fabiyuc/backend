@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.LogDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Log;
 import com.guardias.backend.service.LogService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -41,23 +44,7 @@ public class LogController {
         return new ResponseEntity<Log>(log, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody LogDto logDto) {
-        if (StringUtils.isBlank(logDto.getFecha().toString()))
-            return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        Log log = new Log();
-        log.setFecha(logDto.getFecha());
-        log.setSeccion(logDto.getSeccion());
-        log.setAccion(logDto.getAccion());
-        logService.save(log);
-        return new ResponseEntity<>(new Mensaje("Log creado"), HttpStatus.OK);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LogDto logDto) {
-        if (!logService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+    private ResponseEntity<?> validations(LogDto logDto) {
 
         if (StringUtils.isBlank(logDto.getFecha().toString()))
             return new ResponseEntity<>(new Mensaje("la fecha es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -68,7 +55,11 @@ public class LogController {
         if (StringUtils.isBlank(logDto.getAccion()))
             return new ResponseEntity<>(new Mensaje("la accion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        Log log = logService.findById(id).get();
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+
+    }
+
+    private Log createUpdate(Log log, LogDto logDto) {
 
         if (log.getFecha() != logDto.getFecha())
             log.setFecha(logDto.getFecha());
@@ -80,13 +71,47 @@ public class LogController {
         if (log.getAccion() != logDto.getAccion() && logDto.getAccion() != null
                 && !logDto.getAccion().isEmpty())
             log.setAccion(logDto.getAccion());
-        logService.save(log);
-        return new ResponseEntity<>(new Mensaje("Log Actualizado"), HttpStatus.OK);
+        log.setActivo(true);
+
+        return log;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody LogDto logDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(logDto);
+
+        if (StringUtils.isBlank(logDto.getFecha().toString()))
+            return new ResponseEntity<>(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Log log = createUpdate(new Log(), logDto);
+            logService.save(log);
+            return new ResponseEntity<>(new Mensaje("Log creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LogDto logDto) {
+        if (!logService.activo(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(logDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Log log = createUpdate(logService.findById(id).get(), logDto);
+            logService.save(log);
+            return new ResponseEntity<>(new Mensaje("Log modificado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!logService.existsById(id))
+        if (!logService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         Log log = logService.findById(id).get();
@@ -102,5 +127,4 @@ public class LogController {
         logService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Log eliminado FISICAMENTE"), HttpStatus.OK);
     }
-
 }

@@ -66,7 +66,7 @@ public class HospitalController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<List<Hospital>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!hospitalService.existsByNombre(nombre))
+        if (!hospitalService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         Hospital hospital = hospitalService.findByNombre(nombre).get();
         return new ResponseEntity(hospital, HttpStatus.OK);
