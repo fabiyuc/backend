@@ -113,7 +113,7 @@ public class NotificacionController {
     // Método update
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody NotificacionDto notificacionDto) {
-        if (!notificacionService.existsById(id))
+        if (!notificacionService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(notificacionDto);

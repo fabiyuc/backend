@@ -118,7 +118,7 @@ public class DistribucionConsultorioController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
-        if (!distribucionConsultorioService.existsById(id))
+        if (!distribucionConsultorioService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionConsultorioDto);

@@ -95,7 +95,7 @@ public class LogController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LogDto logDto) {
-        if (!logService.existsById(id))
+        if (!logService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(logDto);

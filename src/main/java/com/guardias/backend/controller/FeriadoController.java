@@ -115,7 +115,7 @@ public class FeriadoController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody FeriadoDto feriadoDto) {
-        if (!feriadoService.existsById(id))
+        if (!feriadoService.activo(id))
             return new ResponseEntity(new Mensaje("El feriado no existe"), HttpStatus.BAD_REQUEST);
 
         ResponseEntity<?> respuestaValidaciones = validations(feriadoDto);

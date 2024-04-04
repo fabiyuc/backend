@@ -136,6 +136,8 @@ public class LocalidadController {
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LocalidadDto localidadDto) {
 
+        if (!localidadService.activo(id))
+            return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
         ResponseEntity<?> respuestaValidaciones = validations(localidadDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {

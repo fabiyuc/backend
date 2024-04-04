@@ -93,8 +93,6 @@ public class NovedadPersonalController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    // private Log createUpdate(Log log, LogDto logDto) {
-
     private NovedadPersonal createUpdate(NovedadPersonal novedadPersonal, NovedadPersonalDto novedadPersonalDto) {
 
         if (novedadPersonalDto.getFechaInicio() != null
@@ -114,11 +112,6 @@ public class NovedadPersonalController {
                 && !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion())
                 && !novedadPersonalDto.getDescripcion().isEmpty())
             novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
-
-        /*
-         * Long idArticulo
-         * Long idInciso
-         */
 
         if (novedadPersonal.getPersona() == null ||
                 (novedadPersonalDto.getIdPersona() != null &&
