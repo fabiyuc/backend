@@ -23,4 +23,6 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     List<Asistencial> findByActivoTrue();
 
+    List<Asistencial> findByActivo(boolean activo);
+
 }

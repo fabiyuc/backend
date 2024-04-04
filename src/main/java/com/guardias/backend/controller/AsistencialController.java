@@ -113,6 +113,10 @@ public class AsistencialController {
 
         ResponseEntity<?> respuestaValidaciones = personController.validationsCreate(asistencialDto);
 
+        if (asistencialDto.getIdRegistrosActividades() == null) {
+            return new ResponseEntity(new Mensaje("debe seleccionar al menos un registro de actividad"),
+                    HttpStatus.BAD_REQUEST);
+        }
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
             asistencialService.save(asistencial);

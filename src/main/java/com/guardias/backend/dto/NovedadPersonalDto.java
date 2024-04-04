@@ -19,9 +19,9 @@ public class NovedadPersonalDto {
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
-    private boolean activa;
+    private boolean actual;
     private String descripcion;
-    private Long idExtensionLicencia;
+
     private boolean activo;
 
     @NotEmpty
@@ -29,4 +29,5 @@ public class NovedadPersonalDto {
     private Long idReemplazante;
     private Long idArticulo;
     private Long idInciso;
+    private Long idExtensionLicencia;
 }
