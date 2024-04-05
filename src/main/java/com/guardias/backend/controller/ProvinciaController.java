@@ -76,8 +76,8 @@ public class ProvinciaController {
         provincia.setNombre(provinciaDto.getNombre());
         provincia.setGentilicio(provinciaDto.getGentilicio());
         provincia.setPais(provinciaDto.getPais());
-
-        // ******* no necesito guardar ni modificar la listas */
+        provincia.setActivo(true);
+        
         // provincia.setDepartamentos(provinciaDto.getDepartamentos());
 
         provinciaService.save(provincia);

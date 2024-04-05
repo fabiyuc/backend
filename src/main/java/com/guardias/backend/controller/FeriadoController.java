@@ -84,6 +84,7 @@ public class FeriadoController {
             feriado.setTipoFeriado(feriadoDto.getTipoFeriado());
         if (!feriadoDto.getDescripcion().equals(feriado.getDescripcion()))
             feriado.setDescripcion(feriadoDto.getDescripcion());
+        
         return feriado;
     }
 
@@ -97,6 +98,7 @@ public class FeriadoController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Feriado feriado = createUpdate(new Feriado(), feriadoDto);
+            feriado.setActivo(true);
             feriadoService.save(feriado);
         }
         return respuestaValidaciones;

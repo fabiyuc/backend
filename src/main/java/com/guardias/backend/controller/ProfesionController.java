@@ -84,6 +84,7 @@ public class ProfesionController {
         Profesion profesion = new Profesion();
         profesion.setNombre(profesionDto.getNombre());
         profesion.setAsistencial(profesionDto.getAsistencial());
+        profesion.setActivo(true);
         /*
          * profesion.setLegajos(profesionDto.getLegajos());
          * profesion.setEspecialidades(profesionDto.getEspecialidades());

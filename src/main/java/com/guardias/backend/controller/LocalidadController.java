@@ -71,7 +71,7 @@ public class LocalidadController {
         Localidad localidad = new Localidad();
         localidad.setNombre(localidadDto.getNombre());
         localidad.setDepartamento(localidadDto.getDepartamento());
-
+        localidad.setActivo(true);
         localidadService.save(localidad);
         return new ResponseEntity(new Mensaje("Localidad creada"), HttpStatus.OK);
     }

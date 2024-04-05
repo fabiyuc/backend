@@ -63,7 +63,7 @@ public class RegionController {
 
         Region region = new Region();
         region.setNombre(regionDto.getNombre());
-
+        region.setActivo(true);
         regionService.save(region);
         return new ResponseEntity(new Mensaje("Region creada"), HttpStatus.OK);
     }
