@@ -95,8 +95,6 @@ public class DistribucionConsultorioController {
             distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
         if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
             distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
-
-        distribucionConsultorio.setActivo(true);
         return distribucionConsultorio;
     }
 

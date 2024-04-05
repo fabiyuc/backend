@@ -3,13 +3,10 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.repository.NovedadPersonalRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -21,7 +18,7 @@ public class NovedadPersonalService {
     @Autowired
     PersonService personaService;
 
-    public List<NovedadPersonal> findByActivoTrue() {
+    public List<NovedadPersonal> findByActivo() {
         return novedadPersonalRepository.findByActivoTrue();
     }
 
@@ -52,10 +49,6 @@ public class NovedadPersonalService {
 
     public boolean existsByFechaInicio(LocalDate fechaInicio) {
         return novedadPersonalRepository.existsByFechaInicio(fechaInicio);
-    }
-
-    public boolean activo(Long id) {
-        return (novedadPersonalRepository.existsById(id) && novedadPersonalRepository.findById(id).get().isActivo());
     }
 
     public void save(NovedadPersonal novedadPersonal) {

@@ -87,8 +87,6 @@ public class DistribucionGuardiaController {
                 && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
 
-        distribucionGuardia.setActivo(true);
-
         return distribucionGuardia;
     }
 

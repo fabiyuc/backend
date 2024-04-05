@@ -43,24 +43,6 @@ public class PersonController {
         if (personService.existsByCui(personDto.getCuil()))
             return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
 
-        if (personDto.getIdLegajos() == null)
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el legajo"), HttpStatus.BAD_REQUEST);
-
-        if (personDto.getIdNovedadesPersonales() == null)
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar la novedad personal"),
-                    HttpStatus.BAD_REQUEST);
-        /*
-         * if (personDto.getIdSuplentes() == null)
-         * return new ResponseEntity<>(new
-         * Mensaje("Es obligatorio indicar el suplente"), HttpStatus.BAD_REQUEST);
-         */
-        if (personDto.getIdDistribucionesHorarias() == null)
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar la distribucion horaria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (personDto.getIdAutoridades() == null)
-            return new ResponseEntity<>(new Mensaje("Es obligatorio indicar la autoridad"), HttpStatus.BAD_REQUEST);
-
         return respuestaValidaciones;
     }
 
@@ -93,32 +75,24 @@ public class PersonController {
                 && !personDto.getTelefono().isEmpty())
             person.setTelefono(personDto.getTelefono());
 
-        /*
-         * if (personDto.getIdSuplentes() != null) {
-         * List<Long> idList = new ArrayList<Long>();
-         * if (person.getSuplentes() != null) {
-         * for (NovedadPersonal novedadPersonal : person.getSuplentes()) {
-         * for (Long id : personDto.getIdSuplentes()) {
-         * if (!novedadPersonal.getId().equals(id)) {
-         * idList.add(id);
-         * }
-         * }
-         * }
-         * } else {
-         * person.setSuplentes(new ArrayList<NovedadPersonal>());
-         * }
-         * 
-         * List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdSuplentes() : idList;
-         * for (Long id : idsToAdd) {
-         * Optional<NovedadPersonal> novedadPersonalOptional =
-         * novedadPersonalService.findById(id);
-         * if (novedadPersonalOptional.isPresent()) {
-         * person.getSuplentes().add(novedadPersonalOptional.get());
-         * novedadPersonalOptional.get().setSuplente(person);
-         * }
-         * }
-         * }
-         */
+        if (personDto.getIdSuplentes() != null) {
+            List<Long> idList = new ArrayList();
+            if (person.getSuplentes() != null) {
+                for (NovedadPersonal novedadPersonal : person.getSuplentes()) {
+                    for (Long id : personDto.getIdSuplentes()) {
+                        if (!novedadPersonal.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdSuplentes() : idList;
+            for (Long id : idsToAdd) {
+                person.getSuplentes().add(novedadPersonalService.findById(id).get());
+                novedadPersonalService.findById(id).get().setSuplente(person);
+            }
+        }
 
         if (personDto.getIdNovedadesPersonales() != null) {
             List<Long> idList = new ArrayList();
@@ -148,7 +122,7 @@ public class PersonController {
             person.setNombre(personDto.getNombre());
 
         if (personDto.getIdLegajos() != null) {
-            List<Long> idList = new ArrayList<Long>();
+            List<Long> idList = new ArrayList();
             if (person.getLegajos() != null) {
                 for (Legajo legajo : person.getLegajos()) {
                     for (Long id : personDto.getIdLegajos()) {
@@ -157,12 +131,9 @@ public class PersonController {
                         }
                     }
                 }
-            } else {
-                person.setLegajos(new ArrayList<Legajo>());
             }
 
             List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdLegajos() : idList;
-
             for (Long id : idsToAdd) {
                 person.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setPersona(person);

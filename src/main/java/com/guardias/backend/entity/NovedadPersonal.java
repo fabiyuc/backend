@@ -33,11 +33,11 @@ public class NovedadPersonal {
     private LocalDate fechaInicio;
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFinal;
-    private Boolean puedeRealizarGuardia;
-    private Boolean cobraSueldo;
-    private Boolean necesitaReemplazo;
+    private boolean puedeRealizarGuardia;
+    private boolean cobraSueldo;
+    private boolean necesitaReemplazo;
     @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
-    private Boolean actual; // Si la novedad es actual(1) o pasada(0)
+    private boolean actual; // Si la novedad es actual(1) o pasada(0)
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
     @Column(columnDefinition = "BIT DEFAULT 1")

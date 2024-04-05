@@ -79,7 +79,6 @@ public class Legajo {
       "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
   private Person persona;
 
-  // sale de legajo corregir esto
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_cargo")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "descripcion", "nroresolucion", "nrodecreto",

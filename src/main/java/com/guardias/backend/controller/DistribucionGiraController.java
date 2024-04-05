@@ -90,8 +90,6 @@ public class DistribucionGiraController {
                 && distribucionGiraDto.getDescripcion() != null)
             distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
 
-        distribucionGira.setActivo(true);
-
         return distribucionGira;
     }
 
