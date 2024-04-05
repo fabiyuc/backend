@@ -19,10 +19,7 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
     Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fechaInicio);
 
-    @Query("SELECT np FROM novedadesPersonales np WHERE np.fechaInicio = :fechaInicio and np.activo=true")
     Boolean existsByFechaInicio(LocalDate fechaInicio);
-
-    Boolean existsByPersona(Long idPersona);
 
     List<NovedadPersonal> findByActivoTrue();
 }

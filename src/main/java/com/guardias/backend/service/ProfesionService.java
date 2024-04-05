@@ -2,11 +2,9 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
 
@@ -53,17 +51,8 @@ public class ProfesionService {
         return profesionRepository.existsById(id);
     }
 
-    public Boolean activo(Long id) {
-        return (profesionRepository.existsById(id) && profesionRepository.findById(id).get().isActivo());
-    }
-
     public Boolean existsByNombre(String nombre) {
         return profesionRepository.existsByNombre(nombre);
-    }
-
-    public Boolean activoByNombre(String nombre) {
-        return (profesionRepository.existsByNombre(nombre)
-                && profesionRepository.findByNombre(nombre).get().isActivo());
     }
 
 }

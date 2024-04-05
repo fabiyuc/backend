@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.FeriadoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Feriado;
 import com.guardias.backend.service.FeriadoService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -52,8 +49,8 @@ public class FeriadoController {
     }
 
     @GetMapping("/detailmotivo/{motivo}")
-    public ResponseEntity<List<Feriado>> getByMotivo(@PathVariable("motivo") String motivo) {
-        if (!feriadoService.activoByMotivo(motivo))
+    public ResponseEntity<List<Feriado>> getById(@PathVariable("motivo") String motivo) {
+        if (!feriadoService.existsByMotivo(motivo))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
         Feriado feriado = feriadoService.getByMotivo(motivo).get();
         return new ResponseEntity(feriado, HttpStatus.OK);
@@ -61,7 +58,7 @@ public class FeriadoController {
 
     @GetMapping("/detail/{fecha}")
     public ResponseEntity<List<Feriado>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
-        if (!feriadoService.activoByFecha(fecha))
+        if (!feriadoService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
         Feriado feriado = feriadoService.getByFecha(fecha).get();
         return new ResponseEntity(feriado, HttpStatus.OK);
@@ -80,21 +77,13 @@ public class FeriadoController {
 
     private Feriado createUpdate(Feriado feriado, FeriadoDto feriadoDto) {
         if (!feriadoDto.getFecha().equals(feriado.getFecha()))
-
-            if (feriadoDto.getFecha() != null && !feriadoDto.getFecha().equals(feriado.getFecha()))
-                feriado.setFecha(feriadoDto.getFecha());
-
-        if (feriadoDto.getMotivo() != null && !feriadoDto.getMotivo().equals(feriado.getMotivo())
-                && !feriadoDto.getMotivo().isEmpty())
+            feriado.setFecha(feriadoDto.getFecha());
+        if (!feriadoDto.getMotivo().equals(feriado.getMotivo()))
             feriado.setMotivo(feriadoDto.getMotivo());
-
-        if (feriadoDto.getTipoFeriado() != null && !feriadoDto.getTipoFeriado().equals(feriado.getTipoFeriado()))
+        if (!feriadoDto.getTipoFeriado().equals(feriado.getTipoFeriado()))
             feriado.setTipoFeriado(feriadoDto.getTipoFeriado());
-        if (feriadoDto.getDescripcion() != null && !feriadoDto.getDescripcion().equals(feriado.getDescripcion())
-                && !feriadoDto.getDescripcion().isEmpty())
+        if (!feriadoDto.getDescripcion().equals(feriado.getDescripcion()))
             feriado.setDescripcion(feriadoDto.getDescripcion());
-
-        feriadoDto.setActivo(true);
         return feriado;
     }
 
@@ -115,7 +104,7 @@ public class FeriadoController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody FeriadoDto feriadoDto) {
-        if (!feriadoService.activo(id))
+        if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("El feriado no existe"), HttpStatus.BAD_REQUEST);
 
         ResponseEntity<?> respuestaValidaciones = validations(feriadoDto);
@@ -129,7 +118,7 @@ public class FeriadoController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!feriadoService.activo(id))
+        if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("el feriado no existe"), HttpStatus.NOT_FOUND);
 
         Feriado feriado = feriadoService.findById(id).get();

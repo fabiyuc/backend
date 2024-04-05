@@ -26,7 +26,7 @@ public class NovedadPersonalDto {
 
     @NotEmpty
     private Long idPersona;
-    private Long idSuplente;
+    private Long idReemplazante;
     private Long idArticulo;
     private Long idInciso;
 }

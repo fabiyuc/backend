@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LeyDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Articulo;
-import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.LeyService;
@@ -111,11 +109,7 @@ public class LeyController {
             List<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
             for (Long id : idsToAdd) {
                 ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                if (ley instanceof Articulo) {
-                    novedadPersonalService.findById(id).get().setArticulo((Articulo) ley);
-                } else {
-                    novedadPersonalService.findById(id).get().setInciso((Inciso) ley);
-                }
+                novedadPersonalService.findById(id).get().setLey(ley);
             }
         }
         ley.setActivo(true);

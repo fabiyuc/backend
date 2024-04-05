@@ -2,13 +2,10 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Log;
 import com.guardias.backend.repository.LogRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -36,10 +33,6 @@ public class LogService {
 
     public boolean existsById(long id) {
         return logRepository.existsById(id);
-    }
-
-    public boolean activo(long id) {
-        return (logRepository.existsById(id) && logRepository.findById(id).get().isActivo());
     }
 
 }
