@@ -73,12 +73,6 @@ public class RegionController {
 
     private Region createUpdate(Region region, RegionDto regionDto) {
 
-        /*
-         * private String nombre;
-         * private List<Long> id ;
-         * private boolean activo;
-         */
-
         if (region.getNombre() != regionDto.getNombre() && regionDto.getNombre() != null
                 && !regionDto.getNombre().isEmpty())
             region.setNombre(regionDto.getNombre());
@@ -110,11 +104,16 @@ public class RegionController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegionDto regionDto) {
 
-        Region region = new Region();
-        region.setNombre(regionDto.getNombre());
+        ResponseEntity<?> respuestaValidaciones = validations(regionDto);
 
-        regionService.save(region);
-        return new ResponseEntity(new Mensaje("Region creada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+
+            Region region = createUpdate(new Region(), regionDto);
+            regionService.save(region);
+            return new ResponseEntity(new Mensaje("Region creada"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
@@ -123,14 +122,16 @@ public class RegionController {
         if (!regionService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el region"), HttpStatus.NOT_FOUND);
 
-        if (StringUtils.isBlank(regionDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(regionDto);
 
-        Region region = regionService.findById(id).get();
-        region.setNombre(regionDto.getNombre());
-        regionService.save(region);
-        return new ResponseEntity(new Mensaje("Region modificada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+
+            Region region = createUpdate(regionService.findById(id).get(), regionDto);
+            regionService.save(region);
+            return new ResponseEntity(new Mensaje("Region creada"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
