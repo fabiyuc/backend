@@ -41,7 +41,7 @@ public class NovedadPersonalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
-        List<NovedadPersonal> list = novedadPersonalService.findByActivo();
+        List<NovedadPersonal> list = novedadPersonalService.findByActivoTrue();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
