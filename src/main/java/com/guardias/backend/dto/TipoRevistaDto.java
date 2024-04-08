@@ -15,7 +15,6 @@ public class TipoRevistaDto {
     @NotBlank
     private String nombre;
     private boolean activo;
-
-    List<Long> idRevista;
+    private List<Long> idRevista;
 
 }

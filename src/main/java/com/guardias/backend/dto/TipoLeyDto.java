@@ -15,6 +15,5 @@ public class TipoLeyDto {
     @NotBlank
     String descripcion;
     private boolean activo;
-
     List<Long> idLeyes;
 }

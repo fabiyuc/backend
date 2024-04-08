@@ -40,6 +40,10 @@ public class TipoRevistaService {
     }
 
     public boolean existsByNombre(String nombre) {
+        return tipoRevistaRepository.existsByNombre(nombre);
+    }
+
+    public boolean activoByNombre(String nombre) {
         return tipoRevistaRepository.existsByNombre(nombre)
                 && tipoRevistaRepository.findByNombre(nombre).get().isActivo();
     }
