@@ -2,9 +2,11 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.guardias.backend.entity.TipoCargo;
 import com.guardias.backend.repository.TipoCargoRepository;
 
@@ -40,8 +42,17 @@ public class TipoCargoService {
         return tipoCargoRepository.existsById((Long) id);
     }
 
+    public boolean activo(Long id) {
+        return (tipoCargoRepository.existsById((Long) id) && tipoCargoRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByNombre(String nombre) {
         return tipoCargoRepository.existsByNombre(nombre);
+    }
+
+    public boolean activoByNombre(String nombre) {
+        return (tipoCargoRepository.existsByNombre(nombre)
+                && tipoCargoRepository.findByNombre(nombre).get().isActivo());
     }
 
 }

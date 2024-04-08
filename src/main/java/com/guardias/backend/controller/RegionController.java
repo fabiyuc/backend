@@ -128,7 +128,7 @@ public class RegionController {
 
             Region region = createUpdate(regionService.findById(id).get(), regionDto);
             regionService.save(region);
-            return new ResponseEntity(new Mensaje("Region creada"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Region modificada"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
