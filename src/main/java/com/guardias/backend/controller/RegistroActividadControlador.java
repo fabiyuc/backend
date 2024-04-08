@@ -50,15 +50,9 @@ public class RegistroActividadControlador {
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<List<RegistroActividad>> getById(@PathVariable("id") Long id) {
-        if (!registroActividadService.activo(id))
-            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
-        RegistroActividad registroActividad = registroActividadService.findById(id).get();
-        return new ResponseEntity(registroActividad, HttpStatus.OK);
-    }
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
 
-    private ResponseEntity<?> validations(RegistroActividadDto registroActividadDto) {
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
