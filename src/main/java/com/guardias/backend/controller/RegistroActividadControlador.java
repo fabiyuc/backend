@@ -50,8 +50,15 @@ public class RegistroActividadControlador {
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<List<RegistroActividad>> getById(@PathVariable("id") Long id) {
+        if (!registroActividadService.activo(id))
+            return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
+        RegistroActividad registroActividad = registroActividadService.findById(id).get();
+        return new ResponseEntity(registroActividad, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> validations(@RequestBody RegistroActividadDto registroActividadDto) {
 
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -69,12 +76,6 @@ public class RegistroActividadControlador {
 
     private RegistroActividad createUpdate(RegistroActividad registroActividad,
             RegistroActividadDto registroActividadDto) {
-
-        /*
-         * private TipoGuardiaEnum tipoGuardia;
-         * private Long idAsistencial;
-         * private Long idEfector;
-         */
 
         if (registroActividad.getServicio() == null ||
                 (registroActividadDto.getIdServicio() != null &&
