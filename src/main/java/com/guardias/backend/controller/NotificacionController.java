@@ -75,8 +75,8 @@ public class NotificacionController {
         if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (notificacionDto.getFechaBaja() == null)
-            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST);
+        /* if (notificacionDto.getFechaBaja() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST); */
 
         if (StringUtils.isBlank(notificacionDto.getDetalle())) {
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -114,8 +114,8 @@ public class NotificacionController {
         if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity<>(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (notificacionDto.getFechaBaja() == null)
-            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST);
+        /* if (notificacionDto.getFechaBaja() == null)
+            return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"), HttpStatus.BAD_REQUEST); */
 
         if (notificacionDto.getDetalle() == null)
             return new ResponseEntity(new Mensaje("El Detalle es obligatorio"), HttpStatus.BAD_REQUEST);

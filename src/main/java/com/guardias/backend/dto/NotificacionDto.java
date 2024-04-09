@@ -33,7 +33,7 @@ public class NotificacionDto {
     @NotNull
     private boolean activo;
 
-    @NotNull
+    
     private LocalDate fechaBaja;
 
 }
