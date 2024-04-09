@@ -89,9 +89,6 @@ public class AsistencialController {
         Person person = personController.createUpdate(asistencial, asistencialDto);
         asistencial = (Asistencial) person;
 
-        if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
-            asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
-
         if (asistencialDto.getIdRegistrosActividades() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (asistencial.getRegistrosActividades() != null) {
