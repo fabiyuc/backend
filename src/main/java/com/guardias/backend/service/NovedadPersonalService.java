@@ -18,8 +18,10 @@ public class NovedadPersonalService {
 
     @Autowired
     NovedadPersonalRepository novedadPersonalRepository;
+    @Autowired
+    PersonService personaService;
 
-    public List<NovedadPersonal> findByActivoTrue() {
+    public List<NovedadPersonal> findByActivo() {
         return novedadPersonalRepository.findByActivoTrue();
     }
 
@@ -61,6 +63,10 @@ public class NovedadPersonalService {
 
     public boolean existsById(Long id) {
         return novedadPersonalRepository.existsById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (novedadPersonalRepository.existById(id) && novedadPersonalRepository.findById(id).get().isActivo());
     }
 
 }
