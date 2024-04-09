@@ -22,8 +22,10 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
+import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.ArticuloService;
 import com.guardias.backend.service.IncisoService;
+import com.guardias.backend.service.NovedadPersonalService;
 
 @Controller
 @RequestMapping("/articulo")
@@ -37,6 +39,9 @@ public class ArticuloController {
 
     @Autowired
     LeyController leyController;
+
+    @Autowired
+    NovedadPersonalService novedadPersonalService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Articulo>> list() {
@@ -105,6 +110,28 @@ public class ArticuloController {
                 incisoService.findById(id).get().setArticulo(articulo);
             }
         }
+
+        if (articuloDto.getIdNovedadesPersonales() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (articulo.getNovedadesPersonales() != null) {
+                for (NovedadPersonal novedad : articulo.getNovedadesPersonales()) {
+                    for (Long id : articuloDto.getIdNovedadesPersonales()) {
+                        if (!novedad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                articulo.setNovedadesPersonales(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdNovedadesPersonales() : idList;
+            for (Long id : idsToAdd) {
+                articulo.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                novedadPersonalService.findById(id).get().setArticulo(articulo);
+            }
+
+        }
+
         return articulo;
     }
 

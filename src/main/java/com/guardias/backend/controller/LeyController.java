@@ -1,7 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LeyDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Articulo;
-import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
-import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.LeyService;
 import com.guardias.backend.service.NovedadPersonalService;
 import com.guardias.backend.service.TipoLeyService;
@@ -97,27 +92,6 @@ public class LeyController {
             ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
         }
 
-        if (leyDto.getIdNovedadesPersonales() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (ley.getNovedadesPersonales() != null) {
-                for (NovedadPersonal novedadPersonal : ley.getNovedadesPersonales()) {
-                    for (Long id : leyDto.getIdNovedadesPersonales()) {
-                        if (!novedadPersonal.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? leyDto.getIdNovedadesPersonales() : idList;
-            for (Long id : idsToAdd) {
-                ley.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                if (ley instanceof Articulo) {
-                    novedadPersonalService.findById(id).get().setArticulo((Articulo) ley);
-                } else {
-                    novedadPersonalService.findById(id).get().setInciso((Inciso) ley);
-                }
-            }
-        }
         ley.setActivo(true);
         return ley;
     }

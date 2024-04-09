@@ -38,8 +38,7 @@ public class NovedadPersonalService {
     }
 
     public boolean activoByPersona(Long idPersona) {
-        return novedadPersonalRepository.existsByPersona(idPersona)
-                && personaService.activoById(idPersona);
+        return personaService.activoById(idPersona);
     }
 
     public Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fecha) {

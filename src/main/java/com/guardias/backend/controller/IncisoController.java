@@ -20,8 +20,10 @@ import com.guardias.backend.dto.IncisoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
+import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.ArticuloService;
 import com.guardias.backend.service.IncisoService;
+import com.guardias.backend.service.NovedadPersonalService;
 
 @Controller
 @RequestMapping("/inciso")
@@ -33,6 +35,8 @@ public class IncisoController {
     ArticuloService articuloService;
     @Autowired
     LeyController leyController;
+    @Autowired
+    NovedadPersonalService novedadPersonalService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Inciso>> list() {
@@ -83,6 +87,25 @@ public class IncisoController {
             }
         }
 
+        if (incisoDto.getIdNovedadesPersonales() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (inciso.getNovedadesPersonales() != null) {
+                for (NovedadPersonal novedad : inciso.getNovedadesPersonales()) {
+                    for (Long id : incisoDto.getIdNovedadesPersonales()) {
+                        if (!novedad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                inciso.setNovedadesPersonales(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdNovedadesPersonales() : idList;
+            for (Long id : idsToAdd) {
+                inciso.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                novedadPersonalService.findById(id).get().setInciso(inciso);
+            }
+        }
         return inciso;
     }
 
