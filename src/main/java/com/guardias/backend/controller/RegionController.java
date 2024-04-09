@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegionDto;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Region;
+import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegionService;
 
 import io.micrometer.common.util.StringUtils;
@@ -30,6 +32,8 @@ public class RegionController {
 
     @Autowired
     RegionService regionService;
+    @Autowired
+    EfectorService efectorService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Region>> list() {
@@ -45,7 +49,7 @@ public class RegionController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Region>> getById(@PathVariable("id") Long id) {
-        if (!regionService.existsById(id))
+        if (!regionService.activo(id))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
         Region region = regionService.findById(id).get();
         return new ResponseEntity(region, HttpStatus.OK);
@@ -53,14 +57,13 @@ public class RegionController {
 
     @GetMapping("/detailname/{nombre}")
     public ResponseEntity<List<Region>> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!regionService.existsByNombre(nombre))
+        if (!regionService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
         Region region = regionService.findByNombre(nombre).get();
         return new ResponseEntity(region, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody RegionDto regionDto) {
+    private ResponseEntity<?> validations(RegionDto regionDto) {
         if (StringUtils.isBlank(regionDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -132,7 +135,7 @@ public class RegionController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!regionService.existsById(id))
+        if (!regionService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el region"), HttpStatus.NOT_FOUND);
 
         Region region = regionService.findById(id).get();
