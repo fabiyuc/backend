@@ -21,5 +21,9 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
     Boolean existsByFechaInicio(LocalDate fechaInicio);
 
+    boolean existsByPersonaId(Long personaId);
+
+    // Boolean existsByPersona(Long idPersona);
+
     List<NovedadPersonal> findByActivoTrue();
 }

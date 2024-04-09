@@ -35,6 +35,10 @@ public class NovedadPersonalService {
         return novedadPersonalRepository.findByPersona(idPersona);
     }
 
+    public boolean activoByPersona(Long idPersona) {
+        return personaService.activoById(idPersona);
+    }
+
     public Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fecha) {
         return novedadPersonalRepository.findByFechaInicio(fecha);
     }

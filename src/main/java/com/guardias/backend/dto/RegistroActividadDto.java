@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class RegistroActividadDto {
 
     @NotBlank
-    private String servicio;
+    private Long idServicio;
 
     @NotBlank
     private LocalDate fechaIngreso;
