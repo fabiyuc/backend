@@ -10,6 +10,7 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.DistribucionHorariaRepository;
 import com.guardias.backend.repository.NoAsistencialRepository;
@@ -36,6 +37,8 @@ public class PersonService {
     DistribucionHorariaRepository distribucionHorariaService; // !TODO CORREGIR ESTO: crear dist. horaria service
     @Autowired
     AutoridadService autoridadService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     public Person findById(Long idPersona) {
         Person persona = asistencialService.findById(idPersona).orElse(null);
@@ -127,4 +130,6 @@ public class PersonService {
 
         savePersona(persona);
     }
+
+    
 }

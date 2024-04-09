@@ -8,8 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.TipoGuardiaRepository;
 
 import jakarta.transaction.Transactional;
+import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.TipoGuardia;
 
 @Service
 @Transactional
@@ -17,6 +20,8 @@ public class AsistencialService {
 
     @Autowired
     AsistencialRepository asistencialRepository;
+    @Autowired
+    TipoGuardiaRepository tipoGuardiaRepository;
 
     public List<Asistencial> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
@@ -62,4 +67,12 @@ public class AsistencialService {
         return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
     }
 
+    public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
+
+        Asistencial asistencial = asistencialRepository.findById(idAsistencial).get();
+        TipoGuardia tipoGuardia = tipoGuardiaRepository.findById(idTipoGuardia).get();
+
+        asistencial.getTiposGuardias().add(tipoGuardia);
+        
+    }
 }

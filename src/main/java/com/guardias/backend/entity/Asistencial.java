@@ -12,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,6 +35,11 @@ public class Asistencial extends Person {
             "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "asistenciales", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales"})
+    private List<TipoGuardia> tiposGuardias = new ArrayList<TipoGuardia>();
+
+    
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "apellido", "dni", "cuil", "legajos",
     // "novedadesPersonales", "suplentes",
