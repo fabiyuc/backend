@@ -45,12 +45,24 @@ public class NovedadPersonal {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "novedades" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes",
+            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+            "domicilio",
+            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial" })
     private Person persona;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_suplente")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "suplentes" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes",
+            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+            "domicilio",
+            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial" })
     private Person suplente;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

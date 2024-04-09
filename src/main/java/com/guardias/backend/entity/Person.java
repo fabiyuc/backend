@@ -90,7 +90,7 @@ public abstract class Person {
      * "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
      * "domicilio",
      * "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-     * "descripcion" })
+     * "descripcion","esAsistencial" })
      */
 
     @Override
