@@ -66,7 +66,7 @@ public class NovedadPersonalService {
     }
 
     public boolean activo(Long id) {
-        return (novedadPersonalRepository.existById(id) && novedadPersonalRepository.findById(id).get().isActivo());
+        return (novedadPersonalRepository.existsById(id) && novedadPersonalRepository.findById(id).get().isActivo());
     }
 
 }
