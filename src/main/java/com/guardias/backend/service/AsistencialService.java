@@ -72,6 +72,7 @@ public class AsistencialService {
         Asistencial asistencial = asistencialRepository.findById(idAsistencial).get();
         TipoGuardia tipoGuardia = tipoGuardiaRepository.findById(idTipoGuardia).get();
 
+        tipoGuardia.getAsistenciales().add(asistencial);
         asistencial.getTiposGuardias().add(tipoGuardia);
         
     }
