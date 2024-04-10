@@ -59,9 +59,9 @@ public class PersonController {
         if (StringUtils.isBlank(personDto.getCuil())) {
             return new ResponseEntity<>(new Mensaje("El Cuil es obligatorio"), HttpStatus.BAD_REQUEST);
         }
-        /* if (personDto.getFechaNacimiento() == null) {
+        if (personDto.getFechaNacimiento() == null) {
             return new ResponseEntity(new Mensaje("La fecha de nacimiento es obligatoria"), HttpStatus.BAD_REQUEST);
-        } */
+        }
         if (StringUtils.isBlank(personDto.getSexo())) {
             return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
         }
@@ -140,9 +140,9 @@ public class PersonController {
             }
         }
 
-       /*  if (!personDto.getFechaNacimiento().equals(person.getFechaNacimiento()))
+        if (!personDto.getFechaNacimiento().equals(person.getFechaNacimiento()))
             if (personDto.getFechaNacimiento() != null && personDto.getFechaNacimiento() != person.getFechaNacimiento())
-                person.setFechaNacimiento(personDto.getFechaNacimiento()); */
+                person.setFechaNacimiento(personDto.getFechaNacimiento());
 
         person.setEsAsistencial(personDto.getEsAsistencial());
 
