@@ -56,7 +56,7 @@ public class ArticuloController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<Articulo>> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Articulo> getById(@PathVariable("id") Long id) {
         if (!articuloService.activo(id))
             return new ResponseEntity(new Mensaje("Articulo no encontrado"), HttpStatus.NOT_FOUND);
         Articulo articulo = articuloService.findById(id).get();
@@ -68,14 +68,26 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        if (articulo.getArticulo() == null || (articuloDto.getIdArticulo() == null
-                && !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo()))) {
-            articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
+        /*
+         * if (articulo.getArticulo() == null
+         * || (articuloDto.getIdArticulo() == null
+         * && !Objects.equals(articulo.getArticulo().getId(),
+         * articuloDto.getIdArticulo()))) {
+         * articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).
+         * get());
+         * }
+         */
+
+        if (articuloDto.getIdArticulo() != null) {
+            if (articulo.getArticulo() == null
+                    || !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo())) {
+                articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
+            }
         }
 
         if (articuloDto.getIdSubArticulos() != null) {
             List<Long> idList = new ArrayList<Long>();
-            if (articulo.getSubArticulos() == null) {
+            if (articulo.getSubArticulos() != null) {
                 for (Articulo articuloList : articulo.getSubArticulos()) {
                     for (Long id : articuloDto.getIdSubArticulos()) {
                         if (!articuloList.getId().equals(id)) {
@@ -83,6 +95,8 @@ public class ArticuloController {
                         }
                     }
                 }
+            } else {
+                articulo.setSubArticulos(new ArrayList<Articulo>());
             }
 
             List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
@@ -122,7 +136,7 @@ public class ArticuloController {
                     }
                 }
             } else {
-                articulo.setNovedadesPersonales(new ArrayList<>());
+                articulo.setNovedadesPersonales(new ArrayList<NovedadPersonal>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdNovedadesPersonales() : idList;
             for (Long id : idsToAdd) {
@@ -131,7 +145,7 @@ public class ArticuloController {
             }
 
         }
-
+        articulo.setActivo(true);
         return articulo;
     }
 
@@ -157,6 +171,7 @@ public class ArticuloController {
         ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+
             Articulo articulo = createUpdate(articuloService.findById(id).get(), articuloDto);
             articuloService.save(articulo);
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);

@@ -95,17 +95,17 @@ public class RevistaController {
         if (revistaDto.getAgrupacion() != null && revista.getAgrupacion() != revistaDto.getAgrupacion())
             revista.setAgrupacion(revistaDto.getAgrupacion());
 
-        // Verificar si el tipo de revista se proporciona en el RevistaDto
         if (revistaDto.getIdTipoRevista() != null) {
-            // Si el tipo de revista ya está establecido o es diferente al proporcionado,
-            // actualizar el tipo de revista
             if (revista.getTipoRevista() == null
                     || !Objects.equals(revista.getTipoRevista().getId(), revistaDto.getIdTipoRevista())) {
                 revista.setTipoRevista(tipoRevistaService.findById(revistaDto.getIdTipoRevista()).get());
             }
         }
 
+        // Verificar si la categoría se proporciona en el RevistaDto
         if (revistaDto.getIdCategoria() != null) {
+            // Si la categoría ya está establecida o es diferente a la proporcionada,
+            // actualizar la categoría
             if (revista.getCategoria() == null
                     || !Objects.equals(revista.getCategoria().getId(), revistaDto.getIdCategoria())) {
                 revista.setCategoria(categoriaService.findById(revistaDto.getIdCategoria()).get());
@@ -142,13 +142,10 @@ public class RevistaController {
                 revista.setLegajos(new ArrayList<Legajo>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? revistaDto.getIdLegajos() : idList;
-
             for (Long id : idsToAdd) {
                 revista.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setRevista(revista);
             }
-            // if(revista.getLegajos().isEmpty()){
-            // }
 
         }
         revista.setActivo(true);

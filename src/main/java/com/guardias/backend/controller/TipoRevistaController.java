@@ -73,6 +73,7 @@ public class TipoRevistaController {
     private TipoRevista createUpdate(TipoRevista tipoRevista, TipoRevistaDto tipoRevistaDto) {
         if (StringUtils.isNotBlank(tipoRevistaDto.getNombre()))
             tipoRevista.setNombre(tipoRevistaDto.getNombre());
+
         if (tipoRevistaDto.getNombre() != null && tipoRevista.getNombre() != tipoRevistaDto.getNombre())
             tipoRevista.setNombre(tipoRevistaDto.getNombre());
 
@@ -86,11 +87,8 @@ public class TipoRevistaController {
                         }
                     }
                 }
-            } else {
-                tipoRevista.setRevistas(new ArrayList<Revista>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? tipoRevistaDto.getIdRevista() : idList;
-
             for (Long id : idsToAdd) {
                 tipoRevista.getRevistas().add(revistaService.findById(id).get());
                 revistaService.findById(id).get().setTipoRevista(tipoRevista);
@@ -98,7 +96,6 @@ public class TipoRevistaController {
         }
         tipoRevista.setActivo(true);
         return tipoRevista;
-
     }
 
     @PostMapping("/create")
