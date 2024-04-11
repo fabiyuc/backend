@@ -87,15 +87,13 @@ public abstract class Person {
             "esRegional", "activo", "efector", "persona" })
     private List<Autoridad> autoridades = new ArrayList<>();
 
-    /*
-     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-     * "apellido", "dni", "cuil", "legajos",
-     * "novedadesPersonales", "suplentes",
-     * "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-     * "domicilio",
-     * "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-     * "descripcion","esAsistencial" })
-     */
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "apellido", "dni", "cuil", "legajos",
+    // "novedadesPersonales", "suplentes",
+    // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+    // "domicilio",
+    // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+    // "descripcion","esAsistencial" })
 
     @Override
     public boolean equals(Object obj) {
