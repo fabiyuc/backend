@@ -94,6 +94,10 @@ public class NoAsistencialController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             NoAsistencial noAsistencial = createUpdate(noAsistencialService.findById(id).get(), noAsistencialDto);
+
+            if (!noAsistencialDto.getDescripcion().equals(noAsistencial.getDescripcion()))
+            noAsistencial.setDescripcion(noAsistencialDto.getDescripcion());
+
             noAsistencialService.save(noAsistencial);
             return new ResponseEntity(new Mensaje("Persona modificada correctamente"), HttpStatus.OK);
         } else {
