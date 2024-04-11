@@ -16,36 +16,40 @@ public class LegajoDto {
     Long id;
     @NotBlank
     private LocalDate fechaInicio;
-
     private LocalDate fechaFinal;
-
-    @NotBlank
-    private Long idPersona;
-
-    @NotBlank
-    private Long idUdo;
-
     @NotBlank
     private Boolean actual;
-
     @NotBlank
     private Boolean legal;
-
+    private boolean activo;
     private String matriculaNacional;
     private String matriculaProvincial;
-
     @NotBlank
     private Long idProfesion;
-
     private Long idSuspencion;
-
     @NotBlank
     private Long idRevista;
+    @NotBlank
+    private Long idUdo;
+    @NotBlank
+    private Long idPersona;
+    private Long idCargo;
+    private List<Long> idEfectores;
+
+    
+
+    
+
+    
+
+    
+
+    
 
     private String tipoGuardia;
     private String descripcion;
-    private Long idCargo;
-    private boolean activo;
+    
+    
 
-    private List<Long> idEfectores;
+    
 }
