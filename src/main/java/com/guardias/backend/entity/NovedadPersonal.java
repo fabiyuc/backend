@@ -80,7 +80,7 @@ public class NovedadPersonal {
     private Inciso inciso;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer",
-    // "handler","fechaInicio","fechaFinal","puedeRealizarGuardia","cobraSueldo","necesitaReemplazo","actual","descripcion","persona","suplente","ley",
+    // "handler","fechaInicio","fechaFinal","puedeRealizarGuardia","cobraSueldo","necesitaReemplazo","actual","descripcion","persona","suplente","ley","articulo","inciso",
     // "activo" })
 
     @Override

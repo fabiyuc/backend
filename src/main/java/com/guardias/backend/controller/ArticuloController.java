@@ -129,9 +129,7 @@ public class ArticuloController {
                 articulo.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
                 novedadPersonalService.findById(id).get().setArticulo(articulo);
             }
-
         }
-
         return articulo;
     }
 

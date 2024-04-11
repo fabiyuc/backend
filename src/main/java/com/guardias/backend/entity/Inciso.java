@@ -49,9 +49,10 @@ public class Inciso extends Ley {
         private Articulo articulo;
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal",
-                        "puedeRealizarGuardia",
-                        "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer",
+                        "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia", "cobraSueldo",
+                        "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "articulo",
+                        "inciso",
                         "activo" })
         private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 }
