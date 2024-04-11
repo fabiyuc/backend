@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LegajoDto {
 
-    Long id; 
     @NotBlank
     private LocalDate fechaInicio;
     private LocalDate fechaFinal;
