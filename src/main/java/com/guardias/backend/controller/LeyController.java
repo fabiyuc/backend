@@ -89,11 +89,18 @@ public class LeyController {
                 && !leyDto.getMotivoModificacion().isEmpty())
             ley.setMotivoModificacion(leyDto.getMotivoModificacion());
 
-        if (ley.getTipoLey() == null ||
-                (leyDto.getIdTipoLey() != null &&
-                        !Objects.equals(ley.getTipoLey().getId(),
-                                leyDto.getIdTipoLey()))) {
-            ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
+        try {
+            if (ley.getTipoLey() == null ||
+                    (leyDto.getIdTipoLey() != null &&
+                            !Objects.equals(ley.getTipoLey().getId(),
+                                    leyDto.getIdTipoLey()))) {
+                ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
+            }
+        } catch (Exception ex) {
+            String mensajePersonalizado = "Error en TipoLey: " + leyDto.getIdTipoLey() + " - Exception:"
+                    + ex.getMessage();
+            System.out.println(mensajePersonalizado);
+            ex.printStackTrace();
         }
 
         ley.setActivo(true);
