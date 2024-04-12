@@ -75,13 +75,13 @@ public class CargoController {
         if (cargoDto.getNrodecreto() == null)
             return new ResponseEntity(new Mensaje("El número de decreto es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (cargoDto.getFecharesolucion() == null)
+        if (cargoDto.getFechaResolucion() == null)
             return new ResponseEntity(new Mensaje("Fecha de resolución obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (cargoDto.getFechainicio() == null)
+        if (cargoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("Fecha de inicio obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (cargoDto.getFechafinal() == null)
+        if (cargoDto.getFechaFinal() == null)
             return new ResponseEntity(new Mensaje("Fecha final obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (cargoDto.getAgrupacion() == null)
@@ -110,13 +110,13 @@ public class CargoController {
         if (cargoDto.getNrodecreto() != null && cargo.getNrodecreto() != cargoDto.getNrodecreto())
             cargo.setNrodecreto(cargoDto.getNrodecreto());
 
-        if (cargoDto.getFecharesolucion() != null && cargo.getFechaResolucion() != cargoDto.getFecharesolucion())
-            cargo.setFechaResolucion(cargoDto.getFecharesolucion());
+        if (cargoDto.getFechaResolucion() != null && cargo.getFechaResolucion() != cargoDto.getFechaResolucion())
+            cargo.setFechaResolucion(cargoDto.getFechaResolucion());
 
-        if (cargoDto.getFechainicio() != null && cargo.getFechaInicio() != cargoDto.getFechainicio())
-            cargo.setFechaInicio(cargoDto.getFechainicio());
-        if (cargoDto.getFechafinal() != null && cargo.getFechaFinal() != cargoDto.getFechafinal())
-            cargo.setFechaFinal(cargoDto.getFechafinal());
+        if (cargoDto.getFechaInicio() != null && cargo.getFechaInicio() != cargoDto.getFechaInicio())
+            cargo.setFechaInicio(cargoDto.getFechaInicio());
+        if (cargoDto.getFechaFinal() != null && cargo.getFechaFinal() != cargoDto.getFechaFinal())
+            cargo.setFechaFinal(cargoDto.getFechaFinal());
 
         if (cargoDto.getAgrupacion() != null && cargo.getAgrupacion() != cargoDto.getAgrupacion())
             cargo.setAgrupacion(cargoDto.getAgrupacion());
