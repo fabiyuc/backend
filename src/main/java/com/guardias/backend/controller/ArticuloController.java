@@ -136,7 +136,7 @@ public class ArticuloController {
                 }
             }
         } catch (Exception ex) {
-            String mensajePersonalizado = "linea 136 - Error en getIdIncisos: " + articuloDto.getIdIncisos()
+            String mensajePersonalizado = "linea 139 - Error en getIdIncisos: " + articuloDto.getIdIncisos()
                     + " - Exception:"
                     + ex.getMessage() + " " + ex.getCause() + "-------------------------------------------------";
             System.out.println(mensajePersonalizado);
