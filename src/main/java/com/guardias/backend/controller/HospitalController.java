@@ -97,6 +97,7 @@ public class HospitalController {
                 capsService.findById(id).get().setCabecera(hospital);
             }
         }
+        hospital.setActivo(true);
 
         return hospital;
     }

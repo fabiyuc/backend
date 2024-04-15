@@ -69,8 +69,8 @@ public class IncisoController {
         }
 
         if (incisoDto.getIdSubIncisos() != null) {
-            List<Long> idList = new ArrayList();
-            if (inciso.getSubIncisos() == null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (inciso.getSubIncisos() != null) {
                 for (Inciso incisoList : inciso.getSubIncisos()) {
                     for (Long id : incisoDto.getIdSubIncisos()) {
                         if (!incisoList.getId().equals(id)) {
@@ -78,12 +78,14 @@ public class IncisoController {
                         }
                     }
                 }
+            } else {
+                inciso.setSubIncisos(new ArrayList<>());
             }
 
             List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
             for (Long id : idsToAdd) {
-                incisoService.findById(id).get().setInciso(inciso);
                 inciso.getSubIncisos().add(incisoService.findById(id).get());
+                incisoService.findById(id).get().setInciso(inciso);
             }
         }
 
@@ -116,11 +118,9 @@ public class IncisoController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Inciso inciso = createUpdate(new Inciso(), incisoDto);
             incisoService.save(inciso);
-            return new ResponseEntity<Mensaje>(new Mensaje("Inciso creado correctamente"), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<Mensaje>(new Mensaje("Error al crear el elemento"),
-                    HttpStatus.BAD_REQUEST);
         }
+
+        return respuestaValidaciones;
     }
 
     @PutMapping(("/update/{id}"))
