@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LegajoDto {
 
-    Long id;
     @NotBlank
     private LocalDate fechaInicio;
     private LocalDate fechaFinal;
@@ -36,18 +35,10 @@ public class LegajoDto {
     private Long idCargo;
     private List<Long> idEfectores;
 
-    
 
-    
 
-    
-
-    
-
-    
-
-    private String tipoGuardia;
-    private String descripcion;
+    /* private String tipoGuardia;*
+    private String descripcion;* */
     
     
 
