@@ -54,7 +54,7 @@ public class IncisoController {
     public ResponseEntity<List<Inciso>> getById(@PathVariable("id") Long id) {
         if (!incisoService.activo(id))
             return new ResponseEntity(new Mensaje("Inciso no encontrado"), HttpStatus.NOT_FOUND);
-        Inciso inciso = incisoService.findById(id).get();
+        Inciso inciso = incisoService.findById(id);
         return new ResponseEntity(inciso, HttpStatus.OK);
     }
 
@@ -82,8 +82,8 @@ public class IncisoController {
 
             List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
             for (Long id : idsToAdd) {
-                incisoService.findById(id).get().setIncisoPadre(inciso);
-                inciso.getSubIncisos().add(incisoService.findById(id).get());
+                incisoService.findById(id).setIncisoPadre(inciso);
+                inciso.getSubIncisos().add(incisoService.findById(id));
             }
         }
 
@@ -130,7 +130,7 @@ public class IncisoController {
         ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Inciso inciso = createUpdate(incisoService.findById(id).get(), incisoDto);
+            Inciso inciso = createUpdate(incisoService.findById(id), incisoDto);
             incisoService.save(inciso);
             return new ResponseEntity<Mensaje>(new Mensaje("Inciso modificado correctamente"), HttpStatus.OK);
         } else {
@@ -143,7 +143,7 @@ public class IncisoController {
         if (!incisoService.activo(id))
             return new ResponseEntity<Mensaje>(new Mensaje("Inciso no encontrado"), HttpStatus.NOT_FOUND);
 
-        Inciso inciso = incisoService.findById(id).get();
+        Inciso inciso = incisoService.findById(id);
         inciso.setActivo(false);
         incisoService.save(inciso);
         return new ResponseEntity<Mensaje>(new Mensaje("Inciso  eliminado"), HttpStatus.OK);

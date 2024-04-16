@@ -125,8 +125,11 @@ public class ArticuloController {
                 List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdIncisos() : idList;
                 for (Long id : idsToAdd) {
                     try {
-                        articulo.getIncisos().add(incisoService.findById(id).get());
-                        incisoService.findById(id).get().setArticulo(articulo);
+                        if (incisoService.existsById(id)) {
+                            Inciso inciso = incisoService.findById(id);
+                            articulo.getIncisos().add(inciso);
+                        }
+                        incisoService.findById(id).setArticulo(articulo);
                     } catch (Exception e) {
                         String mensajePersonalizado = "linea 130 - Error en getIdIncisos: "
                                 + articuloDto.getIdIncisos();

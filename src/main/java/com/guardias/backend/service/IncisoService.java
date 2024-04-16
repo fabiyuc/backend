@@ -25,8 +25,8 @@ public class IncisoService {
         return incisoRepository.findAll();
     }
 
-    public Optional<Inciso> findById(Long id) {
-        return incisoRepository.findById(id);
+    public Inciso findById(Long id) {
+        return incisoRepository.findById(id).get();
     }
 
     public Optional<Inciso> findByNumero(String numero) {
