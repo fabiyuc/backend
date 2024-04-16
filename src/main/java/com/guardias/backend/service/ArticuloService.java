@@ -87,7 +87,7 @@ public class ArticuloService {
                 () -> new EntityNotFoundException("No se encontró el adicional con el ID: " + idArticulo));
 
         Articulo subArticulo = articuloRepository.findById(idSubArticulo).get();
-        subArticulo.setArticulo(articulo);
+        subArticulo.setArticuloPadre(articulo);
         articuloRepository.save(subArticulo);
         articulo.getSubArticulos().add(subArticulo);
         articuloRepository.save(articulo);

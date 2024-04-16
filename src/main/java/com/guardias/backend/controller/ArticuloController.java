@@ -69,12 +69,13 @@ public class ArticuloController {
         articulo = (Articulo) ley;
 
         try {
-            if (articuloDto.getIdArticulo() != null && (articulo.getArticulo() == null
-                    || !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo()))) {
-                articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
+            if (articuloDto.getIdArticuloPadre() != null && (articulo.getArticuloPadre() == null
+                    || !Objects.equals(articulo.getArticuloPadre().getId(), articuloDto.getIdArticuloPadre()))) {
+                articulo.setArticuloPadre(articuloService.findById(articuloDto.getIdArticuloPadre()).get());
             }
         } catch (Exception ex) {
-            String mensajePersonalizado = "Error en getIdArticulo: " + articuloDto.getIdArticulo() + " - Exception:"
+            String mensajePersonalizado = "Error en getIdArticulo: " + articuloDto.getIdArticuloPadre()
+                    + " - Exception:"
                     + ex.getMessage();
             System.out.println(mensajePersonalizado);
             ex.printStackTrace();
@@ -96,7 +97,7 @@ public class ArticuloController {
                 List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
                 for (Long id : idsToAdd) {
                     articulo.getSubArticulos().add(articuloService.findById(id).get());
-                    articuloService.findById(id).get().setArticulo(articulo);
+                    articuloService.findById(id).get().setArticuloPadre(articulo);
                 }
             }
         } catch (Exception ex) {

@@ -82,7 +82,7 @@ public class IncisoController {
 
             List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
             for (Long id : idsToAdd) {
-                incisoService.findById(id).get().setInciso(inciso);
+                incisoService.findById(id).get().setIncisoPadre(inciso);
                 inciso.getSubIncisos().add(incisoService.findById(id).get());
             }
         }

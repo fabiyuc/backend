@@ -26,31 +26,31 @@ import lombok.NoArgsConstructor;
 public class Articulo extends Ley {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "id_articulo")
+        @JoinColumn(name = "id_articulo_padre")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
                         "novedadesPersonales",
-                        "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
-        private Articulo articulo;
+                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos" })
+        private Articulo articuloPadre;
 
-        @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "articuloPadre", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
                         "novedadesPersonales",
-                        "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos" })
         private List<Articulo> subArticulos = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
                         "novedadesPersonales",
-                        "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos" })
         private List<Inciso> incisos = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer",
                         "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia", "cobraSueldo",
-                        "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "articulo",
+                        "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "articuloPadre",
                         "inciso",
                         "activo" })
         private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class IncisoDto extends LeyDto {
 
-    private Long idInciso;
+    private Long idIncisoPadre;
     private List<Long> idSubIncisos;
     private Long idArticulo;
     private List<Long> idNovedadesPersonales;
