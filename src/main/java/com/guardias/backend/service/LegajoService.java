@@ -49,14 +49,6 @@ public class LegajoService {
         legajoRepository.deleteById((Long) id);
     }
 
-    public void save(Legajo legajo) {
-        legajoRepository.save(legajo);
-    }
-
-    public void deleteById(Long id) {
-        legajoRepository.deleteById(id);
-    }
-
     // @Transactional
     // public void agregarEfector(Long idLegajo, Long idEfector) {
 
