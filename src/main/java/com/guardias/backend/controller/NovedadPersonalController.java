@@ -138,7 +138,7 @@ public class NovedadPersonalController {
                 (novedadPersonalDto.getIdInciso() != null &&
                         !Objects.equals(novedadPersonal.getInciso().getId(),
                                 novedadPersonalDto.getIdInciso()))) {
-            novedadPersonal.setInciso(incisoService.findById(novedadPersonalDto.getIdInciso()));
+            novedadPersonal.setInciso(incisoService.findById(novedadPersonalDto.getIdInciso()).get());
         }
         novedadPersonal.setActivo(true);
         return novedadPersonal;
