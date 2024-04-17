@@ -2,8 +2,6 @@ package com.guardias.backend.dto;
 
 import java.util.List;
 
-import com.guardias.backend.entity.Departamento;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +15,7 @@ public class LocalidadDto {
     @NotBlank
     private String nombre;
 
-    Departamento departamento;
+    Long idDepartamento;
     private boolean activo;
 
     private List<Long> idEfectores;

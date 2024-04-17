@@ -127,7 +127,6 @@ public class IncisoController {
             return respuestaValidaciones;
         }
 
-        return respuestaValidaciones;
     }
 
     @PutMapping(("/update/{id}"))
