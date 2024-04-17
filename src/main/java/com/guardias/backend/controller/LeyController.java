@@ -77,17 +77,9 @@ public class LeyController {
         if (leyDto.getFechaAlta() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
                     HttpStatus.BAD_REQUEST);
-        if (leyDto.getFechaBaja() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de baja es obligatoria"),
-                    HttpStatus.BAD_REQUEST); // borrar despues
-        if (leyDto.getFechaModificacion() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de modificacion es obligatoria"),
-                    HttpStatus.BAD_REQUEST); // borrar despues
-        if (leyDto.getMotivoModificacion() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El motivo de modificacion es obligatorio"),
-                    HttpStatus.BAD_REQUEST); // borrar despues
+
         if (leyDto.getIdTipoLey() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El tipo de ley es obligatorio"),
+            return new ResponseEntity<Mensaje>(new Mensaje("El tipo de Ley es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -119,11 +111,18 @@ public class LeyController {
         if (leyDto.getMotivoModificacion() != null && ley.getMotivoModificacion() != leyDto.getMotivoModificacion())
             ley.setMotivoModificacion(leyDto.getMotivoModificacion());
 
-        if (leyDto.getIdTipoLey() != null) {
-            if (ley.getTipoLey() == null
-                    || !Objects.equals(ley.getTipoLey().getId(), leyDto.getIdTipoLey())) {
+        try {
+            if (ley.getTipoLey() == null ||
+                    (leyDto.getIdTipoLey() != null &&
+                            !Objects.equals(ley.getTipoLey().getId(),
+                                    leyDto.getIdTipoLey()))) {
                 ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
             }
+        } catch (Exception ex) {
+            String mensajePersonalizado = "Error en TipoLey: " + leyDto.getIdTipoLey() + " - Exception:"
+                    + ex.getMessage();
+            System.out.println(mensajePersonalizado);
+            ex.printStackTrace();
         }
 
         ley.setActivo(true);

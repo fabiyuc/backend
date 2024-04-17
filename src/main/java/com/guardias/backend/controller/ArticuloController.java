@@ -68,82 +68,106 @@ public class ArticuloController {
         Ley ley = leyController.createUpdate(articulo, articuloDto);
         articulo = (Articulo) ley;
 
-        /*
-         * if (articulo.getArticulo() == null
-         * || (articuloDto.getIdArticulo() == null
-         * && !Objects.equals(articulo.getArticulo().getId(),
-         * articuloDto.getIdArticulo()))) {
-         * articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).
-         * get());
-         * }
-         */
-
-        if (articuloDto.getIdArticulo() != null) {
-            if (articulo.getArticulo() == null
-                    || !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo())) {
+        try {
+            if (articuloDto.getIdArticulo() != null && (articulo.getArticulo() == null
+                    || !Objects.equals(articulo.getArticulo().getId(), articuloDto.getIdArticulo()))) {
                 articulo.setArticulo(articuloService.findById(articuloDto.getIdArticulo()).get());
             }
+        } catch (Exception ex) {
+            String mensajePersonalizado = "Error en getIdArticulo: " + articuloDto.getIdArticulo() + " - Exception:"
+                    + ex.getMessage();
+            System.out.println(mensajePersonalizado);
+            ex.printStackTrace();
         }
 
-        if (articuloDto.getIdSubArticulos() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (articulo.getSubArticulos() != null) {
-                for (Articulo articuloList : articulo.getSubArticulos()) {
-                    for (Long id : articuloDto.getIdSubArticulos()) {
-                        if (!articuloList.getId().equals(id)) {
-                            idList.add(id);
+        try {
+            if (articuloDto.getIdSubArticulos() != null) {
+                List<Long> idList = new ArrayList<Long>();
+                if (articulo.getSubArticulos() == null) {
+                    for (Articulo articuloList : articulo.getSubArticulos()) {
+                        for (Long id : articuloDto.getIdSubArticulos()) {
+                            if (!articuloList.getId().equals(id)) {
+                                idList.add(id);
+                            }
                         }
                     }
                 }
-            } else {
-                articulo.setSubArticulos(new ArrayList<Articulo>());
-            }
 
-            List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
-            for (Long id : idsToAdd) {
-                articulo.getSubArticulos().add(articuloService.findById(id).get());
-                articuloService.findById(id).get().setArticulo(articulo);
-            }
-        }
-
-        if (articuloDto.getIdIncisos() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (articulo.getIncisos() == null) {
-                for (Inciso incisoList : articulo.getIncisos()) {
-                    for (Long id : articuloDto.getIdIncisos()) {
-                        if (!incisoList.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
+                List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
+                for (Long id : idsToAdd) {
+                    articulo.getSubArticulos().add(articuloService.findById(id).get());
+                    articuloService.findById(id).get().setArticulo(articulo);
                 }
             }
-
-            List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdIncisos() : idList;
-            for (Long id : idsToAdd) {
-                articulo.getIncisos().add(incisoService.findById(id).get());
-                incisoService.findById(id).get().setArticulo(articulo);
-            }
+        } catch (Exception ex) {
+            String mensajePersonalizado = "Error en getIdSuArticulo: " + articuloDto.getIdSubArticulos()
+                    + " - Exception:" + ex.getMessage();
+            System.out.println(mensajePersonalizado);
+            ex.printStackTrace();
         }
 
-        if (articuloDto.getIdNovedadesPersonales() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (articulo.getNovedadesPersonales() != null) {
-                for (NovedadPersonal novedad : articulo.getNovedadesPersonales()) {
-                    for (Long id : articuloDto.getIdNovedadesPersonales()) {
-                        if (!novedad.getId().equals(id)) {
-                            idList.add(id);
+        try {
+            if (articuloDto.getIdIncisos() != null) {
+                List<Long> idList = new ArrayList<Long>();
+                if (articulo.getIncisos() != null) {
+                    for (Inciso incisoList : articulo.getIncisos()) {
+                        for (Long id : articuloDto.getIdIncisos()) {
+                            if (!incisoList.getId().equals(id)) {
+                                idList.add(id);
+                            }
                         }
                     }
+                } else {
+                    articulo.setIncisos(new ArrayList<>());
                 }
-            } else {
-                articulo.setNovedadesPersonales(new ArrayList<NovedadPersonal>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdNovedadesPersonales() : idList;
-            for (Long id : idsToAdd) {
-                articulo.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                novedadPersonalService.findById(id).get().setArticulo(articulo);
-            }
 
+                List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdIncisos() : idList;
+                for (Long id : idsToAdd) {
+                    try {
+                        articulo.getIncisos().add(incisoService.findById(id).get());
+                        incisoService.findById(id).get().setArticulo(articulo);
+                    } catch (Exception e) {
+                        String mensajePersonalizado = "linea 130 - Error en getIdIncisos: "
+                                + articuloDto.getIdIncisos();
+                        System.out.println(mensajePersonalizado);
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        } catch (Exception ex) {
+            String mensajePersonalizado = "linea 139 - Error en getIdIncisos: " + articuloDto.getIdIncisos()
+                    + " - Exception:"
+                    + ex.getMessage() + " " + ex.getCause() + "-------------------------------------------------";
+            System.out.println(mensajePersonalizado);
+            ex.printStackTrace();
+        }
+
+        try {
+            if (articuloDto.getIdNovedadesPersonales() != null) {
+                List<Long> idList = new ArrayList<Long>();
+                if (articulo.getNovedadesPersonales() != null) {
+                    for (NovedadPersonal novedad : articulo.getNovedadesPersonales()) {
+                        for (Long id : articuloDto.getIdNovedadesPersonales()) {
+                            if (!novedad.getId().equals(id)) {
+                                idList.add(id);
+                            }
+                        }
+                    }
+                } else {
+                    articulo.setNovedadesPersonales(new ArrayList<>());
+                }
+                List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdNovedadesPersonales() : idList;
+                for (Long id : idsToAdd) {
+                    articulo.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
+                    novedadPersonalService.findById(id).get().setArticulo(articulo);
+                }
+            }
+        } catch (Exception ex) {
+            String mensajePersonalizado = "Error en getIdNovedadesPersonales: " + articuloDto.getIdNovedadesPersonales()
+                    + " - Exception:" + ex.getMessage();
+            System.out.println(mensajePersonalizado);
+            ex.printStackTrace();
         }
         articulo.setActivo(true);
         return articulo;
@@ -155,8 +179,15 @@ public class ArticuloController {
         ResponseEntity<?> respuestaValidaciones = leyController.validationsCreate(articuloDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Articulo articulo = createUpdate(new Articulo(), articuloDto);
-            articuloService.save(articulo);
+            try {
+                Articulo articulo = createUpdate(new Articulo(), articuloDto);
+                articuloService.save(articulo);
+            } catch (Exception ex) {
+                String mensajePersonalizado = "Se produjo un error al guardar el artículo: " + ex.getMessage();
+                System.out.println(mensajePersonalizado);
+                ex.printStackTrace();
+            }
+
             return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

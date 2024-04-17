@@ -15,7 +15,7 @@ public class LocalidadService {
     @Autowired
     LocalidadRepository localidadRepository;
 
-    public List<Localidad> findByActivo() {
+    public Optional<List<Localidad>> findByActivoTrue() {
         return localidadRepository.findByActivoTrue();
     }
 
@@ -24,11 +24,19 @@ public class LocalidadService {
     }
 
     public Optional<Localidad> findById(Long id) {
-        return localidadRepository.findById(id);
+        return localidadRepository.findById((Long) id);
     }
 
     public Optional<Localidad> findByNombre(String nombre) {
         return localidadRepository.findByNombre(nombre);
+    }
+
+    public boolean existsById(Long id) {
+        return localidadRepository.existsById((Long) id);
+    }
+
+    public boolean existsByNombre(String nombre) {
+        return localidadRepository.existsByNombre(nombre);
     }
 
     public void save(Localidad localidad) {
@@ -36,15 +44,7 @@ public class LocalidadService {
     }
 
     public void deleteById(Long id) {
-        localidadRepository.deleteById(id);
-    }
-
-    public boolean existsById(Long id) {
-        return localidadRepository.existsById(id);
-    }
-
-    public boolean existsByNombre(String nombre) {
-        return localidadRepository.existsByNombre(nombre);
+        localidadRepository.deleteById((Long) id);
     }
 
 }

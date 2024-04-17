@@ -51,8 +51,8 @@ public class LegajoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.findByActivoTrue();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<Legajo> list = legajoService.findByActivoTrue().get();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
@@ -71,13 +71,13 @@ public class LegajoController {
     }
 
     private ResponseEntity<?> validations(LegajoDto legajoDto) {
-        if (legajoDto.getFechaInicio() == null) {
+        if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
 
         if (legajoDto.getActual() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
                     HttpStatus.BAD_REQUEST);
+
         if (legajoDto.getLegal() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar si es legal o no"),
                     HttpStatus.BAD_REQUEST);
@@ -102,106 +102,91 @@ public class LegajoController {
 
     private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
 
-        if (legajoDto.getFechaInicio() != null && legajo.getFechaInicio() != legajoDto.getFechaInicio())
+        /*
+         * if (legajo.getFechaInicio() != null && (legajo.getFechaInicio() !=
+         * legajoDto.getFechaInicio())
+         * && legajoDto.getFechaInicio() != null)
+         * legajo.setFechaInicio(legajoDto.getFechaInicio());
+         */
+        if (legajoDto.getFechaInicio() != null && !legajoDto.getFechaInicio().equals(legajo.getFechaInicio()))
             legajo.setFechaInicio(legajoDto.getFechaInicio());
 
-        if (legajoDto.getFechaFinal() != null && legajo.getFechaFinal() != legajoDto.getFechaFinal())
+        /*
+         * if (legajo.getFechaFinal() != null && (legajo.getFechaFinal() !=
+         * legajoDto.getFechaFinal())
+         * && legajoDto.getFechaFinal() != null)
+         * legajo.setFechaFinal(legajoDto.getFechaFinal());
+         */
+        if (legajoDto.getFechaFinal() != null && !legajoDto.getFechaFinal().equals(legajo.getFechaFinal()))
             legajo.setFechaFinal(legajoDto.getFechaFinal());
 
-        if (legajoDto.getMatriculaNacional() != null
-                && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional())
-            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
-
-        if (legajoDto.getMatriculaProvincial() != null
-                && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
-            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
-
-        if (legajoDto.getIdPersona() != null) {
-            if (legajo.getPersona() == null
-                    || !Objects.equals(legajo.getPersona().getId(), legajoDto.getIdPersona())) {
-                legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
-            }
-        }
-        /*
-         * if (legajo.getPersona() == null ||
-         * (legajoDto.getIdPersona() != null &&
-         * !Objects.equals(legajo.getPersona().getId(),
-         * legajoDto.getIdPersona()))) {
-         * legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
-         * }
-         */
-
-        /*
-         * if (legajo.getUdo() == null ||
-         * (legajoDto.getIdUdo() != null &&
-         * !Objects.equals(legajo.getUdo().getId(),
-         * legajoDto.getIdUdo()))) {
-         * legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
-         * }
-         */
-
-        if (legajoDto.getIdUdo() != null) {
-            if (legajo.getUdo() == null
-                    || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
-                legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
-            }
-        }
         legajo.setActual(legajoDto.getActual());
         legajo.setLegal(legajoDto.getLegal());
 
         /*
-         * if (legajo.getProfesion() == null ||
-         * (legajoDto.getIdProfesion() != null &&
-         * !Objects.equals(legajo.getProfesion().getId(),
-         * legajoDto.getIdProfesion()))) {
-         * legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get
-         * ());
-         * }
+         * if (legajo.getMatriculaNacional() != null && (legajo.getMatriculaNacional()
+         * != legajoDto.getMatriculaNacional())
+         * && legajoDto.getMatriculaNacional() != null)
+         * legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
          */
 
-        if (legajoDto.getIdProfesion() != null) {
-            if (legajo.getProfesion() == null
-                    || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
-                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
-            }
-        }
-        if (legajoDto.getIdSuspencion() != null) {
-            if (legajo.getSuspencion() == null
-                    || !Objects.equals(legajo.getSuspencion().getId(), legajoDto.getIdSuspencion())) {
-                legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).get());
-            }
-        }
+        if (legajoDto.getMatriculaNacional() != null
+                && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional()
+                && !legajoDto.getMatriculaNacional().isEmpty())
+            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
 
         /*
-         * if (legajo.getSuspencion() == null ||
-         * (legajoDto.getIdSuspencion() != null &&
-         * !Objects.equals(legajo.getSuspencion().getId(),
-         * legajoDto.getIdSuspencion()))) {
-         * legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).
-         * get());
-         * }
+         * if (legajo.getMatriculaProvincial() != null
+         * && (legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
+         * && legajoDto.getMatriculaProvincial() != null)
+         * legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
          */
 
-        if (legajoDto.getIdRevista() != null) {
-            if (legajo.getRevista() == null
-                    || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {
-                legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
-            }
+        if (legajoDto.getMatriculaProvincial() != null
+                && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial()
+                && !legajoDto.getMatriculaProvincial().isEmpty())
+            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
+
+        if (legajo.getPersona() == null ||
+                (legajoDto.getIdPersona() != null &&
+                        !Objects.equals(legajo.getPersona().getId(),
+                                legajoDto.getIdPersona()))) {
+            legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
         }
-        /*
-         * if (legajo.getRevista() == null ||
-         * (legajoDto.getIdRevista() != null &&
-         * !Objects.equals(legajo.getRevista().getId(),
-         * legajoDto.getIdRevista()))) {
-         * legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
-         * }
-         */
 
-        if (legajoDto.getIdCargo() != null) {
-            if (legajo.getCargo() == null
-                    || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
-                legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-            }
+        if (legajo.getUdo() == null ||
+                (legajoDto.getIdUdo() != null &&
+                        !Objects.equals(legajo.getUdo().getId(),
+                                legajoDto.getIdUdo()))) {
+            legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
+        }
+
+        if (legajo.getProfesion() == null ||
+                (legajoDto.getIdProfesion() != null &&
+                        !Objects.equals(legajo.getProfesion().getId(),
+                                legajoDto.getIdProfesion()))) {
+            legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
+        }
+
+        if (legajo.getSuspencion() == null ||
+                (legajoDto.getIdSuspencion() != null &&
+                        !Objects.equals(legajo.getSuspencion().getId(),
+                                legajoDto.getIdSuspencion()))) {
+            legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).get());
+        }
+
+        if (legajo.getRevista() == null ||
+                (legajoDto.getIdRevista() != null &&
+                        !Objects.equals(legajo.getRevista().getId(),
+                                legajoDto.getIdRevista()))) {
+            legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
+        }
+
+        if (legajo.getCargo() == null ||
+                (legajoDto.getIdCargo() != null &&
+                        !Objects.equals(legajo.getCargo().getId(),
+                                legajoDto.getIdCargo()))) {
+            legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
         }
 
         /*
@@ -224,7 +209,7 @@ public class LegajoController {
                     }
                 }
             } else {
-                legajo.setEfectores(new ArrayList<Efector>());
+                legajo.setEfectores(new ArrayList<>());
             }
 
             List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEfectores() : idList;
@@ -234,6 +219,8 @@ public class LegajoController {
                 efectorService.findById(id).getLegajos().add(legajo);
             }
         }
+
+        legajo.setActivo(true);
 
         legajo.setActivo(true);
 

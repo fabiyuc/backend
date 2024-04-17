@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class ArticuloDto extends LeyDto {
 
-    Long idArticulo;
-    List<Long> idSubArticulos;
-    List<Long> idIncisos;
+    private Long idArticulo;
+    private List<Long> idSubArticulos;
+    private List<Long> idIncisos;
+    private List<Long> idNovedadesPersonales;
 }

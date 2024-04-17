@@ -11,7 +11,7 @@ import com.guardias.backend.entity.Legajo;
 @Repository
 public interface LegajoRepository extends JpaRepository<Legajo, Long> {
 
-    List<Legajo> findByActivoTrue();
+    Optional<List<Legajo>> findByActivoTrue();
 
     Optional<Legajo> findById(Long id);
 

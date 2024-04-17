@@ -18,7 +18,7 @@ public class HospitalService {
     @Autowired
     HospitalRepository hospitalRepository;
 
-    public List<Hospital> findByActivoTrue() {
+    public Optional<List<Hospital>> findByActivoTrue() {
         return hospitalRepository.findByActivoTrue();
     }
 
@@ -31,11 +31,15 @@ public class HospitalService {
     }
 
     public Optional<Hospital> findById(Long id) {
-        return hospitalRepository.findById(id);
+        return hospitalRepository.findById((Long) id);
     }
 
     public Optional<Hospital> findByNombre(String nombre) {
         return hospitalRepository.findByNombre(nombre);
+    }
+
+    public boolean activo(Long id) {
+        return (hospitalRepository.existsById(id) && hospitalRepository.findById(id).get().isActivo());
     }
 
     public void save(Hospital hospital) {
@@ -58,7 +62,4 @@ public class HospitalService {
         return (hospitalRepository.existsByNombre(nombre) && hospitalRepository.findByNombre(nombre).get().isActivo());
     }
 
-    public boolean activo(Long id) {
-        return (hospitalRepository.existsById(id) && hospitalRepository.findById(id).get().isActivo());
-    }
 }

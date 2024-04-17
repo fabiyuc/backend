@@ -63,13 +63,17 @@ public abstract class Person {
     private List<Legajo> legajos = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia",
-            "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "activo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer",
+            "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia", "cobraSueldo", "necesitaReemplazo",
+            "actual", "descripcion", "persona", "suplente", "ley", "articulo", "inciso",
+            "activo" })
     private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia",
-            "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "activo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer",
+            "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia", "cobraSueldo", "necesitaReemplazo",
+            "actual", "descripcion", "persona", "suplente", "ley", "articulo", "inciso",
+            "activo" })
     private List<NovedadPersonal> suplentes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
@@ -83,15 +87,13 @@ public abstract class Person {
             "esRegional", "activo", "efector", "persona" })
     private List<Autoridad> autoridades = new ArrayList<>();
 
-    /*
-     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-     * "apellido", "dni", "cuil", "legajos",
-     * "novedadesPersonales", "suplentes",
-     * "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-     * "domicilio",
-     * "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-     * "descripcion","esAsistencial" })
-     */
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "apellido", "dni", "cuil", "legajos",
+    // "novedadesPersonales", "suplentes",
+    // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+    // "domicilio",
+    // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+    // "descripcion","esAsistencial" })
 
     @Override
     public boolean equals(Object obj) {

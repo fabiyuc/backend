@@ -17,7 +17,16 @@ public class IncisoService {
     @Autowired
     IncisoRepository incisoRepository;
 
-    public List<Inciso> findByActivoTrue() {
+    // @Autowired
+    // IncisoService incisoService;
+
+    @Autowired
+    NovedadPersonalService novedadPersonalService;
+
+    // @Autowired
+    // ArticuloService articuloService;
+
+    public Optional<List<Inciso>> findByActivoTrue() {
         return incisoRepository.findByActivoTrue();
     }
 
@@ -38,7 +47,12 @@ public class IncisoService {
     }
 
     public boolean existsById(Long id) {
-        return incisoRepository.existsById(id);
+        return incisoRepository.existsById((Long) id);
+    }
+
+    public boolean activo(Long id) {
+        return (incisoRepository.existsById(id)
+                && incisoRepository.findById(id).get().isActivo());
     }
 
     public boolean existsByNumero(String numero) {
@@ -51,10 +65,6 @@ public class IncisoService {
 
     public void save(Inciso inciso) {
         incisoRepository.save(inciso);
-    }
-
-    public boolean activo(Long id) {
-        return (incisoRepository.existsById(id) && incisoRepository.findById(id).get().isActivo());
     }
 
     public void deleteById(Long id) {

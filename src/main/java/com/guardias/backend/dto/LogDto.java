@@ -1,8 +1,9 @@
 package com.guardias.backend.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LogDto {
 
-    @NotBlank
-    private LocalDateTime fecha;
+    @NotNull
+    private LocalDate fecha;
     @NotBlank
     private String seccion;
     @NotBlank
