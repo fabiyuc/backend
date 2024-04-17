@@ -75,7 +75,7 @@ public class ArticuloService {
         Articulo articulo = articuloRepository.findById(idArticulo).orElseThrow(
                 () -> new EntityNotFoundException("No se encontró el adicional con el ID: " + idArticulo));
 
-        Inciso inciso = incisoService.findById(idInciso);
+        Inciso inciso = incisoService.findById(idInciso).get();
         inciso.setArticulo(articulo);
         incisoService.save(inciso);
         articulo.getIncisos().add(inciso);
