@@ -41,7 +41,7 @@ public class LocalidadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Localidad>> list() {
-        List<Localidad> list = localidadService.findByActivo();
+        List<Localidad> list = localidadService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -83,7 +83,8 @@ public class LocalidadController {
     // private Cargo createUpdate(Cargo cargo, CargoDto cargoDto) {
     private Localidad createUpdate(Localidad localidad, LocalidadDto localidadDto) {
 
-        if (localidadDto.getNombre() != null && !localidadDto.getNombre().equals(localidad.getNombre())
+        if (localidadDto.getNombre() != null
+                && localidad.getNombre() != localidadDto.getNombre()
                 && !localidadDto.getNombre().isEmpty())
             localidad.setNombre(localidadDto.getNombre());
 

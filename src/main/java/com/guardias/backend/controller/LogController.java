@@ -32,13 +32,13 @@ public class LogController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Log>> list() {
-        List<Log> list = logService.list();
-        return new ResponseEntity<List<Log>>(list, HttpStatus.OK);
+        List<Log> list = logService.findByActivoTrue().get();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Log> getById(@PathVariable("id") Long id) {
-        if (!logService.existsById(id))
+        if (!logService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el log"), HttpStatus.NOT_FOUND);
         Log log = logService.findById(id).get();
         return new ResponseEntity<Log>(log, HttpStatus.OK);
@@ -61,16 +61,21 @@ public class LogController {
 
     private Log createUpdate(Log log, LogDto logDto) {
 
-        if (log.getFecha() != logDto.getFecha())
+        if (logDto.getFecha() != null
+                && log.getFecha() != logDto.getFecha()
+                && !logDto.getFecha().toString().isEmpty())
             log.setFecha(logDto.getFecha());
 
-        if (log.getSeccion() != logDto.getSeccion() && logDto.getSeccion() != null
+        if (logDto.getSeccion() != null
+                && log.getSeccion() != logDto.getSeccion()
                 && !logDto.getSeccion().isEmpty())
             log.setSeccion(logDto.getSeccion());
 
-        if (log.getAccion() != logDto.getAccion() && logDto.getAccion() != null
+        if (logDto.getAccion() != null
+                && log.getAccion() != logDto.getAccion()
                 && !logDto.getAccion().isEmpty())
             log.setAccion(logDto.getAccion());
+
         log.setActivo(true);
 
         return log;

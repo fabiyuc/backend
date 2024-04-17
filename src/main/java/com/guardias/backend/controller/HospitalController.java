@@ -40,32 +40,32 @@ public class HospitalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
-        List<Hospital> list = hospitalService.findByActivoTrue();
+        List<Hospital> list = hospitalService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Hospital>> listAll() {
         List<Hospital> list = hospitalService.findAll();
-        return new ResponseEntity(list, HttpStatus.OK);
+        return new ResponseEntity<List<Hospital>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listPasivas")
     public ResponseEntity<List<Hospital>> listPasivas() {
         List<Hospital> list = hospitalService.findByAdmitePasiva();
-        return new ResponseEntity(list, HttpStatus.OK);
+        return new ResponseEntity<List<Hospital>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<Hospital>> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<Hospital> getById(@PathVariable("id") Long id) {
         if (!hospitalService.activo(id))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         Hospital hospital = hospitalService.findById(id).get();
-        return new ResponseEntity(hospital, HttpStatus.OK);
+        return new ResponseEntity<Hospital>(hospital, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<List<Hospital>> getByNombre(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<Hospital> getByNombre(@PathVariable("nombre") String nombre) {
         if (!hospitalService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         Hospital hospital = hospitalService.findByNombre(nombre).get();
@@ -81,7 +81,7 @@ public class HospitalController {
         hospital.setNivelComplejidad(hospitalDto.getNivelComplejidad());
 
         if (hospitalDto.getIdCaps() != null) {
-            List<Long> idList = new ArrayList();
+            List<Long> idList = new ArrayList<Long>();
             if (hospital.getCaps() != null) {
                 for (Caps caps : hospital.getCaps()) {
                     for (Long id : hospitalDto.getIdCaps()) {
@@ -90,6 +90,8 @@ public class HospitalController {
                         }
                     }
                 }
+            } else {
+                hospital.setCaps(new ArrayList<Caps>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? hospitalDto.getIdCaps() : idList;
             for (Long id : idsToAdd) {
@@ -98,6 +100,7 @@ public class HospitalController {
             }
         }
 
+        hospital.setActivo(false);
         return hospital;
     }
 
