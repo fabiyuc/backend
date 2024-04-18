@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class IncisoDto extends LeyDto {
 
-    @NotNull
-    private Long idInciso;
+    private Long idIncisoPadre;
     private List<Long> idSubIncisos;
     @NotNull
     private Long idArticulo;

@@ -27,7 +27,6 @@ public class LeyDto {
     private LocalDate fechaModificacion;
     private String motivoModificacion;
     private boolean activo;
-
     @NotNull
     Long idTipoLey;
 }

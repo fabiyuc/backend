@@ -86,14 +86,19 @@ public class IncisoController {
         if (incisoDto.getIdSubIncisos() != null) {
             List<Long> idList = new ArrayList();
             if (inciso.getSubIncisos() == null) {
-                inciso.setSubIncisos(new ArrayList<>()); // Initialize subIncisos list if null
+                for (Inciso incisoList : inciso.getSubIncisos()) {
+                    for (Long id : incisoDto.getIdSubIncisos()) {
+                        if (!incisoList.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
             }
-            for (Long id : incisoDto.getIdSubIncisos()) {
-                Inciso subInciso = incisoService.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Subinciso no encontrado con ID: " + id));
-                subInciso.setInciso(inciso);
-                inciso.getSubIncisos().add(subInciso);
-                incisoService.save(subInciso);
+
+            List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
+            for (Long id : idsToAdd) {
+                incisoService.findById(id).get().setIncisoPadre(inciso);
+                inciso.getSubIncisos().add(incisoService.findById(id).get());
             }
         }
 
