@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class MinisterioDto extends EfectorDto {
 
-    Long idCabecera;
-    List<Long> idMinisterios;
+    private Long idCabecera;
+    private List<Long> idMinisterios;
 
 }

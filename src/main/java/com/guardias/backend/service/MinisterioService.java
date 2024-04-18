@@ -18,7 +18,7 @@ public class MinisterioService {
     @Autowired
     MinisterioRepository ministerioRepository;
 
-    public List<Ministerio> findByActivoTrue() {
+    public Optional<List<Ministerio>> findByActivoTrue() {
         return ministerioRepository.findByActivoTrue();
     }
 
@@ -27,23 +27,15 @@ public class MinisterioService {
     }
 
     public Optional<Ministerio> findById(Long id) {
-        return ministerioRepository.findById(id);
+        return ministerioRepository.findById((Long) id);
     }
 
     public Optional<Ministerio> findByNombre(String nombre) {
-        return ministerioRepository.findByNombre(nombre);
-    }
-
-    public void save(Ministerio ministerio) {
-        ministerioRepository.save(ministerio);
-    }
-
-    public void deleteById(Long id) {
-        ministerioRepository.deleteById(id);
+        return ministerioRepository.findByNombre((String) nombre);
     }
 
     public boolean existsById(Long id) {
-        return ministerioRepository.existsById(id);
+        return ministerioRepository.existsById((Long) id);
     }
 
     public boolean existsByNombre(String nombre) {
@@ -58,4 +50,13 @@ public class MinisterioService {
     public boolean activo(Long id) {
         return (ministerioRepository.existsById(id) && ministerioRepository.findById(id).get().isActivo());
     }
+
+    public void save(Ministerio ministerio) {
+        ministerioRepository.save(ministerio);
+    }
+
+    public void deleteById(Long id) {
+        ministerioRepository.deleteById((Long) id);
+    }
+
 }

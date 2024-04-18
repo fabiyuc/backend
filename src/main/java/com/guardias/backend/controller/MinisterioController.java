@@ -35,7 +35,7 @@ public class MinisterioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.findByActivoTrue();
+        List<Ministerio> list = ministerioService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -82,6 +82,8 @@ public class MinisterioController {
                         }
                     }
                 }
+            } else {
+                ministerio.setMinisterios(new ArrayList<Ministerio>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? ministerioDto.getIdMinisterios() : idList;
             for (Long id : idsToAdd) {
@@ -90,9 +92,10 @@ public class MinisterioController {
             }
         }
 
+        ministerio.setActivo(true);
         return ministerio;
     }
-    
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody MinisterioDto ministerioDto) {
         ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(ministerioDto);

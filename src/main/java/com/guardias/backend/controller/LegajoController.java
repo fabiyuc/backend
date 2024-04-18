@@ -222,8 +222,6 @@ public class LegajoController {
 
         legajo.setActivo(true);
 
-        legajo.setActivo(true);
-
         return legajo;
     }
 
