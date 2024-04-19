@@ -68,25 +68,6 @@ public class IncisoController {
             inciso.setArticulo(articuloService.findById(incisoDto.getIdArticulo()).get());
         }
 
-        if (incisoDto.getIdSubIncisos() != null) {
-            List<Long> idList = new ArrayList();
-            if (inciso.getSubIncisos() == null) {
-                for (Inciso incisoList : inciso.getSubIncisos()) {
-                    for (Long id : incisoDto.getIdSubIncisos()) {
-                        if (!incisoList.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            }
-
-            List<Long> idsToAdd = idList.isEmpty() ? incisoDto.getIdSubIncisos() : idList;
-            for (Long id : idsToAdd) {
-                incisoService.findById(id).get().setIncisoPadre(inciso);
-                inciso.getSubIncisos().add(incisoService.findById(id).get());
-            }
-        }
-
         if (incisoDto.getIdNovedadesPersonales() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (inciso.getNovedadesPersonales() != null) {

@@ -82,32 +82,6 @@ public class ArticuloController {
         }
 
         try {
-            if (articuloDto.getIdSubArticulos() != null) {
-                List<Long> idList = new ArrayList<Long>();
-                if (articulo.getSubArticulos() == null) {
-                    for (Articulo articuloList : articulo.getSubArticulos()) {
-                        for (Long id : articuloDto.getIdSubArticulos()) {
-                            if (!articuloList.getId().equals(id)) {
-                                idList.add(id);
-                            }
-                        }
-                    }
-                }
-
-                List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdSubArticulos() : idList;
-                for (Long id : idsToAdd) {
-                    articulo.getSubArticulos().add(articuloService.findById(id).get());
-                    articuloService.findById(id).get().setArticuloPadre(articulo);
-                }
-            }
-        } catch (Exception ex) {
-            String mensajePersonalizado = "Error en getIdSuArticulo: " + articuloDto.getIdSubArticulos()
-                    + " - Exception:" + ex.getMessage();
-            System.out.println(mensajePersonalizado);
-            ex.printStackTrace();
-        }
-
-        try {
             if (articuloDto.getIdIncisos() != null) {
                 List<Long> idList = new ArrayList<Long>();
                 if (articulo.getIncisos() != null) {

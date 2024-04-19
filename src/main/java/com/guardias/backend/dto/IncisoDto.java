@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class IncisoDto extends LeyDto {
 
     private Long idIncisoPadre;
-    private List<Long> idSubIncisos;
     private Long idArticulo;
     private List<Long> idNovedadesPersonales;
 }
