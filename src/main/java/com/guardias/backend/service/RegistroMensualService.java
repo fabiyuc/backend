@@ -17,12 +17,16 @@ public class RegistroMensualService {
     @Autowired
     RegistroMensualRepository registroMensualRepository;
 
-    public List<RegistroMensual> findByActivo() {
+    public List<RegistroMensual> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
     }
 
     public List<RegistroMensual> findAll() {
         return registroMensualRepository.findAll();
+    }
+
+    public List<RegistroMensual> findByIdAsistencialAndMes(Long idAsistencial, String mes, int anio) {
+        return registroMensualRepository.findByIdAsistencialAndMes(idAsistencial, mes, anio);
     }
 
     public Optional<RegistroMensual> findById(Long id) {
