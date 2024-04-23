@@ -67,6 +67,8 @@ public class NoAsistencialController {
 
         if (!noAsistencialDto.getDescripcion().equals(noAsistencial.getDescripcion()))
             noAsistencial.setDescripcion(noAsistencialDto.getDescripcion());
+
+        noAsistencial.setActivo(true);
         return noAsistencial;
     }
 
@@ -77,9 +79,9 @@ public class NoAsistencialController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             NoAsistencial noAsistencial = createUpdate(new NoAsistencial(), noAsistencialDto);
-            noAsistencial.setActivo(true);
+
             noAsistencialService.save(noAsistencial);
-            return new ResponseEntity(new Mensaje("Presona creada correctamente"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Persona creada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }

@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PersonDto;
+import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.NovedadPersonalService;
@@ -32,6 +34,8 @@ public class PersonController {
     LegajoService legajoService;
     @Autowired
     DistribucionHorariaService distribucionHorariaService;
+    @Autowired
+    AutoridadService autoridadService;
 
     public ResponseEntity<?> validationsCreate(PersonDto personDto) {
         ResponseEntity<?> respuestaValidaciones = validations(personDto);
@@ -90,6 +94,25 @@ public class PersonController {
             for (Long id : idsToAdd) {
                 person.getSuplentes().add(novedadPersonalService.findById(id).get());
                 novedadPersonalService.findById(id).get().setSuplente(person);
+            }
+        }
+
+        if (personDto.getIdAutoridades() != null) {
+            List<Long> idList = new ArrayList();
+            if (person.getAutoridades() != null) {
+                for (Autoridad autoridad : person.getAutoridades()) {
+                    for (Long id : personDto.getIdAutoridades()) {
+                        if (!autoridad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdAutoridades() : idList;
+            for (Long id : idsToAdd) {
+                person.getAutoridades().add(autoridadService.findById(id).get());
+                autoridadService.findById(id).get().setPersona(person);
             }
         }
 

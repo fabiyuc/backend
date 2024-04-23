@@ -115,6 +115,7 @@ public class CargoController {
 
         if (cargoDto.getFechaInicio() != null && cargo.getFechaInicio() != cargoDto.getFechaInicio())
             cargo.setFechaInicio(cargoDto.getFechaInicio());
+
         if (cargoDto.getFechaFinal() != null && cargo.getFechaFinal() != cargoDto.getFechaFinal())
             cargo.setFechaFinal(cargoDto.getFechaFinal());
 

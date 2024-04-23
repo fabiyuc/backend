@@ -47,7 +47,7 @@ public class Autoridad {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
                         "autoridades", "domicilio", "telefono",
                         "estado", "activo",
-                        "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+                        "observacion", "region", "localidad", "legajosUdo",
                         "legajos",
                         "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
                         "areaProgramatica",
