@@ -15,7 +15,7 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
     Optional<RegistroMensual> findById(Long id);
 
-    @Query("SELECT rm FROM RegistroMensual rm WHERE rm.idAsistencial = :idAsistencial AND rm.mes = :mes AND rm.anio = :anio")
+    @Query("SELECT rm FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.mes = :mes AND rm.anio = :anio")
     List<RegistroMensual> findByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
             @Param("mes") String mes, @Param("anio") int anio);
 
@@ -26,10 +26,4 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
     boolean existsByIdAsistencial(Long idAsistencial);
 
     Optional<List<RegistroMensual>> findByMes(String mes);
-
-    // @Query("SELECT rm FROM RegistrosMensuales rm WHERE rm.registroActividad.id =
-    // :idRegistroActividad")
-    // List<RegistroMensual> findByRegistroActividad(@Param("idRegistroActividad")
-    // Long idRegistroActividad);
-
 }

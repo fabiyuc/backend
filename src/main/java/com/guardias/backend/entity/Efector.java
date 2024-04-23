@@ -41,7 +41,7 @@ public abstract class Efector {
     private String domicilio;
     @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
-    private boolean estado;
+    private boolean estado; // Para el caso de los CAPS temporales
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 

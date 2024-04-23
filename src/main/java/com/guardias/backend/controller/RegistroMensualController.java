@@ -45,6 +45,14 @@ public class RegistroMensualController {
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<List<RegistroMensual>> getById(@PathVariable("id") Long id) {
+        if (!registroMensualService.activo(id))
+            return new ResponseEntity(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
+        RegistroMensual registroMensual = registroMensualService.findById(id).get();
+        return new ResponseEntity(registroMensual, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> validations(@RequestBody RegistroMensualDto registroMensualDto) {
 
         if (registroMensualDto.getMes() == null)
