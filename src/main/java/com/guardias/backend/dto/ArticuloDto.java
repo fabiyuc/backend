@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 public class ArticuloDto extends LeyDto {
 
     private Long idArticuloPadre;
-    private List<Long> idSubArticulos;
     private List<Long> idIncisos;
     private List<Long> idNovedadesPersonales;
 }

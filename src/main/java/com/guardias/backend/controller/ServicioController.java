@@ -27,7 +27,7 @@ import com.guardias.backend.service.ServicioService;
 @RestController
 @RequestMapping("/servicio")
 @CrossOrigin(origins = "http://localhost:4200")
-public class ServicioControlador {
+public class ServicioController {
 
     @Autowired
     ServicioService servicioService;

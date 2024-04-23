@@ -83,20 +83,15 @@ public class RegistroActividad {
                         "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
         private Efector efector;
 
-        /*
-         * @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade =
-         * CascadeType.REMOVE)
-         * 
-         * @JoinColumn(name = "id_registro_mensual")
-         * 
-         * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
-         * "mes", "fechaEgreso",
-         * "registroActividad", "idAsistencial" })
-         * private RegistroMensual registroMensual;
-         */
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_registro_mensual")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
+                        "registroActividad", "idAsistencial" })
+        private RegistroMensual registroMensual;
 
-        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-        // "activo","fechaIngreso","fechaEgreso","horaIngreso","horaEgreso","tipoGuardia","asistencial","servicio","efector","registroMensual"})
+        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
+        // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
+        // "asistencial","servicio", "efector", "registroMensual" })
 
         @Override
         public boolean equals(Object obj) {

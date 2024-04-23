@@ -24,7 +24,7 @@ import com.guardias.backend.service.TipoGuardiaService;
 @RestController
 @RequestMapping("/tipoGuardia")
 @CrossOrigin(origins = "http://localhost:4200")
-public class TipoGuardiaControlador {
+public class TipoGuardiaController {
     @Autowired
     TipoGuardiaService tipoGuardiaService;
 

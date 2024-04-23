@@ -27,7 +27,7 @@ import com.guardias.backend.service.ServicioService;
 @RestController
 @RequestMapping("/registroActividad")
 @CrossOrigin(origins = "http://localhost:4200")
-public class RegistroActividadControlador {
+public class RegistroActividadController {
 
     @Autowired
     RegistroActividadService registroActividadService;
