@@ -3,6 +3,7 @@ package com.guardias.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -27,17 +28,17 @@ public class Articulo extends Ley {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_articulo_padre")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
-                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
-                        "novedadesPersonales",
-                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos" })
+        @JsonIgnore
         private Articulo articuloPadre;
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articuloPadre", cascade = CascadeType.ALL)
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
-                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero",
+                        "denominacion", "detalle", "estado",
+                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion",
+                        "activo",
                         "novedadesPersonales",
-                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos" })
+                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos"
+        })
         private List<Articulo> subArticulos = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
