@@ -1,9 +1,6 @@
 package com.guardias.backend.dto;
 
 import java.util.List;
-
-import com.guardias.backend.enums.TipoGuardiaEnum;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +17,7 @@ public class AsistencialDto extends PersonDto {
     private List<Long> idLegajos;
 
     @NotBlank
-    private TipoGuardiaEnum tipoGuardia;
+    /* private TipoGuardiaEnum tipoGuardia; */
+    private List<Long> idTiposGuardias;
     private List<Long> idRegistrosActividades;
 }

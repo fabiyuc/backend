@@ -1,10 +1,19 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +33,11 @@ public class TipoGuardia {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "tipoguardia_asistencial", joinColumns = @JoinColumn(name = "id_tipoGuardia"), inverseJoinColumns = @JoinColumn(name = "id_asistencial"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tiposGuardias" })
+    private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
+    
     /*
      * @OneToMany(mappedBy = "tipoGuardia")
      * 
