@@ -29,18 +29,6 @@ public class LeyController {
     public ResponseEntity<?> validationsCreate(LeyDto leyDto) {
         ResponseEntity<?> respuestaValidaciones = validations(leyDto);
 
-        if (leyService.existsByNumero(leyDto.getNumero()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
-                    HttpStatus.BAD_REQUEST);
-        if (leyService.existsByDenominacion(leyDto.getDenominacion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        return respuestaValidaciones;
-    }
-
-    public ResponseEntity<?> validations(LeyDto leyDto) {
-
         if (leyDto.getNumero() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -56,6 +44,18 @@ public class LeyController {
 
         if (leyDto.getIdTipoLey() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El tipo de Ley es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        return respuestaValidaciones;
+    }
+
+    public ResponseEntity<?> validations(LeyDto leyDto) {
+
+        if (leyService.existsByNumero(leyDto.getNumero()))
+            return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+                    HttpStatus.BAD_REQUEST);
+        if (leyService.existsByDenominacion(leyDto.getDenominacion()))
+            return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);

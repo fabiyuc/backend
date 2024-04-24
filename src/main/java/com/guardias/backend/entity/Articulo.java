@@ -32,20 +32,19 @@ public class Articulo extends Ley {
         private Articulo articuloPadre;
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articuloPadre", cascade = CascadeType.ALL)
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero",
-                        "denominacion", "detalle", "estado",
-                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion",
-                        "activo",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
                         "novedadesPersonales",
-                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos"
-        })
+                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos", "articulo",
+                        "incisoPadre" })
         private List<Articulo> subArticulos = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
                         "novedadesPersonales",
-                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos" })
+                        "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos", "articulo",
+                        "incisoPadre" })
         private List<Inciso> incisos = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
