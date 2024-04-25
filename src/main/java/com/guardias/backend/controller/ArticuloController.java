@@ -154,7 +154,7 @@ public class ArticuloController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ArticuloDto articuloDto) {
 
-        ResponseEntity<?> respuestaValidaciones = leyController.validationsCreate(articuloDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             try {
@@ -177,7 +177,7 @@ public class ArticuloController {
         if (!articuloService.activo(id))
             return new ResponseEntity(new Mensaje("El articulo no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(articuloDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Articulo articulo = createUpdate(articuloService.findById(id).get(), articuloDto);

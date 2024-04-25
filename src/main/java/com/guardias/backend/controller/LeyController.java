@@ -24,10 +24,8 @@ public class LeyController {
     @Autowired
     NovedadPersonalService novedadPersonalService;
 
-    // TODO VER que esta validacion debe hacerse en el update teniendo en cuenta q
-    // el id sea diferente!!
-    public ResponseEntity<?> validationsCreate(LeyDto leyDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(leyDto);
+    public ResponseEntity<?> validations(LeyDto leyDto, Long id) {
+        // ResponseEntity<?> respuestaValidaciones = validations(leyDto);
 
         if (leyDto.getNumero() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El numero es obligatorio"),
@@ -46,20 +44,31 @@ public class LeyController {
             return new ResponseEntity<Mensaje>(new Mensaje("El tipo de Ley es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        return respuestaValidaciones;
-    }
-
-    public ResponseEntity<?> validations(LeyDto leyDto) {
-
-        if (leyService.existsByNumero(leyDto.getNumero()))
+        if (leyService.existsByNumero(leyDto.getNumero())
+                && (leyService.findByNumero(leyDto.getNumero()).getId() != id))
             return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
                     HttpStatus.BAD_REQUEST);
-        if (leyService.existsByDenominacion(leyDto.getDenominacion()))
+        if (leyService.existsByDenominacion(leyDto.getDenominacion())
+                && (leyService.findByDenominacion(leyDto.getDenominacion()).getId() != id))
             return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
+
+    // public ResponseEntity<?> validations(LeyDto leyDto, Long id) {
+
+    // if (leyService.existsByNumero(leyDto.getNumero())
+    // && (leyService.findByNumero(leyDto.getNumero()).getId() != id))
+    // return new ResponseEntity<Mensaje>(new Mensaje("Ese numero ya existe"),
+    // HttpStatus.BAD_REQUEST);
+    // if (leyService.existsByDenominacion(leyDto.getDenominacion())
+    // && (leyService.findByDenominacion(leyDto.getDenominacion()).getId() != id))
+    // return new ResponseEntity<Mensaje>(new Mensaje("Esa denominacion ya existe"),
+    // HttpStatus.BAD_REQUEST);
+
+    // return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    // }
 
     public Ley createUpdate(Ley ley, LeyDto leyDto) {
 
