@@ -15,6 +15,8 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
 
     Optional<NoAsistencial> findByDni(int dni);
 
+    Optional<NoAsistencial> findByCuil(String cuil);
+
     boolean existsById(Long id);
 
     boolean existsByDni(int dni);

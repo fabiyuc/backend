@@ -62,9 +62,13 @@ public class AdicionalController {
         return new ResponseEntity(adicional, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(AdicionalDto adicionalDto) {
+    private ResponseEntity<?> validations(AdicionalDto adicionalDto, Long id) {
         if (adicionalDto.getNombre() == null)
             return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (adicionalService.activoByNombre(adicionalDto.getNombre())
+                && (adicionalService.findByNombre(adicionalDto.getNombre()).get().getId() != id))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
 
         return new ResponseEntity(new Mensaje("Valido"), HttpStatus.OK);
     }
@@ -105,10 +109,8 @@ public class AdicionalController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AdicionalDto adicionalDto) {
-        if (adicionalService.activoByNombre(adicionalDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Adicional adicional = createUpdate(new Adicional(), adicionalDto);
@@ -125,7 +127,7 @@ public class AdicionalController {
             return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
         }
 
-        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto);
+        ResponseEntity<?> respuestaValidaciones = validations(adicionalDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Adicional adicional = createUpdate(adicionalService.findById(id).get(), adicionalDto);

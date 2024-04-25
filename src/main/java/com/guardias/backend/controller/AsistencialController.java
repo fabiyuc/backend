@@ -111,7 +111,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validationsCreate(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
@@ -127,7 +127,7 @@ public class AsistencialController {
         if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(asistencialService.findById(id).get(), asistencialDto);

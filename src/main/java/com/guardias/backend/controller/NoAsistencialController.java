@@ -73,7 +73,7 @@ public class NoAsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NoAsistencialDto noAsistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validationsCreate(noAsistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             NoAsistencial noAsistencial = createUpdate(new NoAsistencial(), noAsistencialDto);
@@ -90,7 +90,7 @@ public class NoAsistencialController {
         if (!noAsistencialService.activo(id))
             return new ResponseEntity(new Mensaje("La persona no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(noAsistencialDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             NoAsistencial noAsistencial = createUpdate(noAsistencialService.findById(id).get(), noAsistencialDto);

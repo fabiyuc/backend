@@ -33,19 +33,7 @@ public class PersonController {
     @Autowired
     DistribucionHorariaService distribucionHorariaService;
 
-    public ResponseEntity<?> validationsCreate(PersonDto personDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(personDto);
-
-        if (personService.existsByDni(personDto.getDni()))
-            return new ResponseEntity<>(new Mensaje("El DNI ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (personService.existsByCui(personDto.getCuil()))
-            return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
-
-        return respuestaValidaciones;
-    }
-
-    public ResponseEntity<?> validations(PersonDto personDto) {
+    public ResponseEntity<?> validations(PersonDto personDto, Long id) {
         if (StringUtils.isBlank(personDto.getNombre())) {
             return new ResponseEntity<>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
         }
@@ -64,6 +52,14 @@ public class PersonController {
         if (StringUtils.isBlank(personDto.getSexo())) {
             return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
         }
+
+        if (personService.existsByDni(personDto.getDni())
+                && (personService.findByDni(personDto.getDni()).getId() != id))
+            return new ResponseEntity<>(new Mensaje("El DNI ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (personService.existsByCuil(personDto.getCuil())
+                && (personService.findByCuil(personDto.getCuil()).getId() != id))
+            return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }

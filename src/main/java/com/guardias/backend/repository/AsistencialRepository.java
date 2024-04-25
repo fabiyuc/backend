@@ -15,6 +15,8 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     Optional<Asistencial> findByDni(int dni);
 
+    Optional<Asistencial> findByCuil(String cuil);
+
     boolean existsById(Long id);
 
     boolean existsByDni(int dni);

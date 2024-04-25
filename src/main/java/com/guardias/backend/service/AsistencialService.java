@@ -30,6 +30,10 @@ public class AsistencialService {
         return asistencialRepository.findById(id);
     }
 
+    public Optional<Asistencial> findByCuil(String cuil) {
+        return asistencialRepository.findByCuil(cuil);
+    }
+
     public boolean existsById(Long id) {
         return asistencialRepository.existsById(id);
     }
