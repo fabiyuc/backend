@@ -87,7 +87,7 @@ public class AutoridadController {
         return new ResponseEntity<>(autoridad, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> validations(AutoridadDto autoridadDto) {
+    public ResponseEntity<?> validations(AutoridadDto autoridadDto, Long id) {
         if (autoridadDto.getNombre() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
@@ -100,6 +100,10 @@ public class AutoridadController {
 
         if (autoridadDto.getIdPersona() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("la persona es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (autoridadService.activoByNombre(autoridadDto.getNombre())
+                && (autoridadService.findByNombre(autoridadDto.getNombre()).get().getId() != id))
+            return new ResponseEntity<Mensaje>(new Mensaje("El Nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -139,10 +143,7 @@ public class AutoridadController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
 
-        if (autoridadService.activoByNombre(autoridadDto.getNombre()))
-            return new ResponseEntity<Mensaje>(new Mensaje("El Nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
@@ -160,7 +161,7 @@ public class AutoridadController {
         if (!autoridadService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la autoridad"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto);
+        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);

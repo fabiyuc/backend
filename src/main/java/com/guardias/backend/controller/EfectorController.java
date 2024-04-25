@@ -40,23 +40,19 @@ public class EfectorController {
     @Autowired
     NotificacionService notificacionService;
 
-    public ResponseEntity<?> validationsCreate(EfectorDto efectorDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(efectorDto);
-
-        if (efectorService.existsByName(efectorDto.getNombre()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        return respuestaValidaciones;
-    }
-
-    public ResponseEntity<?> validations(EfectorDto efectorDto) {
+    public ResponseEntity<?> validations(EfectorDto efectorDto, Long id) {
         if (StringUtils.isBlank(efectorDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
         if (StringUtils.isBlank(efectorDto.getDomicilio()))
             return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
                     HttpStatus.BAD_REQUEST);
+
+        // SI EXISTEN CAPS CON NOMBRES IGUALES!!!!!!!!!!!!!!!!!!!!!!
+        // VER si conviene comparar segun ele tipo de efector
+        // if (efectorService.existsByName(efectorDto.getNombre()))
+        // return new ResponseEntity<Mensaje>(new Mensaje("Ese nombre ya existe"),
+        // HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }

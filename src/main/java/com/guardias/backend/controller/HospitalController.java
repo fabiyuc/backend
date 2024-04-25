@@ -103,7 +103,7 @@ public class HospitalController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody HospitalDto hospitalDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(hospitalDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(new Hospital(), hospitalDto);
@@ -119,7 +119,7 @@ public class HospitalController {
         if (!hospitalService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el hospital"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(hospitalService.findById(id).get(), hospitalDto);

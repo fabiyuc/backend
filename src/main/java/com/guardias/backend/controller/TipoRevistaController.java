@@ -63,9 +63,13 @@ public class TipoRevistaController {
         return new ResponseEntity(tipoRevista, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(TipoRevistaDto tipoRevistaDto) {
+    private ResponseEntity<?> validations(TipoRevistaDto tipoRevistaDto, Long id) {
         if (tipoRevistaDto.getNombre() == null)
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (tipoRevistaService.existsByNombre(tipoRevistaDto.getNombre())
+                && (tipoRevistaService.findByNombre(tipoRevistaDto.getNombre()).get().getId() != id))
+            return new ResponseEntity<>(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -99,10 +103,7 @@ public class TipoRevistaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoRevistaDto tipoRevistaDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(tipoRevistaDto);
-
-        if (tipoRevistaService.existsByNombre(tipoRevistaDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoRevistaDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoRevista tipoRevista = createUpdate(new TipoRevista(), tipoRevistaDto);
@@ -118,7 +119,7 @@ public class TipoRevistaController {
         if (!tipoRevistaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el tipo de revista"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(tipoRevistaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoRevistaDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoRevista tipoRevista = createUpdate(tipoRevistaService.findById(id).get(), tipoRevistaDto);

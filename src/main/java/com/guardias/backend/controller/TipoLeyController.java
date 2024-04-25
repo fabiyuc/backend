@@ -55,9 +55,14 @@ public class TipoLeyController {
         return new ResponseEntity(tipoLey, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(TipoLeyDto tipoLeyDto) {
+    private ResponseEntity<?> validations(TipoLeyDto tipoLeyDto, Long id) {
         if (StringUtils.isBlank(tipoLeyDto.getDescripcion()))
             return new ResponseEntity<Mensaje>(new Mensaje("La descripcion es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (tipoLeyService.existsByDescripcion(tipoLeyDto.getDescripcion())
+                && (tipoLeyService.findByDescripcion(tipoLeyDto.getDescripcion()).get().getId() != id))
+            return new ResponseEntity<Mensaje>(new Mensaje("Esa descripcion ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -97,11 +102,7 @@ public class TipoLeyController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoLeyDto tipoLeyDto) {
 
-        if (tipoLeyService.existsByDescripcion(tipoLeyDto.getDescripcion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa descripcion ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        ResponseEntity<?> respuestaValidaciones = validations(tipoLeyDto);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoLeyDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoLey tipoLey = createUpdate(new TipoLey(), tipoLeyDto);
@@ -117,7 +118,7 @@ public class TipoLeyController {
         if (!tipoLeyService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(tipoLeyDto);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoLeyDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoLey tipoLey = createUpdate(tipoLeyService.findById(id).get(), tipoLeyDto);

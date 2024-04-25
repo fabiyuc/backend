@@ -93,7 +93,7 @@ public class MinisterioController {
     }
 
     public ResponseEntity<?> create(@RequestBody MinisterioDto ministerioDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(ministerioDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(new Ministerio(), ministerioDto);
@@ -109,7 +109,7 @@ public class MinisterioController {
         if (!ministerioService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(ministerioService.findById(id).get(), ministerioDto);

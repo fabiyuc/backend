@@ -53,7 +53,7 @@ public class RegistroActividadController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<RegistroActividad>> getById(@PathVariable("id") Long id) {
         if (!registroActividadService.activo(id))
-            return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El registro de actividad no existe"), HttpStatus.NOT_FOUND);
         RegistroActividad registroActividad = registroActividadService.findById(id).get();
         return new ResponseEntity(registroActividad, HttpStatus.OK);
     }

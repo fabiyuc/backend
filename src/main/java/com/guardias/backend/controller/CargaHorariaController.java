@@ -63,7 +63,7 @@ public class CargaHorariaController {
         return new ResponseEntity(cargaHoraria, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(CargaHorariaDto cargaHorariaDto) {
+    private ResponseEntity<?> validations(CargaHorariaDto cargaHorariaDto, Long id) {
 
         if (cargaHorariaDto.getCantidad() < 1)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -72,6 +72,10 @@ public class CargaHorariaController {
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
         if (cargaHorariaDto.getIdRevistas() == null)
             return new ResponseEntity(new Mensaje("La revista es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad())
+                && (cargaHorariaService.findByCantidad(cargaHorariaDto.getCantidad()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("esa cantidad ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -110,10 +114,7 @@ public class CargaHorariaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargaHorariaDto cargaHorariaDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto);
-
-        if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad()))
-            return new ResponseEntity(new Mensaje("esa cantidad ya existe"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             CargaHoraria cargaHoraria = createUpdate(new CargaHoraria(), cargaHorariaDto);
@@ -132,7 +133,7 @@ public class CargaHorariaController {
         if (!cargaHorariaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(cargaHorariaDto, id);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             CargaHoraria cargaHoraria = createUpdate(cargaHorariaService.findById(id).get(), cargaHorariaDto);
             cargaHorariaService.save(cargaHoraria);

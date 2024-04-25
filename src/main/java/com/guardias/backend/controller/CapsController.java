@@ -87,7 +87,7 @@ public class CapsController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CapsDto capsDto) {
-        ResponseEntity<?> respuestaValidaciones = efectorController.validationsCreate(capsDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(new Caps(), capsDto);
@@ -103,7 +103,7 @@ public class CapsController {
         if (!capsService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el efector"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto);
+        ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(capsService.findById(id).get(), capsDto);

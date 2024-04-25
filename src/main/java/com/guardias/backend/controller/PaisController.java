@@ -58,7 +58,7 @@ public class PaisController {
         return new ResponseEntity<Pais>(pais, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(PaisDto paisDto) {
+    private ResponseEntity<?> validations(PaisDto paisDto, Long id) {
         if (StringUtils.isBlank(paisDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -71,7 +71,18 @@ public class PaisController {
             return new ResponseEntity(new Mensaje("el codigo es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
+        if (paisService.activoByNombre(paisDto.getNombre())
+                && (paisService.findByNombre(paisDto.getNombre()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (paisService.existsByNacionalidad(paisDto.getNacionalidad())
+                && (paisService.findByNacionalidad(paisDto.getNacionalidad()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("esa nacionalidad ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+
     }
 
     private Pais createUpdate(Pais pais, PaisDto paisDto) {
@@ -92,15 +103,7 @@ public class PaisController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody PaisDto paisDto) {
 
-        if (paisService.activoByNombre(paisDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (paisService.existsByNacionalidad(paisDto.getNacionalidad()))
-            return new ResponseEntity(new Mensaje("esa nacionalidad ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        ResponseEntity<?> respuestaValidaciones = validations(paisDto);
+        ResponseEntity<?> respuestaValidaciones = validations(paisDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Pais pais = createUpdate(new Pais(), paisDto);
@@ -116,7 +119,7 @@ public class PaisController {
         if (!paisService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(paisDto);
+        ResponseEntity<?> respuestaValidaciones = validations(paisDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Pais pais = createUpdate(paisService.findById(id).get(), paisDto);

@@ -67,7 +67,7 @@ public class ProvinciaController {
         return ResponseEntity.ok(provincia);
     }
 
-    private ResponseEntity<?> validations(ProvinciaDTO provinciaDto) {
+    private ResponseEntity<?> validations(ProvinciaDTO provinciaDto, Long id) {
         if (StringUtils.isBlank(provinciaDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
@@ -76,6 +76,10 @@ public class ProvinciaController {
 
         if (provinciaDto.getIdPais() == null)
             return new ResponseEntity(new Mensaje("es obligatorio indicar el pais"), HttpStatus.BAD_REQUEST);
+
+        if (provinciaService.existsByNombre(provinciaDto.getNombre())
+                && (provinciaService.findByNombre(provinciaDto.getNombre()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -123,10 +127,7 @@ public class ProvinciaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ProvinciaDTO provinciaDto) {
 
-        if (provinciaService.existsByNombre(provinciaDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        ResponseEntity<?> respuestaValidaciones = validations(provinciaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(provinciaDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Provincia provincia = createUpdate(new Provincia(), provinciaDto);
@@ -143,7 +144,7 @@ public class ProvinciaController {
         if (!provinciaService.activo(id))
             return new ResponseEntity(new Mensaje("Provincia no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(provinciaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(provinciaDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Provincia provincia = createUpdate(provinciaService.findById(id).get(), provinciaDto);

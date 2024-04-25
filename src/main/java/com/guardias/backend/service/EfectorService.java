@@ -31,7 +31,25 @@ public class EfectorService {
         if (efector == null)
             efector = ministerioService.findById(idEfector).orElse(null);
 
-        return efector;
+        if (efector.isActivo())
+            return efector;
+        else
+            return null;
+    }
+
+    public Efector findByNombre(String nombre) {
+        Efector efector = capsService.findByNombre(nombre).orElse(null);
+
+        if (efector == null)
+            efector = hospitalService.findByNombre(nombre).orElse(null);
+
+        if (efector == null)
+            efector = ministerioService.findByNombre(nombre).orElse(null);
+
+        if (efector.isActivo())
+            return efector;
+        else
+            return null;
     }
 
     public boolean existsByName(String nombre) {
@@ -82,50 +100,4 @@ public class EfectorService {
             ministerioService.save(ministerio);
         }
     }
-
-    // !TODO falta la relacion con distribucionesHorarias
-
-    // @Transactional
-    // public void agregarNotificacion(Long idEfector, Long idNotificacion) {
-    // Efector efector = findEfector(idEfector);
-    // Notificacion notificacion =
-    // notificacionService.findById(idNotificacion).get();
-
-    // notificacionService.agregarEfector(idNotificacion, idEfector);
-    // efector.getNotificaciones().add(notificacion);
-    // saveEfector(efector);
-    // }
-
-    // @Transactional
-    // public void agregarLegajo(Long idEfector, Long idLegajo) {
-    // Legajo legajo = legajoService.findById(idLegajo).get();
-    // Efector efector = findEfector(idEfector);
-
-    // legajo.getEfectores().add(efector);
-    // efector.getLegajos().add(legajo);
-    // saveEfector(efector);
-
-    // }
-
-    // @Transactional
-    // public void agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
-    // Efector efector = findEfector(idEfector);
-
-    // Legajo legajo = legajoService.findById(idLegajoUdo).get();
-    // legajo.setUdo(efector);
-    // legajoService.save(legajo);
-    // efector.getLegajosUdo().add(legajo);
-    // saveEfector(efector);
-    // }
-
-    // @Transactional
-    // public void agregarAutoridad(Long idEfector, Long idAutoridad) {
-    // Efector efector = findEfector(idEfector);
-    // Autoridad autoridad = autoridadService.findById(idAutoridad).get();
-
-    // autoridad.setEfector(efector);
-    // autoridadService.save(autoridad);
-    // efector.getAutoridades().add(autoridad);
-    // saveEfector(efector);
-    // }
 }
