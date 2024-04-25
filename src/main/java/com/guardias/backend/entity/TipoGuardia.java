@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,10 @@ public class TipoGuardia {
     @JoinTable(name = "tipoguardia_asistencial", joinColumns = @JoinColumn(name = "id_tipoGuardia"), inverseJoinColumns = @JoinColumn(name = "id_asistencial"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tiposGuardias" })
     private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "tipoGuardia"})
+    private List<RegistroActividad> registrosActividades = new ArrayList<>();
     
     /*
      * @OneToMany(mappedBy = "tipoGuardia")
