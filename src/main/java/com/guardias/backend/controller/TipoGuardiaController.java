@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
@@ -27,10 +30,18 @@ import com.guardias.backend.service.TipoGuardiaService;
 public class TipoGuardiaController {
     @Autowired
     TipoGuardiaService tipoGuardiaService;
+    @Autowired
+    AsistencialService asistencialService;
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoGuardia>> list() {
-        List<TipoGuardia> list = tipoGuardiaService.list();
+        List<TipoGuardia> list = tipoGuardiaService.findByActivo();
+        return new ResponseEntity<List<TipoGuardia>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<TipoGuardia>> listAll() {
+        List<TipoGuardia> list = tipoGuardiaService.findAll();
         return new ResponseEntity<List<TipoGuardia>>(list, HttpStatus.OK);
     }
 
@@ -76,6 +87,28 @@ public class TipoGuardiaController {
                 && !tipoGuardiaDto.getDescripcion().isEmpty())
             tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
 
+        if (tipoGuardiaDto.getIdAsistenciales() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (tipoGuardia.getAsistenciales() != null) {
+                for (Asistencial asistencial : tipoGuardia.getAsistenciales()) {
+                    for (Long id : tipoGuardiaDto.getIdAsistenciales()) {
+                        if (!asistencial.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                tipoGuardia.setAsistenciales(new ArrayList<Asistencial>());
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? tipoGuardiaDto.getIdAsistenciales() : idList;
+
+            for (Long id : idsToAdd) {
+                tipoGuardia.getAsistenciales().add(asistencialService.findById(id).get());
+                asistencialService.findById(id).get().getTiposGuardias().add(tipoGuardia);
+
+            }
+        }
         tipoGuardia.setActivo(true);
 
         return tipoGuardia;

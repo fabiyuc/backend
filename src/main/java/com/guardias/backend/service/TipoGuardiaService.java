@@ -15,56 +15,60 @@ import com.guardias.backend.repository.TipoGuardiaRepository;
 public class TipoGuardiaService {
 
     @Autowired
-    TipoGuardiaRepository tipoGuardiaRepositorio;
+    TipoGuardiaRepository tipoGuardiaRepository;
 
     public Optional<TipoGuardia> findByDescripcion(String descripcion) {
-        return tipoGuardiaRepositorio.findByDescripcion(descripcion);
+        return tipoGuardiaRepository.findByDescripcion(descripcion);
     }
 
     public boolean existsByDescripcion(String descripcion) {
-        return tipoGuardiaRepositorio.existsByDescripcion(descripcion);
+        return tipoGuardiaRepository.existsByDescripcion(descripcion);
     }
 
     public boolean activoByDescripcion(String descripcion) {
-        return (tipoGuardiaRepositorio.existsByDescripcion(descripcion)
-                && tipoGuardiaRepositorio.findByDescripcion(descripcion).get().isActivo());
+        return (tipoGuardiaRepository.existsByDescripcion(descripcion)
+                && tipoGuardiaRepository.findByDescripcion(descripcion).get().isActivo());
     }
 
     public Optional<TipoGuardia> findByNombre(String nombre) {
-        return tipoGuardiaRepositorio.findByNombre(nombre);
+        return tipoGuardiaRepository.findByNombre(nombre);
     }
 
     public boolean existsByNombre(String nombre) {
-        return tipoGuardiaRepositorio.existsByNombre(nombre);
+        return tipoGuardiaRepository.existsByNombre(nombre);
     }
 
     public boolean activoByNombre(String nombre) {
-        return (tipoGuardiaRepositorio.existsByNombre(nombre)
-                && tipoGuardiaRepositorio.findByNombre(nombre).get().isActivo());
+        return (tipoGuardiaRepository.existsByNombre(nombre)
+                && tipoGuardiaRepository.findByNombre(nombre).get().isActivo());
     }
 
-    public List<TipoGuardia> list() {
-        return tipoGuardiaRepositorio.findAll();
+    public List<TipoGuardia> findByActivo(){
+        return tipoGuardiaRepository.findByActivoTrue();
+    }
+
+    public List<TipoGuardia> findAll(){
+        return tipoGuardiaRepository.findAll();
     }
 
     public Optional<TipoGuardia> findById(Long id) {
-        return tipoGuardiaRepositorio.findById(id);
+        return tipoGuardiaRepository.findById(id);
     }
 
     public void save(TipoGuardia tipoGuardia) {
-        tipoGuardiaRepositorio.save(tipoGuardia);
+        tipoGuardiaRepository.save(tipoGuardia);
     }
 
     public void deleteById(Long id) {
-        tipoGuardiaRepositorio.deleteById(id);
+        tipoGuardiaRepository.deleteById(id);
     }
 
     public boolean existsById(Long id) {
-        return tipoGuardiaRepositorio.existsById(id);
+        return tipoGuardiaRepository.existsById(id);
     }
 
     public boolean activo(Long id) {
-        return (tipoGuardiaRepositorio.existsById(id) && tipoGuardiaRepositorio.findById(id).get().isActivo());
+        return (tipoGuardiaRepository.existsById(id) && tipoGuardiaRepository.findById(id).get().isActivo());
     }
 
 }

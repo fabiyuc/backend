@@ -2,13 +2,11 @@ package com.guardias.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.NoAsistencialRepository;
-
 import jakarta.transaction.Transactional;
 
 @Service
