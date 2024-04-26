@@ -1,12 +1,11 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
-import com.guardias.backend.entity.Adicional;
-import com.guardias.backend.entity.CargaHoraria;
-import com.guardias.backend.entity.Categoria;
-import com.guardias.backend.entity.Legajo;
-import com.guardias.backend.entity.TipoRevista;
+import java.util.List;
+
+import com.guardias.backend.enums.AgrupacionEnum;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,17 +16,17 @@ import lombok.NoArgsConstructor;
 public class RevistaDto {
 
     @NotBlank
-    private TipoRevista tipoRevista;
+    private Long idTipoRevista;
 
     @NotBlank
-    private Categoria categoria;
-    private boolean activo;
+    private Long idCategoria;
+    @NotBlank
+    private Long idAdicional;
 
     @NotBlank
-    private Adicional adicional;
-
-    @NotBlank
-    private CargaHoraria cargaHoraria;
-    private Set<Legajo> legajos;
+    private Long idCargaHoraria;
+    private List<Long> idLegajos;
+    @NotNull
+    private AgrupacionEnum agrupacion;
 
 }

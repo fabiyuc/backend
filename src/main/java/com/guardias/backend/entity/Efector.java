@@ -1,7 +1,7 @@
 package com.guardias.backend.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -41,7 +41,7 @@ public abstract class Efector {
     private String domicilio;
     @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
-    private boolean estado;
+    private boolean estado; // Para el caso de los CAPS temporales
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
@@ -49,33 +49,56 @@ public abstract class Efector {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "efectores" })
     private Region region;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_localidad")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "departamento" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "departamento", "efectores" })
     private Localidad localidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<DistribucionHoraria> distribucionesHorarias;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dia", "fechaInicio", "fechaFinalizacion",
+            "horaIngreso", "cantidadHoras", "activo", "efector", "persona", "lugar", "especialidad", "cantidadTurnos",
+            "destino", "descripcion", "tipoGuardia" })
+    private List<DistribucionHoraria> distribucionesHorarias = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Legajo> legajosUdo = new HashSet<>();
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "persona", "cargo", "efectores" })
+    private List<Legajo> legajosUdo = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "persona", "cargo", "efectores" })
+    private List<Legajo> legajos = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Legajo> legajos = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Notificacion> notificaciones;
+    private List<Notificacion> notificaciones = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Autoridad> autoridades;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "fechaInicio", "fechaFinal", "esActual",
+            "esRegional", "activo", "efector", "persona" })
+    private List<Autoridad> autoridades = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
+            "servicio", "efector", "registroMensual" })
+    private List<RegistroActividad> registroActividad = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "autoridades", "domicilio", "telefono",
+    // "estado", "activo",
+    // "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+    // "legajos",
+    // "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+    // "areaProgramatica",
+    // "tipoCaps", "nivelComplejidad", "cabecera", "ministerios","registroActividad"
+    // })
 
     @Override
     public boolean equals(Object obj) {

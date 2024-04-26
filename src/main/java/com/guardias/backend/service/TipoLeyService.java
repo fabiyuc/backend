@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.TipoLey;
 import com.guardias.backend.repository.TipoLeyRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -15,8 +18,8 @@ public class TipoLeyService {
     @Autowired
     TipoLeyRepository tipoLeyRepository;
 
-    public List<TipoLey> findByActivo(boolean activo) {
-        return tipoLeyRepository.findByActivo( activo);
+    public List<TipoLey> findByActivo() {
+        return tipoLeyRepository.findByActivoTrue();
     }
 
     public List<TipoLey> findAll() {
@@ -35,8 +38,17 @@ public class TipoLeyService {
         return tipoLeyRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (tipoLeyRepository.existsById(id) && tipoLeyRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByDescripcion(String descripcion) {
         return tipoLeyRepository.existsByDescripcion(descripcion);
+    }
+
+    public boolean activoByDescripcion(String descripcion) {
+        return (tipoLeyRepository.existsByDescripcion(descripcion)
+                && tipoLeyRepository.findByDescripcion(descripcion).get().isActivo());
     }
 
     public void save(TipoLey tipoLey) {

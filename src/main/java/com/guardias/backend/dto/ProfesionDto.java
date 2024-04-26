@@ -1,8 +1,7 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
-import com.guardias.backend.entity.Especialidad;
-import com.guardias.backend.entity.Legajo;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +20,8 @@ public class ProfesionDto {
     private boolean activo;
 
     @NotBlank
-    private Set<Legajo> legajos;
+    private List<Long> idLegajos;
 
-    private Set<Especialidad> especialidades;
+    private List<Long> idEspecialidades;
 
 }

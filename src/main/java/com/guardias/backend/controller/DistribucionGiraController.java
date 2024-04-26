@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.DistribucionGiraDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGira;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionGiraService;
 
 @RestController
@@ -26,10 +29,12 @@ public class DistribucionGiraController {
 
     @Autowired
     DistribucionGiraService distribucionGiraService;
+    @Autowired
+    DistribucionHorariaController distribucionHorariaController;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGira>> list() {
-        List<DistribucionGira> list = distribucionGiraService.findByActivo(true);
+        List<DistribucionGira> list = distribucionGiraService.findByActivoTrue().get();
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
     }
 
@@ -41,7 +46,7 @@ public class DistribucionGiraController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<DistribucionGira> getById(@PathVariable("id") Long id) {
-        if (!distribucionGiraService.existsById(id))
+        if (!distribucionGiraService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
         DistribucionGira distribucionGira = distribucionGiraService.findById(id).get();
         return new ResponseEntity<DistribucionGira>(distribucionGira, HttpStatus.OK);
@@ -72,113 +77,62 @@ public class DistribucionGiraController {
         return new ResponseEntity<>(distribucionGira, HttpStatus.OK);
     }
 
+    DistribucionGira createUpdate(DistribucionGira distribucionGira,
+            DistribucionGiraDto distribucionGiraDto) {
+        DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionGira,
+                distribucionGiraDto);
+        distribucionGira = (DistribucionGira) distribucionHoraria;
+
+        if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
+                && distribucionGiraDto.getDestino() != null)
+            distribucionGira.setDestino(distribucionGiraDto.getDestino());
+        if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
+                && distribucionGiraDto.getDescripcion() != null)
+            distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
+
+        return distribucionGira;
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionGiraDto distribucionGiraDto) {
 
-        if (distribucionGiraDto.getDia() == null)
-            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGiraDto);
 
-        if (distribucionGiraDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getCantidadHoras() == null)
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getEfector() == null)
-            return new ResponseEntity(new Mensaje("El efector es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        DistribucionGira distribucionGira = new DistribucionGira();
-        distribucionGira.setDia(distribucionGiraDto.getDia());
-        distribucionGira.setFechaInicio(distribucionGiraDto.getFechaInicio());
-        distribucionGira.setFechaFinalizacion(distribucionGiraDto.getFechaFinalizacion());
-        distribucionGira.setHoraIngreso(distribucionGiraDto.getHoraIngreso());
-        distribucionGira.setPersona(distribucionGiraDto.getPersona());
-        distribucionGira.setEfector(distribucionGiraDto.getEfector());
-        distribucionGira.setCantidadHoras(distribucionGiraDto.getCantidadHoras());
-
-        distribucionGira.setDestino(distribucionGiraDto.getDestino());
-        distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
-
-        distribucionGiraService.save(distribucionGira);
-        return new ResponseEntity(new Mensaje("Carga horaria creada"),
-                HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            DistribucionGira distribucionGira = createUpdate(new DistribucionGira(),
+                    distribucionGiraDto);
+            distribucionGiraService.save(distribucionGira);
+            return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
+                    HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id,
-
             @RequestBody DistribucionGiraDto distribucionGiraDto) {
 
-        if (!distribucionGiraService.existsById(id))
+        if (!distribucionGiraService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        if (distribucionGiraDto.getDia() == null)
-            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGiraDto);
 
-        if (distribucionGiraDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getCantidadHoras() == null)
-            return new ResponseEntity(new Mensaje("la cantidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getEfector() == null)
-            return new ResponseEntity(new Mensaje("El efector es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (distribucionGiraDto.getPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        DistribucionGira distribucionGira = distribucionGiraService.findById(id).get();
-
-        if (!distribucionGiraDto.getDia().equals(distribucionGira.getDia()))
-            distribucionGira.setDia(distribucionGiraDto.getDia());
-        if (!distribucionGiraDto.getFechaInicio().equals(distribucionGira.getFechaInicio()))
-            distribucionGira.setFechaInicio(distribucionGiraDto.getFechaInicio());
-        if (!distribucionGiraDto.getFechaFinalizacion().equals(distribucionGira.getFechaFinalizacion()))
-            distribucionGira.setFechaFinalizacion(distribucionGiraDto.getFechaFinalizacion());
-        if (!distribucionGiraDto.getHoraIngreso().equals(distribucionGira.getHoraIngreso()))
-            distribucionGira.setHoraIngreso(distribucionGiraDto.getHoraIngreso());
-        if (!distribucionGiraDto.getPersona().equals(distribucionGira.getPersona()))
-            distribucionGira.setPersona(distribucionGiraDto.getPersona());
-        if (!distribucionGiraDto.getEfector().equals(distribucionGira.getEfector()))
-            distribucionGira.setEfector(distribucionGiraDto.getEfector());
-        if (!distribucionGiraDto.getCantidadHoras().equals(distribucionGira.getCantidadHoras()))
-            distribucionGira.setCantidadHoras(distribucionGiraDto.getCantidadHoras());
-
-        if (!distribucionGiraDto.getDestino().equals(distribucionGira.getDestino()))
-            distribucionGira.setDestino(distribucionGiraDto.getDestino());
-        if (!distribucionGiraDto.getDescripcion().equals(distribucionGira.getDescripcion()))
-            distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
-
-        distribucionGiraService.save(distribucionGira);
-
-        return new ResponseEntity(new Mensaje("Carga horaria modificada"),
-                HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            DistribucionGira distribucionGira = createUpdate(
+                    distribucionGiraService.findById(id).get(),
+                    distribucionGiraDto);
+            distribucionGiraService.save(distribucionGira);
+            return new ResponseEntity(new Mensaje("Distribucion horaria modificada correctamente"),
+                    HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!distribucionGiraService.existsById(id))
+        if (!distribucionGiraService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
 
         DistribucionGira distribucionGira = distribucionGiraService.findById(id).get();

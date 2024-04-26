@@ -1,10 +1,9 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.AgrupacionEnum;
 
@@ -18,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,34 +39,40 @@ public class Cargo {
     private String nroresolucion;
     @Column(columnDefinition = "VARCHAR(10)")
     private String nrodecreto;
+
+    /*
+     * @Column(columnDefinition = "BIT DEFAULT 1")
+     * private Boolean activo;
+     */
+
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Column(columnDefinition = "DATE")
-    private LocalDate fecharesolucion;
+    /*
+     * @JsonFormat(pattern = "dd-MM-yyyy")
+     * 
+     * @Column(columnDefinition = "DATE")
+     */
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaResolucion;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Column(columnDefinition = "DATE")
-    private LocalDate fechainicio;
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaInicio;
+    @Temporal(TemporalType.DATE)
+    private LocalDate fechaFinal;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
-    @Column(columnDefinition = "DATE")
-    private LocalDate fechafinal;
-
-    // @OneToOne
-    // @JoinColumn(name = "id_legajo")
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo",
-    // "cargo" })
-    // private Legajo legajo;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
-    // @JoinColumn(name = "id_legajo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo", "cargo" })
-    private Set<Legajo> legajos = new HashSet<>();
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "persona", "cargo", "efectores" })
+    private List<Legajo> legajos = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(40)")
     private AgrupacionEnum agrupacion;
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+    // "nombre","descripcion","nroresolucion","nrodecreto","activo","fechaResolucion","fechaInicio","fechaFinal","legajos","agrupacion"})
 
     @Override
     public boolean equals(Object obj) {

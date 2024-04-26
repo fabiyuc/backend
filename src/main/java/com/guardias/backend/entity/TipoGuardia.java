@@ -1,10 +1,21 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,16 +35,26 @@ public class TipoGuardia {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    /*
-     * @OneToMany(mappedBy = "tipoGuardia")
-     * 
-     * @JsonIgnore // Añade esta anotación para evitar la recursión infinita
-     * private Set<RegistroActividad> registroActividades;
-     */
-    /*
-     * @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
-     * private Set<Asistencial> asistenciales;
-     */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "tipoguardia_asistencial", joinColumns = @JoinColumn(name = "id_tipoGuardia"), inverseJoinColumns = @JoinColumn(name = "id_asistencial"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes",
+            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+            "domicilio",
+            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial", "tiposGuardias" })
+    private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+            "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
+            "asistencial", "servicio", "efector", "registroMensual" })
+    private List<RegistroActividad> registrosActividades = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer",
+    // "handler","asistenciales", "descripcion",
+    // "nombre", "activo","registrosActividades" })
 
     @Override
     public boolean equals(Object obj) {

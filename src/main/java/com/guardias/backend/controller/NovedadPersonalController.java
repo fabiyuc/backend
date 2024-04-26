@@ -2,6 +2,8 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +16,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
 import com.guardias.backend.entity.NovedadPersonal;
+import com.guardias.backend.service.ArticuloService;
+import com.guardias.backend.service.IncisoService;
 import com.guardias.backend.service.NovedadPersonalService;
+import com.guardias.backend.service.PersonService;
 
 @Controller
 @RequestMapping("/novedadPersonal")
@@ -26,10 +32,16 @@ public class NovedadPersonalController {
 
     @Autowired
     NovedadPersonalService novedadPersonalService;
+    @Autowired
+    PersonService personaService;
+    @Autowired
+    ArticuloService articuloService;
+    @Autowired
+    IncisoService incisoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
-        List<NovedadPersonal> list = novedadPersonalService.findByActivo(true);
+        List<NovedadPersonal> list = novedadPersonalService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -41,113 +53,139 @@ public class NovedadPersonalController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<NovedadPersonal> getById(@PathVariable("id") Long id) {
-        if (!novedadPersonalService.existsById(id))
+        if (!novedadPersonalService.activo(id))
             return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
         NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
         return new ResponseEntity(novedadPersonal, HttpStatus.OK);
     }
 
-    // @GetMapping("/detailpersona/{id}")
-    // public ResponseEntity<List<NovedadPersonal>> getByPersona(@PathVariable("id")
-    // Long id) {
-    // if (!novedadPersonalService.existsByPersona(id))
-    // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
-    // HttpStatus.NOT_FOUND);
-    // List<NovedadPersonal> novedadesList =
-    // novedadPersonalService.getByPersona(id).get();
-    // return new ResponseEntity(novedadesList, HttpStatus.OK);
-    // }
+    @GetMapping("/detailpersona/{id}")
+    public ResponseEntity<List<NovedadPersonal>> getByPersona(@PathVariable("id") Long id) {
+        if (!novedadPersonalService.activoByPersona(id))
+            return new ResponseEntity(new Mensaje("Novedad no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        List<NovedadPersonal> novedadesList = novedadPersonalService.findByPersona(id).get();
+        return new ResponseEntity(novedadesList, HttpStatus.OK);
+    }
 
     @GetMapping("/detailfecha/{fecha}")
     public ResponseEntity<List<NovedadPersonal>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
-        // if (!novedadPersonalService.existsByFechaIniciofecha))
-        // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
-        // HttpStatus.NOT_FOUND);
+        if (!novedadPersonalService.existsByFechaInicio(fecha))
+            return new ResponseEntity(new Mensaje("Novedad no encontrada"),
+                    HttpStatus.NOT_FOUND);
         List<NovedadPersonal> novedadesList = novedadPersonalService.findByFechaInicio(fecha).get();
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody NovedadPersonalDto novedadPersonalDto) {
+    private ResponseEntity<?> validations(NovedadPersonalDto novedadPersonalDto) {
         if (novedadPersonalDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha es obligatoria"),
+            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        NovedadPersonal novedadPersonal = new NovedadPersonal();
+        if (novedadPersonalDto.getFechaFinal() == null)
+            return new ResponseEntity(new Mensaje("la fecha de final es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
 
-        novedadPersonal.setFechaInicio(novedadPersonalDto.getFechaInicio());
-        novedadPersonal.setFechaFinal(novedadPersonalDto.getFechaFinal());
-        novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
-        novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
-        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
-        novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
-        // novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
-        // novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
-        // novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
-        // novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
-        // novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
+        if (novedadPersonalDto.getIdPersona() == null)
+            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
 
-        novedadPersonalService.save(novedadPersonal);
-        return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody NovedadPersonalDto novedadPersonalDto) {
-        // if (!novedadPersonalService.existsByPersona(id))
-        // return new ResponseEntity(new Mensaje("Novedad no encontrada"),
-        // HttpStatus.NOT_FOUND);
+    private NovedadPersonal createUpdate(NovedadPersonal novedadPersonal, NovedadPersonalDto novedadPersonalDto) {
 
-        NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
-
-        if (!novedadPersonalDto.getFechaInicio().isEqual(novedadPersonal.getFechaInicio()))
+        if (novedadPersonalDto.getFechaInicio() != null
+                && !novedadPersonalDto.getFechaInicio().equals(novedadPersonal.getFechaInicio()))
             novedadPersonal.setFechaInicio(novedadPersonalDto.getFechaInicio());
 
-        if (!novedadPersonalDto.getFechaFinal().isEqual(novedadPersonal.getFechaFinal()))
+        if (novedadPersonalDto.getFechaFinal() != null
+                && !novedadPersonalDto.getFechaFinal().equals(novedadPersonal.getFechaFinal()))
             novedadPersonal.setFechaFinal(novedadPersonalDto.getFechaFinal());
 
         novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
         novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
+        novedadPersonal.setActual(novedadPersonalDto.isActual());
 
-        if (novedadPersonalDto.getDescripcion() != novedadPersonal.getDescripcion()
-                && novedadPersonalDto.getDescripcion() != null && !novedadPersonalDto.getDescripcion().isEmpty())
+        if (novedadPersonalDto.getDescripcion() != null
+                && !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion())
+                && !novedadPersonalDto.getDescripcion().isEmpty())
             novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
 
-        // if (novedadPersonalDto.getIdExtensionLicencia() !=
-        // novedadPersonal.getIdExtensionLicencia())
-        // novedadPersonal.setIdExtensionLicencia(novedadPersonalDto.getIdExtensionLicencia());
+        if (novedadPersonal.getPersona() == null ||
+                (novedadPersonalDto.getIdPersona() != null &&
+                        !Objects.equals(novedadPersonal.getPersona().getId(),
+                                novedadPersonalDto.getIdPersona()))) {
+            novedadPersonal.setPersona(personaService.findById(novedadPersonalDto.getIdPersona()));
+        }
 
-        // if
-        // (!novedadPersonalDto.getNovedadesAsistencial().equals(novedadPersonal.getNovedadesAsistencial()))
-        // novedadPersonal.setNovedadesAsistencial(novedadPersonalDto.getNovedadesAsistencial());
+        if (novedadPersonal.getSuplente() == null ||
+                (novedadPersonalDto.getIdSuplente() != null &&
+                        !Objects.equals(novedadPersonal.getSuplente().getId(),
+                                novedadPersonalDto.getIdSuplente()))) {
+            novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.getIdSuplente()));
+        }
 
-        // if
-        // (!novedadPersonalDto.getAsistencialReemplazante().equals(novedadPersonal.getAsistencialReemplazante()))
-        // novedadPersonal.setAsistencialReemplazante(novedadPersonalDto.getAsistencialReemplazante());
+        if (novedadPersonal.getArticulo() == null ||
+                (novedadPersonalDto.getIdArticulo() != null &&
+                        !Objects.equals(novedadPersonal.getArticulo().getId(),
+                                novedadPersonalDto.getIdArticulo()))) {
+            novedadPersonal.setArticulo(articuloService.findById(novedadPersonalDto.getIdArticulo()).get());
+        }
 
-        // if
-        // (!novedadPersonalDto.getNovedadesNoAsistencial().equals(novedadPersonal.getNovedadesNoAsistencial()))
-        // novedadPersonal.setNovedadesNoAsistencial(novedadPersonalDto.getNovedadesNoAsistencial());
+        if (novedadPersonal.getInciso() == null ||
+                (novedadPersonalDto.getIdInciso() != null &&
+                        !Objects.equals(novedadPersonal.getInciso().getId(),
+                                novedadPersonalDto.getIdInciso()))) {
+            novedadPersonal.setInciso(incisoService.findById(novedadPersonalDto.getIdInciso()).get());
+        }
+        novedadPersonal.setActivo(true);
+        return novedadPersonal;
+    }
 
-        // if
-        // (!novedadPersonalDto.getReemplazantesNoAsistencial().equals(novedadPersonal.getReemplazantesNoAsistencial()))
-        // novedadPersonal.setReemplazantesNoAsistencial(novedadPersonalDto.getReemplazantesNoAsistencial());
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody NovedadPersonalDto novedadPersonalDto) {
 
-        // if (novedadPersonalDto.getTipoLicencia() != novedadPersonal.getTipoLicencia()
-        // && novedadPersonalDto.getTipoLicencia() != null)
-        // novedadPersonal.setTipoLicencia(novedadPersonalDto.getTipoLicencia());
+        ResponseEntity<?> respuestaValidaciones = validations(novedadPersonalDto);
 
-        novedadPersonalService.save(novedadPersonal);
-        return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+
+            NovedadPersonal novedadPersonal = createUpdate(new NovedadPersonal(), novedadPersonalDto);
+            novedadPersonalService.save(novedadPersonal);
+            return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
+
+        } else {
+            return respuestaValidaciones;
+        }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody NovedadPersonalDto novedadPersonalDto) {
+        if (!novedadPersonalService.activo(id))
+            return new ResponseEntity(new Mensaje("Novedad no encontrada"),
+                    HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(novedadPersonalDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            NovedadPersonal novedadPersonal = createUpdate(novedadPersonalService.getById(id).get(),
+                    novedadPersonalDto);
+            novedadPersonalService.save(novedadPersonal);
+            return new ResponseEntity(new Mensaje("Novedad modificada correctamente"), HttpStatus.OK);
+
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!novedadPersonalService.existsById(id))
+        if (!novedadPersonalService.activo(id))
             return new ResponseEntity(new Mensaje("La novedad no exixte"), HttpStatus.NOT_FOUND);
 
         NovedadPersonal novedadPersonal = novedadPersonalService.findById(id).get();
-        novedadPersonal.setActiva(false);
+        novedadPersonal.setActual(false);
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity<>(new Mensaje("novedad eliminada correctamente"), HttpStatus.OK);
     }

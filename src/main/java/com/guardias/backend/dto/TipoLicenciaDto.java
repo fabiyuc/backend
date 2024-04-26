@@ -1,7 +1,7 @@
 package com.guardias.backend.dto;
 
-import java.util.Set;
-import com.guardias.backend.entity.NovedadPersonal;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +23,6 @@ public class TipoLicenciaDto {
 
     private String inciso;
 
-    private Set<NovedadPersonal> novedadesPersonales;
+    private List<Long> idNovedadesPersonales;
 
 }

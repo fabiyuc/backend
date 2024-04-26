@@ -3,8 +3,10 @@ package com.guardias.backend.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.DiasEnum;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,7 +49,14 @@ public abstract class DistribucionHoraria {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "autoridades", "domicilio", "telefono",
+            "estado", "activo",
+            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+            "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+            "areaProgramatica",
+            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
     private Efector efector;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -56,6 +65,9 @@ public abstract class DistribucionHoraria {
             "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes" })
     private Person persona;
 
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+    // "dia","fechaInicio","fechaFinalizacion","horaIngreso","cantidadHoras","activo","efector","persona","lugar","especialidad","cantidadTurnos","destino","descripcion","tipoGuardia"
+    // })
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

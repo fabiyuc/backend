@@ -1,14 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-import com.guardias.backend.entity.Cargo;
-import com.guardias.backend.entity.Efector;
-import com.guardias.backend.entity.Person;
-import com.guardias.backend.entity.Profesion;
-import com.guardias.backend.entity.Revista;
-import com.guardias.backend.entity.Suspencion;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,17 +13,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LegajoDto {
 
-    Long id;
     @NotBlank
     private LocalDate fechaInicio;
 
     private LocalDate fechaFinal;
 
     @NotBlank
-    private Person persona;
+    private Long idPersona;
 
     @NotBlank
-    private Efector udo;
+    private Long idUdo;
 
     @NotBlank
     private Boolean actual;
@@ -41,17 +34,17 @@ public class LegajoDto {
     private String matriculaProvincial;
 
     @NotBlank
-    private Profesion profesion;
+    private Long idProfesion;
 
-    private Suspencion suspencion;
+    private Long idSuspencion;
 
     @NotBlank
-    private Revista revista;
+    private Long idRevista;
 
     private String tipoGuardia;
     private String descripcion;
-    private Cargo cargo;
+    private Long idCargo;
     private boolean activo;
 
-    private Set<Efector> efectores = new HashSet<>();
+    private List<Long> idEfectores;
 }

@@ -1,8 +1,8 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -36,12 +36,23 @@ public class Localidad {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_departamento")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "localidades" })
-    Departamento departamento;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "codigoPostal", "activo", "departamentos",
+            "gentilicio" })
+    private Departamento departamento;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "localidad", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Efector> efectores;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "autoridades", "domicilio", "telefono",
+            "estado", "activo",
+            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+            "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+            "areaProgramatica",
+            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
+    private List<Efector> efectores = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer",
+    // "handler","nombre","activo", "departamento", "efectores" })
 
     @Override
     public boolean equals(Object obj) {

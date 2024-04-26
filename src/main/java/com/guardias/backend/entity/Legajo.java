@@ -1,9 +1,11 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,45 +45,67 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_profesion")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "especialidades" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "asistencial", "especialidades",
+      "legajos" })
   private Profesion profesion;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_suspencion")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "fechaInicio", "activo", "fechaFin",
+      "legajos" })
   private Suspencion suspencion;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_revista")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista", "categoria", "adicional", "cargaHoraria",
+      "legajos", "agrupacion", "activo" })
   private Revista revista;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_udo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajosUdo", "domicilio", "telefono", "estado",
-      "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+      "autoridades", "domicilio", "telefono",
+      "estado", "activo",
+      "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+      "legajos",
+      "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+      "areaProgramatica",
+      "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
   private Efector udo;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_persona")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades", "especialidades",
-      "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+      "apellido", "dni", "cuil", "legajos",
+      "novedadesPersonales", "suplentes",
+      "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+      "domicilio",
+      "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+      "descripcion", "esAsistencial" })
   private Person persona;
-
-  // @OneToOne(mappedBy = "legajo")
-  // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
-  // private Cargo cargo;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_cargo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajo" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "descripcion", "nroresolucion", "nrodecreto",
+      "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos", "agrupacion" })
   private Cargo cargo;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "domicilio", "telefono", "estado",
-      "observacion", "region", "localidad", "esCabecera", "admitePasiva", "caps" })
-  private Set<Efector> efectores = new HashSet<>();
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+      "autoridades", "domicilio", "telefono",
+      "estado", "activo",
+      "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+      "legajos",
+      "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+      "areaProgramatica",
+      "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
+  private List<Efector> efectores = new ArrayList<>();
+
+  // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
+  // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",
+  // "matriculaProvincial", "profesion", "suspencion", "revista", "udo","persona",
+  // "cargo", "efectores" })
 
   @Override
   public boolean equals(Object obj) {

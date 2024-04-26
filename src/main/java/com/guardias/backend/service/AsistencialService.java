@@ -2,10 +2,15 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.TipoGuardiaRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,9 +19,11 @@ public class AsistencialService {
 
     @Autowired
     AsistencialRepository asistencialRepository;
+    @Autowired
+    TipoGuardiaRepository tipoGuardiaRepository;
 
-    public List<Asistencial> findByActivo(boolean activo) {
-        return asistencialRepository.findByActivo(activo);
+    public List<Asistencial> findByActivoTrue() {
+        return asistencialRepository.findByActivoTrue();
     }
 
     public List<Asistencial> findAll() {
@@ -27,6 +34,10 @@ public class AsistencialService {
         return asistencialRepository.findById(id);
     }
 
+    public Optional<Asistencial> findByCuil(String cuil) {
+        return asistencialRepository.findByCuil(cuil);
+    }
+
     public boolean existsById(Long id) {
         return asistencialRepository.existsById(id);
     }
@@ -35,8 +46,8 @@ public class AsistencialService {
         return asistencialRepository.existsByDni(dni);
     }
 
-    public List<Asistencial> findByEstado(boolean estado) {
-        return asistencialRepository.findByEstado(estado);
+    public boolean existsByCuil(String cuil) {
+        return asistencialRepository.existsByCuil(cuil);
     }
 
     public Optional<Asistencial> findByDni(int dni) {
@@ -49,6 +60,24 @@ public class AsistencialService {
 
     public void deleteById(Long id) {
         asistencialRepository.deleteById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (asistencialRepository.existsById(id) && asistencialRepository.findById(id).get().isActivo());
+    }
+
+    public boolean activoDni(int dni) {
+        return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
+    }
+
+    public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
+
+        Asistencial asistencial = asistencialRepository.findById(idAsistencial).get();
+        TipoGuardia tipoGuardia = tipoGuardiaRepository.findById(idTipoGuardia).get();
+
+        tipoGuardia.getAsistenciales().add(asistencial);
+        asistencial.getTiposGuardias().add(tipoGuardia);
+        
     }
 
 }

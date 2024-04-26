@@ -1,5 +1,6 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,7 +11,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,22 +25,34 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
 public class Inciso extends Ley {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_inciso")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "subIncisos", "inciso" })
-    private Inciso inciso;
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_inciso_padre")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
+                        "novedadesPersonales",
+                        "tipoLey", "articuloPadre", "incisoPadre", "incisos", "subIncisos", "subArticulos" })
+        private Inciso incisoPadre;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "inciso" })
-    private List<Inciso> subIncisos;
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "incisoPadre", cascade = CascadeType.ALL)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
+                        "novedadesPersonales",
+                        "tipoLey", "articuloPadre", "incisoPadre", "incisos", "subIncisos", "subArticulos" })
+        private List<Inciso> subIncisos = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_articulo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "incisos", "articulo" })
-    private Articulo articulo;
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_articulo")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+                        "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
+                        "novedadesPersonales",
+                        "tipoLey", "articuloPadre", "incisoPadre", "incisos", "subIncisos", "subArticulos" })
+        private Articulo articulo;
 
-    @OneToOne
-    @JoinColumn(name = "id_novedad_personal")
-    private NovedadPersonal novedadPersonal;
-
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "inciso", cascade = CascadeType.ALL)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer",
+                        "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia", "cobraSueldo",
+                        "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "articuloPadre",
+                        "incisoPadre",
+                        "activo" })
+        private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 }

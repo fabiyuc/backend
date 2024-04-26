@@ -1,9 +1,7 @@
 package com.guardias.backend.dto;
 
-import java.util.HashSet;
-import java.util.Set;
-import com.guardias.backend.entity.Asistencial;
-import com.guardias.backend.entity.Profesion;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,9 +13,9 @@ import lombok.NoArgsConstructor;
 public class EspecialidadDto {
     @NotBlank
     private String nombre;
-    private Profesion profesion;
+    private Long idProfesion;
     private Boolean esPasiva;
     private boolean activo;
-    private Set<Asistencial> asistenciales = new HashSet<>();
+    private List<Long> idAsistenciales;
 
 }

@@ -1,8 +1,10 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.EstadoLey;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +18,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -55,14 +56,16 @@ public abstract class Ley {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @OneToOne
-    @JoinColumn(name = "id_novedad_personal")
-    private NovedadPersonal novedadPersonal;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_ley")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes" })
-    private TipoLey ley;
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "leyes", "activo" })
+    private TipoLey tipoLey;
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+    // "numero","denominacion", "detalle", "estado","fechaAlta", "fechaBaja",
+    // "fechaModificacion", "motivoModificacion","activo",
+    // "novedadesPersonales","tipoLey", "articulo", "inciso", "incisos",
+    // "subIncisos", "subArticulos" })
 
     @Override
     public boolean equals(Object obj) {

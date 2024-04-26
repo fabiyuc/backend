@@ -13,5 +13,5 @@ public interface RegistroActividadRepository extends JpaRepository<RegistroActiv
 
     boolean existsById(Long id);
 
-    List<RegistroActividad> findByActivo(boolean activo);
+    List<RegistroActividad> findByActivoTrue();
 }

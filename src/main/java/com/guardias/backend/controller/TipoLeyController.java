@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLeyDto;
+import com.guardias.backend.entity.Ley;
 import com.guardias.backend.entity.TipoLey;
+import com.guardias.backend.service.LeyService;
 import com.guardias.backend.service.TipoLeyService;
 
 import io.micrometer.common.util.StringUtils;
@@ -27,10 +32,12 @@ public class TipoLeyController {
 
     @Autowired
     TipoLeyService tipoLeyService;
+    @Autowired
+    LeyService leyService;
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLey>> list() {
-        List<TipoLey> list = tipoLeyService.findByActivo(true);
+        List<TipoLey> list = tipoLeyService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -42,49 +49,89 @@ public class TipoLeyController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<TipoLey>> getById(@PathVariable("id") Long id) {
-        if (!tipoLeyService.existsById(id))
+        if (!tipoLeyService.activo(id))
             return new ResponseEntity(new Mensaje("Tipo de Ley no encontrada"), HttpStatus.NOT_FOUND);
         TipoLey tipoLey = tipoLeyService.findById(id).get();
         return new ResponseEntity(tipoLey, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody TipoLeyDto tipoLeyDto) {
+    private ResponseEntity<?> validations(TipoLeyDto tipoLeyDto, Long id) {
         if (StringUtils.isBlank(tipoLeyDto.getDescripcion()))
             return new ResponseEntity<Mensaje>(new Mensaje("La descripcion es obligatoria"),
                     HttpStatus.BAD_REQUEST);
-        if (tipoLeyService.existsByDescripcion(tipoLeyDto.getDescripcion()))
+
+        if (tipoLeyService.existsByDescripcion(tipoLeyDto.getDescripcion())
+                && (tipoLeyService.findByDescripcion(tipoLeyDto.getDescripcion()).get().getId() != id))
             return new ResponseEntity<Mensaje>(new Mensaje("Esa descripcion ya existe"),
                     HttpStatus.BAD_REQUEST);
 
-        TipoLey tipoLey = new TipoLey();
-        tipoLey.setDescripcion(tipoLeyDto.getDescripcion());
-        tipoLey.setLeyes(tipoLeyDto.getLeyes());
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
 
-        tipoLeyService.save(tipoLey);
-        return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley creada correctamente"), HttpStatus.OK);
+    private TipoLey createUpdate(TipoLey tipoLey, TipoLeyDto tipoLeyDto) {
+
+        if (tipoLey.getDescripcion() != tipoLeyDto.getDescripcion() && tipoLeyDto.getDescripcion() != null
+                && !tipoLeyDto.getDescripcion().isEmpty())
+            tipoLeyDto.setDescripcion(tipoLeyDto.getDescripcion());
+
+        if (tipoLeyDto.getIdLeyes() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (tipoLey.getLeyes() != null) {
+                for (Ley ley : tipoLey.getLeyes()) {
+                    for (Long id : tipoLeyDto.getIdLeyes()) {
+                        if (!ley.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                tipoLey.setLeyes(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? tipoLeyDto.getIdLeyes() : idList;
+            for (Long id : idsToAdd) {
+                tipoLey.getLeyes().add(leyService.findById(id));
+                leyService.findById(id).setTipoLey(tipoLey);
+            }
+
+        }
+
+        tipoLey.setActivo(true);
+        return tipoLey;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody TipoLeyDto tipoLeyDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(tipoLeyDto, 0L);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            TipoLey tipoLey = createUpdate(new TipoLey(), tipoLeyDto);
+            tipoLeyService.save(tipoLey);
+            return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley creada correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoLeyDto tipoLeyDto) {
-        if (StringUtils.isBlank(tipoLeyDto.getDescripcion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("La descripcion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (tipoLeyService.existsByDescripcion(tipoLeyDto.getDescripcion()))
-            return new ResponseEntity<Mensaje>(new Mensaje("Esa descripcion ya existe"),
-                    HttpStatus.BAD_REQUEST);
+        if (!tipoLeyService.activo(id))
+            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        TipoLey tipoLey = tipoLeyService.findById(id).get();
-        tipoLey.setDescripcion(tipoLeyDto.getDescripcion());
-        tipoLey.setLeyes(tipoLeyDto.getLeyes());
+        ResponseEntity<?> respuestaValidaciones = validations(tipoLeyDto, id);
 
-        tipoLeyService.save(tipoLey);
-        return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley modificada correctamente"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            TipoLey tipoLey = createUpdate(tipoLeyService.findById(id).get(), tipoLeyDto);
+            tipoLeyService.save(tipoLey);
+            return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley modificada correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!tipoLeyService.existsById(id))
+        if (!tipoLeyService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         TipoLey tipoLey = tipoLeyService.findById(id).get();

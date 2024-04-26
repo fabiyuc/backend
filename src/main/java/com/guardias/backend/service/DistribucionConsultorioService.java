@@ -3,10 +3,13 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -16,8 +19,14 @@ public class DistribucionConsultorioService {
     @Autowired
     DistribucionConsultorioRepository distribucionConsultorioRepository;
 
-    public List<DistribucionConsultorio> findByActivo(boolean activo) {
-        return distribucionConsultorioRepository.findByActivo(activo);
+    @Autowired
+    EfectorService efectorService;
+
+    @Autowired
+    PersonService personService;
+
+    public Optional<List<DistribucionConsultorio>> findByActivoTrue() {
+        return distribucionConsultorioRepository.findByActivoTrue();
     }
 
     public List<DistribucionConsultorio> findAll() {
@@ -26,6 +35,11 @@ public class DistribucionConsultorioService {
 
     public Optional<DistribucionConsultorio> findById(Long id) {
         return distribucionConsultorioRepository.findById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (distribucionConsultorioRepository.existsById(id)
+                && distribucionConsultorioRepository.findById(id).get().isActivo());
     }
 
     public List<DistribucionConsultorio> findByFechaInicio(LocalDate fechaInicio) {
@@ -45,11 +59,11 @@ public class DistribucionConsultorioService {
     }
 
     public boolean existsByEfectorId(Long efectorId) {
-        return distribucionConsultorioRepository.existsByEfectorId(efectorId);
+        return distribucionConsultorioRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
     public boolean existsByPersonaId(Long personaId) {
-        return distribucionConsultorioRepository.existsByPersonaId(personaId);
+        return distribucionConsultorioRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
     public void save(DistribucionConsultorio distribucionConsultorio) {

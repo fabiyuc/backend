@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLicenciaDto;
 import com.guardias.backend.entity.TipoLicencia;
 import com.guardias.backend.service.TipoLicenciaService;
+
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -35,7 +38,7 @@ public class TipoLicenciaController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("id") Long id) {
-        if (!tipoLicenciaService.existsById(id))
+        if (!tipoLicenciaService.activo(id))
             return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
         TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).get();
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);

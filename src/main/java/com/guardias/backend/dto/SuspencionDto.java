@@ -1,8 +1,8 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
-import com.guardias.backend.entity.Legajo;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +24,6 @@ public class SuspencionDto {
     private LocalDate fechaFin;
 
     @NotBlank
-    private Set<Legajo> legajos;
+    private List<Long> idLegajos;
 
 }

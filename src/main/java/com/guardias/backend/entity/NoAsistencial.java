@@ -18,4 +18,12 @@ public class NoAsistencial extends Person {
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "apellido", "dni", "cuil", "legajos",
+    // "novedadesPersonales", "suplentes",
+    // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+    // "domicilio",
+    // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+    // "descripcion" })
 }

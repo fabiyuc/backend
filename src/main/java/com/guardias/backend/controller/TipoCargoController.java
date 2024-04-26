@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoCargoDto;
 import com.guardias.backend.entity.TipoCargo;
@@ -35,7 +37,7 @@ public class TipoCargoController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<TipoCargo> getById(@PathVariable("id") long id) {
-        if (!tipoCargoService.existsById(id))
+        if (!tipoCargoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         TipoCargo tipoCargo = tipoCargoService.findById(id).get();
         return new ResponseEntity<TipoCargo>(tipoCargo, HttpStatus.OK);
@@ -44,76 +46,71 @@ public class TipoCargoController {
 
     @GetMapping("/detailname/{nombre}")
     public ResponseEntity<TipoCargo> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!tipoCargoService.existsByNombre(nombre))
+        if (!tipoCargoService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         TipoCargo tipoCargo = tipoCargoService.findByNombre(nombre).get();
         return new ResponseEntity<TipoCargo>(tipoCargo, HttpStatus.OK);
 
     }
 
+    private ResponseEntity<?> validations(TipoCargoDto tipoCargoDto) {
+        if (StringUtils.isBlank(tipoCargoDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+        if (tipoCargoDto.getDescripcion() == null)
+            return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private TipoCargo createUpdate(TipoCargo tipoCargo, TipoCargoDto tipoCargoDto) {
+
+        if (tipoCargo.getNombre() != tipoCargoDto.getNombre() && tipoCargoDto.getNombre() != null
+                && !tipoCargoDto.getNombre().isEmpty())
+            tipoCargo.setNombre(tipoCargoDto.getNombre());
+
+        if (tipoCargo.getDescripcion() != tipoCargoDto.getDescripcion() && tipoCargoDto.getDescripcion() != null
+                && !tipoCargoDto.getDescripcion().isEmpty())
+            tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
+
+        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
+
+        tipoCargo.setActivo(true);
+        return tipoCargo;
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoCargoDto tipoCargoDto) {
 
-        if (StringUtils.isBlank(tipoCargoDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoCargoDto);
 
-        if (tipoCargoService.existsByNombre(tipoCargoDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (tipoCargoDto.getDescripcion() == null)
-            return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
-        TipoCargo tipoCargo = new TipoCargo();
-
-        tipoCargo.setNombre(tipoCargoDto.getNombre());
-        tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
-        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
-
-        tipoCargoService.save(tipoCargo);
-
-        return new ResponseEntity<>(new Mensaje("Tipo cargo creado"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            TipoCargo tipoCargo = createUpdate(new TipoCargo(), tipoCargoDto);
+            tipoCargoService.save(tipoCargo);
+            return new ResponseEntity<>(new Mensaje("Tipo cargo creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody TipoCargoDto tipoCargoDto) {
-        if (!tipoCargoService.existsById(id))
+        if (!tipoCargoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        if (tipoCargoService.existsByNombre(tipoCargoDto.getNombre())) {
-            TipoCargo existingTipoCargo = tipoCargoService.findByNombre(tipoCargoDto.getNombre()).orElse(null);
-            if (existingTipoCargo != null && existingTipoCargo.getId() != id) {
-                return new ResponseEntity(new Mensaje("Ya existe un TipoCargo con ese nombre"), HttpStatus.BAD_REQUEST);
-            }
+        ResponseEntity<?> respuestaValidaciones = validations(tipoCargoDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            TipoCargo tipoCargo = createUpdate(tipoCargoService.findById(id).get(), tipoCargoDto);
+            tipoCargoService.save(tipoCargo);
+            return new ResponseEntity<>(new Mensaje("Tipo cargo modificado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
         }
-
-        if (StringUtils.isBlank(tipoCargoDto.getNombre())) {
-            return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-        }
-
-        if (StringUtils.isBlank(tipoCargoDto.getDescripcion())) {
-            return new ResponseEntity<>(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
-        // Obtén el TipoCargo actual
-        TipoCargo tipoCargo = tipoCargoService.findById(id).orElse(null);
-        if (tipoCargo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new Mensaje("No se encontró el TipoCargo para actualizar"));
-
-        }
-
-        // Actualiza los campos
-        tipoCargo.setNombre(tipoCargoDto.getNombre());
-        tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
-        tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
-
-        // Guarda la actualización
-        tipoCargoService.save(tipoCargo);
-
-        return ResponseEntity.ok(new Mensaje("Tipo cargo actualizado"));
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!tipoCargoService.existsById(id))
+        if (!tipoCargoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         TipoCargo tipoCargo = tipoCargoService.findById(id).get();

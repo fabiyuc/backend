@@ -18,5 +18,5 @@ public interface FeriadoRepository extends JpaRepository<Feriado, Long> {
 
     boolean existsByFecha(LocalDate fecha);
 
-    List<Feriado> findByActivo(boolean activo);
+    List<Feriado> findByActivoTrue();
 }

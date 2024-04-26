@@ -3,10 +3,13 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -16,8 +19,14 @@ public class DistribucionGuardiaService {
     @Autowired
     DistribucionGuardiaRepository distribucionGuardiaRepository;
 
-    public List<DistribucionGuardia> findByActivo(boolean activo) {
-        return distribucionGuardiaRepository.findByActivo(activo);
+    @Autowired
+    EfectorService efectorService;
+
+    @Autowired
+    PersonService personService;
+
+    public Optional<List<DistribucionGuardia>> findByActivoTrue() {
+        return distribucionGuardiaRepository.findByActivoTrue();
     }
 
     public List<DistribucionGuardia> findAll() {
@@ -44,12 +53,17 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (distribucionGuardiaRepository.existsById(id)
+                && distribucionGuardiaRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByEfectorId(Long efectorId) {
-        return distribucionGuardiaRepository.existsByEfectorId(efectorId);
+        return distribucionGuardiaRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
     }
 
     public boolean existsByPersonaId(Long personaId) {
-        return distribucionGuardiaRepository.existsByPersonaId(personaId);
+        return distribucionGuardiaRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
     public void save(DistribucionGuardia distribucionGuardia) {

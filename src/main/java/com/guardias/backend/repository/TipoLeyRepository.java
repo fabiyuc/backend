@@ -13,5 +13,5 @@ public interface TipoLeyRepository extends JpaRepository<TipoLey, Long> {
 
     boolean existsByDescripcion(String descripcion);
 
-    List<TipoLey> findByActivo(boolean activo);
+    List<TipoLey> findByActivoTrue();
 }

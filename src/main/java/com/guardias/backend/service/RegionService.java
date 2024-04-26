@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.repository.RegionRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -14,8 +17,8 @@ public class RegionService {
     @Autowired
     RegionRepository regionRepository;
 
-    public List<Region> findByActivo(boolean activo) {
-        return regionRepository.findByActivo(activo);
+    public List<Region> findByActivo() {
+        return regionRepository.findByActivoTrue();
     }
 
     public List<Region> findAll() {
@@ -42,7 +45,15 @@ public class RegionService {
         return regionRepository.existsById(id);
     }
 
+    public boolean activo(Long id) {
+        return (regionRepository.existsById(id) && regionRepository.findById(id).get().isActivo());
+    }
+
     public boolean existsByNombre(String nombre) {
         return regionRepository.existsByNombre(nombre);
+    }
+
+    public boolean activoByNombre(String nombre) {
+        return (regionRepository.existsByNombre(nombre) && regionRepository.findByNombre(nombre).get().isActivo());
     }
 }

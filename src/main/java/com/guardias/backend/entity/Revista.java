@@ -1,8 +1,11 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.AgrupacionEnum;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,31 +36,39 @@ public class Revista {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_tipo_revista")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "revistas", "activo" })
   private TipoRevista tipoRevista;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_categoria")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "revistas" })
   private Categoria categoria;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_adicional")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "revistas" })
   private Adicional adicional;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_carga_horaria")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cantidad", "descripcion", "activo", "revistas" })
   private CargaHoraria cargaHoraria;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "revista", cascade = CascadeType.ALL)
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas" })
-  private Set<Legajo> legajos;
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+      "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo", "persona",
+      "cargo", "efectores" })
+  private List<Legajo> legajos = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
   @Column(columnDefinition = "VARCHAR(40)")
   private AgrupacionEnum agrupacion;
+
+  /*
+   * @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista",
+   * "categoria", "adicional", "cargaHoraria",
+   * "legajos", "agrupacion", "activo" })
+   */
 
   @Override
   public boolean equals(Object obj) {
@@ -73,8 +84,7 @@ public class Revista {
         return false;
     } else if (!id.equals(other.id))
       return false;
-    if (agrupacion != other.agrupacion)
-      return false;
+
     return true;
   }
 
@@ -83,7 +93,6 @@ public class Revista {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((agrupacion == null) ? 0 : agrupacion.hashCode());
     return result;
   }
 

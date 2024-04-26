@@ -1,11 +1,13 @@
 package com.guardias.backend.entity;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,15 +25,21 @@ public class Adicional {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(columnDefinition = "VARCHAR(20)")
     private String nombre;
+
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "adicional", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tipoRevista", "categoria", "adicional",
-            "cargaHoraria", "legajos", "agrupacion" })
-    private Set<Revista> revistas;
+    // Inicializar el conjunto de revistas
+    @OneToMany(mappedBy = "adicional", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista", "categoria", "adicional", "cargaHoraria",
+            "legajos", "agrupacion", "activo" })
+    private List<Revista> revistas = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+    // "activo", "revistas" })
 
     @Override
     public boolean equals(Object obj) {

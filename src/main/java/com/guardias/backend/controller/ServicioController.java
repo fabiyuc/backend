@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,22 +16,27 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.Servicio;
-import com.guardias.backend.service.ServiceService;
+import com.guardias.backend.service.RegistroActividadService;
+import com.guardias.backend.service.ServicioService;
 
 @RestController
 @RequestMapping("/servicio")
 @CrossOrigin(origins = "http://localhost:4200")
-public class ServicioControlador {
+public class ServicioController {
 
     @Autowired
-    ServiceService servicioService;
+    ServicioService servicioService;
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Servicio>> list() {
-        List<Servicio> list = servicioService.findByActivo(true);
+        List<Servicio> list = servicioService.findByActivo();
         return new ResponseEntity<List<Servicio>>(list, HttpStatus.OK);
     }
 
@@ -41,27 +48,15 @@ public class ServicioControlador {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Servicio> getById(@PathVariable("id") Long id) {
-        if (!servicioService.existsById(id))
+        if (!servicioService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el servicio"), HttpStatus.NOT_FOUND);
         Servicio servicio = servicioService.findById(id).get();
         return new ResponseEntity<Servicio>(servicio, HttpStatus.OK);
     }
 
-    // @GetMapping("/detaildescripcion/{descripcion}")
-    // public ResponseEntity<?> getByDescripcion(@PathVariable("descripcion") String
-    // descripcion) {
-    // try {
-    // Servicio servicio = serviceServicio.getByDescripcion(descripcion).get();
-    // return new ResponseEntity<>(servicio, HttpStatus.OK);
-    // } catch (NoSuchElementException e) {
-    // return new ResponseEntity<>(new Mensaje("No existe el servicio"),
-    // HttpStatus.NOT_FOUND);
-    // }
-    // }
-
     @GetMapping("/detaildescripcion/{descripcion}")
     public ResponseEntity<Servicio> getByDescripcion(@PathVariable("descripcion") String descripcion) {
-        if (!servicioService.existsByDescripcion(descripcion))
+        if (!servicioService.activoByDescripcion(descripcion))
             return new ResponseEntity(new Mensaje("no existe el servicio"),
                     HttpStatus.NOT_FOUND);
         Servicio servicio = servicioService.findByDescripcion(descripcion).get();
@@ -76,51 +71,85 @@ public class ServicioControlador {
         return new ResponseEntity<>(servicios, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody ServicioDto servicioDto) {
+    private ResponseEntity<?> validations(ServicioDto servicioDto) {
+
         if (StringUtils.isBlank(servicioDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("la descripcion es obligatoria"),
                     HttpStatus.BAD_REQUEST);
-        if (servicioService.existsByDescripcion(servicioDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("esa descripcion ya existe"),
-                    HttpStatus.BAD_REQUEST);
+
         if (servicioDto.getNivel() <= 0)
             return new ResponseEntity(new Mensaje("el nivel debe ser mayor que 0"),
                     HttpStatus.BAD_REQUEST);
-        Servicio servicio = new Servicio();
-        servicio.setDescripcion(servicioDto.getDescripcion());
-        servicio.setNivel(servicioDto.getNivel());
-        servicioService.save(servicio);
-        return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private Servicio createUpdate(Servicio servicio, ServicioDto servicioDto) {
+
+        if (servicio.getDescripcion() != servicioDto.getDescripcion() && servicioDto.getDescripcion() != null
+                && !servicioDto.getDescripcion().isEmpty())
+            servicio.setDescripcion(servicioDto.getDescripcion());
+
+        if (servicio.getNivel() != servicioDto.getNivel())
+            servicio.setNivel(servicioDto.getNivel());
+
+        if (servicioDto.getIdRegistrosActividades() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (servicio.getRegistrosActividades() != null) {
+                for (RegistroActividad registro : servicio.getRegistrosActividades()) {
+                    for (Long id : servicioDto.getIdRegistrosActividades()) {
+                        if (!registro.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                servicio.setRegistrosActividades(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? servicioDto.getIdRegistrosActividades() : idList;
+            for (Long id : idsToAdd) {
+                servicio.getRegistrosActividades().add(registroActividadService.findById(id).get());
+                registroActividadService.findById(id).get().setServicio(servicio);
+            }
+        }
+
+        servicio.setActivo(true);
+        return servicio;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody ServicioDto servicioDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(servicioDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Servicio servicio = createUpdate(new Servicio(), servicioDto);
+            servicioService.save(servicio);
+            return new ResponseEntity(new Mensaje("servicio creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ServicioDto servicioDto) {
-        if (!servicioService.existsById(id))
+        if (!servicioService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
 
-        if (servicioService.existsByDescripcion(servicioDto.getDescripcion()) &&
-                servicioService.findByDescripcion(servicioDto.getDescripcion()).get().getId() == id)
-            return new ResponseEntity(new Mensaje("esa descripcion ya existe"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(servicioDto);
 
-        if (StringUtils.isBlank(servicioDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (servicioDto.getNivel() <= 0)
-            return new ResponseEntity(new Mensaje("el nivel debe ser mayor que 0"), HttpStatus.BAD_REQUEST);
-
-        Servicio servicio = servicioService.findById(id).get();
-        if (servicio.getDescripcion() != servicioDto.getDescripcion() && servicioDto.getDescripcion() != null
-                && !servicioDto.getDescripcion().isEmpty())
-            servicio.setDescripcion(servicioDto.getDescripcion());
-        servicio.setNivel(servicioDto.getNivel());
-        servicioService.save(servicio);
-        return new ResponseEntity(new Mensaje("servicio actualizado"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Servicio servicio = createUpdate(servicioService.findById(id).get(), servicioDto);
+            servicioService.save(servicio);
+            return new ResponseEntity(new Mensaje("servicio modificado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!servicioService.existsById(id))
+        if (!servicioService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el servicio"), HttpStatus.NOT_FOUND);
         Servicio servicio = servicioService.findById(id).get();
         servicio.setActivo(false);

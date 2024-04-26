@@ -1,23 +1,26 @@
 package com.guardias.backend.dto;
 
-import com.guardias.backend.entity.Hospital;
+import com.guardias.backend.enums.TipoCaps;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class CapsDto extends EfectorDto {
 
-    Hospital cabecera;
+    private Long idCabecera;
 
     @Min(value = 1)
-    int areaProgramatica;
+    private int areaProgramatica;
 
     @NotBlank
-    private String tipoCaps;
+    private TipoCaps tipoCaps;
 
 }

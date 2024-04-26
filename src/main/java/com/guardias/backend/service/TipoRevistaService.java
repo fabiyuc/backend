@@ -2,9 +2,11 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.guardias.backend.entity.TipoRevista;
 import com.guardias.backend.repository.TipoRevistaRepository;
 
@@ -14,9 +16,11 @@ public class TipoRevistaService {
 
     @Autowired
     TipoRevistaRepository tipoRevistaRepository;
+    @Autowired
+    RevistaService revistaService;
 
-    public List<TipoRevista> findByActivo(boolean activo) {
-        return tipoRevistaRepository.findByActivo( activo);
+    public List<TipoRevista> findByActivoTrue() {
+        return tipoRevistaRepository.findByActivoTrue();
     }
 
     public List<TipoRevista> findAll() {
@@ -27,12 +31,25 @@ public class TipoRevistaService {
         return tipoRevistaRepository.findById(id);
     }
 
-    public Optional<TipoRevista> getByNombre(String nombre) {
+    public Optional<TipoRevista> findByNombre(String nombre) {
         return tipoRevistaRepository.findByNombre(nombre);
+    }
+
+    public boolean existsById(Long id) {
+        return tipoRevistaRepository.existsById(id);
     }
 
     public boolean existsByNombre(String nombre) {
         return tipoRevistaRepository.existsByNombre(nombre);
+    }
+
+    public boolean activoByNombre(String nombre) {
+        return tipoRevistaRepository.existsByNombre(nombre)
+                && tipoRevistaRepository.findByNombre(nombre).get().isActivo();
+    }
+
+    public boolean activo(Long id) {
+        return tipoRevistaRepository.existsById(id) && tipoRevistaRepository.findById(id).get().isActivo();
     }
 
     public void save(TipoRevista tipoRevista) {
@@ -43,9 +60,4 @@ public class TipoRevistaService {
         tipoRevistaRepository.deleteById(id);
     }
 
-    public boolean existsById(Long id) {
-        return tipoRevistaRepository.existsById(id);
-    }
-
-    
 }
