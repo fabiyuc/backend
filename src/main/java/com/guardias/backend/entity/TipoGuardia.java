@@ -37,25 +37,24 @@ public class TipoGuardia {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tipoguardia_asistencial", joinColumns = @JoinColumn(name = "id_tipoGuardia"), inverseJoinColumns = @JoinColumn(name = "id_asistencial"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "tiposGuardias" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes",
+            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+            "domicilio",
+            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial", "tiposGuardias" })
     private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
-    
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "tipoGuardia"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+            "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
+            "asistencial", "servicio", "efector", "registroMensual" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
-    
-    /*
-     * @OneToMany(mappedBy = "tipoGuardia")
-     * 
-     * @JsonIgnore // Añade esta anotación para evitar la recursión infinita
-     * private Set<RegistroActividad> registroActividades;
-     */
-    /*
-     * @OneToMany(mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
-     * private Set<Asistencial> asistenciales;
-     */
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
-    // "nombre", "activo" })
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer",
+    // "handler","asistenciales", "descripcion",
+    // "nombre", "activo","registrosActividades" })
 
     @Override
     public boolean equals(Object obj) {

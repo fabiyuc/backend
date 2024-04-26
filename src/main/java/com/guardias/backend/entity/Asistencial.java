@@ -2,7 +2,9 @@ package com.guardias.backend.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,14 +22,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Asistencial extends Person {
 
-    /* @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(15)")
-    private TipoGuardiaEnum tipoGuardia; */
+    /*
+     * @Enumerated(EnumType.STRING)
+     * 
+     * @Column(columnDefinition = "VARCHAR(15)")
+     * private TipoGuardiaEnum tipoGuardia;
+     */
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "asistenciales", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+            "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
+            "asistencial", "servicio", "efector", "registroMensual" })
     private List<TipoGuardia> tiposGuardias = new ArrayList<TipoGuardia>();
-    
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaIngreso", "fechaEgreso",
             "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector", "registroMensual" })
@@ -39,5 +46,5 @@ public class Asistencial extends Person {
     // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
     // "domicilio",
     // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-    // "descripcion" })
+    // "descripcion","esAsistencial","tiposGuardias" })
 }

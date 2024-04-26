@@ -2,6 +2,7 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,5 +34,5 @@ public class RegistroActividadDto {
     private Long idServicio;
     @NotBlank
     private Long idEfector;
-
+    private Long idRegistroMensual;
 }
