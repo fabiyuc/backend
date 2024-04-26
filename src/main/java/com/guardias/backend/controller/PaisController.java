@@ -32,7 +32,7 @@ public class PaisController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Pais>> list() {
-        List<Pais> list = paisService.findByActivoTrue().get();
+        List<Pais> list = paisService.findByActivo();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -62,15 +62,9 @@ public class PaisController {
         if (StringUtils.isBlank(paisDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
-        if (paisService.existsByNombre(paisDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(paisDto.getNacionalidad()))
             return new ResponseEntity(new Mensaje("la nacionalidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-        if (paisService.existsByNacionalidad(paisDto.getNacionalidad()))
-            return new ResponseEntity(new Mensaje("esa nacionalidad ya existe"),
                     HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(paisDto.getCodigo()))
@@ -91,36 +85,7 @@ public class PaisController {
 
     }
 
-    @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody PaisDto paisDto) {
-        if (!paisService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
-
-        if (paisService.existsByNombre(paisDto.getNombre()) &&
-                paisService.findByNombre(paisDto.getNombre()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(paisDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(paisDto.getNacionalidad()))
-            return new ResponseEntity(new Mensaje("la nacionalidad es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (paisService.existsByNacionalidad(paisDto.getNacionalidad()))
-            return new ResponseEntity(new Mensaje("esa nacionalidad ya existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (StringUtils.isBlank(paisDto.getCodigo()))
-            return new ResponseEntity(new Mensaje("el codigo es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        Pais pais = paisService.findById(id).get();
-        // ******* La validacion antes de setear los valores me gusta que sea en la
-        // misma linea pero no muestra mensajes de error
-
-        // ******* Ahora está mostrando los msjs de error por la validacion previa, ver
-        // como queda para limpiar el codigo */
+    private Pais createUpdate(Pais pais, PaisDto paisDto) {
         if (pais.getNombre() != paisDto.getNombre() && paisDto.getNombre() != null && !paisDto.getNombre().isEmpty())
             pais.setNombre(paisDto.getNombre());
 
@@ -167,7 +132,7 @@ public class PaisController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!paisService.existsById(id))
+        if (!paisService.activo(id))
             return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
 
         Pais pais = paisService.findById(id).get();
@@ -183,5 +148,4 @@ public class PaisController {
         paisService.deleteById(id);
         return new ResponseEntity(new Mensaje("pais eliminado FISICAMENTE"), HttpStatus.OK);
     }
-
 }
