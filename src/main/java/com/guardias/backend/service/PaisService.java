@@ -18,7 +18,7 @@ public class PaisService {
     @Autowired
     PaisRepository paisRepository;
 
-    public Optional<List<Pais>> findByActivoTrue() {
+    public List<Pais> findByActivo() {
         return paisRepository.findByActivoTrue();
     }
 
@@ -27,7 +27,7 @@ public class PaisService {
     }
 
     public Optional<Pais> findById(Long id) {
-        return paisRepository.findById((Long) id);
+        return paisRepository.findById(id);
     }
 
     public Optional<Pais> findByNombre(String nombre) {
@@ -43,29 +43,27 @@ public class PaisService {
     }
 
     public void deleteById(Long id) {
-        paisRepository.deleteById((Long) id);
+        paisRepository.deleteById(id);
     }
 
     public boolean existsById(Long id) {
-        return paisRepository.existsById((Long) id);
+        return paisRepository.existsById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (paisRepository.existsById(id) && paisRepository.findById(id).get().isActivo());
     }
 
     public boolean existsByNombre(String nombre) {
         return paisRepository.existsByNombre(nombre);
     }
 
+    public boolean activoByNombre(String nombre) {
+        return (paisRepository.existsByNombre(nombre) && paisRepository.findByNombre(nombre).get().isActivo());
+    }
+
     public boolean existsByNacionalidad(String nacionalidad) {
         return paisRepository.existsByNacionalidad(nacionalidad);
-    }
-
-    public boolean activoByNombre(String nombre) {
-        return (paisRepository.existsByNombre(nombre)
-                && paisRepository.findByNombre(nombre).get().isActivo());
-    }
-
-    public boolean activo(Long id) {
-        return (paisRepository.existsById(id)
-                && paisRepository.findById(id).get().isActivo());
     }
 
 }
