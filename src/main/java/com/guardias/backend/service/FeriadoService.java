@@ -30,6 +30,10 @@ public class FeriadoService {
         return feriadoRepository.findById(id);
     }
 
+    public Optional<Feriado> findByMotivo(String motivo) {
+        return feriadoRepository.findByMotivo(motivo);
+    }
+
     public Optional<Feriado> getByMotivo(String motivo) {
         return feriadoRepository.findByMotivo(motivo);
     }

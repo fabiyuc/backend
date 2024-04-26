@@ -80,8 +80,8 @@ public class ProfesionController {
 
     }
 
-    public ResponseEntity<?> validations(ProfesionDto profesionDto) {
-        if (profesionDto.getNombre() == null)
+    private ResponseEntity<?> validations(ProfesionDto profesionDto, Long id) {
+        if (StringUtils.isBlank(profesionDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
@@ -89,7 +89,12 @@ public class ProfesionController {
             return new ResponseEntity<>(new Mensaje("Indicar si es asistencial o no"), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(new Mensaje("valido"), HttpStatus.OK);
+        if (profesionService.existsByNombre(profesionDto.getNombre())
+                && (profesionService.findByNombre(profesionDto.getNombre()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public Profesion createUpdate(Profesion profesion, ProfesionDto profesionDto) {
@@ -145,10 +150,8 @@ public class ProfesionController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ProfesionDto profesionDto) {
-        if (profesionService.activoByNombre(profesionDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(profesionDto);
+        ResponseEntity<?> respuestaValidaciones = validations(profesionDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Profesion profesion = createUpdate(new Profesion(), profesionDto);
@@ -164,7 +167,7 @@ public class ProfesionController {
         if (!profesionService.activo(id))
             return new ResponseEntity<>(new Mensaje("La profesion no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(profesionDto);
+        ResponseEntity<?> respuestaValidaciones = validations(profesionDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Profesion profesion = createUpdate(profesionService.findById(id).get(), profesionDto);

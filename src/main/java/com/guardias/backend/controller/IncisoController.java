@@ -91,7 +91,7 @@ public class IncisoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody IncisoDto incisoDto) {
-        ResponseEntity<?> respuestaValidaciones = leyController.validationsCreate(incisoDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             // Crear el inciso principal y guardarlo en la base de datos
@@ -111,7 +111,7 @@ public class IncisoController {
         if (!incisoService.activo(id))
             return new ResponseEntity(new Mensaje("El inciso no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto);
+        ResponseEntity<?> respuestaValidaciones = leyController.validations(incisoDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Inciso inciso = createUpdate(incisoService.findById(id).get(), incisoDto);

@@ -67,13 +67,17 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(FeriadoDto feriadoDto) {
+    private ResponseEntity<?> validations(FeriadoDto feriadoDto, Long id) {
         if (StringUtils.isBlank(feriadoDto.getMotivo()))
             return new ResponseEntity(new Mensaje("El motivo es obligatorio"), HttpStatus.BAD_REQUEST);
         if (feriadoDto.getTipoFeriado() == null)
             return new ResponseEntity(new Mensaje("El tipo de feriado es obligatorio"), HttpStatus.BAD_REQUEST);
         if (feriadoDto.getFecha() == null)
             return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (feriadoService.existsByMotivo(feriadoDto.getMotivo())
+                && (feriadoService.findByMotivo(feriadoDto.getMotivo()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("Feriado creado correctamente"), HttpStatus.OK);
     }
@@ -96,10 +100,7 @@ public class FeriadoController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FeriadoDto feriadoDto) {
 
-        if (feriadoService.existsByMotivo(feriadoDto.getMotivo()))
-            return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
-
-        ResponseEntity<?> respuestaValidaciones = validations(feriadoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(feriadoDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Feriado feriado = createUpdate(new Feriado(), feriadoDto);
@@ -113,7 +114,7 @@ public class FeriadoController {
         if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("El feriado no existe"), HttpStatus.BAD_REQUEST);
 
-        ResponseEntity<?> respuestaValidaciones = validations(feriadoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(feriadoDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Feriado feriado = createUpdate(feriadoService.findById(id).get(), feriadoDto);

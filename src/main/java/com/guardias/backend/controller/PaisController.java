@@ -58,8 +58,7 @@ public class PaisController {
         return new ResponseEntity<Pais>(pais, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody PaisDto paisDto) {
+    private ResponseEntity<?> validations(PaisDto paisDto, Long id) {
         if (StringUtils.isBlank(paisDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -78,15 +77,18 @@ public class PaisController {
             return new ResponseEntity(new Mensaje("el codigo es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        Pais pais = new Pais();
-        pais.setNombre(paisDto.getNombre());
-        pais.setNacionalidad(paisDto.getNacionalidad());
-        pais.setCodigo(paisDto.getCodigo());
+        if (paisService.activoByNombre(paisDto.getNombre())
+                && (paisService.findByNombre(paisDto.getNombre()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
+                    HttpStatus.BAD_REQUEST);
 
-        // ******* no necesito guardar ni modificar la listas */
-        // pais.setProvincias(paisDto.getProvincias());
-        paisService.save(pais);
-        return new ResponseEntity(new Mensaje("pais creado"), HttpStatus.OK);
+        if (paisService.existsByNacionalidad(paisDto.getNacionalidad())
+                && (paisService.findByNacionalidad(paisDto.getNacionalidad()).get().getId() != id))
+            return new ResponseEntity(new Mensaje("esa nacionalidad ya existe"),
+                    HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+
     }
 
     @PutMapping(("/update/{id}"))
@@ -129,12 +131,38 @@ public class PaisController {
                 && !paisDto.getNacionalidad().isEmpty())
             pais.setNacionalidad(paisDto.getNacionalidad());
 
-        // ******* no necesito guardar ni modificar la listas */
-        // if (!pais.getProvincias().equals(paisDto.getProvincias()))
-        // pais.setProvincias(paisDto.getProvincias());
+        pais.setActivo(true);
+        return pais;
+    }
 
-        paisService.save(pais);
-        return new ResponseEntity(new Mensaje("pais actualizado"), HttpStatus.OK);
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody PaisDto paisDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(paisDto, 0L);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Pais pais = createUpdate(new Pais(), paisDto);
+            paisService.save(pais);
+            return new ResponseEntity(new Mensaje("pais creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
+    }
+
+    @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody PaisDto paisDto) {
+        if (!paisService.activo(id))
+            return new ResponseEntity(new Mensaje("no existe el pais"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(paisDto, id);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Pais pais = createUpdate(paisService.findById(id).get(), paisDto);
+            paisService.save(pais);
+            return new ResponseEntity(new Mensaje("pais creado"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")

@@ -23,6 +23,7 @@ import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.ServicioService;
+import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
 @RequestMapping("/registroActividad")
@@ -37,6 +38,8 @@ public class RegistroActividadController {
     EfectorService efectorService;
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -53,7 +56,7 @@ public class RegistroActividadController {
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<RegistroActividad>> getById(@PathVariable("id") Long id) {
         if (!registroActividadService.activo(id))
-            return new ResponseEntity(new Mensaje("region no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El registro de actividad no existe"), HttpStatus.NOT_FOUND);
         RegistroActividad registroActividad = registroActividadService.findById(id).get();
         return new ResponseEntity(registroActividad, HttpStatus.OK);
     }
@@ -63,11 +66,11 @@ public class RegistroActividadController {
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (registroActividadDto.getFechaEgreso() == null)
+        /* if (registroActividadDto.getFechaEgreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (registroActividadDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"), HttpStatus.BAD_REQUEST); */
 
         if (registroActividadDto.getHoraEgreso() == null)
             return new ResponseEntity(new Mensaje("la hora de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -82,6 +85,13 @@ public class RegistroActividadController {
                         !Objects.equals(registroActividad.getServicio().getId(),
                                 registroActividadDto.getIdServicio()))) {
             registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
+        }
+
+        if (registroActividad.getTipoGuardia() == null ||
+                (registroActividadDto.getIdTipoGuardia() != null &&
+                        !Objects.equals(registroActividad.getTipoGuardia().getId(),
+                                registroActividadDto.getIdTipoGuardia()))) {
+            registroActividad.setTipoGuardia(tipoGuardiaService.findById(registroActividadDto.getIdTipoGuardia()).get());
         }
 
         if (registroActividad.getFechaIngreso() != registroActividadDto.getFechaIngreso() &&
@@ -114,10 +124,6 @@ public class RegistroActividadController {
                                 registroActividadDto.getIdEfector()))) {
             registroActividad.setEfector(efectorService.findById(registroActividadDto.getIdEfector()));
         }
-
-        if (registroActividad.getTipoGuardia() != registroActividadDto.getTipoGuardia() &&
-                registroActividadDto.getTipoGuardia() != null)
-            registroActividad.setTipoGuardia(registroActividadDto.getTipoGuardia());
 
         registroActividad.setActivo(true);
         return registroActividad;

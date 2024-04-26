@@ -34,6 +34,10 @@ public class PaisService {
         return paisRepository.findByNombre(nombre);
     }
 
+    public Optional<Pais> findByNacionalidad(String nacionalidad) {
+        return paisRepository.findByNacionalidad(nacionalidad);
+    }
+
     public void save(Pais pais) {
         paisRepository.save(pais);
     }

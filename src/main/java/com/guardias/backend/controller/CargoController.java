@@ -62,7 +62,7 @@ public class CargoController {
         return new ResponseEntity(cargo, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(CargoDto cargoDto) {
+    private ResponseEntity<?> validations(CargoDto cargoDto, Long id) {
         if (cargoDto.getNombre() == null)
             return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
 
@@ -89,6 +89,10 @@ public class CargoController {
 
         if (cargoDto.getIdLegajos() == null)
             return new ResponseEntity(new Mensaje("Legajos obligatorios"), HttpStatus.BAD_REQUEST);
+
+        if (cargoService.activoByNombre(cargoDto.getNombre())
+                && (cargoService.findByNombre(cargoDto.getNombre()).get().getId() != id))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
 
@@ -147,10 +151,7 @@ public class CargoController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CargoDto cargoDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
-
-        if (cargoService.activoByNombre(cargoDto.getNombre()))
-            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(cargoDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Cargo cargo = createUpdate(new Cargo(), cargoDto);
@@ -167,7 +168,7 @@ public class CargoController {
         if (!cargoService.existsById(id))
             return new ResponseEntity(new Mensaje("El cargo no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(cargoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(cargoDto, id);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Cargo cargo = createUpdate(cargoService.findById(id).get(), cargoDto);
             cargoService.save(cargo);
@@ -180,7 +181,7 @@ public class CargoController {
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!cargoService.activo(id))
-            return new ResponseEntity(new Mensaje("Eel cargo no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El cargo no existe"), HttpStatus.NOT_FOUND);
 
         Cargo cargo = cargoService.findById(id).get();
         cargo.setActivo(false);

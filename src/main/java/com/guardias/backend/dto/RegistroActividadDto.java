@@ -3,8 +3,6 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import com.guardias.backend.enums.TipoGuardiaEnum;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,13 +14,9 @@ import lombok.NoArgsConstructor;
 public class RegistroActividadDto {
 
     @NotBlank
-    private Long idServicio;
-
-    @NotBlank
     private LocalDate fechaIngreso;
 
     private LocalDate fechaEgreso;
-    private boolean activo;
 
     @NotBlank
     private LocalTime horaIngreso;
@@ -30,9 +24,15 @@ public class RegistroActividadDto {
     private LocalTime horaEgreso;
 
     @NotBlank
-    private TipoGuardiaEnum tipoGuardia;
+    private Long idTipoGuardia;
 
+    private boolean activo;
+
+    @NotBlank
     private Long idAsistencial;
+    @NotBlank
+    private Long idServicio;
+    @NotBlank
     private Long idEfector;
-
+    private Long idRegistroMensual;
 }

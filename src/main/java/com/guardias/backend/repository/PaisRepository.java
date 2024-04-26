@@ -11,11 +11,9 @@ import com.guardias.backend.entity.Pais;
 @Repository
 public interface PaisRepository extends JpaRepository<Pais, Long> {
 
-    Optional<List<Pais>> findByActivoTrue();
-
     Optional<Pais> findByNombre(String nombre);
 
-    Optional<Pais> findById(Long id);
+    public Optional<Pais> findByNacionalidad(String nacionalidad);
 
     boolean existsByNombre(String nombre);
 

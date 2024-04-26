@@ -100,41 +100,4 @@ public class AutoridadService {
     public void deleteById(Long id) {
         autoridadRepository.deleteById((Long) id);
     }
-
-    /*
-     * public void agregarEfector(Long efectorId, Long idAutoridad) {
-     * Efector efector = efectorService.findEfector(efectorId);
-     * if (efector == null)
-     * throw new EntityNotFoundException("No se encontró el efector con el ID: " +
-     * efectorId);
-     * 
-     * Autoridad autoridad = findById(idAutoridad).orElseThrow(
-     * () -> new EntityNotFoundException("No se encontró la autoridad con el ID: " +
-     * idAutoridad));
-     * 
-     * autoridad.setEfector(efector);
-     * efector.getAutoridades().add(autoridad);
-     * 
-     * save(autoridad);
-     * efectorService.saveEfector(efector);
-     * }
-     * 
-     * public void agregarPersona(Long idPersona, Long idAutoridad) {
-     * Person persona = personaService.findPerson(idPersona);
-     * if (persona == null)
-     * throw new EntityNotFoundException("No se encontró la persona con el ID: " +
-     * idPersona);
-     * 
-     * Autoridad autoridad = findById(idAutoridad).orElseThrow(
-     * () -> new EntityNotFoundException("No se encontró la autoridad con el ID: " +
-     * idAutoridad));
-     * 
-     * autoridad.setPersona(persona);
-     * save(autoridad);
-     * persona.getAutoridades().add(autoridad);
-     * 
-     * personaService.savePersona(persona);
-     * }
-     */
-
 }

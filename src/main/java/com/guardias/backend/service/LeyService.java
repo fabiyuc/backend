@@ -18,16 +18,20 @@ public class LeyService {
     IncisoRepository incisoRepository;
 
     public boolean existsByNumero(String numero) {
-        boolean exists = articuloRepository.existsByNumero(numero);
+        boolean exists = (articuloRepository.existsByNumero(numero)
+                && articuloRepository.findByNumero(numero).get().isActivo());
         if (!exists)
-            exists = incisoRepository.existsByNumero(numero);
+            exists = (incisoRepository.existsByNumero(numero)
+                    && incisoRepository.findByNumero(numero).get().isActivo());
         return exists;
     }
 
     public boolean existsByDenominacion(String denominacion) {
-        boolean exists = articuloRepository.existsByDenominacion(denominacion);
+        boolean exists = (articuloRepository.existsByDenominacion(denominacion)
+                && articuloRepository.findByDenominacion(denominacion).get().isActivo());
         if (!exists)
-            exists = incisoRepository.existsByDenominacion(denominacion);
+            exists = (incisoRepository.existsByDenominacion(denominacion)
+                    && incisoRepository.findByDenominacion(denominacion).get().isActivo());
 
         return exists;
     }
@@ -37,6 +41,33 @@ public class LeyService {
         if (ley == null) {
             ley = incisoRepository.findById(id).orElse(null);
         }
-        return ley;
+
+        if (ley.isActivo())
+            return ley;
+        else
+            return null;
     }
+
+    public Ley findByDenominacion(String denominacion) {
+        Ley ley = articuloRepository.findByDenominacion(denominacion).orElse(null);
+        if (ley == null) {
+            ley = incisoRepository.findByDenominacion(denominacion).orElse(null);
+        }
+        if (ley.isActivo())
+            return ley;
+        else
+            return null;
+    }
+
+    public Ley findByNumero(String numero) {
+        Ley ley = articuloRepository.findByNumero(numero).orElse(null);
+        if (ley == null) {
+            ley = incisoRepository.findByNumero(numero).orElse(null);
+        }
+        if (ley.isActivo())
+            return ley;
+        else
+            return null;
+    }
+
 }

@@ -73,12 +73,6 @@ public class RegionController {
 
     private Region createUpdate(Region region, RegionDto regionDto) {
 
-        /*
-         * private String nombre;
-         * private List<Long> id ;
-         * private boolean activo;
-         */
-
         if (region.getNombre() != regionDto.getNombre() && regionDto.getNombre() != null
                 && !regionDto.getNombre().isEmpty())
             region.setNombre(regionDto.getNombre());

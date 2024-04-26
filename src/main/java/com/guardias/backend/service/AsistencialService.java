@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.TipoGuardiaRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -17,6 +19,8 @@ public class AsistencialService {
 
     @Autowired
     AsistencialRepository asistencialRepository;
+    @Autowired
+    TipoGuardiaRepository tipoGuardiaRepository;
 
     public Optional<List<Asistencial>> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
@@ -28,6 +32,10 @@ public class AsistencialService {
 
     public Optional<Asistencial> findById(Long id) {
         return asistencialRepository.findById(id);
+    }
+
+    public Optional<Asistencial> findByCuil(String cuil) {
+        return asistencialRepository.findByCuil(cuil);
     }
 
     public boolean existsById(Long id) {
@@ -60,6 +68,16 @@ public class AsistencialService {
 
     public boolean activoDni(int dni) {
         return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
+    }
+
+    public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
+
+        Asistencial asistencial = asistencialRepository.findById(idAsistencial).get();
+        TipoGuardia tipoGuardia = tipoGuardiaRepository.findById(idTipoGuardia).get();
+
+        tipoGuardia.getAsistenciales().add(asistencial);
+        asistencial.getTiposGuardias().add(tipoGuardia);
+        
     }
 
 }

@@ -23,8 +23,12 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.RegistroActividadService;
+import com.guardias.backend.service.TipoGuardiaService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -35,6 +39,8 @@ public class AsistencialController {
     AsistencialService asistencialService;
     @Autowired
     RegistroActividadService registroActividadService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     @Autowired
     @Lazy
@@ -83,8 +89,8 @@ public class AsistencialController {
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
         Person person = personController.createUpdate(asistencial, asistencialDto);
         asistencial = (Asistencial) person;
-        if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
-            asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
+        /* if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
+            asistencial.setTipoGuardia(asistencialDto.getTipoGuardia()); */
 
         if (asistencialDto.getIdRegistrosActividades() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -104,6 +110,26 @@ public class AsistencialController {
             }
         }
 
+        if (asistencialDto.getIdTiposGuardias() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (asistencial.getTiposGuardias() != null) {
+                for (TipoGuardia tipoGuardia : asistencial.getTiposGuardias()) {
+                    for (Long id : asistencialDto.getIdRegistrosActividades()) {
+                        if (!tipoGuardia.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? asistencialDto.getIdTiposGuardias() : idList;
+
+            for (Long id : idsToAdd) {
+                asistencial.getTiposGuardias().add(tipoGuardiaService.findById(id).get());
+                tipoGuardiaService.findById(id).get().getAsistenciales().add(asistencial);
+            }
+        }
+
         asistencial.setActivo(true);
         return asistencial;
     }
@@ -111,7 +137,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validationsCreate(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
@@ -127,7 +153,7 @@ public class AsistencialController {
         if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("el profesional no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto);
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(asistencialService.findById(id).get(), asistencialDto);
@@ -154,5 +180,22 @@ public class AsistencialController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         asistencialService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Asistencial eliminado FISICAMENTE"), HttpStatus.OK);
+    }
+
+    @PostMapping("/{idAsistencial}/addTipoGuardia/{idTipoGuardia}")
+    public ResponseEntity<?> agregarTipoGuardia(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
+        
+        try {
+            asistencialService.agregarTipoGuardia(idAsistencial, idTipoGuardia);
+            return new ResponseEntity<>(new Mensaje("Tipo DEGuardia agregado al asistencial correctamente"),
+                    HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el asistencial con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        }catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al agregar el tipo de Guardia al asistencial"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
