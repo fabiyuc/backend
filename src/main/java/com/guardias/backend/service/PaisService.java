@@ -2,10 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.entity.Pais;
 import com.guardias.backend.repository.PaisRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -15,7 +18,7 @@ public class PaisService {
     @Autowired
     PaisRepository paisRepository;
 
-    public List<Pais> findByActivo() {
+    public Optional<List<Pais>> findByActivoTrue() {
         return paisRepository.findByActivoTrue();
     }
 
@@ -24,7 +27,7 @@ public class PaisService {
     }
 
     public Optional<Pais> findById(Long id) {
-        return paisRepository.findById(id);
+        return paisRepository.findById((Long) id);
     }
 
     public Optional<Pais> findByNombre(String nombre) {
@@ -36,11 +39,11 @@ public class PaisService {
     }
 
     public void deleteById(Long id) {
-        paisRepository.deleteById(id);
+        paisRepository.deleteById((Long) id);
     }
 
     public boolean existsById(Long id) {
-        return paisRepository.existsById(id);
+        return paisRepository.existsById((Long) id);
     }
 
     public boolean existsByNombre(String nombre) {
@@ -49,6 +52,16 @@ public class PaisService {
 
     public boolean existsByNacionalidad(String nacionalidad) {
         return paisRepository.existsByNacionalidad(nacionalidad);
+    }
+
+    public boolean activoByNombre(String nombre) {
+        return (paisRepository.existsByNombre(nombre)
+                && paisRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    public boolean activo(Long id) {
+        return (paisRepository.existsById(id)
+                && paisRepository.findById(id).get().isActivo());
     }
 
 }

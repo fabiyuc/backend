@@ -36,7 +36,7 @@ public class NotificacionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Notificacion>> list() {
-        List<Notificacion> list = notificacionService.findByActivoTrue();
+        List<Notificacion> list = notificacionService.findByActivoTrue().get();
         return new ResponseEntity<List<Notificacion>>(list, HttpStatus.OK);
     }
 

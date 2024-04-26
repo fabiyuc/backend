@@ -18,7 +18,7 @@ public class CapsService {
     @Autowired
     CapsRepository capsRepository;
 
-    public List<Caps> findByActivoTrue() {
+    public Optional<List<Caps>> findByActivoTrue() {
         return capsRepository.findByActivoTrue();
     }
 
@@ -27,7 +27,7 @@ public class CapsService {
     }
 
     public Optional<Caps> findById(Long id) {
-        return capsRepository.findById(id);
+        return capsRepository.findById((Long) id);
     }
 
     public Optional<Caps> findByNombre(String nombre) {
@@ -39,11 +39,11 @@ public class CapsService {
     }
 
     public void deleteById(Long id) {
-        capsRepository.deleteById(id);
+        capsRepository.deleteById((Long) id);
     }
 
     public boolean existsById(Long id) {
-        return capsRepository.existsById(id);
+        return capsRepository.existsById((Long) id);
     }
 
     public boolean existsByNombre(String nombre) {
@@ -51,7 +51,8 @@ public class CapsService {
     }
 
     public boolean activoByNombre(String nombre) {
-        return (capsRepository.existsByNombre(nombre) && capsRepository.findByNombre(nombre).get().isActivo());
+        return (capsRepository.existsByNombre(nombre)
+                && capsRepository.findByNombre(nombre).get().isActivo());
     }
 
     public boolean activo(Long id) {

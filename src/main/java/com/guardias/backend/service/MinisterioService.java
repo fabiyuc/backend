@@ -48,7 +48,8 @@ public class MinisterioService {
     }
 
     public boolean activo(Long id) {
-        return (ministerioRepository.existsById(id) && ministerioRepository.findById(id).get().isActivo());
+        return (ministerioRepository.existsById(id)
+                && ministerioRepository.findById(id).get().isActivo());
     }
 
     public void save(Ministerio ministerio) {

@@ -14,6 +14,10 @@ import com.guardias.backend.entity.NovedadPersonal;
 @Repository
 public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal, Long> {
 
+    Optional<List<NovedadPersonal>> findByActivoTrue();
+
+    Optional<NovedadPersonal> findById(Long id);
+
     @Query("SELECT np FROM novedadesPersonales np WHERE np.persona.id = :personaId")
     Optional<List<NovedadPersonal>> findByPersona(@Param("personaId") Long personaId);
 
@@ -24,7 +28,7 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
     boolean existsByPersonaId(Long personaId);
 
-    // Boolean existsByPersona(Long idPersona);
+    boolean existsById(Long id);
 
-    List<NovedadPersonal> findByActivoTrue();
+    List<NovedadPersonal> findByActivo(boolean activo);
 }

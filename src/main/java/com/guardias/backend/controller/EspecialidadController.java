@@ -35,7 +35,7 @@ public class EspecialidadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Especialidad>> list() {
-        List<Especialidad> list = especialidadService.findByActivo();
+        List<Especialidad> list = especialidadService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

@@ -18,7 +18,7 @@ public class NoAsistencialService {
     @Autowired
     NoAsistencialRepository noAsistencialRepository;
 
-    public List<NoAsistencial> findByActivoTrue() {
+    public Optional<List<NoAsistencial>> findByActivoTrue() {
         return noAsistencialRepository.findByActivoTrue();
     }
 
@@ -27,7 +27,7 @@ public class NoAsistencialService {
     }
 
     public Optional<NoAsistencial> findById(Long id) {
-        return noAsistencialRepository.findById(id);
+        return noAsistencialRepository.findById((Long) id);
     }
 
     public boolean existsById(Long id) {
@@ -55,7 +55,8 @@ public class NoAsistencialService {
     }
 
     public boolean activo(Long id) {
-        return (noAsistencialRepository.existsById(id) && noAsistencialRepository.findById(id).get().isActivo());
+        return (noAsistencialRepository.existsById(id)
+                && noAsistencialRepository.findById(id).get().isActivo());
     }
 
     public boolean activoDni(int dni) {

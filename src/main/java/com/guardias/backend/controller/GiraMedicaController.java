@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.guardias.backend.dto.GiraMedicaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.GiraMedica;
 import com.guardias.backend.service.GiraMedicaService;
+
 import io.micrometer.common.util.StringUtils;
 
 @Controller
@@ -30,7 +33,7 @@ public class GiraMedicaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<GiraMedica>> list() {
-        List<GiraMedica> list = giraMedicaService.findByActivo();
+        List<GiraMedica> list = giraMedicaService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -41,8 +44,8 @@ public class GiraMedicaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<GiraMedica>> getById(@PathVariable("id") Long id) {
-        if (!giraMedicaService.existsById(id))
+    public ResponseEntity<GiraMedica> getById(@PathVariable("id") Long id) {
+        if (!giraMedicaService.activo(id))
             return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
         GiraMedica giraMedica = giraMedicaService.findById(id).get();
         return new ResponseEntity(giraMedica, HttpStatus.OK);

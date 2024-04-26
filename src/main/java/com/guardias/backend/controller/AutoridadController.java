@@ -106,7 +106,8 @@ public class AutoridadController {
 
     public Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
 
-        if (autoridadDto.getNombre() != null && !autoridadDto.getNombre().isEmpty()
+        if (autoridadDto.getNombre() != null && 
+        !autoridadDto.getNombre().isEmpty()
                 && !autoridadDto.getNombre().equals(autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
 

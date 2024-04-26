@@ -16,7 +16,7 @@ public class ProfesionDto {
     private String nombre;
 
     @NotBlank
-    private Boolean asistencial;
+    private boolean asistencial;
     private boolean activo;
 
     @NotBlank

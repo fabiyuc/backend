@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PaisDto;
 import com.guardias.backend.entity.Pais;
 import com.guardias.backend.service.PaisService;
+
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -29,7 +32,7 @@ public class PaisController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Pais>> list() {
-        List<Pais> list = paisService.findByActivo();
+        List<Pais> list = paisService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -41,7 +44,7 @@ public class PaisController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<Pais>> getById(@PathVariable("id") Long id) {
-        if (!paisService.existsById(id))
+        if (!paisService.activo(id))
             return new ResponseEntity(new Mensaje("pais no existe"), HttpStatus.NOT_FOUND);
         Pais pais = paisService.findById(id).get();
         return new ResponseEntity(pais, HttpStatus.OK);
@@ -49,7 +52,7 @@ public class PaisController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Pais> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!paisService.existsByNombre(nombre))
+        if (!paisService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe el nombre del pais"), HttpStatus.NOT_FOUND);
         Pais pais = paisService.findByNombre(nombre).get();
         return new ResponseEntity<Pais>(pais, HttpStatus.OK);

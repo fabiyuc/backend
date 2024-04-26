@@ -34,7 +34,7 @@ public class NoAsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<NoAsistencial>> list() {
-        List<NoAsistencial> list = noAsistencialService.findByActivoTrue();
+        List<NoAsistencial> list = noAsistencialService.findByActivoTrue().get();
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
 

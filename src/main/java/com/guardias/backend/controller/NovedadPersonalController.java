@@ -41,22 +41,22 @@ public class NovedadPersonalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
-        List<NovedadPersonal> list = novedadPersonalService.findByActivo();
-        return new ResponseEntity(list, HttpStatus.OK);
+        List<NovedadPersonal> list = novedadPersonalService.findByActivoTrue().get();
+        return new ResponseEntity<List<NovedadPersonal>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<NovedadPersonal>> listAll() {
         List<NovedadPersonal> list = novedadPersonalService.findAll();
-        return new ResponseEntity(list, HttpStatus.OK);
+        return new ResponseEntity<List<NovedadPersonal>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<NovedadPersonal> getById(@PathVariable("id") Long id) {
         if (!novedadPersonalService.activo(id))
             return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
-        NovedadPersonal novedadPersonal = novedadPersonalService.getById(id).get();
-        return new ResponseEntity(novedadPersonal, HttpStatus.OK);
+        NovedadPersonal novedadPersonal = novedadPersonalService.findById(id).get();
+        return new ResponseEntity<NovedadPersonal>(novedadPersonal, HttpStatus.OK);
     }
 
     @GetMapping("/detailpersona/{id}")
@@ -82,12 +82,20 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        if (novedadPersonalDto.getFechaFinal() == null)
-            return new ResponseEntity(new Mensaje("la fecha de final es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
         if (novedadPersonalDto.getIdPersona() == null)
             return new ResponseEntity(new Mensaje("la persona es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getIdArticulo() == null)
+            return new ResponseEntity(new Mensaje("el articulo es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getIdInciso() == null)
+            return new ResponseEntity(new Mensaje("el inciso es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (novedadPersonalDto.getIdSuplente() == null)
+            return new ResponseEntity(new Mensaje("el suplente es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -160,16 +168,16 @@ public class NovedadPersonalController {
         }
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody NovedadPersonalDto novedadPersonalDto) {
-        if (!novedadPersonalService.activo(id))
+        if (!novedadPersonalService.existsById(id))
             return new ResponseEntity(new Mensaje("Novedad no encontrada"),
                     HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(novedadPersonalDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            NovedadPersonal novedadPersonal = createUpdate(novedadPersonalService.getById(id).get(),
+            NovedadPersonal novedadPersonal = createUpdate(novedadPersonalService.findById(id).get(),
                     novedadPersonalDto);
             novedadPersonalService.save(novedadPersonal);
             return new ResponseEntity(new Mensaje("Novedad modificada correctamente"), HttpStatus.OK);

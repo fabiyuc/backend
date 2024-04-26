@@ -38,7 +38,8 @@ public class LegajoService {
     }
 
     public boolean activo(Long id) {
-        return (legajoRepository.existsById(id) && legajoRepository.findById(id).get().isActivo());
+        return (legajoRepository.existsById(id)
+                && legajoRepository.findById(id).get().isActivo());
     }
 
     public void save(Legajo legajo) {

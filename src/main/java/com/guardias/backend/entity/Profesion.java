@@ -28,7 +28,7 @@ public class Profesion {
     private Long id;
     @Column(columnDefinition = "VARCHAR(25)")
     private String nombre;
-    private Boolean asistencial;
+    private boolean asistencial;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 

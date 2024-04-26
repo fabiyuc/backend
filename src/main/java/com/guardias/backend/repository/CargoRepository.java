@@ -14,7 +14,7 @@ import com.guardias.backend.enums.AgrupacionEnum;
 @Repository
 public interface CargoRepository extends JpaRepository<Cargo, Long> {
 
-    List<Cargo> findByActivoTrue();
+    Optional<List<Cargo>> findByActivoTrue();
 
     Optional<Cargo> findByNombre(String nombre);
 

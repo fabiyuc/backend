@@ -1,7 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
+import com.guardias.backend.entity.Especialidad;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Profesion;
+import com.guardias.backend.service.EspecialidadService;
+import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.ProfesionService;
 
 @RestController
@@ -27,9 +33,15 @@ public class ProfesionController {
     @Autowired
     ProfesionService profesionService;
 
+    @Autowired
+    LegajoService legajoService;
+
+    @Autowired
+    EspecialidadService especialidadService;
+
     @GetMapping("/list")
     public ResponseEntity<List<Profesion>> list() {
-        List<Profesion> list = profesionService.findByActivo();
+        List<Profesion> list = profesionService.findByActivoTrue().get();
         return new ResponseEntity<List<Profesion>>(list, HttpStatus.OK);
     }
 
@@ -53,7 +65,7 @@ public class ProfesionController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Profesion> getById(@PathVariable("id") Long id) {
-        if (!profesionService.existsById(id))
+        if (!profesionService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la profesion"), HttpStatus.NOT_FOUND);
         Profesion profesion = profesionService.findById(id).get();
         return new ResponseEntity<Profesion>(profesion, HttpStatus.OK);
@@ -61,67 +73,111 @@ public class ProfesionController {
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Profesion> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!profesionService.existsByNombre(nombre))
+        if (!profesionService.activoByNombre(nombre))
             return new ResponseEntity(new Mensaje("no existe profesion con ese nombre"), HttpStatus.NOT_FOUND);
         Profesion profesion = profesionService.findByNombre(nombre).get();
         return new ResponseEntity<Profesion>(profesion, HttpStatus.OK);
 
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody ProfesionDto profesionDto) {
-        if (StringUtils.isBlank(profesionDto.getNombre()))
+    public ResponseEntity<?> validations(ProfesionDto profesionDto) {
+        if (profesionDto.getNombre() == null)
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
-        if (profesionService.existsByNombre(profesionDto.getNombre()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"),
-                    HttpStatus.BAD_REQUEST);
 
-        if (profesionDto.getAsistencial() == null)
-            return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
-                    HttpStatus.BAD_REQUEST);
+        if (!profesionDto.isAsistencial()) {
+            return new ResponseEntity<>(new Mensaje("Indicar si es asistencial o no"), HttpStatus.BAD_REQUEST);
+        }
 
-        Profesion profesion = new Profesion();
-        profesion.setNombre(profesionDto.getNombre());
-        profesion.setAsistencial(profesionDto.getAsistencial());
+        return new ResponseEntity<>(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    public Profesion createUpdate(Profesion profesion, ProfesionDto profesionDto) {
+
+        if (profesionDto.getNombre() != null &&
+                !profesionDto.getNombre().isEmpty() &&
+                !profesionDto.getNombre().equals(profesion.getNombre()))
+            profesion.setNombre(profesionDto.getNombre());
+
+        profesion.setAsistencial(profesionDto.isAsistencial());
+
+        if (profesionDto.getIdLegajos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (profesion.getLegajos() != null) {
+                for (Legajo legajo : profesion.getLegajos()) {
+                    for (Long id : profesionDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? profesionDto.getIdLegajos() : idList;
+            for (Long id : idsToAdd) {
+                profesion.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().setProfesion(profesion);
+            }
+        }
+
+        if (profesionDto.getIdEspecialidades() != null) {
+            List<Long> idList = new ArrayList<>();
+
+            // Si hay especialidades asignadas a la profesión actualmente, obtener sus IDs
+            if (profesion.getEspecialidades() != null) {
+                for (Especialidad especialidad : profesion.getEspecialidades()) {
+                    idList.add(especialidad.getId());
+                }
+            }
+
+            // Iterar sobre los IDs proporcionados en el DTO
+            for (Long id : profesionDto.getIdEspecialidades()) {
+                // Si el ID no está presente en la lista actual, agregarlo
+                if (!idList.contains(id)) {
+                    profesion.getEspecialidades().add(especialidadService.findById(id).get());
+                }
+            }
+        }
+
+        // Guardar la profesión en la base de datos
         profesion.setActivo(true);
-        /*
-         * profesion.setLegajos(profesionDto.getLegajos());
-         * profesion.setEspecialidades(profesionDto.getEspecialidades());
-         */
+        return profesion;
+    }
 
-        profesionService.save(profesion);
-        return new ResponseEntity(new Mensaje("Profesion creada"), HttpStatus.OK);
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody ProfesionDto profesionDto) {
+        if (profesionService.activoByNombre(profesionDto.getNombre()))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(profesionDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Profesion profesion = createUpdate(new Profesion(), profesionDto);
+            profesionService.save(profesion);
+            return new ResponseEntity<Mensaje>(new Mensaje("Profesion creada correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ProfesionDto profesionDto) {
-        // Busca por ID
-        if (!profesionService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
+        if (!profesionService.activo(id))
+            return new ResponseEntity<>(new Mensaje("La profesion no existe"), HttpStatus.NOT_FOUND);
 
-        // Verifica que el nombre no exista para el mismo ID
-        if (profesionService.existsByNombre(profesionDto.getNombre()) &&
-                profesionService.findByNombre(profesionDto.getNombre()).get().getId() != id)
-            return new ResponseEntity(new Mensaje("esa profesion ya existe"), HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(profesionDto);
 
-        if (StringUtils.isBlank(profesionDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre de la profesion es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (profesionDto.getAsistencial() == null)
-            return new ResponseEntity(new Mensaje("indicar si es asistencial o no"),
-                    HttpStatus.BAD_REQUEST);
-
-        Profesion profesion = profesionService.findById(id).get();
-        profesion.setNombre(profesionDto.getNombre());
-        profesion.setAsistencial(profesionDto.getAsistencial());
-        profesionService.save(profesion);
-        return new ResponseEntity(new Mensaje("Profesion actualizada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Profesion profesion = createUpdate(profesionService.findById(id).get(), profesionDto);
+            profesionService.save(profesion);
+            return new ResponseEntity<Mensaje>(new Mensaje("Profesion modificada correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!profesionService.existsById(id))
+        if (!profesionService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la profesion"), HttpStatus.NOT_FOUND);
         Profesion profesion = profesionService.findById(id).get();
         profesion.setActivo(false);

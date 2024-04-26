@@ -35,7 +35,8 @@ public class LogService {
     }
 
     public boolean activo(Long id) {
-        return (logRepository.existsById(id) && logRepository.findById(id).get().isActivo());
+        return (logRepository.existsById(id)
+                && logRepository.findById(id).get().isActivo());
     }
 
     public void save(Log log) {

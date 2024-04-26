@@ -38,7 +38,7 @@ public class LogController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Log> getById(@PathVariable("id") Long id) {
-        if (!logService.existsById(id))
+        if (!logService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el log"), HttpStatus.NOT_FOUND);
         Log log = logService.findById(id).get();
         return new ResponseEntity<Log>(log, HttpStatus.OK);

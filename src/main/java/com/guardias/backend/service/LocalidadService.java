@@ -18,8 +18,8 @@ public class LocalidadService {
     @Autowired
     LocalidadRepository localidadRepository;
 
-    public List<Localidad> findByActivoTrue() {
-        return localidadRepository.findByActivo(true);
+    public Optional<List<Localidad>> findByActivoTrue() {
+        return localidadRepository.findByActivoTrue();
     }
 
     public List<Localidad> findAll() {
@@ -27,7 +27,7 @@ public class LocalidadService {
     }
 
     public Optional<Localidad> findById(Long id) {
-        return localidadRepository.findById(id);
+        return localidadRepository.findById((Long) id);
     }
 
     public Optional<Localidad> findByNombre(String nombre) {
@@ -47,7 +47,8 @@ public class LocalidadService {
     }
 
     public boolean activo(Long id) {
-        return (localidadRepository.existsById(id) && localidadRepository.findById(id).get().isActivo());
+        return (localidadRepository.existsById(id)
+                && localidadRepository.findById(id).get().isActivo());
     }
 
     public boolean activoByNombre(String nombre) {

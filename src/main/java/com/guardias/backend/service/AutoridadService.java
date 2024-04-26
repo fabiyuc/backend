@@ -68,7 +68,8 @@ public class AutoridadService {
     }
 
     public boolean activo(Long id) {
-        return (autoridadRepository.existsById(id) && autoridadRepository.findById(id).get().isActivo());
+        return (autoridadRepository.existsById(id)
+                && autoridadRepository.findById(id).get().isActivo());
     }
 
     public boolean activoByNombre(String nombre) {

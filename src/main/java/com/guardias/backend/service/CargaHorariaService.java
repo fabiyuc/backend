@@ -19,7 +19,7 @@ public class CargaHorariaService {
     @Autowired
     RevistaService revistaService;
 
-    public List<CargaHoraria> findByActivoTrue() {
+    public Optional<List<CargaHoraria>> findByActivoTrue() {
         return cargaHorariaRepository.findByActivoTrue();
     }
 
@@ -28,7 +28,7 @@ public class CargaHorariaService {
     }
 
     public Optional<CargaHoraria> findById(Long id) {
-        return cargaHorariaRepository.findById(id);
+        return cargaHorariaRepository.findById((Long) id);
     }
 
     public Optional<CargaHoraria> findByCantidad(int cantidad) {
@@ -36,7 +36,7 @@ public class CargaHorariaService {
     }
 
     public boolean existsById(Long id) {
-        return cargaHorariaRepository.existsById(id);
+        return cargaHorariaRepository.existsById((Long) id);
     }
 
     public boolean activoByCantidad(int cantidad) {
@@ -58,7 +58,7 @@ public class CargaHorariaService {
     }
 
     public void deleteById(Long id) {
-        cargaHorariaRepository.deleteById(id);
+        cargaHorariaRepository.deleteById((Long) id);
     }
 
 }

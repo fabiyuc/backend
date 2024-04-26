@@ -36,7 +36,7 @@ public class CargoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Cargo>> list() {
-        List<Cargo> list = cargoService.findByActivoTrue();
+        List<Cargo> list = cargoService.findByActivoTrue().get();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 

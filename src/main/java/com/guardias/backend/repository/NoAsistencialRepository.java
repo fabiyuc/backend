@@ -11,6 +11,8 @@ import com.guardias.backend.entity.NoAsistencial;
 @Repository
 public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Long> {
 
+    Optional<List<NoAsistencial>> findByActivoTrue();
+
     Optional<NoAsistencial> findById(Long id);
 
     Optional<NoAsistencial> findByDni(int dni);
@@ -21,5 +23,5 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
 
     boolean existsByCuil(String cuil);
 
-    List<NoAsistencial> findByActivoTrue();
+    List<NoAsistencial> findByActivo(boolean activo);
 }

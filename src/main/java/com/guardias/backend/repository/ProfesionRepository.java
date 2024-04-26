@@ -9,6 +9,8 @@ import com.guardias.backend.entity.Profesion;
 @Repository
 public interface ProfesionRepository extends JpaRepository<Profesion, Long> {
     
+    Optional<List<Profesion>> findByActivoTrue();
+
     Optional<Profesion> findById(Long id);
     
     boolean existsById(Long id);
@@ -21,5 +23,5 @@ public interface ProfesionRepository extends JpaRepository<Profesion, Long> {
     
     List<Profesion> findByAsistencialFalse();
 
-    List<Profesion> findByActivoTrue();
+    List<Profesion> findByActivo(boolean activo);
 }
