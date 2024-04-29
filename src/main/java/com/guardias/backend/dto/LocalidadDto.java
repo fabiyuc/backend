@@ -14,7 +14,8 @@ public class LocalidadDto {
 
     @NotBlank
     private String nombre;
-    private Long idDepartamento;
+
+    Long idDepartamento;
     private boolean activo;
 
     private List<Long> idEfectores;

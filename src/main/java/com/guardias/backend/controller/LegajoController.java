@@ -51,50 +51,50 @@ public class LegajoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.findByActivo();
-        return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
+        List<Legajo> list = legajoService.findByActivoTrue().get();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Legajo>> listAll() {
         List<Legajo> list = legajoService.findAll();
-        return new ResponseEntity<List<Legajo>>(list, HttpStatus.OK);
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<Legajo> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<List<Legajo>> getById(@PathVariable("id") Long id) {
         if (!legajoService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el legajo"),
                     HttpStatus.NOT_FOUND);
         Legajo legajo = legajoService.findById(id).get();
-        return new ResponseEntity<Legajo>(legajo, HttpStatus.OK);
+        return new ResponseEntity(legajo, HttpStatus.OK);
     }
 
     private ResponseEntity<?> validations(LegajoDto legajoDto) {
-        if (legajoDto.getFechaInicio() == null) {
+        if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-        }
 
         if (legajoDto.getActual() == null)
-            return new ResponseEntity(new Mensaje("indicar si es actual o no"),
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
                     HttpStatus.BAD_REQUEST);
+
         if (legajoDto.getLegal() == null)
-            return new ResponseEntity(new Mensaje("indicar si es legal o no"),
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es legal o no"),
                     HttpStatus.BAD_REQUEST);
 
         if (legajoDto.getIdPersona() == null)
-            return new ResponseEntity(new Mensaje("indicar la persona"),
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
 
         if (legajoDto.getIdUdo() == null)
-            return new ResponseEntity(new Mensaje("indicar la UdO"),
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la UdO"),
                     HttpStatus.BAD_REQUEST);
 
         if (legajoDto.getIdProfesion() == null)
-            return new ResponseEntity(new Mensaje("indicar la profesion"),
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                     HttpStatus.BAD_REQUEST);
         if (legajoDto.getIdRevista() == null)
-            return new ResponseEntity(new Mensaje("indicar la situacion de revista"),
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -102,13 +102,50 @@ public class LegajoController {
 
     private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
 
-        if (legajo.getFechaInicio() != null && (legajo.getFechaInicio() != legajoDto.getFechaInicio())
-                && legajoDto.getFechaInicio() != null)
+        /*
+         * if (legajo.getFechaInicio() != null && (legajo.getFechaInicio() !=
+         * legajoDto.getFechaInicio())
+         * && legajoDto.getFechaInicio() != null)
+         * legajo.setFechaInicio(legajoDto.getFechaInicio());
+         */
+        if (legajoDto.getFechaInicio() != null && !legajoDto.getFechaInicio().equals(legajo.getFechaInicio()))
             legajo.setFechaInicio(legajoDto.getFechaInicio());
 
-        if (legajo.getFechaFinal() != null && (legajo.getFechaFinal() != legajoDto.getFechaFinal())
-                && legajoDto.getFechaFinal() != null)
+        /*
+         * if (legajo.getFechaFinal() != null && (legajo.getFechaFinal() !=
+         * legajoDto.getFechaFinal())
+         * && legajoDto.getFechaFinal() != null)
+         * legajo.setFechaFinal(legajoDto.getFechaFinal());
+         */
+        if (legajoDto.getFechaFinal() != null && !legajoDto.getFechaFinal().equals(legajo.getFechaFinal()))
             legajo.setFechaFinal(legajoDto.getFechaFinal());
+
+        legajo.setActual(legajoDto.getActual());
+        legajo.setLegal(legajoDto.getLegal());
+
+        /*
+         * if (legajo.getMatriculaNacional() != null && (legajo.getMatriculaNacional()
+         * != legajoDto.getMatriculaNacional())
+         * && legajoDto.getMatriculaNacional() != null)
+         * legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
+         */
+
+        if (legajoDto.getMatriculaNacional() != null
+                && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional()
+                && !legajoDto.getMatriculaNacional().isEmpty())
+            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
+
+        /*
+         * if (legajo.getMatriculaProvincial() != null
+         * && (legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
+         * && legajoDto.getMatriculaProvincial() != null)
+         * legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
+         */
+
+        if (legajoDto.getMatriculaProvincial() != null
+                && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial()
+                && !legajoDto.getMatriculaProvincial().isEmpty())
+            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
 
         if (legajo.getPersona() == null ||
                 (legajoDto.getIdPersona() != null &&
@@ -123,18 +160,6 @@ public class LegajoController {
                                 legajoDto.getIdUdo()))) {
             legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
         }
-
-        legajo.setActual(legajoDto.getActual());
-        legajo.setLegal(legajoDto.getLegal());
-
-        if (legajo.getMatriculaNacional() != null && (legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional())
-                && legajoDto.getMatriculaNacional() != null)
-            legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
-
-        if (legajo.getMatriculaProvincial() != null
-                && (legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
-                && legajoDto.getMatriculaProvincial() != null)
-            legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
 
         if (legajo.getProfesion() == null ||
                 (legajoDto.getIdProfesion() != null &&
@@ -164,8 +189,17 @@ public class LegajoController {
             legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
         }
 
+        /*
+         * if (legajo.getCargo() == null ||
+         * (legajoDto.getIdCargo() != null &&
+         * !Objects.equals(legajo.getCargo().getId(),
+         * legajoDto.getIdCargo()))) {
+         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
+         * }
+         */
+
         if (legajoDto.getIdEfectores() != null) {
-            List<Long> idList = new ArrayList();
+            List<Long> idList = new ArrayList<Long>();
             if (legajo.getEfectores() != null) {
                 for (Efector efector : legajo.getEfectores()) {
                     for (Long id : legajoDto.getIdEfectores()) {
@@ -174,14 +208,19 @@ public class LegajoController {
                         }
                     }
                 }
+            } else {
+                legajo.setEfectores(new ArrayList<>());
             }
 
             List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEfectores() : idList;
+
             for (Long id : idsToAdd) {
                 legajo.getEfectores().add(efectorService.findById(id));
                 efectorService.findById(id).getLegajos().add(legajo);
             }
         }
+
+        legajo.setActivo(true);
 
         return legajo;
     }
@@ -195,13 +234,17 @@ public class LegajoController {
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
+            /*
+             * return new ResponseEntity(new Mensaje("error al guardar los cambios"),
+             * HttpStatus.BAD_REQUEST);
+             */
             return respuestaValidaciones;
         }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {
-        if (!legajoService.activo(id))
+        if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(legajoDto);

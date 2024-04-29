@@ -11,6 +11,8 @@ import com.guardias.backend.entity.Categoria;
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
+    Optional<List<Categoria>> findByActivoTrue();
+
     Optional<Categoria> findByNombre(String nombre);
 
     Optional<Categoria> findById(Long id);
@@ -19,5 +21,5 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     boolean existsById(Long id);
 
-    List<Categoria> findByActivoTrue();
+    List<Categoria> findByActivo(boolean activo);
 }

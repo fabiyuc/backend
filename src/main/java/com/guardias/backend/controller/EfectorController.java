@@ -59,22 +59,22 @@ public class EfectorController {
 
     public Efector createUpdate(Efector efector, EfectorDto efectorDto) {
 
-        if (efectorDto.getNombre() != null && !efectorDto.getNombre().equals(efector.getNombre())
-                && !efectorDto.getNombre().isEmpty())
+        if (efector.getNombre() == null
+                || (efectorDto.getNombre() != null && !Objects.equals(efector.getNombre(), efectorDto.getNombre())))
             efector.setNombre(efectorDto.getNombre());
 
-        if (efectorDto.getDomicilio() != null && !efectorDto.getDomicilio().equals(efector.getDomicilio())
-                && !efectorDto.getDomicilio().isEmpty())
+        if (efector.getDomicilio() == null || (efectorDto.getDomicilio() != null
+                && !Objects.equals(efector.getDomicilio(), efectorDto.getDomicilio())))
             efector.setDomicilio(efectorDto.getDomicilio());
 
-        if (efectorDto.getTelefono() != null && !efectorDto.getTelefono().equals(efector.getTelefono())
-                && !efectorDto.getTelefono().isEmpty())
+        if (efector.getTelefono() == null || (efectorDto.getTelefono() != null
+                && !Objects.equals(efector.getTelefono(), efectorDto.getTelefono())))
             efector.setTelefono(efectorDto.getTelefono());
 
         efector.setEstado(efectorDto.isEstado());
 
-        if (efectorDto.getObservacion() != null && !efectorDto.getObservacion().equals(efector.getObservacion())
-                && !efectorDto.getObservacion().isEmpty())
+        if (efector.getObservacion() == null || (efectorDto.getObservacion() != null
+                && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
 
         if (efector.getRegion() == null ||
@@ -85,7 +85,7 @@ public class EfectorController {
         }
 
         if (efectorDto.getIdDistribucionesHorarias() != null) {
-            List<Long> idList = new ArrayList();
+            List<Long> idList = new ArrayList<Long>();
             if (efector.getDistribucionesHorarias() != null) {
                 for (DistribucionHoraria distribucionHoraria : efector.getDistribucionesHorarias()) {
                     for (Long id : efectorDto.getIdDistribucionesHorarias()) {
@@ -94,8 +94,11 @@ public class EfectorController {
                         }
                     }
                 }
+            } else {
+                efector.setDistribucionesHorarias(new ArrayList<DistribucionHoraria>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdDistribucionesHorarias() : idList;
+
             for (Long id : idsToAdd) {
                 efector.getDistribucionesHorarias().add(distribucionHorariaService.findById(id));
                 distribucionHorariaService.findById(id).setEfector(efector);

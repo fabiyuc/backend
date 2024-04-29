@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
 
 @Service
@@ -25,8 +26,12 @@ public class RegistroMensualService {
         return registroMensualRepository.findAll();
     }
 
-    public List<RegistroMensual> findByIdAsistencialAndMes(Long idAsistencial, String mes, int anio) {
+    public Optional<RegistroMensual> findByIdAsistencialAndMes(Long idAsistencial, MesesEnum mes, int anio) {
         return registroMensualRepository.findByIdAsistencialAndMes(idAsistencial, mes, anio);
+    }
+
+    public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, MesesEnum mes, int anio) {
+        return registroMensualRepository.idByIdAsistencialAndMes(idAsistencial, mes, anio);
     }
 
     public Optional<RegistroMensual> findById(Long id) {

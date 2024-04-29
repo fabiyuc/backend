@@ -77,6 +77,7 @@ public class TipoRevistaController {
     private TipoRevista createUpdate(TipoRevista tipoRevista, TipoRevistaDto tipoRevistaDto) {
         if (StringUtils.isNotBlank(tipoRevistaDto.getNombre()))
             tipoRevista.setNombre(tipoRevistaDto.getNombre());
+
         if (tipoRevistaDto.getNombre() != null && tipoRevista.getNombre() != tipoRevistaDto.getNombre())
             tipoRevista.setNombre(tipoRevistaDto.getNombre());
 

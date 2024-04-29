@@ -33,7 +33,7 @@ public class FeriadoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Feriado>> list() {
-        List<Feriado> list = feriadoService.findByActivo();
+        List<Feriado> list = feriadoService.findByActivoTrue().get();
         return new ResponseEntity<List<Feriado>>(list, HttpStatus.OK);
     }
 
@@ -44,16 +44,16 @@ public class FeriadoController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<Feriado>> getById(@PathVariable("id") Long id) {
-        if (!feriadoService.existsById(id))
+    public ResponseEntity<Feriado> getById(@PathVariable("id") Long id) {
+        if (!feriadoService.activo(id))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
         Feriado feriado = feriadoService.findById(id).get();
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
     @GetMapping("/detailmotivo/{motivo}")
-    public ResponseEntity<List<Feriado>> getByMotivo(@PathVariable("motivo") String motivo) {
-        if (!feriadoService.activoByMotivo(motivo))
+    public ResponseEntity<List<Feriado>> getById(@PathVariable("motivo") String motivo) {
+        if (!feriadoService.existsByMotivo(motivo))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
         Feriado feriado = feriadoService.getByMotivo(motivo).get();
         return new ResponseEntity(feriado, HttpStatus.OK);
@@ -61,7 +61,7 @@ public class FeriadoController {
 
     @GetMapping("/detail/{fecha}")
     public ResponseEntity<List<Feriado>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
-        if (!feriadoService.activoByFecha(fecha))
+        if (!feriadoService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
         Feriado feriado = feriadoService.getByFecha(fecha).get();
         return new ResponseEntity(feriado, HttpStatus.OK);
@@ -84,21 +84,16 @@ public class FeriadoController {
 
     private Feriado createUpdate(Feriado feriado, FeriadoDto feriadoDto) {
         if (!feriadoDto.getFecha().equals(feriado.getFecha()))
-
-            if (feriadoDto.getFecha() != null && !feriadoDto.getFecha().equals(feriado.getFecha()))
-                feriado.setFecha(feriadoDto.getFecha());
-
-        if (feriadoDto.getMotivo() != null && !feriadoDto.getMotivo().equals(feriado.getMotivo())
-                && !feriadoDto.getMotivo().isEmpty())
+            feriado.setFecha(feriadoDto.getFecha());
+        if (!feriadoDto.getMotivo().equals(feriado.getMotivo()))
             feriado.setMotivo(feriadoDto.getMotivo());
-
-        if (feriadoDto.getTipoFeriado() != null && !feriadoDto.getTipoFeriado().equals(feriado.getTipoFeriado()))
+        if (!feriadoDto.getTipoFeriado().equals(feriado.getTipoFeriado()))
             feriado.setTipoFeriado(feriadoDto.getTipoFeriado());
-        if (feriadoDto.getDescripcion() != null && !feriadoDto.getDescripcion().equals(feriado.getDescripcion())
-                && !feriadoDto.getDescripcion().isEmpty())
+        if (!feriadoDto.getDescripcion().equals(feriado.getDescripcion()))
             feriado.setDescripcion(feriadoDto.getDescripcion());
 
-        feriadoDto.setActivo(true);
+        feriado.setActivo(true);
+
         return feriado;
     }
 
@@ -116,7 +111,7 @@ public class FeriadoController {
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody FeriadoDto feriadoDto) {
-        if (!feriadoService.activo(id))
+        if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("El feriado no existe"), HttpStatus.BAD_REQUEST);
 
         ResponseEntity<?> respuestaValidaciones = validations(feriadoDto, id);
@@ -130,7 +125,7 @@ public class FeriadoController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!feriadoService.activo(id))
+        if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("el feriado no existe"), HttpStatus.NOT_FOUND);
 
         Feriado feriado = feriadoService.findById(id).get();

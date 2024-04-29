@@ -10,9 +10,16 @@ import com.guardias.backend.entity.Caps;
 
 @Repository
 public interface CapsRepository extends JpaRepository<Caps, Long> {
+
+    Optional<List<Caps>> findByActivoTrue();
+
     Optional<Caps> findByNombre(String nombre);
+
+    Optional<Caps> findById(Long id);
 
     boolean existsByNombre(String nombre);
 
-    List<Caps> findByActivoTrue();
+    boolean existsById(Long id);
+
+    List<Caps> findByActivo(boolean activo);
 }

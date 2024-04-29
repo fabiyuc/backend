@@ -17,7 +17,7 @@ public class ProfesionService {
     @Autowired
     ProfesionRepository profesionRepository;
 
-    public List<Profesion> findByActivo() {
+    public Optional<List<Profesion>> findByActivoTrue() {
         return profesionRepository.findByActivoTrue();
     }
 
@@ -34,7 +34,7 @@ public class ProfesionService {
     }
 
     public Optional<Profesion> findById(Long id) {
-        return profesionRepository.findById(id);
+        return profesionRepository.findById((Long) id);
     }
 
     public Optional<Profesion> findByNombre(String nombre) {
@@ -46,22 +46,23 @@ public class ProfesionService {
     }
 
     public void deleteById(Long id) {
-        profesionRepository.deleteById(id);
+        profesionRepository.deleteById((Long) id);
     }
 
-    public Boolean existsById(Long id) {
+    public boolean existsById(Long id) {
         return profesionRepository.existsById(id);
     }
 
-    public Boolean activo(Long id) {
-        return (profesionRepository.existsById(id) && profesionRepository.findById(id).get().isActivo());
-    }
-
-    public Boolean existsByNombre(String nombre) {
+    public boolean existsByNombre(String nombre) {
         return profesionRepository.existsByNombre(nombre);
     }
 
-    public Boolean activoByNombre(String nombre) {
+    public boolean activo(Long id) {
+        return (profesionRepository.existsById(id)
+                && profesionRepository.findById(id).get().isActivo());
+    }
+
+    public boolean activoByNombre(String nombre) {
         return (profesionRepository.existsByNombre(nombre)
                 && profesionRepository.findByNombre(nombre).get().isActivo());
     }

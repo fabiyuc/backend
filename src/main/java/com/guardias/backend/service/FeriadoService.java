@@ -18,7 +18,7 @@ public class FeriadoService {
     @Autowired
     FeriadoRepository feriadoRepository;
 
-    public List<Feriado> findByActivo() {
+    public Optional<List<Feriado>> findByActivoTrue() {
         return feriadoRepository.findByActivoTrue();
     }
 
@@ -54,24 +54,16 @@ public class FeriadoService {
         return feriadoRepository.existsById(id);
     }
 
-    public boolean activo(Long id) {
-        return (feriadoRepository.existsById(id) && feriadoRepository.findById(id).get().isActivo());
-    }
-
     public boolean existsByMotivo(String motivo) {
         return feriadoRepository.existsByMotivo(motivo);
-    }
-
-    public boolean activoByMotivo(String motivo) {
-        return (feriadoRepository.existsByMotivo(motivo) && feriadoRepository.findByMotivo(motivo).get().isActivo());
     }
 
     public boolean existsByFecha(LocalDate fecha) {
         return feriadoRepository.existsByFecha(fecha);
     }
 
-    public boolean activoByFecha(LocalDate fecha) {
-        return (feriadoRepository.existsByFecha(fecha) && feriadoRepository.findByFecha(fecha).get().isActivo());
+    public boolean activo(Long id) {
+        return (feriadoRepository.existsById(id) && feriadoRepository.findById(id).get().isActivo());
     }
 
 }

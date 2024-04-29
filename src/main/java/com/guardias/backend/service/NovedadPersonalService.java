@@ -21,7 +21,7 @@ public class NovedadPersonalService {
     @Autowired
     PersonService personaService;
 
-    public List<NovedadPersonal> findByActivo() {
+    public Optional<List<NovedadPersonal>> findByActivoTrue() {
         return novedadPersonalRepository.findByActivoTrue();
     }
 
@@ -29,9 +29,11 @@ public class NovedadPersonalService {
         return novedadPersonalRepository.findAll();
     }
 
-    public Optional<NovedadPersonal> getById(Long id) {
-        return novedadPersonalRepository.findById(id);
-    }
+    /*
+     * public Optional<NovedadPersonal> getById(Long id) {
+     * return novedadPersonalRepository.findById(id);
+     * }
+     */
 
     public Optional<List<NovedadPersonal>> findByPersona(Long idPersona) {
         return novedadPersonalRepository.findByPersona(idPersona);
@@ -46,11 +48,20 @@ public class NovedadPersonalService {
     }
 
     public Optional<NovedadPersonal> findById(Long id) {
-        return novedadPersonalRepository.findById(id);
+        return novedadPersonalRepository.findById((Long) id);
     }
 
     public boolean existsByFechaInicio(LocalDate fechaInicio) {
         return novedadPersonalRepository.existsByFechaInicio(fechaInicio);
+    }
+
+    public boolean existsById(Long id) {
+        return novedadPersonalRepository.existsById((Long) id);
+    }
+
+    public boolean activo(Long id) {
+        return (novedadPersonalRepository.existsById(id)
+                && novedadPersonalRepository.findById(id).get().isActivo());
     }
 
     public void save(NovedadPersonal novedadPersonal) {
@@ -58,15 +69,7 @@ public class NovedadPersonalService {
     }
 
     public void deleteById(Long id) {
-        novedadPersonalRepository.deleteById(id);
-    }
-
-    public boolean existsById(Long id) {
-        return novedadPersonalRepository.existsById(id);
-    }
-
-    public boolean activo(Long id) {
-        return (novedadPersonalRepository.existsById(id) && novedadPersonalRepository.findById(id).get().isActivo());
+        novedadPersonalRepository.deleteById((Long) id);
     }
 
 }

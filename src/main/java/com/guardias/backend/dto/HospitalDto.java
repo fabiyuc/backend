@@ -16,10 +16,11 @@ public class HospitalDto extends EfectorDto {
 
     private boolean esCabecera;
     private boolean admitePasiva;
+    private boolean activo;
 
     @Min(value = 1)
     private int nivelComplejidad;
 
-    private List<Long> idCaps;
+    List<Long> idCaps;
 
 }

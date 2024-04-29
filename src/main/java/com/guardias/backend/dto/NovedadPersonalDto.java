@@ -2,7 +2,7 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +20,12 @@ public class NovedadPersonalDto {
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
     private boolean actual;
-    private String descripcion;
     private boolean activo;
 
-    @NotEmpty
+    @NotBlank
+    private String descripcion;
+
+    @NotNull
     private Long idPersona;
     private Long idSuplente;
     private Long idArticulo;

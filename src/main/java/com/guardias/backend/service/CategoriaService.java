@@ -19,7 +19,7 @@ public class CategoriaService {
     @Autowired
     RevistaService revistaService;
 
-    public List<Categoria> findByActivoTrue() {
+    public Optional<List<Categoria>> findByActivoTrue() {
         return categoriaRepository.findByActivoTrue();
     }
 

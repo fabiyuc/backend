@@ -11,9 +11,15 @@ import com.guardias.backend.entity.Ministerio;
 @Repository
 public interface MinisterioRepository extends JpaRepository<Ministerio, Long> {
 
+    Optional<List<Ministerio>> findByActivoTrue();
+
+    Optional<Ministerio> findById(Long id);
+
     Optional<Ministerio> findByNombre(String nombre);
 
     boolean existsByNombre(String nombre);
 
-    List<Ministerio> findByActivoTrue();
+    boolean existsById(Long id);
+
+    List<Ministerio> findByActivo(boolean activo);
 }

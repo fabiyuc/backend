@@ -38,7 +38,7 @@ public class CapsController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
-        List<Caps> list = capsService.findByActivoTrue();
+        List<Caps> list = capsService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

@@ -18,7 +18,7 @@ public class NotificacionService {
     @Autowired
     NotificacionRepository notificacionRepository;
 
-    public List<Notificacion> findByActivo() {
+    public Optional<List<Notificacion>> findByActivoTrue() {
         return notificacionRepository.findByActivoTrue();
 
     }
@@ -35,20 +35,21 @@ public class NotificacionService {
         return notificacionRepository.findByTipoAndActivo(tipo, activo);
     }
 
+    public boolean existsById(Long id) {
+        return notificacionRepository.existsById((Long) id);
+    }
+
+    public boolean activo(Long id) {
+        return (notificacionRepository.existsById(id)
+                && notificacionRepository.findById(id).get().isActivo());
+    }
+
     public void save(Notificacion notificacion) {
         notificacionRepository.save(notificacion);
     }
 
     public void deleteById(Long id) {
         notificacionRepository.deleteById(id);
-    }
-
-    public boolean existsById(Long id) {
-        return notificacionRepository.existsById(id);
-    }
-
-    public boolean activo(Long id) {
-        return (notificacionRepository.existsById(id) && notificacionRepository.findById(id).get().isActivo());
     }
 
 }

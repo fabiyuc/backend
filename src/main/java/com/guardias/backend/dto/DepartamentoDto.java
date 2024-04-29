@@ -2,6 +2,8 @@ package com.guardias.backend.dto;
 
 import java.util.List;
 
+import com.guardias.backend.entity.Provincia;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +18,7 @@ public class DepartamentoDto {
     private String nombre;
     private String codigoPostal;
     private boolean activo;
-    Long idProvincia;
+    Provincia provincia;
     List<Long> idLocalidades;
 
 }

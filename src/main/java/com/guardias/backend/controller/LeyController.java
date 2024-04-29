@@ -33,6 +33,9 @@ public class LeyController {
         if (leyDto.getDenominacion() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La denominacion es obligatoria"),
                     HttpStatus.BAD_REQUEST);
+        if (leyDto.getDetalle() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("El detalle es obligatorio"),
+                    HttpStatus.BAD_REQUEST); // borrar despues
         if (leyDto.getEstado() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El estado es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -72,30 +75,28 @@ public class LeyController {
 
     public Ley createUpdate(Ley ley, LeyDto leyDto) {
 
-        if (leyDto.getNumero() != null && !leyDto.getNumero().isEmpty()
-                && !leyDto.getNumero().equals(ley.getNumero()))
+        if (leyDto.getNumero() != null && ley.getNumero() != leyDto.getNumero())
             ley.setNumero(leyDto.getNumero());
 
-        if (leyDto.getDenominacion() != null && !leyDto.getDenominacion().isEmpty()
-                && !leyDto.getDenominacion().equals(ley.getDenominacion()))
+        if (leyDto.getDenominacion() != null && ley.getDenominacion() != leyDto.getDenominacion())
             ley.setDenominacion(leyDto.getDenominacion());
 
-        if (leyDto.getDetalle() != null && !leyDto.getDetalle().isEmpty()
-                && !leyDto.getDetalle().equals(ley.getDetalle()))
+        if (leyDto.getDetalle() != null && ley.getDetalle() != leyDto.getDetalle())
             ley.setDetalle(leyDto.getDetalle());
 
-        if (leyDto.getEstado() != null && !leyDto.getEstado().equals(ley.getEstado()))
+        if (leyDto.getEstado() != null && ley.getEstado() != leyDto.getEstado())
             ley.setEstado(leyDto.getEstado());
 
-        if (leyDto.getFechaAlta() != null && !leyDto.getFechaAlta().equals(ley.getFechaAlta()))
+        if (leyDto.getFechaAlta() != null && ley.getFechaAlta() != leyDto.getFechaAlta())
             ley.setFechaAlta(leyDto.getFechaAlta());
 
-        if (ley.getFechaBaja() != leyDto.getFechaBaja() && leyDto.getFechaBaja() != null)
+        if (leyDto.getFechaBaja() != null && ley.getFechaBaja() != leyDto.getFechaBaja())
             ley.setFechaBaja(leyDto.getFechaBaja());
-        if (ley.getFechaModificacion() != leyDto.getFechaModificacion() && leyDto.getFechaModificacion() != null)
+
+        if (leyDto.getFechaModificacion() != null && ley.getFechaModificacion() != leyDto.getFechaModificacion())
             ley.setFechaModificacion(leyDto.getFechaModificacion());
-        if (ley.getMotivoModificacion() != leyDto.getMotivoModificacion() && leyDto.getMotivoModificacion() != null
-                && !leyDto.getMotivoModificacion().isEmpty())
+
+        if (leyDto.getMotivoModificacion() != null && ley.getMotivoModificacion() != leyDto.getMotivoModificacion())
             ley.setMotivoModificacion(leyDto.getMotivoModificacion());
 
         try {
@@ -114,5 +115,48 @@ public class LeyController {
 
         ley.setActivo(true);
         return ley;
+
+        /*
+         * if (leyDto.getNumero() != null && !leyDto.getNumero().isEmpty()
+         * && !leyDto.getNumero().equals(ley.getNumero()))
+         * ley.setNumero(leyDto.getNumero());
+         * 
+         * if (leyDto.getDenominacion() != null && !leyDto.getDenominacion().isEmpty()
+         * && !leyDto.getDenominacion().equals(ley.getDenominacion()))
+         * ley.setDenominacion(leyDto.getDenominacion());
+         * 
+         * if (leyDto.getDetalle() != null && !leyDto.getDetalle().isEmpty()
+         * && !leyDto.getDetalle().equals(ley.getDetalle()))
+         * ley.setDetalle(leyDto.getDetalle());
+         * 
+         * if (leyDto.getEstado() != null &&
+         * !leyDto.getEstado().equals(ley.getEstado()))
+         * ley.setEstado(leyDto.getEstado());
+         * 
+         * if (leyDto.getFechaAlta() != null &&
+         * !leyDto.getFechaAlta().equals(ley.getFechaAlta()))
+         * ley.setFechaAlta(leyDto.getFechaAlta());
+         * 
+         * if (ley.getFechaBaja() != leyDto.getFechaBaja() && leyDto.getFechaBaja() !=
+         * null)
+         * ley.setFechaBaja(leyDto.getFechaBaja());
+         * if (ley.getFechaModificacion() != leyDto.getFechaModificacion() &&
+         * leyDto.getFechaModificacion() != null)
+         * ley.setFechaModificacion(leyDto.getFechaModificacion());
+         * if (ley.getMotivoModificacion() != leyDto.getMotivoModificacion() &&
+         * leyDto.getMotivoModificacion() != null
+         * && !leyDto.getMotivoModificacion().isEmpty())
+         * ley.setMotivoModificacion(leyDto.getMotivoModificacion());
+         * 
+         * if (ley.getTipoLey() == null ||
+         * (leyDto.getIdTipoLey() != null &&
+         * !Objects.equals(ley.getTipoLey().getId(),
+         * leyDto.getIdTipoLey()))) {
+         * ley.setTipoLey(tipoLeyService.findById(leyDto.getIdTipoLey()).get());
+         * }
+         * 
+         * ley.setActivo(true);
+         * return ley;
+         */
     }
 }

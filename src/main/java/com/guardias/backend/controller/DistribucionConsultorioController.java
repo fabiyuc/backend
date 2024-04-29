@@ -95,6 +95,8 @@ public class DistribucionConsultorioController {
             distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
         if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
             distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
+
+        distribucionConsultorio.setActivo(true);
         return distribucionConsultorio;
     }
 
@@ -118,7 +120,7 @@ public class DistribucionConsultorioController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
-        if (!distribucionConsultorioService.activo(id))
+        if (!distribucionConsultorioService.existsById(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionConsultorioDto);

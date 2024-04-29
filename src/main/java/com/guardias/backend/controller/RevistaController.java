@@ -95,10 +95,7 @@ public class RevistaController {
         if (revistaDto.getAgrupacion() != null && revista.getAgrupacion() != revistaDto.getAgrupacion())
             revista.setAgrupacion(revistaDto.getAgrupacion());
 
-        // Verificar si el tipo de revista se proporciona en el RevistaDto
         if (revistaDto.getIdTipoRevista() != null) {
-            // Si el tipo de revista ya está establecido o es diferente al proporcionado,
-            // actualizar el tipo de revista
             if (revista.getTipoRevista() == null
                     || !Objects.equals(revista.getTipoRevista().getId(), revistaDto.getIdTipoRevista())) {
                 revista.setTipoRevista(tipoRevistaService.findById(revistaDto.getIdTipoRevista()).get());

@@ -33,7 +33,7 @@ public class GiraMedicaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<GiraMedica>> list() {
-        List<GiraMedica> list = giraMedicaService.findByActivo();
+        List<GiraMedica> list = giraMedicaService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -44,8 +44,8 @@ public class GiraMedicaController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<GiraMedica>> getById(@PathVariable("id") Long id) {
-        if (!giraMedicaService.existsById(id))
+    public ResponseEntity<GiraMedica> getById(@PathVariable("id") Long id) {
+        if (!giraMedicaService.activo(id))
             return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
         GiraMedica giraMedica = giraMedicaService.findById(id).get();
         return new ResponseEntity(giraMedica, HttpStatus.OK);

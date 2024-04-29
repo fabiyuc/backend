@@ -1,6 +1,7 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.guardias.backend.enums.TipoNotificacionEnum;
 
@@ -21,9 +22,6 @@ public class NotificacionDto {
     @NotBlank
     private String categoria;
 
-    @NotNull
-    private LocalDate fechaNotificacion;
-
     @NotBlank
     private String detalle;
 
@@ -31,9 +29,15 @@ public class NotificacionDto {
     private String url;
 
     @NotNull
-    private boolean activo;
+    private LocalDate fechaNotificacion;
 
     @NotNull
     private LocalDate fechaBaja;
+
+    @NotNull
+    private boolean activo;
+
+    @NotNull
+    private List<Long> idEfectores;
 
 }

@@ -87,6 +87,8 @@ public class DistribucionOtraController {
                 && distribucionOtraDto.getDescripcion() != null)
             distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
 
+        distribucionOtra.setActivo(true);
+
         return distribucionOtra;
     }
 

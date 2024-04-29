@@ -22,7 +22,7 @@ public class AsistencialService {
     @Autowired
     TipoGuardiaRepository tipoGuardiaRepository;
 
-    public List<Asistencial> findByActivoTrue() {
+    public Optional<List<Asistencial>> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
     }
 

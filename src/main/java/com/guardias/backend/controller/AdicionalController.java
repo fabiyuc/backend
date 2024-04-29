@@ -36,7 +36,7 @@ public class AdicionalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
-        List<Adicional> list = adicionalService.findByActivoTrue();
+        List<Adicional> list = adicionalService.findByActivoTrue().get();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -132,7 +132,7 @@ public class AdicionalController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Adicional adicional = createUpdate(adicionalService.findById(id).get(), adicionalDto);
             adicionalService.save(adicional);
-            return new ResponseEntity<Mensaje>(new Mensaje("Articulo creado correctamente"), HttpStatus.OK);
+            return new ResponseEntity<Mensaje>(new Mensaje("Articulo modificado correctamente"), HttpStatus.OK);
         }
         return respuestaValidaciones;
     }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,7 @@ public class MinisterioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.findByActivoTrue();
+        List<Ministerio> list = ministerioService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -81,6 +82,8 @@ public class MinisterioController {
                         }
                     }
                 }
+            } else {
+                ministerio.setMinisterios(new ArrayList<Ministerio>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? ministerioDto.getIdMinisterios() : idList;
             for (Long id : idsToAdd) {
@@ -89,14 +92,17 @@ public class MinisterioController {
             }
         }
 
+        ministerio.setActivo(true);
         return ministerio;
     }
 
+    @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody MinisterioDto ministerioDto) {
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(ministerioDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(new Ministerio(), ministerioDto);
+            ministerio.setId(58L);
             ministerioService.save(ministerio);
             return new ResponseEntity(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
         } else {

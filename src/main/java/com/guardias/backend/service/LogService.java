@@ -18,12 +18,25 @@ public class LogService {
     @Autowired
     LogRepository logRepository;
 
-    public List<Log> list() {
+    public Optional<List<Log>> findByActivoTrue() {
+        return logRepository.findByActivoTrue();
+    }
+
+    public List<Log> findAll() {
         return logRepository.findAll();
     }
 
     public Optional<Log> findById(Long id) {
-        return logRepository.findById(id);
+        return logRepository.findById((Long) id);
+    }
+
+    public boolean existsById(long id) {
+        return logRepository.existsById((Long) id);
+    }
+
+    public boolean activo(Long id) {
+        return (logRepository.existsById(id)
+                && logRepository.findById(id).get().isActivo());
     }
 
     public void save(Log log) {
@@ -31,15 +44,7 @@ public class LogService {
     }
 
     public void deleteById(Long id) {
-        logRepository.deleteById(id);
-    }
-
-    public boolean existsById(long id) {
-        return logRepository.existsById(id);
-    }
-
-    public boolean activo(long id) {
-        return (logRepository.existsById(id) && logRepository.findById(id).get().isActivo());
+        logRepository.deleteById((Long) id);
     }
 
 }

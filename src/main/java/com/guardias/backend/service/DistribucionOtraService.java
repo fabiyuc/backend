@@ -19,11 +19,16 @@ public class DistribucionOtraService {
     @Autowired
     DistribucionOtraRepository distribucionOtraRepository;
 
-    @Autowired
-    EfectorService efectorService;
+    /*
+     * @Autowired
+     * EfectorService efectorRepository;
+     */
 
     @Autowired
     PersonService personService;
+
+    @Autowired
+    EfectorService efectorService;
 
     public Optional<List<DistribucionOtra>> findByActivoTrue() {
         return distribucionOtraRepository.findByActivoTrue();

@@ -41,7 +41,7 @@ public class LocalidadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Localidad>> list() {
-        List<Localidad> list = localidadService.findByActivo();
+        List<Localidad> list = localidadService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

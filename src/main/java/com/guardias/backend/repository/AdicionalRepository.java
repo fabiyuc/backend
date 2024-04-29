@@ -11,6 +11,8 @@ import com.guardias.backend.entity.Adicional;
 @Repository
 public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
 
+    Optional<List<Adicional>> findByActivoTrue();
+
     Optional<Adicional> findByNombre(String nombre);
 
     Optional<Adicional> findById(Long id);
@@ -21,5 +23,5 @@ public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
 
     // boolean existsByNombreAndIdNot(String nombre, Long id);
 
-    List<Adicional> findByActivoTrue();
+    List<Adicional> findByActivo(boolean activo);
 }

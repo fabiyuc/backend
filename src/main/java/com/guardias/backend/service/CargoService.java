@@ -22,7 +22,7 @@ public class CargoService {
     @Autowired
     LegajoService legajoService;
 
-    public List<Cargo> findByActivoTrue() {
+    public Optional<List<Cargo>> findByActivoTrue() {
         return cargoRepository.findByActivoTrue();
     }
 
@@ -31,7 +31,7 @@ public class CargoService {
     }
 
     public Optional<Cargo> findById(Long id) {
-        return cargoRepository.findById(id);
+        return cargoRepository.findById((Long) id);
     }
 
     public Optional<Cargo> findByNombre(String nombre) {

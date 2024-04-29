@@ -36,7 +36,7 @@ public class CategoriaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Categoria>> list() {
-        List<Categoria> list = categoriaService.findByActivoTrue();
+        List<Categoria> list = categoriaService.findByActivoTrue().get();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 

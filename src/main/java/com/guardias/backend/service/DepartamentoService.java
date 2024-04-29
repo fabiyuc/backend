@@ -18,7 +18,7 @@ public class DepartamentoService {
     @Autowired
     DepartamentoRepository departamentoRepository;
 
-    public List<Departamento> findByActivo() {
+    public Optional<List<Departamento>> findByActivoTrue() {
         return departamentoRepository.findByActivoTrue();
     }
 

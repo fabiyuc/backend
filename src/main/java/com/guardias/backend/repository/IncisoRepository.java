@@ -13,15 +13,21 @@ import com.guardias.backend.entity.TipoLey;
 @Repository
 public interface IncisoRepository extends JpaRepository<Inciso, Long> {
 
+    Optional<List<Inciso>> findByActivoTrue();
+
     Optional<Inciso> findByNumero(String numero);
+
+    Optional<Inciso> findById(Long id);
 
     Optional<Inciso> findByDenominacion(String denominacion);
 
     Optional<Articulo> findByTipoLey(TipoLey tipoLey);
 
+    boolean existsById(Long id);
+
     boolean existsByNumero(String numero);
 
     boolean existsByDenominacion(String denominacion);
 
-    List<Inciso> findByActivoTrue();
+    List<Inciso> findByActivo(boolean activo);
 }

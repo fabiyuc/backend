@@ -25,11 +25,11 @@ public class CargoDto {
     @NotBlank
     private String nrodecreto;
     @NotNull
-    private LocalDate fecharesolucion;
+    private LocalDate fechaResolucion;
     @NotNull
-    private LocalDate fechainicio;
+    private LocalDate fechaInicio;
     @NotNull
-    private LocalDate fechafinal;
+    private LocalDate fechaFinal;
 
     // private Boolean activo = true;
 

@@ -32,13 +32,13 @@ public class LogController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Log>> list() {
-        List<Log> list = logService.list();
+        List<Log> list = logService.findByActivoTrue().get();
         return new ResponseEntity<List<Log>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Log> getById(@PathVariable("id") Long id) {
-        if (!logService.existsById(id))
+        if (!logService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el log"), HttpStatus.NOT_FOUND);
         Log log = logService.findById(id).get();
         return new ResponseEntity<Log>(log, HttpStatus.OK);
@@ -71,6 +71,7 @@ public class LogController {
         if (log.getAccion() != logDto.getAccion() && logDto.getAccion() != null
                 && !logDto.getAccion().isEmpty())
             log.setAccion(logDto.getAccion());
+
         log.setActivo(true);
 
         return log;
