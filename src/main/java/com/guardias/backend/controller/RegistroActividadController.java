@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
+import com.guardias.backend.service.RegistroMensualService;
 import com.guardias.backend.service.ServicioService;
 import com.guardias.backend.service.TipoGuardiaService;
 
@@ -40,6 +43,11 @@ public class RegistroActividadController {
     AsistencialService asistencialService;
     @Autowired
     TipoGuardiaService tipoGuardiaService;
+
+    @Autowired
+    RegistroMensualService registroMensualService;
+    @Autowired
+    RegistroMensualController registroMensualController;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -66,14 +74,10 @@ public class RegistroActividadController {
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        /* if (registroActividadDto.getFechaEgreso() == null)
-            return new ResponseEntity(new Mensaje("la fecha de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
-
         if (registroActividadDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"), HttpStatus.BAD_REQUEST); */
+            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
 
-        if (registroActividadDto.getHoraEgreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -91,7 +95,8 @@ public class RegistroActividadController {
                 (registroActividadDto.getIdTipoGuardia() != null &&
                         !Objects.equals(registroActividad.getTipoGuardia().getId(),
                                 registroActividadDto.getIdTipoGuardia()))) {
-            registroActividad.setTipoGuardia(tipoGuardiaService.findById(registroActividadDto.getIdTipoGuardia()).get());
+            registroActividad
+                    .setTipoGuardia(tipoGuardiaService.findById(registroActividadDto.getIdTipoGuardia()).get());
         }
 
         if (registroActividad.getFechaIngreso() != registroActividadDto.getFechaIngreso() &&
@@ -125,8 +130,54 @@ public class RegistroActividadController {
             registroActividad.setEfector(efectorService.findById(registroActividadDto.getIdEfector()));
         }
 
+        if (registroActividadDto.getIdRegistroMensual() != null && (registroActividad.getRegistroMensual() == null
+                || !Objects.equals(registroActividad.getRegistroMensual().getId(),
+                        registroActividadDto.getIdRegistroMensual()))) {
+            registroActividad.setRegistroMensual(
+                    registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
+        }
+
         registroActividad.setActivo(true);
         return registroActividad;
+    }
+
+    public Long createRegistroMensual(Long idAsistencial, MesesEnum mesEnum, int anio) {
+        RegistroMensualDto registroMensualDto = new RegistroMensualDto();
+
+        registroMensualDto.setMes(mesEnum);
+        registroMensualDto.setAnio(anio);
+        registroMensualDto.setIdAsistencial(idAsistencial);
+
+        ResponseEntity<?> respuesta = registroMensualController.create(registroMensualDto);
+
+        if (respuesta.getStatusCode() == HttpStatus.OK) {
+            return registroMensualController.idByIdAsistencialAndMes(idAsistencial, mesEnum.toString(), anio)
+                    .getBody();
+        } else {
+            return null;
+        }
+    }
+
+    public void setRegistroMensual(RegistroActividad registroActividad) {
+
+        Long idAsistencial = registroActividad.getAsistencial().getId();
+        int mes = registroActividad.getFechaIngreso().getMonth().getValue();
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+        int anio = registroActividad.getFechaIngreso().getYear();
+        Long id;
+        try {
+            id = registroMensualController.idByIdAsistencialAndMes(idAsistencial, mesEnum.toString(), anio)
+                    .getBody();
+        } catch (Exception e) {
+            id = createRegistroMensual(idAsistencial, mesEnum, anio);
+        }
+
+        try {
+            registroActividad.setRegistroMensual(registroMensualService.findById(id).get());
+            registroActividadService.save(registroActividad);
+        } catch (Exception e) {
+            System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
+        }
     }
 
     @PostMapping("/create")
@@ -138,6 +189,7 @@ public class RegistroActividadController {
 
             RegistroActividad registroActividad = createUpdate(new RegistroActividad(), registroActividadDto);
             registroActividadService.save(registroActividad);
+            setRegistroMensual(registroActividad);
             return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

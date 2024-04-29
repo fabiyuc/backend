@@ -20,6 +20,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.RegistroMensualService;
 
@@ -51,6 +52,42 @@ public class RegistroMensualController {
             return new ResponseEntity(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
         RegistroMensual registroMensual = registroMensualService.findById(id).get();
         return new ResponseEntity(registroMensual, HttpStatus.OK);
+    }
+
+    @GetMapping("/listMes/{idAsistencial}/{mes}/{anio}")
+    public ResponseEntity<List<RegistroActividad>> getByMes(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        if (!registroMensualService.existsByIdAsistencial(idAsistencial))
+            return new ResponseEntity(new Mensaje("El registro mensual no existe"),
+                    HttpStatus.NOT_FOUND);
+
+        try {
+            RegistroMensual registroMensual = registroMensualService
+                    .findByIdAsistencialAndMes(idAsistencial, mesEnum, anio)
+                    .get();
+            List<RegistroActividad> list = registroMensual.getRegistroActividad();
+            return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/detailId/{idAsistencial}/{mes}/{anio}")
+    public ResponseEntity<Long> idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            Long idRegistroMensual = registroMensualService
+                    .idByIdAsistencialAndMes(idAsistencial, mesEnum, anio)
+                    .get();
+            return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     public ResponseEntity<?> validations(@RequestBody RegistroMensualDto registroMensualDto) {
