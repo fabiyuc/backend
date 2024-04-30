@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,8 +77,12 @@ public class EspecialidadController {
                 && !especialidadDto.getNombre().isEmpty())
             especialidad.setNombre(especialidadDto.getNombre());
 
-        if (especialidadDto.getIdProfesion() != null && !especialidadDto.getIdProfesion().equals(especialidad.getId()))
-            especialidad.setProfesion(profesionService.findById(especialidadDto.getIdProfesion()).get());
+        if (especialidadDto.getIdProfesion() != null) {
+            if (especialidad.getProfesion() == null
+                    || !Objects.equals(especialidad.getProfesion().getId(), especialidadDto.getIdProfesion())) {
+                especialidad.setProfesion(profesionService.findById(especialidadDto.getIdProfesion()).get());
+            }
+        }
 
         especialidad.setEsPasiva(especialidadDto.getEsPasiva());
         especialidad.setActivo(true);

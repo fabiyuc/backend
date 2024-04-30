@@ -35,7 +35,7 @@ public class Especialidad {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_profesion")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "asistencial", "especialidades",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial", "especialidades",
             "legajos" })
     private Profesion profesion;
 

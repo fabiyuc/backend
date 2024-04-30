@@ -68,10 +68,8 @@ public class CargaHorariaController {
         if (cargaHorariaDto.getCantidad() < 1)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(cargaHorariaDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("la descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
-        if (cargaHorariaDto.getIdRevistas() == null)
-            return new ResponseEntity(new Mensaje("La revista es obligatoria"), HttpStatus.BAD_REQUEST);
+        /* if (cargaHorariaDto.getIdRevistas() == null)
+            return new ResponseEntity(new Mensaje("La revista es obligatoria"), HttpStatus.BAD_REQUEST); */
 
         if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad())
                 && (cargaHorariaService.findByCantidad(cargaHorariaDto.getCantidad()).get().getId() != id))

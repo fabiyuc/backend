@@ -22,13 +22,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Asistencial extends Person {
 
-    /*
-     * @Enumerated(EnumType.STRING)
-     * 
-     * @Column(columnDefinition = "VARCHAR(15)")
-     * private TipoGuardiaEnum tipoGuardia;
-     */
-
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "asistenciales", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
             "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
