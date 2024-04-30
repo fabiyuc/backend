@@ -41,7 +41,7 @@ public abstract class Efector {
     private String domicilio;
     @Column(columnDefinition = "VARCHAR(15)")
     private String telefono;
-    private boolean estado; // Para el caso de los CAPS temporales
+    private boolean estado;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
@@ -87,7 +87,7 @@ public abstract class Efector {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registroMensual" })
+            "servicio", "efector" })
     private List<RegistroActividad> registroActividad = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",

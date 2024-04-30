@@ -58,12 +58,12 @@ public class Legajo {
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_revista")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista", "categoria", "adicional", "cargaHoraria",
-      "legajos", "activo" })
+      "legajos", "agrupacion", "activo" })
   private Revista revista;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_udo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", 
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
       "autoridades", "domicilio", "telefono",
       "estado", "activo",
       "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
@@ -75,7 +75,8 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_persona")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "legajos", "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "tiposGuardias", "registrosActividades", "descripcion"})
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos", "registrosActividades", "especialidades",
+      "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "tipoGuardia" })
   private Person persona;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
