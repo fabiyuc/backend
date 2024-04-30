@@ -141,17 +141,18 @@ public class RegistroActividadController {
         return registroActividad;
     }
 
-    public Long createRegistroMensual(Long idAsistencial, MesesEnum mesEnum, int anio) {
+    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
         RegistroMensualDto registroMensualDto = new RegistroMensualDto();
 
         registroMensualDto.setMes(mesEnum);
         registroMensualDto.setAnio(anio);
         registroMensualDto.setIdAsistencial(idAsistencial);
+        registroMensualDto.setIdEfector(idEfector);
 
         ResponseEntity<?> respuesta = registroMensualController.create(registroMensualDto);
 
         if (respuesta.getStatusCode() == HttpStatus.OK) {
-            return registroMensualController.idByIdAsistencialAndMes(idAsistencial, mesEnum.toString(), anio)
+            return registroMensualController.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum.toString(), anio)
                     .getBody();
         } else {
             return null;
@@ -161,15 +162,16 @@ public class RegistroActividadController {
     public void setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
+        Long idEfector = registroActividad.getEfector().getId();
         int mes = registroActividad.getFechaIngreso().getMonth().getValue();
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
         int anio = registroActividad.getFechaIngreso().getYear();
         Long id;
         try {
-            id = registroMensualController.idByIdAsistencialAndMes(idAsistencial, mesEnum.toString(), anio)
+            id = registroMensualController.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum.toString(), anio)
                     .getBody();
         } catch (Exception e) {
-            id = createRegistroMensual(idAsistencial, mesEnum, anio);
+            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
 
         try {
