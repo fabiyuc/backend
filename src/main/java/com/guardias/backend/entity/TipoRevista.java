@@ -27,7 +27,7 @@ public class TipoRevista {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "VARCHAR(20)")
+    @Column(columnDefinition = "VARCHAR(35)")
     private String nombre;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
