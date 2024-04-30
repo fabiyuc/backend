@@ -16,7 +16,7 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         Optional<RegistroMensual> findById(Long id);
 
-        @Query("SELECT rm FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.idEfector = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
+        @Query("SELECT rm FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.efector.id = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
         Optional<RegistroMensual> findByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
@@ -26,7 +26,7 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         boolean existsByIdAsistencial(Long idAsistencial);
 
-        @Query("SELECT id FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.idEfector = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
+        @Query("SELECT id FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.efector.id = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
         Optional<Long> idByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
