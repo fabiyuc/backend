@@ -51,8 +51,8 @@ public class LegajoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
-        List<Legajo> list = legajoService.findByActivoTrue().get();
-        return new ResponseEntity(list, HttpStatus.OK);
+        List<Legajo> list = legajoService.findByActivoTrue();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
@@ -102,55 +102,69 @@ public class LegajoController {
 
     private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
 
-        if (legajoDto.getFechaInicio() != null && !legajoDto.getFechaInicio().equals(legajo.getFechaInicio()))
+        if (legajoDto.getFechaInicio() != null && legajo.getFechaInicio() != legajoDto.getFechaInicio())
             legajo.setFechaInicio(legajoDto.getFechaInicio());
 
-        if (legajoDto.getFechaFinal() != null && !legajoDto.getFechaFinal().equals(legajo.getFechaFinal()))
+        if (legajoDto.getFechaFinal() != null && legajo.getFechaFinal() != legajoDto.getFechaFinal())
             legajo.setFechaFinal(legajoDto.getFechaFinal());
 
-        legajo.setActual(legajoDto.getActual());
-        legajo.setLegal(legajoDto.getLegal());
-
         if (legajoDto.getMatriculaNacional() != null
-                && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional()
-                && !legajoDto.getMatriculaNacional().isEmpty())
+                && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional())
             legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
 
         if (legajoDto.getMatriculaProvincial() != null
-                && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial()
-                && !legajoDto.getMatriculaProvincial().isEmpty())
+                && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
             legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
 
-        if (legajo.getPersona() == null ||
-                (legajoDto.getIdPersona() != null &&
-                        !Objects.equals(legajo.getPersona().getId(),
-                                legajoDto.getIdPersona()))) {
-            legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+        if (legajoDto.getIdPersona() != null) {
+            if (legajo.getPersona() == null
+                    || !Objects.equals(legajo.getPersona().getId(), legajoDto.getIdPersona())) {
+                legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+            }
         }
+        /*
+         * if (legajo.getPersona() == null ||
+         * (legajoDto.getIdPersona() != null &&
+         * !Objects.equals(legajo.getPersona().getId(),
+         * legajoDto.getIdPersona()))) {
+         * legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+         * }
+         */
 
-        if (legajo.getUdo() == null ||
-                (legajoDto.getIdUdo() != null &&
-                        !Objects.equals(legajo.getUdo().getId(),
-                                legajoDto.getIdUdo()))) {
-            legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
+        /*
+         * if (legajo.getUdo() == null ||
+         * (legajoDto.getIdUdo() != null &&
+         * !Objects.equals(legajo.getUdo().getId(),
+         * legajoDto.getIdUdo()))) {
+         * legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
+         * }
+         */
+
+        if (legajoDto.getIdUdo() != null) {
+            if (legajo.getUdo() == null
+                    || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
+                legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
+            }
         }
+        legajo.setActual(legajoDto.getActual());
+        legajo.setLegal(legajoDto.getLegal());
 
-        if (legajo.getProfesion() == null ||
-                (legajoDto.getIdProfesion() != null &&
-                        !Objects.equals(legajo.getProfesion().getId(),
-                                legajoDto.getIdProfesion()))) {
-            legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
+        /*
+         * if (legajo.getProfesion() == null ||
+         * (legajoDto.getIdProfesion() != null &&
+         * !Objects.equals(legajo.getProfesion().getId(),
+         * legajoDto.getIdProfesion()))) {
+         * legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get
+         * ());
+         * }
+         */
+
+        if (legajoDto.getIdProfesion() != null) {
+            if (legajo.getProfesion() == null
+                    || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
+                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
+            }
         }
-
-        /* 
-        DEJO EL CONTROL QUE HABÍA ANTES PUES ÉSTE NO PERMITÍA CREAR CON VALOR NULL 
-
-        if (legajo.getSuspencion() == null ||
-                (legajoDto.getIdSuspencion() != null &&
-                        !Objects.equals(legajo.getSuspencion().getId(),
-                                legajoDto.getIdSuspencion()))) {
-            legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).get());
-        } */
         if (legajoDto.getIdSuspencion() != null) {
             if (legajo.getSuspencion() == null
                     || !Objects.equals(legajo.getSuspencion().getId(), legajoDto.getIdSuspencion())) {
@@ -158,21 +172,30 @@ public class LegajoController {
             }
         }
 
-        if (legajo.getRevista() == null ||
-                (legajoDto.getIdRevista() != null &&
-                        !Objects.equals(legajo.getRevista().getId(),
-                                legajoDto.getIdRevista()))) {
-            legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
+        /*
+         * if (legajo.getSuspencion() == null ||
+         * (legajoDto.getIdSuspencion() != null &&
+         * !Objects.equals(legajo.getSuspencion().getId(),
+         * legajoDto.getIdSuspencion()))) {
+         * legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).
+         * get());
+         * }
+         */
+
+        if (legajoDto.getIdRevista() != null) {
+            if (legajo.getRevista() == null
+                    || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {
+                legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
+            }
         }
-
-        /* DEJO EL CONTROL QUE HABÍA ANTES PUES ÉSTE NO PERMITÍA CREAR CON VALOR NULL 
-
-         if (legajo.getCargo() == null ||
-                (legajoDto.getIdCargo() != null &&
-                        !Objects.equals(legajo.getCargo().getId(),
-                                legajoDto.getIdCargo()))) {
-            legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-        } */
+        /*
+         * if (legajo.getRevista() == null ||
+         * (legajoDto.getIdRevista() != null &&
+         * !Objects.equals(legajo.getRevista().getId(),
+         * legajoDto.getIdRevista()))) {
+         * legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
+         * }
+         */
 
         if (legajoDto.getIdCargo() != null) {
             if (legajo.getCargo() == null
@@ -180,6 +203,15 @@ public class LegajoController {
                 legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
             }
         }
+
+        /*
+         * if (legajo.getCargo() == null ||
+         * (legajoDto.getIdCargo() != null &&
+         * !Objects.equals(legajo.getCargo().getId(),
+         * legajoDto.getIdCargo()))) {
+         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
+         * }
+         */
 
         if (legajoDto.getIdEfectores() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -192,7 +224,7 @@ public class LegajoController {
                     }
                 }
             } else {
-                legajo.setEfectores(new ArrayList<>());
+                legajo.setEfectores(new ArrayList<Efector>());
             }
 
             List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEfectores() : idList;
@@ -217,6 +249,10 @@ public class LegajoController {
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
+            /*
+             * return new ResponseEntity(new Mensaje("error al guardar los cambios"),
+             * HttpStatus.BAD_REQUEST);
+             */
             return respuestaValidaciones;
         }
     }
