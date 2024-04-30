@@ -134,12 +134,6 @@ public class LegajoController {
                                 legajoDto.getIdUdo()))) {
             legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
         }
-        /* if (legajoDto.getIdUdo() != null) {
-            if (legajo.getUdo() == null
-                    || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
-                legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
-            }
-        } */
 
         if (legajo.getProfesion() == null ||
                 (legajoDto.getIdProfesion() != null &&
@@ -186,15 +180,6 @@ public class LegajoController {
                 legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
             }
         }
-
-        /*
-         * if (legajo.getCargo() == null ||
-         * (legajoDto.getIdCargo() != null &&
-         * !Objects.equals(legajo.getCargo().getId(),
-         * legajoDto.getIdCargo()))) {
-         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-         * }
-         */
 
         if (legajoDto.getIdEfectores() != null) {
             List<Long> idList = new ArrayList<Long>();
