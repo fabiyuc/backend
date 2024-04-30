@@ -22,6 +22,8 @@ public class RegistroMensualDto {
     @Min(value = 1)
     private Long idAsistencial;
 
+    private Long idEfector;
+
     private List<Long> idRegistroActividad;
     private boolean activo;
 

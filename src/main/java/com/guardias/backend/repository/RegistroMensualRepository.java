@@ -14,21 +14,21 @@ import com.guardias.backend.enums.MesesEnum;
 @Repository
 public interface RegistroMensualRepository extends JpaRepository<RegistroMensual, Long> {
 
-    Optional<RegistroMensual> findById(Long id);
+        Optional<RegistroMensual> findById(Long id);
 
-    @Query("SELECT rm FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.mes = :mes AND rm.anio = :anio")
-    Optional<RegistroMensual> findByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
-            @Param("mes") MesesEnum mes, @Param("anio") int anio);
+        @Query("SELECT rm FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.idEfector = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
+        Optional<RegistroMensual> findByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
-    List<RegistroMensual> findByActivoTrue();
+        List<RegistroMensual> findByActivoTrue();
 
-    boolean existsByMes(String mes);
+        boolean existsByMes(String mes);
 
-    boolean existsByIdAsistencial(Long idAsistencial);
+        boolean existsByIdAsistencial(Long idAsistencial);
 
-    @Query("SELECT id FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.mes = :mes AND rm.anio = :anio")
-    Optional<Long> idByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
-            @Param("mes") MesesEnum mes, @Param("anio") int anio);
+        @Query("SELECT id FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.idEfector = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
+        Optional<Long> idByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
-    Optional<List<RegistroMensual>> findByMes(String mes);
+        Optional<List<RegistroMensual>> findByMes(String mes);
 }

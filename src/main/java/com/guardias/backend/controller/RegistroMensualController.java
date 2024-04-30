@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.RegistroMensualService;
 
@@ -30,7 +32,8 @@ import com.guardias.backend.service.RegistroMensualService;
 public class RegistroMensualController {
     @Autowired
     RegistroMensualService registroMensualService;
-
+    @Autowired
+    EfectorService efectorService;
     @Autowired
     RegistroActividadService registroActividadService;
 
@@ -54,8 +57,9 @@ public class RegistroMensualController {
         return new ResponseEntity(registroMensual, HttpStatus.OK);
     }
 
-    @GetMapping("/listMes/{idAsistencial}/{mes}/{anio}")
+    @GetMapping("/listMes/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegistroActividad>> getByMes(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
             @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
@@ -66,7 +70,7 @@ public class RegistroMensualController {
 
         try {
             RegistroMensual registroMensual = registroMensualService
-                    .findByIdAsistencialAndMes(idAsistencial, mesEnum, anio)
+                    .findByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
                     .get();
             List<RegistroActividad> list = registroMensual.getRegistroActividad();
             return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
@@ -75,14 +79,15 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/detailId/{idAsistencial}/{mes}/{anio}")
+    @GetMapping("/detailId/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<Long> idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
             @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
         try {
             Long idRegistroMensual = registroMensualService
-                    .idByIdAsistencialAndMes(idAsistencial, mesEnum, anio)
+                    .idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
                     .get();
             return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
         } catch (Exception e) {
@@ -135,6 +140,12 @@ public class RegistroMensualController {
                 registroActividadService.findById(id).get().setRegistroMensual(registroMensual);
             }
         }
+
+        if (registroMensualDto.getIdEfector() != null && (registroMensual.getEfector() == null
+                || !Objects.equals(registroMensual.getEfector().getId(), registroMensualDto.getIdEfector()))) {
+            registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
+        }
+
         registroMensual.setActivo(true);
         return registroMensual;
     }

@@ -26,12 +26,13 @@ public class RegistroMensualService {
         return registroMensualRepository.findAll();
     }
 
-    public Optional<RegistroMensual> findByIdAsistencialAndMes(Long idAsistencial, MesesEnum mes, int anio) {
-        return registroMensualRepository.findByIdAsistencialAndMes(idAsistencial, mes, anio);
+    public Optional<RegistroMensual> findByIdAsistencialAndMes(Long idAsistencial, Long idEfector, MesesEnum mes,
+            int anio) {
+        return registroMensualRepository.findByIdAsistencialAndMes(idAsistencial, idEfector, mes, anio);
     }
 
-    public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, MesesEnum mes, int anio) {
-        return registroMensualRepository.idByIdAsistencialAndMes(idAsistencial, mes, anio);
+    public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+        return registroMensualRepository.idByIdAsistencialAndMes(idAsistencial, idEfector, mes, anio);
     }
 
     public Optional<RegistroMensual> findById(Long id) {

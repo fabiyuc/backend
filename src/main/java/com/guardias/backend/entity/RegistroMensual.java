@@ -15,6 +15,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,9 +47,21 @@ public class RegistroMensual {
             "servicio", "efector", "registroMensual" })
     private List<RegistroActividad> registroActividad = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_efector")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "autoridades", "domicilio", "telefono",
+            "estado", "activo",
+            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
+            "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+            "areaProgramatica",
+            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
+    private Efector efector;
+
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "mes", "fechaEgreso","anio",
-    // "registroActividad","idAsistencial" })
+    // "registroActividad","idAsistencial","efector" })
 
     @Override
     public boolean equals(Object obj) {
