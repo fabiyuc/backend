@@ -1,6 +1,9 @@
 package com.guardias.backend.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,36 +16,36 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "tiposLicencias")
+@Entity(name = "ValoresGmi")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
-/*
- * TODO debe ser reemplazado por las clases Articulo e Inciso
- */
-public class TipoLicencia {
+public class ValorGmi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(30)")
-    private String nombre;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String ley;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String articulo;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String inciso;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
+
     @Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
 
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
 
+    @Column(precision = 20, scale = 2)
+    private BigDecimal monto;
+
+    private TipoGuardiaEnum tipoGuardia;
+
+    // @OneToMany(fetch = FetchType.LAZY, mappedBy = "ValorGmi", cascade =
+    // CascadeType.ALL)
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "nombre","ley", "articulo", "inciso","fechaInicio","fechaFin", "activo" })
+    // "nombre","registroActividad" })
+    // private List<Ddjj> ddjjs = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+    // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })
 
     @Override
     public boolean equals(Object obj) {
@@ -52,7 +55,7 @@ public class TipoLicencia {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        TipoLicencia other = (TipoLicencia) obj;
+        ValorGmi other = (ValorGmi) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
@@ -68,5 +71,4 @@ public class TipoLicencia {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
-
 }
