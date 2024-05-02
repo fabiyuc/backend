@@ -79,7 +79,7 @@ public class FeriadoController {
                 && (feriadoService.findByMotivo(feriadoDto.getMotivo()).get().getId() != id))
             return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity(new Mensaje("Feriado creado correctamente"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     private Feriado createUpdate(Feriado feriado, FeriadoDto feriadoDto) {
