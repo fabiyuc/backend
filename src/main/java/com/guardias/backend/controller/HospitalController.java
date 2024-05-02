@@ -101,7 +101,7 @@ public class HospitalController {
         }
         hospital.setActivo(true);
 
-        hospital.setActivo(false);
+        /* hospital.setActivo(false); */
         return hospital;
     }
 
