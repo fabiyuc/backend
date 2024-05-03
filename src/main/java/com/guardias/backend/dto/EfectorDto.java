@@ -21,9 +21,9 @@ public class EfectorDto {
     @NotBlank
     private boolean estado;
     private String observacion;
-    private Long idLocalidad;
     private boolean activo;
 
+    private Long idLocalidad;
     private Long idRegion;
     private List<Long> idDistribucionesHorarias;
     private List<Long> idAutoridades;

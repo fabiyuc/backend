@@ -20,6 +20,7 @@ import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.LegajoService;
+import com.guardias.backend.service.LocalidadService;
 import com.guardias.backend.service.NotificacionService;
 import com.guardias.backend.service.RegionService;
 
@@ -28,6 +29,8 @@ public class EfectorController {
 
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    LocalidadService localidadService;
     @Autowired
     RegionService regionService;
     @Autowired
@@ -75,6 +78,13 @@ public class EfectorController {
         if (efector.getObservacion() == null || (efectorDto.getObservacion() != null
                 && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
+
+        if (efector.getLocalidad() == null ||
+                (efectorDto.getIdLocalidad() != null &&
+                        !Objects.equals(efector.getLocalidad().getId(),
+                                efectorDto.getIdLocalidad()))) {
+            efector.setLocalidad(localidadService.findById(efectorDto.getIdLocalidad()).get());
+        }
 
         if (efector.getRegion() == null ||
                 (efectorDto.getIdRegion() != null &&
