@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
@@ -48,6 +50,8 @@ public class RegistroActividadController {
     RegistroMensualService registroMensualService;
     @Autowired
     RegistroMensualController registroMensualController;
+    @Autowired
+    EfectorController efectorController;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -105,7 +109,7 @@ public class RegistroActividadController {
 
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
-            registroActividad.setFechaIngreso(registroActividadDto.getFechaEgreso());
+            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
 
         if (registroActividad.getHoraIngreso() != registroActividadDto.getHoraIngreso() &&
                 registroActividadDto.getHoraIngreso() != null)
@@ -217,6 +221,7 @@ public class RegistroActividadController {
         }
     }
 
+
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!registroActividadService.existsById(id))
@@ -225,7 +230,33 @@ public class RegistroActividadController {
         RegistroActividad registroActividad = registroActividadService.findById(id).get();
         registroActividad.setActivo(false);
         registroActividadService.save(registroActividad);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada correctamente"), HttpStatus.OK);
+
+        //pruebo actualizar la lista de registroActiv en efectores pero da error ClassCastException
+        /* Efector efector = registroActividad.getEfector();
+        efector.getRegistroActividad().remove(registroActividad);
+        efectorService.saveEfector(efector); */
+
+
+        // modifica la lista pero no guarda actualizada
+        /* TipoGuardia tipoGuardia = registroActividad.getTipoGuardia();
+
+        System.out.println("Datos en la lista antes del remove:");
+    for (RegistroActividad ra : tipoGuardia.getRegistrosActividades()) {
+        System.out.println("registro    : "+ ra.getId());
+    }
+
+        TipoGuardia tipoGuardiaModificado = tipoGuardiaService.findById(tipoGuardia.getId()).orElse(null);
+
+        tipoGuardiaModificado.getRegistrosActividades().remove(registroActividad);
+        
+        System.out.println("Datos en la lista despues del remove:");
+        for (RegistroActividad ra : tipoGuardiaModificado.getRegistrosActividades()) {
+            System.out.println("registro    "+ ra.getId());
+        }
+
+        tipoGuardiaService.save(tipoGuardiaModificado); */
+
+        return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -233,7 +264,7 @@ public class RegistroActividadController {
         if (!registroActividadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         registroActividadService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada FISICAMENTEE"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada FISICAMENTEE"), HttpStatus.OK);
     }
 
 }

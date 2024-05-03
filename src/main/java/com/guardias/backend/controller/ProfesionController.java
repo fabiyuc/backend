@@ -86,7 +86,7 @@ public class ProfesionController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        if (!profesionDto.isAsistencial()) {
+        if (profesionDto.getAsistencial() == null) {
             return new ResponseEntity<>(new Mensaje("Indicar si es asistencial o no"), HttpStatus.BAD_REQUEST);
         }
 
@@ -105,7 +105,7 @@ public class ProfesionController {
                 !profesionDto.getNombre().equals(profesion.getNombre()))
             profesion.setNombre(profesionDto.getNombre());
 
-        profesion.setAsistencial(profesionDto.isAsistencial());
+        profesion.setAsistencial(profesionDto.getAsistencial());
 
         if (profesionDto.getIdLegajos() != null) {
             List<Long> idList = new ArrayList<Long>();

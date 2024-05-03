@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,15 +72,18 @@ public class EfectorService {
     }
 
     public void saveEfector(Efector efector) {
+
+        Hibernate.initialize(efector);
+
         if (efector instanceof Caps) {
-            Caps caps = (Caps) efector;
-            capsService.save(caps);
+            //Caps caps = (Caps) efector;
+            capsService.save((Caps)efector);
         } else if (efector instanceof Hospital) {
-            Hospital hospital = (Hospital) efector;
-            hospitalService.save(hospital);
+            //Hospital hospital = (Hospital) efector;
+            hospitalService.save((Hospital)efector);
         } else {
-            Ministerio ministerio = (Ministerio) efector;
-            ministerioService.save(ministerio);
+            //Ministerio ministerio = (Ministerio) efector;
+            ministerioService.save((Ministerio)efector);
         }
     }
 

@@ -49,12 +49,12 @@ public abstract class Efector {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "efectores" })
     private Region region;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_localidad")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "departamento", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "departamento", "efectores" })
     private Localidad localidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)

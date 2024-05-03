@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
@@ -94,6 +93,10 @@ public class EfectorController {
             efector.setRegion(regionService.findById(efectorDto.getIdRegion()).get());
         }
 
+        //localidad? 
+        //registroActividades?
+        //registro mensual?
+        
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (efector.getDistribucionesHorarias() != null) {
@@ -201,4 +204,6 @@ public class EfectorController {
         efectorService.saveEfector(efector);
         return new ResponseEntity(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
     }
+
+    
 }
