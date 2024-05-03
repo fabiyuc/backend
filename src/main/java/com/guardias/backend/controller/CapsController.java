@@ -91,6 +91,7 @@ public class CapsController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(new Caps(), capsDto);
+            caps.setActivo(true);
             capsService.save(caps);
             return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
         } else {
