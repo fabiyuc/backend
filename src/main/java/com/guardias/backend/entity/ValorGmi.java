@@ -2,14 +2,20 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -38,11 +44,10 @@ public class ValorGmi {
 
     private TipoGuardiaEnum tipoGuardia;
 
-    // @OneToMany(fetch = FetchType.LAZY, mappedBy = "ValorGmi", cascade =
-    // CascadeType.ALL)
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "nombre","registroActividad" })
-    // private List<Ddjj> ddjjs = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ValorGmi", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
+            "total", "estadoDdjj", "valorGmi" })
+    private List<Ddjj> ddjjs = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })

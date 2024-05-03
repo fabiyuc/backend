@@ -57,14 +57,10 @@ public class Notificacion {
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "notificacion_efector", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "efector_id"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-            "autoridades", "domicilio", "telefono",
-            "estado", "activo",
-            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
-            "legajos",
-            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-            "areaProgramatica",
-            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
+            "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs" })
     private List<Efector> efectores = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer",

@@ -32,14 +32,10 @@ public class Region {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "region", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-            "autoridades", "domicilio", "telefono",
-            "estado", "activo",
-            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
-            "legajos",
-            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-            "areaProgramatica",
-            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
+            "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs" })
     private List<Efector> efectores = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",

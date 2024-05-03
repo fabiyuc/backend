@@ -60,4 +60,8 @@ public class ValorGmiController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
+    private ValorGmi createUpdate(ValorGmi valorGmi, ValorGmiDto valorGmiDto) {
+        return valorGmi;
+    }
+
 }

@@ -1,9 +1,11 @@
 package com.guardias.backend.entity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.EstadoDdjjEenum;
 import com.guardias.backend.enums.MesesEnum;
 
 import jakarta.persistence.CascadeType;
@@ -18,56 +20,51 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "registrosMensuales")
+@Entity(name = "Ddjjs")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistroMensual {
+public class Ddjj {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private boolean activo;
     @Column(columnDefinition = "VARCHAR(20)")
     @Enumerated(EnumType.STRING)
     private MesesEnum mes;
-
     private int anio;
-    private Long idAsistencial; // para que sea mas facil la busqueda por persona
+    @Column(precision = 20, scale = 2)
+    private BigDecimal subtotal;
+    @Column(precision = 20, scale = 2)
+    private BigDecimal total;
+    private EstadoDdjjEenum estadoDdjj;
 
-    @Column(columnDefinition = "BIT DEFAULT 1")
-    private boolean activo;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "registroMensual", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registroMensual" })
-    private List<RegistroActividad> registroActividad = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_valorGmi")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFin", "monto", "tipoGuardia",
+            "ddjjs", "activo" })
+    private ValorGmi valorGmi;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
-            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
-            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
-            "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "autoridades", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad",
+            "distribucionesHorarias", "legajosUdo",
+            "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
+            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs" })
     private Efector efector;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_ddjj")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
-            "total", "estadoDdjj", "valorGmi" })
-    Ddjj ddjj;
-
-    @OneToOne(mappedBy = "registroMensual")
-    private SumaHoras sumaHoras;
-
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
-    // "mes", "fechaEgreso","anio",
-    // "registroActividad","idAsistencial","efector","ddjj","sumaHoras" })
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+            "mes", "fechaEgreso", "anio",
+            "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras" })
+    List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {
@@ -77,7 +74,7 @@ public class RegistroMensual {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RegistroMensual other = (RegistroMensual) obj;
+        Ddjj other = (Ddjj) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
@@ -93,5 +90,9 @@ public class RegistroMensual {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+    // "mes", "anio", "subtotal",
+    // "total", "estadoDdjj","valorGmi" })
 
 }

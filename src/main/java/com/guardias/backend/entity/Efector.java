@@ -92,17 +92,21 @@ public abstract class Efector {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "registroActividad", "idAsistencial", "efector" })
+            "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras" })
     private List<RegistroMensual> registroMensual = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ValorGmi", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
+            "total", "estadoDdjj", "valorGmi" })
+    private List<Ddjj> ddjjs = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "autoridades", "domicilio", "telefono",
-    // "estado", "activo",
-    // "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
-    // "legajos",
+    // "estado", "activo", "observacion", "region", "localidad",
+    // "distribucionesHorarias", "legajosUdo", "legajos",
     // "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-    // "areaProgramatica",
-    // "tipoCaps", "nivelComplejidad", "cabecera", "ministerios","registroActividad"
+    // "areaProgramatica", "tipoCaps",
+    // "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs"
     // })
 
     @Override
