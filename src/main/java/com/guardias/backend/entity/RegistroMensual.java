@@ -60,7 +60,7 @@ public class RegistroMensual {
     @JoinColumn(name = "id_ddjj")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi" })
-    Ddjj ddjj;
+    private Ddjj ddjj;
 
     @OneToOne(mappedBy = "registroMensual")
     private SumaHoras sumaHoras;

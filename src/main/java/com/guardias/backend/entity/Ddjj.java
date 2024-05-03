@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.EstadoDdjjEenum;
+import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 
 import jakarta.persistence.CascadeType;
@@ -43,7 +43,7 @@ public class Ddjj {
     private BigDecimal subtotal;
     @Column(precision = 20, scale = 2)
     private BigDecimal total;
-    private EstadoDdjjEenum estadoDdjj;
+    private EstadoDdjjEnum estadoDdjj;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valorGmi")

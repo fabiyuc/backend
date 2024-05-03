@@ -25,6 +25,8 @@ public class RegistroMensualDto {
     private Long idEfector;
 
     private List<Long> idRegistroActividad;
+    private Long idDdjj;
+    private Long idSumaHoras;
     private boolean activo;
 
 }

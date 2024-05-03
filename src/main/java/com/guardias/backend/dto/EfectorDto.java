@@ -30,4 +30,6 @@ public class EfectorDto {
     private List<Long> idLegajosUdo;
     private List<Long> idLegajos;
     private List<Long> idNotificaciones;
+    private List<Long> idRegistroMensual;
+    private List<Long> idDdjjs;
 }
