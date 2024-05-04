@@ -17,5 +17,5 @@ public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Long> 
 
     boolean existsByDescripcion(String descripcion);
 
-    List <TipoGuardia> findByActivoTrue();
+    Optional <List<TipoGuardia>> findByActivoTrue();
 }

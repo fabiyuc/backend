@@ -21,6 +21,8 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Ministerio;
+import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.MinisterioService;
 
 @Controller
@@ -35,8 +37,21 @@ public class MinisterioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
-        List<Ministerio> list = ministerioService.findByActivoTrue().get();
-        return new ResponseEntity(list, HttpStatus.OK);
+        List<Ministerio> ministerioList = ministerioService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Ministerio> filteredList = new ArrayList<>();
+
+        for (Ministerio ministerio : ministerioList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : ministerio.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            ministerio.setRegistrosActividades(activeRegActividades);
+            filteredList.add(ministerio);
+        }
+        
+        return new ResponseEntity<List<Ministerio>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")

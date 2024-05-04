@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.TipoGuardiaService;
@@ -35,8 +35,21 @@ public class TipoGuardiaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoGuardia>> list() {
-        List<TipoGuardia> list = tipoGuardiaService.findByActivo();
-        return new ResponseEntity<List<TipoGuardia>>(list, HttpStatus.OK);
+        List<TipoGuardia> tipoGuardiaList = tipoGuardiaService.findByActivoTrue().orElse(new ArrayList<>());
+        List<TipoGuardia> filteredList = new ArrayList<>();
+
+        for (TipoGuardia tipoGuardia : tipoGuardiaList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : tipoGuardia.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            tipoGuardia.setRegistrosActividades(activeRegActividades);
+            filteredList.add(tipoGuardia);
+        }
+        
+        return new ResponseEntity<List<TipoGuardia>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")

@@ -15,13 +15,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.RegistroMensualDto;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
@@ -230,31 +227,6 @@ public class RegistroActividadController {
         RegistroActividad registroActividad = registroActividadService.findById(id).get();
         registroActividad.setActivo(false);
         registroActividadService.save(registroActividad);
-
-        //pruebo actualizar la lista de registroActiv en efectores pero da error ClassCastException
-        /* Efector efector = registroActividad.getEfector();
-        efector.getRegistroActividad().remove(registroActividad);
-        efectorService.saveEfector(efector); */
-
-
-        // modifica la lista pero no guarda actualizada
-        /* TipoGuardia tipoGuardia = registroActividad.getTipoGuardia();
-
-        System.out.println("Datos en la lista antes del remove:");
-    for (RegistroActividad ra : tipoGuardia.getRegistrosActividades()) {
-        System.out.println("registro    : "+ ra.getId());
-    }
-
-        TipoGuardia tipoGuardiaModificado = tipoGuardiaService.findById(tipoGuardia.getId()).orElse(null);
-
-        tipoGuardiaModificado.getRegistrosActividades().remove(registroActividad);
-        
-        System.out.println("Datos en la lista despues del remove:");
-        for (RegistroActividad ra : tipoGuardiaModificado.getRegistrosActividades()) {
-            System.out.println("registro    "+ ra.getId());
-        }
-
-        tipoGuardiaService.save(tipoGuardiaModificado); */
 
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
     }

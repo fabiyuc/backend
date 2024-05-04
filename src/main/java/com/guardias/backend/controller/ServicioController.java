@@ -21,6 +21,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.Servicio;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.ServicioService;
 
@@ -36,8 +37,21 @@ public class ServicioController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Servicio>> list() {
-        List<Servicio> list = servicioService.findByActivo();
-        return new ResponseEntity<List<Servicio>>(list, HttpStatus.OK);
+        List<Servicio> servicioList = servicioService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Servicio> filteredList = new ArrayList<>();
+
+        for (Servicio servicio : servicioList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : servicio.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            servicio.setRegistrosActividades(activeRegActividades);
+            filteredList.add(servicio);
+        }
+        
+        return new ResponseEntity<List<Servicio>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")

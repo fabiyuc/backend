@@ -21,6 +21,8 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
+import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 
@@ -40,8 +42,21 @@ public class HospitalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
-        List<Hospital> list = hospitalService.findByActivoTrue().get();
-        return new ResponseEntity(list, HttpStatus.OK);
+        List<Hospital> hospitalList = hospitalService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Hospital> filteredList = new ArrayList<>();
+
+        for (Hospital hospital : hospitalList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : hospital.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            hospital.setRegistrosActividades(activeRegActividades);
+            filteredList.add(hospital);
+        }
+        
+        return new ResponseEntity<List<Hospital>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
