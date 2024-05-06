@@ -26,7 +26,7 @@ public class RegistroActividadDto {
     @NotBlank
     private Long idTipoGuardia;
 
-    private boolean activo;
+    private Boolean activo;
 
     @NotBlank
     private Long idAsistencial;

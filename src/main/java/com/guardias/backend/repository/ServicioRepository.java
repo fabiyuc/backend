@@ -19,5 +19,5 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 
     Boolean existsByNivel(int nivel);
 
-    List<Servicio> findByActivoTrue();
+    Optional<List<Servicio>> findByActivoTrue();
 }

@@ -36,8 +36,21 @@ public class AdicionalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
-        List<Adicional> list = adicionalService.findByActivoTrue();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        List<Adicional> adicionalList = adicionalService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Adicional> filteredList = new ArrayList<>();
+
+        for (Adicional adicional : adicionalList) {
+            List<Revista> activeRevistas = new ArrayList<>();
+            for (Revista revista : adicional.getRevistas()) {
+                if (revista.isActivo()) {
+                    activeRevistas.add(revista);
+                }
+            }
+            adicional.setRevistas(activeRevistas);
+            filteredList.add(adicional);
+        }
+
+        return new ResponseEntity<>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")

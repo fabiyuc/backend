@@ -191,7 +191,7 @@ public class RegistroMensualController {
         RegistroMensual registroMensual = registroMensualService.findById(id).get();
         registroMensual.setActivo(false);
         registroMensualService.save(registroMensual);
-        return new ResponseEntity<>(new Mensaje("Registro de Actividad eliminado correctamente"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Registro mensual eliminado correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -199,6 +199,6 @@ public class RegistroMensualController {
         if (!registroMensualService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         registroMensualService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Registro de Actividad eliminado FISICAMENTEE"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Registro mensual eliminado FISICAMENTEE"), HttpStatus.OK);
     }
 }

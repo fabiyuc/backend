@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,6 +21,8 @@ import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 
@@ -38,8 +41,21 @@ public class CapsController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Caps>> list() {
-        List<Caps> list = capsService.findByActivoTrue().get();
-        return new ResponseEntity(list, HttpStatus.OK);
+        List<Caps> capsList = capsService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Caps> filteredList = new ArrayList<>();
+
+        for (Caps caps : capsList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : caps.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            caps.setRegistrosActividades(activeRegActividades);
+            filteredList.add(caps);
+        }
+        
+        return new ResponseEntity<List<Caps>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
@@ -91,6 +107,7 @@ public class CapsController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(new Caps(), capsDto);
+            caps.setActivo(true);
             capsService.save(caps);
             return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
         } else {

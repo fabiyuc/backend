@@ -45,7 +45,7 @@ public class ArticuloController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Articulo>> list() {
-        List<Articulo> list = articuloService.findByActivoTrue();
+        List<Articulo> list = articuloService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

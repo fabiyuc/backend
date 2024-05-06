@@ -16,7 +16,11 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
     @Query("SELECT a FROM Articulo a WHERE a.activo = true")
     List<Articulo> findAllActivos();
 
+    Optional<List<Articulo>> findByActivoTrue();
+
     Optional<Articulo> findByNumero(String numero);
+
+    Optional<Articulo> findById(Long id);
 
     Optional<Articulo> findByDenominacion(String denominacion);
 
@@ -26,6 +30,8 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
 
     boolean existsByDenominacion(String denominacion);
 
-    List<Articulo> findByActivoTrue();
+    boolean existsById(Long id);
+
+    List<Articulo> findByActivo(boolean activo);
 
 }

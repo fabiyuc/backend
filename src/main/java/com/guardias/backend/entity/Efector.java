@@ -49,12 +49,12 @@ public abstract class Efector {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "efectores" })
     private Region region;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_localidad")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "departamento", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "departamento", "efectores" })
     private Localidad localidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
@@ -88,7 +88,7 @@ public abstract class Efector {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
             "servicio", "efector" })
-    private List<RegistroActividad> registroActividad = new ArrayList<>();
+    private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",

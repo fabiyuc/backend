@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
@@ -21,6 +20,7 @@ import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.LegajoService;
+import com.guardias.backend.service.LocalidadService;
 import com.guardias.backend.service.NotificacionService;
 import com.guardias.backend.service.RegionService;
 
@@ -29,6 +29,8 @@ public class EfectorController {
 
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    LocalidadService localidadService;
     @Autowired
     RegionService regionService;
     @Autowired
@@ -77,6 +79,13 @@ public class EfectorController {
                 && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
 
+        if (efector.getLocalidad() == null ||
+                (efectorDto.getIdLocalidad() != null &&
+                        !Objects.equals(efector.getLocalidad().getId(),
+                                efectorDto.getIdLocalidad()))) {
+            efector.setLocalidad(localidadService.findById(efectorDto.getIdLocalidad()).get());
+        }
+
         if (efector.getRegion() == null ||
                 (efectorDto.getIdRegion() != null &&
                         !Objects.equals(efector.getRegion().getId(),
@@ -84,6 +93,10 @@ public class EfectorController {
             efector.setRegion(regionService.findById(efectorDto.getIdRegion()).get());
         }
 
+        //localidad? 
+        //registroActividades?
+        //registro mensual?
+        
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (efector.getDistribucionesHorarias() != null) {
@@ -191,4 +204,6 @@ public class EfectorController {
         efectorService.saveEfector(efector);
         return new ResponseEntity(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
     }
+
+    
 }

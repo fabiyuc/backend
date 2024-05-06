@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -48,8 +50,21 @@ public class AsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
-        List<Asistencial> list = asistencialService.findByActivoTrue().get();
-        return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
+        List<Asistencial> asistencialList = asistencialService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Asistencial> filteredList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistencialList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : asistencial.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            asistencial.setRegistrosActividades(activeRegActividades);
+            filteredList.add(asistencial);
+        }
+
+        return new ResponseEntity<List<Asistencial>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.RegistroMensualDto;
@@ -48,6 +47,8 @@ public class RegistroActividadController {
     RegistroMensualService registroMensualService;
     @Autowired
     RegistroMensualController registroMensualController;
+    @Autowired
+    EfectorController efectorController;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -105,7 +106,7 @@ public class RegistroActividadController {
 
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
-            registroActividad.setFechaIngreso(registroActividadDto.getFechaEgreso());
+            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
 
         if (registroActividad.getHoraIngreso() != registroActividadDto.getHoraIngreso() &&
                 registroActividadDto.getHoraIngreso() != null)
@@ -217,6 +218,7 @@ public class RegistroActividadController {
         }
     }
 
+
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!registroActividadService.activo(id))
@@ -225,7 +227,8 @@ public class RegistroActividadController {
         RegistroActividad registroActividad = registroActividadService.findById(id).get();
         registroActividad.setActivo(false);
         registroActividadService.save(registroActividad);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada correctamente"), HttpStatus.OK);
+
+        return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -233,7 +236,7 @@ public class RegistroActividadController {
         if (!registroActividadService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         registroActividadService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada FISICAMENTEE"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada FISICAMENTEE"), HttpStatus.OK);
     }
 
 }

@@ -43,7 +43,7 @@ public class TipoGuardiaService {
                 && tipoGuardiaRepository.findByNombre(nombre).get().isActivo());
     }
 
-    public List<TipoGuardia> findByActivo(){
+    public Optional <List<TipoGuardia>> findByActivoTrue(){
         return tipoGuardiaRepository.findByActivoTrue();
     }
 

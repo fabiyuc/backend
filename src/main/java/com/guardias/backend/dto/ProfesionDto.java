@@ -16,8 +16,8 @@ public class ProfesionDto {
     private String nombre;
 
     @NotBlank
-    private boolean asistencial;
-    private boolean activo;
+    private Boolean asistencial;
+    private Boolean activo;
 
     @NotBlank
     private List<Long> idLegajos;

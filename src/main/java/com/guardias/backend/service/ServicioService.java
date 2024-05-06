@@ -17,7 +17,7 @@ public class ServicioService {
     @Autowired
     ServicioRepository servicioRepositorio;
 
-    public List<Servicio> findByActivo() {
+    public Optional<List<Servicio>> findByActivoTrue() {
         return servicioRepositorio.findByActivoTrue();
     }
 
