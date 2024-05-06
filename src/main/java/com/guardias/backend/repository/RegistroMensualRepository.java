@@ -22,7 +22,7 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         List<RegistroMensual> findByActivoTrue();
 
-        boolean existsByMes(String mes);
+        boolean existsByAnioAndMes(int anio, MesesEnum mes);
 
         boolean existsByIdAsistencial(Long idAsistencial);
 
@@ -30,5 +30,5 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         Optional<Long> idByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
-        Optional<List<RegistroMensual>> findByMes(String mes);
+        List<RegistroMensual> findByAnioAndMes(int anio, MesesEnum mes);
 }

@@ -39,8 +39,8 @@ public class RegistroMensualService {
         return registroMensualRepository.findById(id);
     }
 
-    boolean existsByMes(String mes) {
-        return registroMensualRepository.existsByMes(mes);
+    boolean existsByAnioAndMes(int anio, MesesEnum mes) {
+        return registroMensualRepository.existsByAnioAndMes(anio, mes);
     }
 
     public boolean existsByIdAsistencial(Long idAsistencial) {

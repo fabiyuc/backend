@@ -36,7 +36,7 @@ public class AdicionalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
-        List<Adicional> list = adicionalService.findByActivoTrue().get();
+        List<Adicional> list = adicionalService.findByActivoTrue();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 

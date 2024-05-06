@@ -19,7 +19,7 @@ public class AdicionalService {
     @Autowired
     RegionService regionService;
 
-    public Optional<List<Adicional>> findByActivoTrue() {
+    public List<Adicional> findByActivoTrue() {
         return adicionalRepository.findByActivoTrue();
     }
 

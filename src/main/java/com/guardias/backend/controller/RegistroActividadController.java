@@ -69,7 +69,7 @@ public class RegistroActividadController {
         return new ResponseEntity(registroActividad, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> validations(@RequestBody RegistroActividadDto registroActividadDto) {
+    public ResponseEntity<?> validations(RegistroActividadDto registroActividadDto) {
 
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -219,7 +219,7 @@ public class RegistroActividadController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!registroActividadService.existsById(id))
+        if (!registroActividadService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         RegistroActividad registroActividad = registroActividadService.findById(id).get();

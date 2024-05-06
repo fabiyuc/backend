@@ -95,7 +95,7 @@ public class RegistroMensualController {
         }
     }
 
-    public ResponseEntity<?> validations(@RequestBody RegistroMensualDto registroMensualDto) {
+    public ResponseEntity<?> validations(RegistroMensualDto registroMensualDto) {
 
         if (registroMensualDto.getMes() == null)
             return new ResponseEntity(new Mensaje("El mes es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -177,7 +177,7 @@ public class RegistroMensualController {
             RegistroMensual registroMensual = createUpdate(registroMensualService.findById(id).get(),
                     registroMensualDto);
             registroMensualService.save(registroMensual);
-            return new ResponseEntity(new Mensaje("Registro de Actividad modificada"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Registro de Actividad modificado"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -191,7 +191,7 @@ public class RegistroMensualController {
         RegistroMensual registroMensual = registroMensualService.findById(id).get();
         registroMensual.setActivo(false);
         registroMensualService.save(registroMensual);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada correctamente"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Registro de Actividad eliminado correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -199,6 +199,6 @@ public class RegistroMensualController {
         if (!registroMensualService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         registroMensualService.deleteById(id);
-        return new ResponseEntity<>(new Mensaje("Notificación eliminada FISICAMENTEE"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Registro de Actividad eliminado FISICAMENTEE"), HttpStatus.OK);
     }
 }
