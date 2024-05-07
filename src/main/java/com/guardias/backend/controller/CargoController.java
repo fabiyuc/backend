@@ -81,14 +81,15 @@ public class CargoController {
         if (cargoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("Fecha de inicio obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (cargoDto.getFechaFinal() == null)
-            return new ResponseEntity(new Mensaje("Fecha final obligatoria"), HttpStatus.BAD_REQUEST);
+        // if (cargoDto.getFechaFinal() == null)
+        // return new ResponseEntity(new Mensaje("Fecha final obligatoria"),
+        // HttpStatus.BAD_REQUEST);
 
         if (cargoDto.getAgrupacion() == null)
             return new ResponseEntity(new Mensaje("Agrupación obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (cargoDto.getIdLegajos() == null)
-            return new ResponseEntity(new Mensaje("Legajos obligatorios"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("Legajo obligatorios"), HttpStatus.BAD_REQUEST);
 
         if (cargoService.activoByNombre(cargoDto.getNombre())
                 && (cargoService.findByNombre(cargoDto.getNombre()).get().getId() != id))

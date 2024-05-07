@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DepartamentoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Departamento;
+import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.service.DepartamentoService;
+import com.guardias.backend.service.LocalidadService;
+import com.guardias.backend.service.ProvinciaService;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -28,6 +33,12 @@ import io.micrometer.common.util.StringUtils;
 public class DepartamentoController {
     @Autowired
     DepartamentoService departamentoService;
+
+    @Autowired
+    ProvinciaService provinciaService;
+
+    @Autowired
+    LocalidadService localidadService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Departamento>> list() {
@@ -66,7 +77,7 @@ public class DepartamentoController {
             return new ResponseEntity(new Mensaje("el codigo postal es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        if (departamentoDto.getProvincia() == null)
+        if (departamentoDto.getIdProvincia() == null)
             return new ResponseEntity(new Mensaje("la provincia es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
@@ -90,7 +101,32 @@ public class DepartamentoController {
             departamento.setCodigoPostal(departamentoDto.getCodigoPostal());
 
         // VER PROVINCIAS!!!!!!!!!!!!!!!!
-        departamento.setProvincia(departamentoDto.getProvincia());
+        if (departamentoDto.getIdProvincia() != null) {
+            if (departamento.getProvincia() == null
+                    || !Objects.equals(departamento.getProvincia().getId(), departamentoDto.getIdProvincia())) {
+                departamento.setProvincia(provinciaService.findById(departamentoDto.getIdProvincia()).get());
+            }
+        }
+
+        if (departamentoDto.getIdLocalidades() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (departamento.getLocalidades() != null) {
+                for (Localidad localidad : departamento.getLocalidades()) {
+                    for (Long id : departamentoDto.getIdLocalidades()) {
+                        if (!localidad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                departamento.setLocalidades(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? departamentoDto.getIdLocalidades() : idList;
+            for (Long id : idsToAdd) {
+                departamento.getLocalidades().add(localidadService.findById(id).get());
+                localidadService.findById(id).get().setDepartamento(departamento);
+            }
+        }
 
         departamento.setActivo(true);
         return departamento;
@@ -119,7 +155,7 @@ public class DepartamentoController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Departamento departamento = createUpdate(departamentoService.findById(id).get(), departamentoDto);
             departamentoService.save(departamento);
-            return new ResponseEntity<>(new Mensaje("Departamento creado correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Departamento modificado correctamente"), HttpStatus.OK);
         }
         return respuestaValidaciones;
 
@@ -133,7 +169,7 @@ public class DepartamentoController {
         Departamento departamento = departamentoService.findById(id).get();
         departamento.setActivo(false);
         departamentoService.save(departamento);
-        return new ResponseEntity(new Mensaje("departamento eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("departamento eliminado correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -142,6 +178,6 @@ public class DepartamentoController {
         if (!departamentoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el departamento"), HttpStatus.NOT_FOUND);
         departamentoService.deleteById(id);
-        return new ResponseEntity(new Mensaje("departamento eliminado"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("departamento eliminado FISICAMENTE"), HttpStatus.OK);
     }
 }

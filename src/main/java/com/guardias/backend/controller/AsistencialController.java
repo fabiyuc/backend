@@ -89,8 +89,10 @@ public class AsistencialController {
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
         Person person = personController.createUpdate(asistencial, asistencialDto);
         asistencial = (Asistencial) person;
-        /* if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
-            asistencial.setTipoGuardia(asistencialDto.getTipoGuardia()); */
+        /*
+         * if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
+         * asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
+         */
 
         if (asistencialDto.getIdRegistrosActividades() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -143,9 +145,9 @@ public class AsistencialController {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
+
     }
 
     @PutMapping("/update/{id}")
@@ -185,7 +187,7 @@ public class AsistencialController {
     @PostMapping("/{idAsistencial}/addTipoGuardia/{idTipoGuardia}")
     public ResponseEntity<?> agregarTipoGuardia(@PathVariable("idAsistencial") Long idAsistencial,
             @PathVariable("idTipoGuardia") Long idTipoGuardia) {
-        
+
         try {
             asistencialService.agregarTipoGuardia(idAsistencial, idTipoGuardia);
             return new ResponseEntity<>(new Mensaje("Tipo DEGuardia agregado al asistencial correctamente"),
@@ -193,7 +195,7 @@ public class AsistencialController {
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new Mensaje("No se encontró el asistencial con el ID proporcionado"),
                     HttpStatus.NOT_FOUND);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(new Mensaje("Error al agregar el tipo de Guardia al asistencial"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
