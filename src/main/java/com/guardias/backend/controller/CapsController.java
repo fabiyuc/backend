@@ -22,7 +22,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 
@@ -54,7 +53,7 @@ public class CapsController {
             caps.setRegistrosActividades(activeRegActividades);
             filteredList.add(caps);
         }
-        
+
         return new ResponseEntity<List<Caps>>(filteredList, HttpStatus.OK);
     }
 
