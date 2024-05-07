@@ -44,7 +44,7 @@ public class ValorGmi {
 
     private TipoGuardiaEnum tipoGuardia;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ValorGmi", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi" })
     private List<Ddjj> ddjjs = new ArrayList<>();

@@ -46,7 +46,7 @@ public class DdjjService {
     }
 
     public List<Ddjj> findByByAnioAndMes(int anio, MesesEnum mes) {
-        return ddjjRepository.findByByAnioAndMes(anio, mes);
+        return ddjjRepository.findByAnioAndMes(anio, mes);
     }
 
     public List<Ddjj> findByEfectorIdAndMesAndAnio(Long efectorId, MesesEnum mes, int anio) {
@@ -54,7 +54,7 @@ public class DdjjService {
     }
 
     public List<Ddjj> findByByAnio(int anio) {
-        return ddjjRepository.findByByAnio(anio);
+        return ddjjRepository.findByAnio(anio);
     }
 
     public void save(Ddjj ddjj) {

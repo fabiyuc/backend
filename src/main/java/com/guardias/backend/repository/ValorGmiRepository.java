@@ -13,8 +13,9 @@ import com.guardias.backend.entity.ValorGmi;
 @Repository
 public interface ValorGmiRepository extends JpaRepository<ValorGmi, Long> {
 
-    public List<ValorGmi> findByActivoTrue();
+    List<ValorGmi> findByActivoTrue();
 
-    @Query("SELECT vg FROM ValorGmi vg WHERE :fecha BETWEEN vg.fechaInicio AND vg.fechaFin")
+    @Query("SELECT vg FROM ValorGmi vg WHERE vg.fechaInicio <= :fecha AND vg.fechaFin >= :fecha")
     public List<ValorGmi> findByDate(@Param("fecha") LocalDate fecha);
+
 }

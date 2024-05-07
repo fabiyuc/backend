@@ -22,9 +22,10 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
 
     boolean existsByAnio(int anio);
 
-    List<Ddjj> findByByAnioAndMes(int anio, MesesEnum mes);
+    List<Ddjj> findByAnio(int anio);
+
+    List<Ddjj> findByAnioAndMes(int anio, MesesEnum mes);
 
     List<Ddjj> findByEfectorIdAndMesAndAnio(Long efectorId, MesesEnum mes, int anio);
 
-    List<Ddjj> findByByAnio(int anio);
 }
