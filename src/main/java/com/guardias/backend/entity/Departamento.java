@@ -41,11 +41,11 @@ public class Departamento {
     @JoinColumn(name = "id_provincia")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "gentilicio", "activo", "departamentos",
             "pais" })
-    Provincia provincia;
+    private Provincia provincia;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "departamento", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "departamento", "efectores" })
-    List<Localidad> localidades = new ArrayList<>();
+    private List<Localidad> localidades = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

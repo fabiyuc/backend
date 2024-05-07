@@ -19,12 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Adicional;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.Revista;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -152,9 +150,9 @@ public class AsistencialController {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial creado"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
+
     }
 
     @PutMapping("/update/{id}")
@@ -194,7 +192,7 @@ public class AsistencialController {
     @PostMapping("/{idAsistencial}/addTipoGuardia/{idTipoGuardia}")
     public ResponseEntity<?> agregarTipoGuardia(@PathVariable("idAsistencial") Long idAsistencial,
             @PathVariable("idTipoGuardia") Long idTipoGuardia) {
-        
+
         try {
             asistencialService.agregarTipoGuardia(idAsistencial, idTipoGuardia);
             return new ResponseEntity<>(new Mensaje("Tipo DEGuardia agregado al asistencial correctamente"),
@@ -202,7 +200,7 @@ public class AsistencialController {
         } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(new Mensaje("No se encontró el asistencial con el ID proporcionado"),
                     HttpStatus.NOT_FOUND);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(new Mensaje("Error al agregar el tipo de Guardia al asistencial"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

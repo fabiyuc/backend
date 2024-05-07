@@ -151,7 +151,7 @@ public class AdicionalController {
         return respuestaValidaciones;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PutMapping("/delete/{id}")
     public ResponseEntity<Mensaje> logicDelete(@PathVariable("id") long id) {
         if (!adicionalService.activo(id))
             return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
