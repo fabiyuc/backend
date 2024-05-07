@@ -48,8 +48,21 @@ public class AsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
-        List<Asistencial> list = asistencialService.findByActivoTrue().get();
-        return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
+        List<Asistencial> asistencialList = asistencialService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Asistencial> filteredList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistencialList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : asistencial.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            asistencial.setRegistrosActividades(activeRegActividades);
+            filteredList.add(asistencial);
+        }
+
+        return new ResponseEntity<List<Asistencial>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
@@ -89,10 +102,6 @@ public class AsistencialController {
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
         Person person = personController.createUpdate(asistencial, asistencialDto);
         asistencial = (Asistencial) person;
-        /*
-         * if (!asistencialDto.getTipoGuardia().equals(asistencial.getTipoGuardia()))
-         * asistencial.setTipoGuardia(asistencialDto.getTipoGuardia());
-         */
 
         if (asistencialDto.getIdRegistrosActividades() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -113,22 +122,18 @@ public class AsistencialController {
         }
 
         if (asistencialDto.getIdTiposGuardias() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (asistencial.getTiposGuardias() != null) {
+            for (Long idTipoGuar : asistencialDto.getIdTiposGuardias()) {
+                boolean idRepetido = false;
                 for (TipoGuardia tipoGuardia : asistencial.getTiposGuardias()) {
-                    for (Long id : asistencialDto.getIdRegistrosActividades()) {
-                        if (!tipoGuardia.getId().equals(id)) {
-                            idList.add(id);
-                        }
+                    if (tipoGuardia.getId().equals(idTipoGuar)) {
+                        idRepetido = true;
+                        break;
                     }
                 }
-            }
-
-            List<Long> idsToAdd = idList.isEmpty() ? asistencialDto.getIdTiposGuardias() : idList;
-
-            for (Long id : idsToAdd) {
-                asistencial.getTiposGuardias().add(tipoGuardiaService.findById(id).get());
-                tipoGuardiaService.findById(id).get().getAsistenciales().add(asistencial);
+                if (!idRepetido) {
+                    asistencial.getTiposGuardias().add(tipoGuardiaService.findById(idTipoGuar).get());
+                    tipoGuardiaService.findById(idTipoGuar).get().getAsistenciales().add(asistencial);
+                }
             }
         }
 

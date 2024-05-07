@@ -150,7 +150,6 @@ public class PersonController {
                     }
                 }
             }
-
             List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdLegajos() : idList;
             for (Long id : idsToAdd) {
                 person.getLegajos().add(legajoService.findById(id).get());
