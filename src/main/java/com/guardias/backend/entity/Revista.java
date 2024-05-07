@@ -36,22 +36,22 @@ public class Revista {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_tipo_revista")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "revistas", "activo" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "revistas", "activo" })
   private TipoRevista tipoRevista;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_categoria")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "revistas" })
   private Categoria categoria;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_adicional")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "revistas" })
   private Adicional adicional;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_carga_horaria")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cantidad", "descripcion", "activo", "revistas" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "revistas" })
   private CargaHoraria cargaHoraria;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "revista", cascade = CascadeType.ALL)
