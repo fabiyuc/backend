@@ -36,14 +36,7 @@ public class AdicionalController {
 
     @GetMapping("/list")
     public ResponseEntity<List<Adicional>> list() {
-        // List<Adicional> adicionalList =
-        // adicionalService.findByActivoTrue().orElse(new ArrayList<>());
-        List<Adicional> adicionalList;
-        try {
-            adicionalList = adicionalService.findByActivoTrue();
-        } catch (Exception e) {
-            adicionalList = new ArrayList<Adicional>();
-        }
+        List<Adicional> adicionalList = adicionalService.findByActivoTrue().orElse(new ArrayList<>());
 
         List<Adicional> filteredList = new ArrayList<>();
 

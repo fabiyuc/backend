@@ -11,7 +11,7 @@ import com.guardias.backend.entity.Adicional;
 @Repository
 public interface AdicionalRepository extends JpaRepository<Adicional, Long> {
 
-    List<Adicional> findByActivoTrue();
+    public Optional<List<Adicional>> findByActivoTrue();
 
     Optional<Adicional> findByNombre(String nombre);
 
