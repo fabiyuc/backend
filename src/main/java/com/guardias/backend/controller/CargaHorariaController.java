@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,8 +67,11 @@ public class CargaHorariaController {
         if (cargaHorariaDto.getCantidad() < 1)
             return new ResponseEntity(new Mensaje("la cantidad es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        /* if (cargaHorariaDto.getIdRevistas() == null)
-            return new ResponseEntity(new Mensaje("La revista es obligatoria"), HttpStatus.BAD_REQUEST); */
+        /*
+         * if (cargaHorariaDto.getIdRevistas() == null)
+         * return new ResponseEntity(new Mensaje("La revista es obligatoria"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (cargaHorariaService.existsByCantidad(cargaHorariaDto.getCantidad())
                 && (cargaHorariaService.findByCantidad(cargaHorariaDto.getCantidad()).get().getId() != id))
@@ -89,7 +91,7 @@ public class CargaHorariaController {
         }
 
         if (cargaHorariaDto.getIdRevistas() != null) {
-            List<Long> idList = new ArrayList<>();
+            List<Long> idList = new ArrayList<Long>();
             if (cargaHoraria.getRevistas() != null) {
                 for (Revista revista : cargaHoraria.getRevistas()) {
                     for (Long id : cargaHorariaDto.getIdRevistas()) {
@@ -98,6 +100,8 @@ public class CargaHorariaController {
                         }
                     }
                 }
+            } else {
+                cargaHoraria.setRevistas(new ArrayList<>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? cargaHorariaDto.getIdRevistas() : idList;
             for (Long id : idsToAdd) {
@@ -116,12 +120,12 @@ public class CargaHorariaController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             CargaHoraria cargaHoraria = createUpdate(new CargaHoraria(), cargaHorariaDto);
-            cargaHoraria = createUpdate(cargaHoraria, cargaHorariaDto);
+
             cargaHorariaService.save(cargaHoraria);
             return new ResponseEntity(new Mensaje("Carga horaria creada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
+
     }
 
     @PutMapping("/update/{id}")

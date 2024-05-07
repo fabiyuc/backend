@@ -16,6 +16,6 @@ public class CategoriaDto {
     private String nombre;
     private boolean activo;
 
-    List<Long> idRevista;
+    List<Long> idRevistas;
 
 }

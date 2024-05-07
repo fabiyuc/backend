@@ -78,18 +78,20 @@ public class CategoriaController {
         if (categoriaDto.getNombre() != null && categoria.getNombre() != categoriaDto.getNombre())
             categoria.setNombre(categoriaDto.getNombre());
 
-        if (categoriaDto.getIdRevista() != null) {
+        if (categoriaDto.getIdRevistas() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (categoria.getRevistas() != null) {
                 for (Revista revista : categoria.getRevistas()) {
-                    for (Long id : categoriaDto.getIdRevista()) {
+                    for (Long id : categoriaDto.getIdRevistas()) {
                         if (!revista.getId().equals(id)) {
                             idList.add(id);
                         }
                     }
                 }
+            } else {
+                categoria.setRevistas(new ArrayList<Revista>());
             }
-            List<Long> idsToAdd = idList.isEmpty() ? categoriaDto.getIdRevista() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? categoriaDto.getIdRevistas() : idList;
             for (Long id : idsToAdd) {
                 categoria.getRevistas().add(revistaService.findById(id).get());
                 revistaService.findById(id).get().setCategoria(categoria);
@@ -107,9 +109,9 @@ public class CategoriaController {
             Categoria categoria = createUpdate(new Categoria(), categoriaDto);
             categoriaService.save(categoria);
             return new ResponseEntity<>(new Mensaje("Categoria creada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
+
     }
 
     @PutMapping("/update/{id}")
