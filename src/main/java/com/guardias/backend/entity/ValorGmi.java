@@ -16,8 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,10 +31,8 @@ public class ValorGmi {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
 
-    @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
 
     @Column(precision = 20, scale = 2)
