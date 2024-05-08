@@ -53,11 +53,10 @@ public class Ddjj {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-            "autoridades", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad",
-            "distribucionesHorarias", "legajosUdo",
-            "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
-            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+            "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
+            "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs" })
     private Efector efector;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)

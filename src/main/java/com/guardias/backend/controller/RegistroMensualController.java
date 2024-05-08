@@ -22,9 +22,11 @@ import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.RegistroMensualService;
+import com.guardias.backend.service.SumaHorasService;
 
 @RestController
 @RequestMapping("/registroMensual")
@@ -36,6 +38,11 @@ public class RegistroMensualController {
     EfectorService efectorService;
     @Autowired
     RegistroActividadService registroActividadService;
+    @Autowired
+    DdjjService ddjjService;
+
+    @Autowired
+    SumaHorasService sumaHorasService;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroMensual>> list() {
@@ -144,6 +151,16 @@ public class RegistroMensualController {
         if (registroMensualDto.getIdEfector() != null && (registroMensual.getEfector() == null
                 || !Objects.equals(registroMensual.getEfector().getId(), registroMensualDto.getIdEfector()))) {
             registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
+        }
+
+        if (registroMensualDto.getIdSumaHoras() != null && (registroMensual.getSumaHoras() == null
+                || !Objects.equals(registroMensual.getSumaHoras().getId(), registroMensualDto.getIdSumaHoras()))) {
+            registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
+        }
+
+        if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
+                || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
+            registroMensual.setDdjj(ddjjService.findById(registroMensualDto.getIdDdjj()).get());
         }
 
         registroMensual.setActivo(true);

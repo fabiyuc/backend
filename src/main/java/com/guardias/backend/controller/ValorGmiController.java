@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,15 +55,16 @@ public class ValorGmiController {
         return new ResponseEntity(valorGmi, HttpStatus.OK);
     }
 
-    @GetMapping("/findByDate/{fecha}")
-    public ResponseEntity<List<ValorGmi>> findByDate(LocalDate fecha) {
-        List<ValorGmi> list = valorGmiService.findByDate(fecha);
+    // @GetMapping("/findByDate/{fecha}")
+    // public ResponseEntity<List<ValorGmi>> findByDate(LocalDate fecha) {
+    // List<ValorGmi> list = valorGmiService.findByDate(fecha);
 
-        if (list == null)
-            return new ResponseEntity(new Mensaje("Valor no encontrado"), HttpStatus.NOT_FOUND);
+    // if (list == null)
+    // return new ResponseEntity(new Mensaje("Valor no encontrado"),
+    // HttpStatus.NOT_FOUND);
 
-        return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
-    }
+    // return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
+    // }
 
     private ResponseEntity<?> validations(ValorGmiDto valorGmiDto) {
 

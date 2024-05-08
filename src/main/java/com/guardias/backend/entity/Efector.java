@@ -106,8 +106,8 @@ public abstract class Efector {
     // "distribucionesHorarias", "legajosUdo", "legajos",
     // "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
     // "areaProgramatica", "tipoCaps",
-    // "nivelComplejidad", "cabecera", "ministerios", "registroActividad", "ddjjs"
-    // })
+    // "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
+    // "registroMensual", "ddjjs" })
 
     @Override
     public boolean equals(Object obj) {
