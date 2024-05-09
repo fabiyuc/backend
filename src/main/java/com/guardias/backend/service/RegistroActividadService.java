@@ -15,34 +15,34 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class RegistroActividadService {
     @Autowired
-    RegistroActividadRepository registroActividadRepositorio;
+    RegistroActividadRepository registroActividadRepository;
 
     public List<RegistroActividad> findByActivo() {
-        return registroActividadRepositorio.findByActivoTrue();
+        return registroActividadRepository.findByActivoTrue();
     }
 
     public List<RegistroActividad> findAll() {
-        return registroActividadRepositorio.findAll();
+        return registroActividadRepository.findAll();
     }
 
     public Optional<RegistroActividad> findById(Long id) {
-        return registroActividadRepositorio.findById((Long) id);
+        return registroActividadRepository.findById(id);
     }
 
     public void save(RegistroActividad registroActividad) {
-        registroActividadRepositorio.save(registroActividad);
+        registroActividadRepository.save(registroActividad);
     }
 
     public void deleteById(Long id) {
-        registroActividadRepositorio.deleteById(id);
+        registroActividadRepository.deleteById(id);
     }
 
     public boolean existsById(Long id) {
-        return registroActividadRepositorio.existsById(id);
+        return registroActividadRepository.existsById(id);
     }
 
     public boolean activo(Long id) {
-        return (registroActividadRepositorio.existsById(id)
-                && registroActividadRepositorio.findById(id).get().isActivo());
+        return (registroActividadRepository.existsById(id)
+                && registroActividadRepository.findById(id).get().isActivo());
     }
 }
