@@ -75,7 +75,7 @@ public class RegistroActividad {
                         "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
                         "tipoCaps",
                         "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual",
-                        "ddjjs" })
+                        "ddjjs", "registrosPendientes" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -84,9 +84,16 @@ public class RegistroActividad {
                         "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras" })
         private RegistroMensual registroMensual;
 
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_registros_pendientes")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+                        "activo", "fecha", "efector", "registrosActividades" })
+        RegistrosPendientes registrosPendientes;
+
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
-        // "asistencial","servicio", "efector", "registroMensual" })
+        // "asistencial","servicio", "efector", "registroMensual","registrosPendientes"
+        // })
 
         @Override
         public boolean equals(Object obj) {

@@ -87,7 +87,7 @@ public abstract class Efector {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector" })
+            "servicio", "efector", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
@@ -100,6 +100,11 @@ public abstract class Efector {
             "total", "estadoDdjj", "valorGmi" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "activo", "fecha", "efector", "registrosActividades" })
+    private List<RegistrosPendientes> registrosPendientes = new ArrayList<>();
+
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "autoridades", "domicilio", "telefono",
     // "estado", "activo", "observacion", "region", "localidad",
@@ -107,7 +112,7 @@ public abstract class Efector {
     // "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
     // "areaProgramatica", "tipoCaps",
     // "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-    // "registroMensual", "ddjjs" })
+    // "registroMensual", "ddjjs","registrosPendientes" })
 
     @Override
     public boolean equals(Object obj) {

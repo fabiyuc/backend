@@ -46,11 +46,10 @@ public class Autoridad {
         @JoinColumn(name = "id_efector")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
                         "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
-                        "legajosUdo", "legajos",
-                        "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
-                        "tipoCaps",
-                        "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual",
-                        "ddjjs" })
+                        "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+                        "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios",
+                        "registrosActividades",
+                        "registroMensual", "ddjjs", "registrosPendientes" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
