@@ -65,4 +65,13 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
+    // registro de actividad debe crear los pendientes (en caso que no exista) o
+    // deben agregarse al que les corresponda
+
+    // al completar un registro de actividad, se lo debe eliminar del listado de
+    // pendientes y RECIEN EN ESE MOMENTO DEBE AGERGARSE AL LISTADO DE REGISTRO
+    // MENSUAL
+
+    // cuando el pendiente no tiene elementos debe ser eliminado fisicamente
+
 }
