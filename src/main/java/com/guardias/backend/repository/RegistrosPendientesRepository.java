@@ -2,6 +2,7 @@ package com.guardias.backend.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,10 +18,11 @@ public interface RegistrosPendientesRepository extends JpaRepository<RegistrosPe
 
     List<RegistrosPendientes> findByFecha(LocalDate fecha);
 
-    @Query("SELECT pr FROM registrosPendientes rp WHERE rp.efector.id = :idEfector")
-    List<RegistrosPendientes> findByEfector(@Param("idEfector") Long idEfector);
+    @Query("SELECT rp FROM RegistrosPendientes rp WHERE rp.efector.id = :idEfector")
+    List<RegistrosPendientes> findByEfectorId(@Param("idEfector") Long idEfector);
 
-    @Query("SELECT pr FROM registrosPendientes rp WHERE rp.efector.id = :idEfector AND rp.fecha = :fecha")
-    List<RegistrosPendientes> findByEfectorAndFecha(@Param("idEfector") Long idEfector,
+    @Query("SELECT rp FROM RegistrosPendientes rp WHERE rp.efector.id = :idEfector AND rp.fecha = :fecha")
+    Optional<RegistrosPendientes> findByEfectorAndFecha(@Param("idEfector") Long idEfector,
             @Param("fecha") LocalDate fecha);
+
 }

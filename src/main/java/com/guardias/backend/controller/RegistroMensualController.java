@@ -200,6 +200,44 @@ public class RegistroMensualController {
         }
     }
 
+    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+        RegistroMensualDto registroMensualDto = new RegistroMensualDto();
+
+        registroMensualDto.setMes(mesEnum);
+        registroMensualDto.setAnio(anio);
+        registroMensualDto.setIdAsistencial(idAsistencial);
+        registroMensualDto.setIdEfector(idEfector);
+
+        ResponseEntity<?> respuesta = create(registroMensualDto);
+
+        if (respuesta.getStatusCode() == HttpStatus.OK) {
+            return registroMensualService.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio).get();
+        } else {
+            return null;
+        }
+    }
+
+    public void setRegistroMensual(RegistroActividad registroActividad) {
+
+        Long idAsistencial = registroActividad.getAsistencial().getId();
+        Long idEfector = registroActividad.getEfector().getId();
+        int mes = registroActividad.getFechaIngreso().getMonth().getValue();
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+        int anio = registroActividad.getFechaIngreso().getYear();
+        Long id = registroMensualService.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio).get();
+
+        if (id == null) {
+            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+        }
+
+        try {
+            registroActividad.setRegistroMensual(registroMensualService.findById(id).get());
+            registroActividadService.save(registroActividad);
+        } catch (Exception e) {
+            System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
+        }
+    }
+
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!registroMensualService.existsById(id))

@@ -46,11 +46,14 @@ public class RegistrosPendientes {
             "registroMensual", "ddjjs", "registrosPendientes" })
     private Efector efector;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "RegistrosPendientes", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "registrosPendientes", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registrosPendientes" })
+            "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
+
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+    // "fecha", "efector", "registrosActividades" })
 
     @Override
     public boolean equals(Object obj) {
@@ -76,8 +79,4 @@ public class RegistrosPendientes {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
-
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
-    // "fecha", "efector", "registrosActividades" })
-
 }

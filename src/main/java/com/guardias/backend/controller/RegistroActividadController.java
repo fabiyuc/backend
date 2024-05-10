@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
-import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -49,6 +48,8 @@ public class RegistroActividadController {
     RegistroMensualController registroMensualController;
     @Autowired
     EfectorController efectorController;
+    @Autowired
+    RegistrosPendientesController registrosPendientesController;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -142,47 +143,6 @@ public class RegistroActividadController {
         return registroActividad;
     }
 
-    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
-        RegistroMensualDto registroMensualDto = new RegistroMensualDto();
-
-        registroMensualDto.setMes(mesEnum);
-        registroMensualDto.setAnio(anio);
-        registroMensualDto.setIdAsistencial(idAsistencial);
-        registroMensualDto.setIdEfector(idEfector);
-
-        ResponseEntity<?> respuesta = registroMensualController.create(registroMensualDto);
-
-        if (respuesta.getStatusCode() == HttpStatus.OK) {
-            return registroMensualController.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum.toString(), anio)
-                    .getBody();
-        } else {
-            return null;
-        }
-    }
-
-    public void setRegistroMensual(RegistroActividad registroActividad) {
-
-        Long idAsistencial = registroActividad.getAsistencial().getId();
-        Long idEfector = registroActividad.getEfector().getId();
-        int mes = registroActividad.getFechaIngreso().getMonth().getValue();
-        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
-        int anio = registroActividad.getFechaIngreso().getYear();
-        Long id;
-        try {
-            id = registroMensualController.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum.toString(), anio)
-                    .getBody();
-        } catch (Exception e) {
-            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
-        }
-
-        try {
-            registroActividad.setRegistroMensual(registroMensualService.findById(id).get());
-            registroActividadService.save(registroActividad);
-        } catch (Exception e) {
-            System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
-        }
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
 
@@ -192,8 +152,14 @@ public class RegistroActividadController {
 
             RegistroActividad registroActividad = createUpdate(new RegistroActividad(), registroActividadDto);
             registroActividadService.save(registroActividad);
-            setRegistroMensual(registroActividad);
-            return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
+
+            ResponseEntity<?> respuestaAddPendiente = registrosPendientesController
+                    .addRegistroActividad(registroActividad);
+            if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+                return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
+            } else {
+                return respuestaAddPendiente;
+            }
         } else {
             return respuestaValidaciones;
         }
@@ -218,6 +184,31 @@ public class RegistroActividadController {
         }
     }
 
+    // VER que tipo de registro recibirá desde el front para la salida
+    @PutMapping("/registrarSalida/{id}")
+    public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
+            @RequestBody RegistroActividadDto registroActividadDto) {
+
+        if (!registroActividadService.activo(id))
+            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
+
+        RegistroActividad registroActividad = registroActividadService.findById(id).get();
+
+        if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
+                registroActividadDto.getFechaEgreso() != null)
+            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
+
+        if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
+                registroActividadDto.getHoraEgreso() != null)
+            registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+
+        registroActividadService.save(registroActividad);
+
+        ResponseEntity<?> respuestaDeletePendiente = registrosPendientesController
+                .deleteRegistroActividad(registroActividad);
+
+        return respuestaDeletePendiente;
+    }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {

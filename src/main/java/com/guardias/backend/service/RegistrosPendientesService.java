@@ -30,11 +30,11 @@ public class RegistrosPendientesService {
         return registrosPendientesRepository.findById(id);
     }
 
-    public List<RegistrosPendientes> findByEfector(Long idEfector) {
-        return registrosPendientesRepository.findByEfector(idEfector);
+    public List<RegistrosPendientes> findByEfectorId(Long idEfector) {
+        return registrosPendientesRepository.findByEfectorId(idEfector);
     }
 
-    public List<RegistrosPendientes> findByEfectorAndFecha(Long idEfector, LocalDate fecha) {
+    public Optional<RegistrosPendientes> findByEfectorAndFecha(Long idEfector, LocalDate fecha) {
         return registrosPendientesRepository.findByEfectorAndFecha(idEfector, fecha);
     }
 
