@@ -16,6 +16,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.RegistrosPendientesService;
 
 @RestController
@@ -29,6 +30,8 @@ public class RegistrosPendientesController {
     RegistroMensualController registroMensualController;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistrosPendientes>> list() {
@@ -82,28 +85,28 @@ public class RegistrosPendientesController {
             registrosPendientes.getRegistrosActividades().add(registroActividad);
             registrosPendientes.setActivo(true);
             registrosPendientesService.save(registrosPendientes);
+            registroActividad.setRegistrosPendientes(registrosPendientes);
+            registroActividadService.save(registroActividad);
             return new ResponseEntity(new Mensaje("Registro de Actividad agregado"), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
 
-    public ResponseEntity<?> addRegistroActividad(RegistroActividad registroActividad) {
-        try {
-            RegistrosPendientes registrosPendientes = registrosPendientesService
-                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
-                    .get();
+    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
+        RegistrosPendientes registrosPendientes = registrosPendientesService
+                .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
+                .get();
 
-            if (registrosPendientes != null) {
-                registrosPendientes.getRegistrosActividades().add(registroActividad);
-                registrosPendientesService.save(registrosPendientes);
-            } else {
-                create(registroActividad);
-            }
-            return new ResponseEntity(new Mensaje("Registro de Actividad agregado"), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
+        if (registrosPendientes != null) {
+            registrosPendientes.getRegistrosActividades().add(registroActividad);
+            registrosPendientesService.save(registrosPendientes);
+        } else {
+            create(registroActividad);
         }
+
+        return registroActividad;
+
     }
 
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {

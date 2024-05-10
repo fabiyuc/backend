@@ -35,4 +35,5 @@ public class RegistroActividadDto {
     @NotBlank
     private Long idEfector;
     private Long idRegistroMensual;
+    private Long idRegistrosPendientes;
 }

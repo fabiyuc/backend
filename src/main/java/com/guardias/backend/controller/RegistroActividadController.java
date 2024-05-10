@@ -153,12 +153,11 @@ public class RegistroActividadController {
             RegistroActividad registroActividad = createUpdate(new RegistroActividad(), registroActividadDto);
             registroActividadService.save(registroActividad);
 
-            ResponseEntity<?> respuestaAddPendiente = registrosPendientesController
-                    .addRegistroActividad(registroActividad);
+            registroActividad = registrosPendientesController.addRegistroActividad(registroActividad);
             if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
                 return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
             } else {
-                return respuestaAddPendiente;
+                return new ResponseEntity(new Mensaje("error"), HttpStatus.BAD_REQUEST);
             }
         } else {
             return respuestaValidaciones;

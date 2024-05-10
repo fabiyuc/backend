@@ -22,22 +22,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Asistencial extends Person {
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "asistenciales", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
-            "registrosActividades" })
-    private List<TipoGuardia> tiposGuardias = new ArrayList<TipoGuardia>();
+        @ManyToMany(fetch = FetchType.LAZY, mappedBy = "asistenciales", cascade = CascadeType.ALL)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
+                        "registrosActividades" })
+        private List<TipoGuardia> tiposGuardias = new ArrayList<TipoGuardia>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registrosPendientes" })
-    private List<RegistroActividad> registrosActividades = new ArrayList<>();
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+                        "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
+                        "asistencial",
+                        "servicio", "efector", "registrosPendientes" })
+        private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-    // "apellido", "dni", "cuil", "legajos",
-    // "novedadesPersonales", "suplentes",
-    // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-    // "domicilio",
-    // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-    // "descripcion","esAsistencial","tiposGuardias" })
+        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+        // "apellido", "dni", "cuil", "legajos",
+        // "novedadesPersonales", "suplentes",
+        // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+        // "domicilio",
+        // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+        // "descripcion","esAsistencial","tiposGuardias" })
 }
