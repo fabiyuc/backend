@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
+import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistrosPendientesService;
 
 @RestController
@@ -26,6 +27,8 @@ public class RegistrosPendientesController {
     RegistrosPendientesService registrosPendientesService;
     @Autowired
     RegistroMensualController registroMensualController;
+    @Autowired
+    EfectorService efectorService;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistrosPendientes>> list() {
@@ -50,7 +53,7 @@ public class RegistrosPendientesController {
     // List<RegistrosPendientes> findByEfector(Long idEfector)
     @GetMapping("/detail/{idEfector}")
     public ResponseEntity<List<RegistrosPendientes>> getByEfector(Long idEfector) {
-        List<RegistrosPendientes> list = registrosPendientesService.findByEfectorId(idEfector);
+        List<RegistrosPendientes> list = registrosPendientesService.findByEfectorId(efectorService.findById(idEfector));
 
         if (list != null)
             return new ResponseEntity<List<RegistrosPendientes>>(list, HttpStatus.OK);
@@ -60,11 +63,13 @@ public class RegistrosPendientesController {
 
     @GetMapping("/detail/{idEfector}/{fecha}")
     public ResponseEntity<RegistrosPendientes> getByEfectorAndFecha(Long idEfector, LocalDate fecha) {
-        RegistrosPendientes registrosPendientes = registrosPendientesService.findByEfectorAndFecha(idEfector, fecha)
+        RegistrosPendientes registrosPendientes = registrosPendientesService
+                .findByEfectorAndFecha(efectorService.findById(idEfector), fecha)
                 .get();
 
         if (registrosPendientes != null)
-            return new ResponseEntity<RegistrosPendientes>(registrosPendientes, HttpStatus.OK);
+            return new ResponseEntity<RegistrosPendientes>(registrosPendientes,
+                    HttpStatus.OK);
         else
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
@@ -86,7 +91,7 @@ public class RegistrosPendientesController {
     public ResponseEntity<?> addRegistroActividad(RegistroActividad registroActividad) {
         try {
             RegistrosPendientes registrosPendientes = registrosPendientesService
-                    .findByEfectorAndFecha(registroActividad.getEfector().getId(), registroActividad.getFechaIngreso())
+                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
                     .get();
 
             if (registrosPendientes != null) {
@@ -105,7 +110,7 @@ public class RegistrosPendientesController {
 
         try {
             RegistrosPendientes registrosPendientes = registrosPendientesService
-                    .findByEfectorAndFecha(registroActividad.getEfector().getId(), registroActividad.getFechaIngreso())
+                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
                     .get();
 
             registrosPendientes.getRegistrosActividades().remove(registroActividad);

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.repository.RegistrosPendientesRepository;
 
@@ -30,12 +31,12 @@ public class RegistrosPendientesService {
         return registrosPendientesRepository.findById(id);
     }
 
-    public List<RegistrosPendientes> findByEfectorId(Long idEfector) {
-        return registrosPendientesRepository.findByEfectorId(idEfector);
+    public List<RegistrosPendientes> findByEfectorId(Efector efector) {
+        return registrosPendientesRepository.findByEfector(efector);
     }
 
-    public Optional<RegistrosPendientes> findByEfectorAndFecha(Long idEfector, LocalDate fecha) {
-        return registrosPendientesRepository.findByEfectorAndFecha(idEfector, fecha);
+    public Optional<RegistrosPendientes> findByEfectorAndFecha(Efector efector, LocalDate fecha) {
+        return registrosPendientesRepository.findByEfectorAndFecha(efector, fecha);
     }
 
     public void save(RegistrosPendientes registrosPendientes) {

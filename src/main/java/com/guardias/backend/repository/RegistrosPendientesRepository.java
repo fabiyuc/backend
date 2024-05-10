@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistrosPendientes;
 
 @Repository
@@ -18,11 +18,9 @@ public interface RegistrosPendientesRepository extends JpaRepository<RegistrosPe
 
     List<RegistrosPendientes> findByFecha(LocalDate fecha);
 
-    @Query("SELECT rp FROM RegistrosPendientes rp WHERE rp.efector.id = :idEfector")
-    List<RegistrosPendientes> findByEfectorId(@Param("idEfector") Long idEfector);
+    List<RegistrosPendientes> findByEfector(@Param("efector") Efector efector);
 
-    @Query("SELECT rp FROM RegistrosPendientes rp WHERE rp.efector.id = :idEfector AND rp.fecha = :fecha")
-    Optional<RegistrosPendientes> findByEfectorAndFecha(@Param("idEfector") Long idEfector,
+    Optional<RegistrosPendientes> findByEfectorAndFecha(@Param("efector") Efector efector,
             @Param("fecha") LocalDate fecha);
 
 }
