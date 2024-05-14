@@ -224,9 +224,12 @@ public class RegistroMensualController {
         int mes = registroActividad.getFechaIngreso().getMonth().getValue();
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
         int anio = registroActividad.getFechaIngreso().getYear();
-        Long id = registroMensualService.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio).get();
+        Long id;
 
-        if (id == null) {
+        try {
+            id = registroMensualService.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio).get();
+        } catch (Exception exception) {
+            System.out.println("id no encontrado");
             id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
 

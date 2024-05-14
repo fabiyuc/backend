@@ -46,7 +46,7 @@ public class RegistrosPendientesController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<RegistrosPendientes>> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<RegistrosPendientes> getById(@PathVariable("id") Long id) {
         if (!registrosPendientesService.activo(id))
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
         RegistrosPendientes registrosPendientes = registrosPendientesService.findById(id).get();
@@ -54,7 +54,7 @@ public class RegistrosPendientesController {
     }
 
     // List<RegistrosPendientes> findByEfector(Long idEfector)
-    @GetMapping("/detail/{idEfector}")
+    @GetMapping("/detailByEfector/{idEfector}")
     public ResponseEntity<List<RegistrosPendientes>> getByEfector(Long idEfector) {
         List<RegistrosPendientes> list = registrosPendientesService.findByEfectorId(efectorService.findById(idEfector));
 
@@ -64,7 +64,7 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/detail/{idEfector}/{fecha}")
+    @GetMapping("/detailByEfectorAndFecha/{idEfector}/{fecha}")
     public ResponseEntity<RegistrosPendientes> getByEfectorAndFecha(Long idEfector, LocalDate fecha) {
         RegistrosPendientes registrosPendientes = registrosPendientesService
                 .findByEfectorAndFecha(efectorService.findById(idEfector), fecha)
@@ -77,50 +77,34 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<?> create(RegistroActividad registroActividad) {
+    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
+
+        RegistrosPendientes registrosPendientes = new RegistrosPendientes();
         try {
-            RegistrosPendientes registrosPendientes = new RegistrosPendientes();
+            registrosPendientes = registrosPendientesService
+                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
+                    .get();
+        } catch (Exception e) {
             registrosPendientes.setEfector(registroActividad.getEfector());
             registrosPendientes.setFecha(registroActividad.getFechaIngreso());
-            registrosPendientes.getRegistrosActividades().add(registroActividad);
             registrosPendientes.setActivo(true);
-            registrosPendientesService.save(registrosPendientes);
-            registroActividad.setRegistrosPendientes(registrosPendientes);
-            registroActividadService.save(registroActividad);
-            return new ResponseEntity(new Mensaje("Registro de Actividad agregado"), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
         }
-    }
-
-    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
-        RegistrosPendientes registrosPendientes = registrosPendientesService
-                .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
-                .get();
-
-        if (registrosPendientes != null) {
-            registrosPendientes.getRegistrosActividades().add(registroActividad);
-            registrosPendientesService.save(registrosPendientes);
-        } else {
-            create(registroActividad);
-        }
-
+        registrosPendientes.getRegistrosActividades().add(registroActividad);
+        registrosPendientesService.save(registrosPendientes);
+        registroActividad.setRegistrosPendientes(registrosPendientes);
+        registroActividadService.save(registroActividad);
         return registroActividad;
-
     }
 
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
-
+        Long id = registroActividad.getRegistrosPendientes().getId();
         try {
-            RegistrosPendientes registrosPendientes = registrosPendientesService
-                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
-                    .get();
+            if (!registrosPendientesService.activo(id))
+                return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+            RegistrosPendientes registrosPendientes = registrosPendientesService.findById(id).get();
 
             registrosPendientes.getRegistrosActividades().remove(registroActividad);
             registrosPendientesService.save(registrosPendientes);
-
-            // enviar el registro de actividad al registro mensual
-            registroMensualController.setRegistroMensual(registroActividad);
 
             // Si el listado de registros de actividad esta vacio, eliminar el registro de
             // pendientes

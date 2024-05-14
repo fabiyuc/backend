@@ -46,7 +46,7 @@ public class RegistrosPendientes {
             "registroMensual", "ddjjs", "registrosPendientes" })
     private Efector efector;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "registrosPendientes", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "registrosPendientes", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
             "servicio", "efector", "registroMensual", "registrosPendientes" })
