@@ -44,12 +44,6 @@ public class Legajo {
   private String matriculaProvincial;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "id_profesion")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial", "especialidades",
-      "legajos" })
-  private Profesion profesion;
-
-  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_suspencion")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "fechaInicio", "activo", "fechaFin",
       "legajos" })
@@ -92,9 +86,16 @@ public class Legajo {
       "registroMensual", "ddjjs", "registrosPendientes" })
   private List<Efector> efectores = new ArrayList<>();
 
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "legajo_especialidad", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_especialidad"))
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "esPasiva", "activo", "profesion",
+      "legajos" })
+  private List<Especialidad> especialidades = new ArrayList<>();
+
   // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
   // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",
-  // "matriculaProvincial", "profesion", "suspencion", "revista", "udo","persona",
+  // "matriculaProvincial", "especialidades", "suspencion", "revista",
+  // "udo","persona",
   // "cargo", "efectores" })
 
   @Override

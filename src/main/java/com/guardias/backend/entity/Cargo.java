@@ -63,7 +63,7 @@ public class Cargo {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
-            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
             "persona", "cargo", "efectores" })
     private List<Legajo> legajos = new ArrayList<>();
 

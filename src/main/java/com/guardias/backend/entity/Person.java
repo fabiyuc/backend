@@ -57,14 +57,14 @@ public abstract class Person {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "legal",
-            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "udo",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
+            "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
             "persona", "cargo", "efectores" })
     private List<Legajo> legajos = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer",
-            "handler",  "puedeRealizarGuardia", "cobraSueldo", "necesitaReemplazo",
+            "handler", "puedeRealizarGuardia", "cobraSueldo", "necesitaReemplazo",
             "persona", "suplente", "ley", "articulo", "inciso",
             "activo" })
     private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();

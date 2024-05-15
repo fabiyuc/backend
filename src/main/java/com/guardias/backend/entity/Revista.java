@@ -56,8 +56,8 @@ public class Revista {
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "revista", cascade = CascadeType.ALL)
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
-      "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo", "persona",
-      "cargo", "efectores" })
+      "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
+      "persona", "cargo", "efectores" })
   private List<Legajo> legajos = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)

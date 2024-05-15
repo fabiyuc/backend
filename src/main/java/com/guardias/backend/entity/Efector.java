@@ -65,7 +65,7 @@ public abstract class Efector {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
-            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
+            "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
             "persona", "cargo", "efectores" })
     private List<Legajo> legajosUdo = new ArrayList<>();
 
