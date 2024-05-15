@@ -56,6 +56,22 @@ public class RegistroMensualController {
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensual>> listByYearMonthAndEfector(@PathVariable("anio") int anio,
+    @PathVariable("mes") String mes, @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensual> registrosMensuales = registroMensualService
+                    .findByAnioAndMesAndEfectorId(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<RegistroMensual>> getById(@PathVariable("id") Long id) {
         if (!registroMensualService.activo(id))
