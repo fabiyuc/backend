@@ -18,10 +18,6 @@ public class ProfesionDto {
     @NotBlank
     private Boolean asistencial;
     private Boolean activo;
-
-    @NotBlank
-    private List<Long> idLegajos;
-
     private List<Long> idEspecialidades;
 
 }

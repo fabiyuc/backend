@@ -18,9 +18,6 @@ public class LegajoService {
     @Autowired
     LegajoRepository legajoRepository;
 
-    // @Autowired
-    // EfectorService efectorService;
-
     public List<Legajo> findByActivoTrue() {
         return legajoRepository.findByActivoTrue();
     }
@@ -48,15 +45,4 @@ public class LegajoService {
     public void deleteById(Long id) {
         legajoRepository.deleteById(id);
     }
-
-    // @Transactional
-    // public void agregarEfector(Long idLegajo, Long idEfector) {
-
-    // Legajo legajo = findById(idLegajo).get();
-    // Efector efector = efectorService.findEfector(idEfector);
-    // legajo.getEfectores().add(efector);
-    // efector.getLegajos().add(legajo);
-    // save(legajo);
-    // }
-
 }

@@ -16,6 +16,6 @@ public class EspecialidadDto {
     private Long idProfesion;
     private Boolean esPasiva;
     private boolean activo;
-    private List<Long> idAsistenciales;
+    private List<Long> idLegajos;
 
 }

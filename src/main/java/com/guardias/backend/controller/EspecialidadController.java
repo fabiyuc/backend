@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.EspecialidadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Especialidad;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.EspecialidadService;
+import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.ProfesionService;
 
 import io.micrometer.common.util.StringUtils;
@@ -33,6 +36,8 @@ public class EspecialidadController {
     EspecialidadService especialidadService;
     @Autowired
     ProfesionService profesionService;
+    @Autowired
+    LegajoService legajoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Especialidad>> list() {
@@ -81,6 +86,26 @@ public class EspecialidadController {
             if (especialidad.getProfesion() == null
                     || !Objects.equals(especialidad.getProfesion().getId(), especialidadDto.getIdProfesion())) {
                 especialidad.setProfesion(profesionService.findById(especialidadDto.getIdProfesion()).get());
+            }
+        }
+
+        if (especialidadDto.getIdLegajos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (especialidad.getLegajos() != null) {
+                for (Legajo legajo : especialidad.getLegajos()) {
+                    for (Long id : especialidadDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                especialidad.setLegajos(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? especialidadDto.getIdLegajos() : idList;
+            for (Long id : idsToAdd) {
+                especialidad.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().getEspecialidades().add(especialidad);
             }
         }
 

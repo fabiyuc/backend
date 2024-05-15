@@ -76,60 +76,14 @@ public class EfectorService {
         Hibernate.initialize(efector);
 
         if (efector instanceof Caps) {
-            //Caps caps = (Caps) efector;
-            capsService.save((Caps)efector);
+            // Caps caps = (Caps) efector;
+            capsService.save((Caps) efector);
         } else if (efector instanceof Hospital) {
-            //Hospital hospital = (Hospital) efector;
-            hospitalService.save((Hospital)efector);
+            // Hospital hospital = (Hospital) efector;
+            hospitalService.save((Hospital) efector);
         } else {
-            //Ministerio ministerio = (Ministerio) efector;
-            ministerioService.save((Ministerio)efector);
+            // Ministerio ministerio = (Ministerio) efector;
+            ministerioService.save((Ministerio) efector);
         }
     }
-
-    // !TODO falta la relacion con distribucionesHorarias
-
-    // @Transactional
-    // public void agregarNotificacion(Long idEfector, Long idNotificacion) {
-    // Efector efector = findEfector(idEfector);
-    // Notificacion notificacion =
-    // notificacionService.findById(idNotificacion).get();
-
-    // notificacionService.agregarEfector(idNotificacion, idEfector);
-    // efector.getNotificaciones().add(notificacion);
-    // saveEfector(efector);
-    // }
-
-    // @Transactional
-    // public void agregarLegajo(Long idEfector, Long idLegajo) {
-    // Legajo legajo = legajoService.findById(idLegajo).get();
-    // Efector efector = findEfector(idEfector);
-
-    // legajo.getEfectores().add(efector);
-    // efector.getLegajos().add(legajo);
-    // saveEfector(efector);
-
-    // }
-
-    // @Transactional
-    // public void agregarLegajoUdo(Long idEfector, Long idLegajoUdo) {
-    // Efector efector = findEfector(idEfector);
-
-    // Legajo legajo = legajoService.findById(idLegajoUdo).get();
-    // legajo.setUdo(efector);
-    // legajoService.save(legajo);
-    // efector.getLegajosUdo().add(legajo);
-    // saveEfector(efector);
-    // }
-
-    // @Transactional
-    // public void agregarAutoridad(Long idEfector, Long idAutoridad) {
-    // Efector efector = findEfector(idEfector);
-    // Autoridad autoridad = autoridadService.findById(idAutoridad).get();
-
-    // autoridad.setEfector(efector);
-    // autoridadService.save(autoridad);
-    // efector.getAutoridades().add(autoridad);
-    // saveEfector(efector);
-    // }
 }

@@ -1,6 +1,7 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +25,6 @@ public class LegajoDto {
     private String matriculaNacional;
     private String matriculaProvincial;
     @NotBlank
-    private Long idProfesion;
     private Long idSuspencion;
     @NotBlank
     private Long idRevista;
@@ -33,11 +33,7 @@ public class LegajoDto {
     @NotBlank
     private Long idPersona;
     private Long idCargo;
-    private List<Long> idEfectores;
-
-    /*
-     * private String tipoGuardia;*
-     * private String descripcion;*
-     */
+    private List<Long> idEfectores = new ArrayList<>();
+    private List<Long> IdEspecialidades = new ArrayList<>();
 
 }

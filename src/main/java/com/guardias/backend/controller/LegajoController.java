@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.EspecialidadService;
 import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.PersonService;
 import com.guardias.backend.service.ProfesionService;
@@ -48,6 +50,8 @@ public class LegajoController {
     RevistaService revistaService;
     @Autowired
     CargoService cargoService;
+    @Autowired
+    EspecialidadService especialidadService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
@@ -90,9 +94,6 @@ public class LegajoController {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la UdO"),
                     HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getIdProfesion() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
-                    HttpStatus.BAD_REQUEST);
         if (legajoDto.getIdRevista() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
                     HttpStatus.BAD_REQUEST);
@@ -122,23 +123,6 @@ public class LegajoController {
                 legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
             }
         }
-        /*
-         * if (legajo.getPersona() == null ||
-         * (legajoDto.getIdPersona() != null &&
-         * !Objects.equals(legajo.getPersona().getId(),
-         * legajoDto.getIdPersona()))) {
-         * legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
-         * }
-         */
-
-        /*
-         * if (legajo.getUdo() == null ||
-         * (legajoDto.getIdUdo() != null &&
-         * !Objects.equals(legajo.getUdo().getId(),
-         * legajoDto.getIdUdo()))) {
-         * legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
-         * }
-         */
 
         if (legajoDto.getIdUdo() != null) {
             if (legajo.getUdo() == null
@@ -149,22 +133,26 @@ public class LegajoController {
         legajo.setActual(legajoDto.getActual());
         legajo.setLegal(legajoDto.getLegal());
 
-        /*
-         * if (legajo.getProfesion() == null ||
-         * (legajoDto.getIdProfesion() != null &&
-         * !Objects.equals(legajo.getProfesion().getId(),
-         * legajoDto.getIdProfesion()))) {
-         * legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get
-         * ());
-         * }
-         */
-
-        if (legajoDto.getIdProfesion() != null) {
-            if (legajo.getProfesion() == null
-                    || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
-                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
+        if (legajoDto.getIdEspecialidades() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (legajo.getEspecialidades() != null) {
+                for (Especialidad especialidad : legajo.getEspecialidades()) {
+                    for (Long id : legajoDto.getIdEspecialidades()) {
+                        if (!especialidad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                legajo.setEspecialidades(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEspecialidades() : idList;
+            for (Long id : idsToAdd) {
+                legajo.getEspecialidades().add(especialidadService.findById(id).get());
+                especialidadService.findById(id).get().getLegajos().add(legajo);
             }
         }
+
         if (legajoDto.getIdSuspencion() != null) {
             if (legajo.getSuspencion() == null
                     || !Objects.equals(legajo.getSuspencion().getId(), legajoDto.getIdSuspencion())) {
@@ -172,30 +160,12 @@ public class LegajoController {
             }
         }
 
-        /*
-         * if (legajo.getSuspencion() == null ||
-         * (legajoDto.getIdSuspencion() != null &&
-         * !Objects.equals(legajo.getSuspencion().getId(),
-         * legajoDto.getIdSuspencion()))) {
-         * legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).
-         * get());
-         * }
-         */
-
         if (legajoDto.getIdRevista() != null) {
             if (legajo.getRevista() == null
                     || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {
                 legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
             }
         }
-        /*
-         * if (legajo.getRevista() == null ||
-         * (legajoDto.getIdRevista() != null &&
-         * !Objects.equals(legajo.getRevista().getId(),
-         * legajoDto.getIdRevista()))) {
-         * legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
-         * }
-         */
 
         if (legajoDto.getIdCargo() != null) {
             if (legajo.getCargo() == null
@@ -203,15 +173,6 @@ public class LegajoController {
                 legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
             }
         }
-
-        /*
-         * if (legajo.getCargo() == null ||
-         * (legajoDto.getIdCargo() != null &&
-         * !Objects.equals(legajo.getCargo().getId(),
-         * legajoDto.getIdCargo()))) {
-         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-         * }
-         */
 
         if (legajoDto.getIdEfectores() != null) {
             List<Long> idList = new ArrayList<Long>();
