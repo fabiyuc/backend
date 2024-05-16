@@ -86,6 +86,7 @@ public class IncisoController {
                 novedadPersonalService.save(novedad);
             }
         }
+
         return inciso;
     }
 
@@ -97,6 +98,7 @@ public class IncisoController {
             // Crear el inciso principal y guardarlo en la base de datos
             Inciso inciso = new Inciso();
             inciso = createUpdate(inciso, incisoDto);
+            inciso.setActivo(true);
             incisoService.save(inciso);
 
             return new ResponseEntity<Mensaje>(new Mensaje("Inciso creado correctamente"), HttpStatus.OK);
