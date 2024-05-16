@@ -91,7 +91,8 @@ public class DepartamentoController {
 
         departamento.setNombre(departamentoDto.getNombre());
 
-        if (departamentoDto.getNombre() != null && departamento.getNombre() != departamentoDto.getNombre()
+        if (departamentoDto.getNombre() != null
+                && departamento.getNombre() != departamentoDto.getNombre()
                 && !departamentoDto.getNombre().isEmpty())
             departamento.setNombre(departamentoDto.getNombre());
 

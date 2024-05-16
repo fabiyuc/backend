@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,8 +60,8 @@ public class GiraMedicaController {
         return new ResponseEntity(girasMedicas, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody GiraMedicaDto giraMedicaDto) {
+    private ResponseEntity<?> validations(GiraMedicaDto giraMedicaDto) {
+
         if (giraMedicaDto.getFecha() == null)
             return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
         if (giraMedicaDto.getCantidadHoras() < 0)
@@ -68,40 +69,56 @@ public class GiraMedicaController {
         if (StringUtils.isBlank(giraMedicaDto.getDescripcion()))
             return new ResponseEntity(new Mensaje("La descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        GiraMedica giraMedica = new GiraMedica();
-        giraMedica.setFecha(giraMedicaDto.getFecha());
-        giraMedica.setCantidadHoras(giraMedicaDto.getCantidadHoras());
-        giraMedica.setDescripcion(giraMedicaDto.getDescripcion());
-
-        giraMedicaService.save(giraMedica);
-        return new ResponseEntity(new Mensaje("Gira medica creada correctamente"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("Valido"), HttpStatus.OK);
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody GiraMedicaDto giraMedicaDto) {
-        if (giraMedicaDto.getFecha() == null)
-            return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
-        if (giraMedicaDto.getCantidadHoras() < 0)
-            return new ResponseEntity(new Mensaje("Cantidad ded horas invalida"), HttpStatus.BAD_REQUEST);
-        if (StringUtils.isBlank(giraMedicaDto.getDescripcion()))
-            return new ResponseEntity(new Mensaje("La descripcion es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        GiraMedica giraMedica = giraMedicaService.findById(id).get();
-
-        if (!giraMedicaDto.getFecha().equals(giraMedica.getFecha()))
+    private GiraMedica createUpdate(GiraMedica giraMedica, GiraMedicaDto giraMedicaDto) {
+        if (giraMedicaDto.getFecha() != null
+                && giraMedica.getFecha() != giraMedicaDto.getFecha())
             giraMedica.setFecha(giraMedicaDto.getFecha());
-        if (giraMedicaDto.getCantidadHoras() != giraMedica.getCantidadHoras() && giraMedicaDto.getCantidadHoras() > 0)
+
+        if (!Objects.equals(giraMedica.getCantidadHoras(), giraMedicaDto.getCantidadHoras()))
             giraMedica.setCantidadHoras(giraMedicaDto.getCantidadHoras());
-        if (!giraMedicaDto.getDescripcion().equals(giraMedica.getDescripcion()))
+
+        if (giraMedicaDto.getDescripcion() != null
+                && giraMedica.getDescripcion() != giraMedicaDto.getDescripcion()
+                && !giraMedicaDto.getDescripcion().isEmpty())
             giraMedica.setDescripcion(giraMedicaDto.getDescripcion());
 
-        giraMedicaService.save(giraMedica);
-        return new ResponseEntity(new Mensaje("Gira medica actualizada"), HttpStatus.OK);
+        giraMedica.setActivo(true);
+        return giraMedica;
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody GiraMedicaDto giraMedicaDto) {
+        ResponseEntity<?> respuestaValidaciones = validations(giraMedicaDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            GiraMedica giraMedica = createUpdate(new GiraMedica(), giraMedicaDto);
+            giraMedicaService.save(giraMedica);
+            return new ResponseEntity(new Mensaje("Gira medica creada correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody GiraMedicaDto giraMedicaDto) {
+        if (!giraMedicaService.activo(id))
+            return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> respuestaValidaciones = validations(giraMedicaDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            GiraMedica giraMedica = createUpdate(giraMedicaService.findById(id).get(), giraMedicaDto);
+            giraMedicaService.save(giraMedica);
+            return new ResponseEntity<>(new Mensaje("Gira medica modificada correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!giraMedicaService.existsById(id))
+        if (!giraMedicaService.activo(id))
             return new ResponseEntity(new Mensaje("Gira medica  no encontrada"), HttpStatus.NOT_FOUND);
 
         GiraMedica giraMedica = giraMedicaService.findById(id).get();
