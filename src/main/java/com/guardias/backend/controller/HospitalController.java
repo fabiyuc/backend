@@ -22,7 +22,6 @@ import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 
@@ -55,7 +54,7 @@ public class HospitalController {
             hospital.setRegistrosActividades(activeRegActividades);
             filteredList.add(hospital);
         }
-        
+
         return new ResponseEntity<List<Hospital>>(filteredList, HttpStatus.OK);
     }
 
@@ -114,9 +113,7 @@ public class HospitalController {
                 capsService.findById(id).get().setCabecera(hospital);
             }
         }
-        hospital.setActivo(true);
 
-        /* hospital.setActivo(false); */
         return hospital;
     }
 
@@ -126,6 +123,8 @@ public class HospitalController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(new Hospital(), hospitalDto);
+            hospital.setActivo(true);
+
             hospitalService.save(hospital);
             return new ResponseEntity(new Mensaje("Hospital creado correctamente"), HttpStatus.OK);
         } else {

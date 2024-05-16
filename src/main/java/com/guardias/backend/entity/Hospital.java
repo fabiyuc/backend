@@ -26,7 +26,6 @@ public class Hospital extends Efector {
     private boolean esCabecera;
     private boolean admitePasiva;
     private int nivelComplejidad;
-    private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })

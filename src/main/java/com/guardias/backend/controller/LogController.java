@@ -36,6 +36,12 @@ public class LogController {
         return new ResponseEntity<List<Log>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listAll")
+    public ResponseEntity<List<Log>> listAll() {
+        List<Log> list = logService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<Log> getById(@PathVariable("id") Long id) {
         if (!logService.activo(id))

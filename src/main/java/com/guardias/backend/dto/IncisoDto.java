@@ -16,4 +16,5 @@ public class IncisoDto extends LeyDto {
     private Long idIncisoPadre;
     private Long idArticulo;
     private List<Long> idNovedadesPersonales;
+    private boolean activo;
 }

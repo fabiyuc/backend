@@ -143,7 +143,7 @@ public class LocalidadController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Localidad localidad = createUpdate(localidadService.findById(id).get(), localidadDto);
             localidadService.save(localidad);
-            return new ResponseEntity<>(new Mensaje("Localidad creada correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Localidad modificada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
