@@ -103,12 +103,15 @@ public class RegistrosPendientesController {
                 return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
             RegistrosPendientes registrosPendientes = registrosPendientesService.findById(id).get();
 
+            registroActividad.setRegistrosPendientes(null);
             registrosPendientes.getRegistrosActividades().remove(registroActividad);
             registrosPendientesService.save(registrosPendientes);
 
             // Si el listado de registros de actividad esta vacio, eliminar el registro de
             // pendientes
             if (registrosPendientes.getRegistrosActividades().isEmpty()) {
+                registrosPendientes.setEfector(null);
+
                 registrosPendientesService.deleteById(registrosPendientes.getId());
             }
 
@@ -117,5 +120,4 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
-
 }

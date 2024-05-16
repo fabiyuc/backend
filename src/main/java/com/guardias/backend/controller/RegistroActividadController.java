@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -200,7 +199,6 @@ public class RegistroActividadController {
 
         System.out.println("id: " + registroActividad.getRegistrosPendientes().getId());
 
-        RegistrosPendientes registrosPendientes = registroActividad.getRegistrosPendientes();
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
             registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
@@ -213,7 +211,6 @@ public class RegistroActividadController {
                 .deleteRegistroActividad(registroActividad);
 
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
-            registroActividad.setRegistrosPendientes(null);
             registroActividadService.save(registroActividad);
         }
         // enviar el registro de actividad al registro mensual
