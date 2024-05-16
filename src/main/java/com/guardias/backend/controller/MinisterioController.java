@@ -22,7 +22,6 @@ import com.guardias.backend.dto.MinisterioDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.MinisterioService;
 
 @Controller
@@ -50,7 +49,7 @@ public class MinisterioController {
             ministerio.setRegistrosActividades(activeRegActividades);
             filteredList.add(ministerio);
         }
-        
+
         return new ResponseEntity<List<Ministerio>>(filteredList, HttpStatus.OK);
     }
 
