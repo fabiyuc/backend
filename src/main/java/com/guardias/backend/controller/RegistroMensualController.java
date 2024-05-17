@@ -22,6 +22,7 @@ import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -40,7 +41,8 @@ public class RegistroMensualController {
     RegistroActividadService registroActividadService;
     @Autowired
     DdjjService ddjjService;
-
+    @Autowired
+    AsistencialService asistencialService;
     @Autowired
     SumaHorasService sumaHorasService;
 
@@ -58,7 +60,7 @@ public class RegistroMensualController {
 
     @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<RegistroMensual>> listByYearMonthAndEfector(@PathVariable("anio") int anio,
-    @PathVariable("mes") String mes, @PathVariable("idEfector") Long idEfector) {
+            @PathVariable("mes") String mes, @PathVariable("idEfector") Long idEfector) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
@@ -141,8 +143,14 @@ public class RegistroMensualController {
         if (registroMensualDto.getAnio() != registroMensual.getAnio())
             registroMensual.setAnio(registroMensualDto.getAnio());
 
-        if (registroMensualDto.getIdAsistencial() != registroMensual.getIdAsistencial())
-            registroMensual.setIdAsistencial(registroMensualDto.getIdAsistencial());
+        // if (registroMensualDto.getIdAsistencial() !=
+        // registroMensual.getIdAsistencial())
+        // registroMensual.setIdAsistencial(registroMensualDto.getIdAsistencial());
+
+        if (registroMensualDto.getIdAsistencial() != null && (registroMensual.getAsistencial() == null
+                || !Objects.equals(registroMensual.getAsistencial().getId(), registroMensualDto.getIdAsistencial()))) {
+            registroMensual.setAsistencial(asistencialService.findById(registroMensualDto.getIdAsistencial()).get());
+        }
 
         if (registroMensualDto.getIdRegistroActividad() != null) {
             List<Long> idList = new ArrayList<Long>();

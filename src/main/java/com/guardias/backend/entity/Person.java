@@ -87,13 +87,19 @@ public abstract class Person {
             "esRegional", "activo", "efector", "persona" })
     private List<Autoridad> autoridades = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+            "mes", "fechaEgreso", "anio",
+            "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
+    List<RegistroMensual> registrosMensuales = new ArrayList<>();
+
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "apellido", "dni", "cuil", "legajos",
     // "novedadesPersonales", "suplentes",
     // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
     // "domicilio",
     // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-    // "descripcion","esAsistencial" })
+    // "descripcion","esAsistencial","registroMensual" })
 
     @Override
     public boolean equals(Object obj) {

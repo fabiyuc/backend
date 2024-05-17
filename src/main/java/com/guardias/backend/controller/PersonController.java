@@ -15,11 +15,13 @@ import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.NovedadPersonalService;
 import com.guardias.backend.service.PersonService;
+import com.guardias.backend.service.RegistroMensualService;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -36,6 +38,8 @@ public class PersonController {
     DistribucionHorariaService distribucionHorariaService;
     @Autowired
     AutoridadService autoridadService;
+    @Autowired
+    RegistroMensualService registroMensualService;
 
     public ResponseEntity<?> validations(PersonDto personDto, Long id) {
         if (StringUtils.isBlank(personDto.getNombre())) {
@@ -200,6 +204,26 @@ public class PersonController {
         if (personDto.getApellido() != null && !personDto.getApellido().equals(person.getApellido())
                 && !personDto.getApellido().isEmpty())
             person.setApellido(personDto.getApellido());
+
+        if (personDto.getIdRegistrosMensuales() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (person.getRegistrosMensuales() != null) {
+                for (RegistroMensual registroMensual : person.getRegistrosMensuales()) {
+                    for (Long id : personDto.getIdRegistrosMensuales()) {
+                        if (!registroMensual.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                person.setRegistrosMensuales(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdRegistrosMensuales() : idList;
+            for (Long id : idsToAdd) {
+                person.getRegistrosMensuales().add(registroMensualService.findById(id).get());
+                registroMensualService.findById(id).get().setAsistencial(person);
+            }
+        }
         return person;
     }
 }

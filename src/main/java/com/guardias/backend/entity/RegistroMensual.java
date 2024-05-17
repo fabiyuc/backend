@@ -37,7 +37,14 @@ public class RegistroMensual {
     private MesesEnum mes;
 
     private int anio;
-    private Long idAsistencial; // para que sea mas facil la busqueda por persona
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_asistencial")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono",
+            "email", "domicilio", "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial", "registroMensual" })
+    private Person asistencial; // para que sea mas facil la busqueda por persona
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
@@ -68,7 +75,8 @@ public class RegistroMensual {
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "mes", "fechaEgreso","anio",
-    // "registroActividad","idAsistencial","efector","ddjj","sumaHoras" })
+    // "registroActividad","idAsistencial","efector","ddjj","sumaHoras","asistencial"
+    // })
 
     @Override
     public boolean equals(Object obj) {

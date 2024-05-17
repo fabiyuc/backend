@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
+// VER completar, para generar informes con las salidas que no fueron
+// registradas a tiempo
 public class PendientesSemanal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

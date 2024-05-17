@@ -36,5 +36,6 @@ public class PersonDto {
     private List<Long> idDistribucionesHorarias;
     private List<Long> idAutoridades;
     private List<Long> idLegajos;
+    private List<Long> idRegistrosMensuales;
 
 }
