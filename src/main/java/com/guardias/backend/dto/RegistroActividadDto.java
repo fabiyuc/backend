@@ -36,4 +36,5 @@ public class RegistroActividadDto {
     private Long idEfector;
     private Long idRegistroMensual;
     private Long idRegistrosPendientes;
+    private Long idUsuario;
 }

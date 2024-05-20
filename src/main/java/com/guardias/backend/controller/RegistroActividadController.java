@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -55,6 +56,8 @@ public class RegistroActividadController {
     RegistrosPendientesController registrosPendientesController;
     @Autowired
     RegistrosPendientesService registrosPendientesService;
+    @Autowired
+    UsuarioService usuarioService;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
@@ -144,6 +147,7 @@ public class RegistroActividadController {
                     registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
         }
 
+        registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
         registroActividad.setActivo(true);
         return registroActividad;
     }
