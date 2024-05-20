@@ -101,10 +101,16 @@ public class RegistroActividad {
                         "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
         Usuario usuario;
 
+        @Temporal(TemporalType.DATE)
+        private LocalDate fechaRegistro;
+
+        @Temporal(TemporalType.TIME)
+        private LocalTime horaRegistro;
+
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
         // "asistencial","servicio", "efector",
-        // "registroMensual","registrosPendientes","usuario"
+        // "registroMensual","registrosPendientes","usuario","horaRegistro","fechaRegistro"
         // })
 
         @Override

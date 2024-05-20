@@ -1,5 +1,7 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -154,6 +156,11 @@ public class RegistroActividadController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
             RegistroActividad registroActividad = createUpdate(new RegistroActividad(), registroActividadDto);
+
+            // Set de fecha y hora en la que se realiza el registroActividad
+            registroActividad.setFechaRegistro(LocalDate.now());
+            registroActividad.setHoraRegistro(LocalTime.now());
+
             registroActividadService.save(registroActividad);
 
             registroActividad = registrosPendientesController.addRegistroActividad(registroActividad);
