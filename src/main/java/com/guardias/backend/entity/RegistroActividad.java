@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.security.entity.Usuario;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -94,9 +95,16 @@ public class RegistroActividad {
                         "activo", "fecha", "efector", "registrosActividades" })
         RegistrosPendientes registrosPendientes;
 
+        @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "usuario")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+                        "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
+        Usuario usuario;
+
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
-        // "asistencial","servicio", "efector", "registroMensual","registrosPendientes"
+        // "asistencial","servicio", "efector",
+        // "registroMensual","registrosPendientes","usuario"
         // })
 
         @Override
