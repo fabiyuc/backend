@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PaisDto;
 import com.guardias.backend.entity.Pais;
+import com.guardias.backend.entity.Provincia;
 import com.guardias.backend.service.PaisService;
+import com.guardias.backend.service.ProvinciaService;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -29,6 +32,9 @@ public class PaisController {
 
     @Autowired
     PaisService paisService;
+
+    @Autowired
+    ProvinciaService provinciaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Pais>> list() {
@@ -96,6 +102,26 @@ public class PaisController {
                 && !paisDto.getNacionalidad().isEmpty())
             pais.setNacionalidad(paisDto.getNacionalidad());
 
+        if (paisDto.getIdProvincias() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (pais.getProvincias() != null) {
+                for (Provincia provincia : pais.getProvincias()) {
+                    for (Long id : paisDto.getIdProvincias()) {
+                        if (!provincia.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                pais.setProvincias(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? paisDto.getIdProvincias() : idList;
+            for (Long id : idsToAdd) {
+                pais.getProvincias().add(provinciaService.findById(id).get());
+                provinciaService.findById(id).get().setPais(pais);
+            }
+        }
+
         pais.setActivo(true);
         return pais;
     }
@@ -124,7 +150,7 @@ public class PaisController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Pais pais = createUpdate(paisService.findById(id).get(), paisDto);
             paisService.save(pais);
-            return new ResponseEntity(new Mensaje("pais creado"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("pais modificado"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
