@@ -96,21 +96,33 @@ public class RegistroActividad {
         RegistrosPendientes registrosPendientes;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "usuario")
+        @JoinColumn(name = "id_usuario_ingreso")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
                         "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
-        Usuario usuario;
+        Usuario usuarioIngreso;
+
+        @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_usuario_egreso")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+                        "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
+        Usuario usuarioEgreso;
 
         @Temporal(TemporalType.DATE)
-        private LocalDate fechaRegistro;
+        private LocalDate fechaRegistroIngreso;
 
         @Temporal(TemporalType.TIME)
-        private LocalTime horaRegistro;
+        private LocalTime horaRegistroIngreso;
+
+        @Temporal(TemporalType.DATE)
+        private LocalDate fechaRegistroEgreso;
+
+        @Temporal(TemporalType.TIME)
+        private LocalTime horaRegistroEgreso;
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
         // "asistencial","servicio", "efector",
-        // "registroMensual","registrosPendientes","usuario","horaRegistro","fechaRegistro"
+        // "registroMensual","registrosPendientes","usuarioIngreso","usuarioEgreso","horaRegistroIngreso","fechaRegistroIngreso","horaRegistroEgreso","fechaRegistroEgreso"
         // })
 
         @Override

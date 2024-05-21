@@ -30,14 +30,17 @@ public class RegistroMensualService {
         return registroMensualRepository.findByAnioAndMesAndEfectorId(anio, mes, idEfector);
     }
 
-    public Optional<RegistroMensual> findByIdAsistencialAndMes(Long idAsistencial, Long idEfector, MesesEnum mes,
-            int anio) {
-        return registroMensualRepository.findByIdAsistencialAndMes(idAsistencial, idEfector, mes, anio);
+    public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
+            MesesEnum mes, int anio) {
+        return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId, mes,
+                anio);
     }
 
-    public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
-        return registroMensualRepository.idByIdAsistencialAndMes(idAsistencial, idEfector, mes, anio);
-    }
+    // public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, Long
+    // idEfector, MesesEnum mes, int anio) {
+    // return registroMensualRepository.idByIdAsistencialAndMes(idAsistencial,
+    // idEfector, mes, anio);
+    // }
 
     public Optional<RegistroMensual> findById(Long id) {
         return registroMensualRepository.findById(id);
@@ -47,8 +50,8 @@ public class RegistroMensualService {
         return registroMensualRepository.existsByAnioAndMes(anio, mes);
     }
 
-    public boolean existsByIdAsistencial(Long idAsistencial) {
-        return registroMensualRepository.existsByIdAsistencial(idAsistencial);
+    public boolean existsByAsistencialId(Long idAsistencial) {
+        return registroMensualRepository.existsByAsistencialId(idAsistencial);
     }
 
     public boolean existsById(Long id) {
