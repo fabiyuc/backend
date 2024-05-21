@@ -18,7 +18,7 @@ public class ProvinciaService {
     @Autowired
     ProvinciaRepository ProvinciaRepository;
 
-    public List<Provincia> findByActivo() {
+    public Optional<List<Provincia>> findByActivoTrue() {
         return ProvinciaRepository.findByActivoTrue();
     }
 
@@ -27,7 +27,7 @@ public class ProvinciaService {
     }
 
     public Optional<Provincia> findById(Long id) {
-        return ProvinciaRepository.findById(id);
+        return ProvinciaRepository.findById((Long) id);
     }
 
     public Optional<Provincia> findByNombre(String nombre) {
@@ -39,11 +39,11 @@ public class ProvinciaService {
     }
 
     public void deleteById(Long id) {
-        ProvinciaRepository.deleteById(id);
+        ProvinciaRepository.deleteById((Long) id);
     }
 
     public boolean existsById(Long id) {
-        return ProvinciaRepository.existsById(id);
+        return ProvinciaRepository.existsById((Long) id);
     }
 
     public boolean activo(Long id) {

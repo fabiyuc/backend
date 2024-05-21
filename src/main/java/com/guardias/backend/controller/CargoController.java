@@ -167,7 +167,7 @@ public class CargoController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CargoDto cargoDto) {
-        if (!cargoService.existsById(id))
+        if (!cargoService.activo(id))
             return new ResponseEntity(new Mensaje("El cargo no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(cargoDto, id);
