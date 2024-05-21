@@ -22,7 +22,7 @@ import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.NoAsistencialService;
 
 @RestController
-@RequestMapping("/noasistencial")
+@RequestMapping("/noAsistencial")
 @CrossOrigin(origins = "http://localhost:4200")
 public class NoAsistencialController {
 

@@ -91,7 +91,8 @@ public class CapsController {
         }
 
         if (caps.getTipoCaps() == null
-                || (capsDto.getTipoCaps() != null && !Objects.equals(caps.getTipoCaps(), capsDto.getTipoCaps())))
+                || (capsDto.getTipoCaps() != null &&
+                        !Objects.equals(caps.getTipoCaps(), capsDto.getTipoCaps())))
             caps.setTipoCaps(capsDto.getTipoCaps());
 
         if (!Objects.equals(caps.getAreaProgramatica(), capsDto.getAreaProgramatica()))
