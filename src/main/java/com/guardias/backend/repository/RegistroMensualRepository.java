@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.RegistroMensual;
@@ -16,14 +18,19 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         List<RegistroMensual> findByAnioAndMesAndEfectorId(int anio, MesesEnum mes, Long idEfector);
 
-        Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
-                        MesesEnum mes, int anio);
+        @Query("SELECT rm FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.efector.id = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
+        Optional<RegistroMensual> findByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
         List<RegistroMensual> findByActivoTrue();
 
         boolean existsByAnioAndMes(int anio, MesesEnum mes);
 
-        boolean existsByAsistencialId(Long asistencialId);
+        boolean existsByIdAsistencial(Long idAsistencial);
+
+        @Query("SELECT id FROM registrosMensuales rm WHERE rm.idAsistencial = :idAsistencial AND rm.efector.id = :idEfector AND rm.mes = :mes AND rm.anio = :anio")
+        Optional<Long> idByIdAsistencialAndMes(@Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector, @Param("mes") MesesEnum mes, @Param("anio") int anio);
 
         List<RegistroMensual> findByAnioAndMes(int anio, MesesEnum mes);
 }

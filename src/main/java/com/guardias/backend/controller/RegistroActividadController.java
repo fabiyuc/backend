@@ -147,7 +147,7 @@ public class RegistroActividadController {
                     registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
         }
 
-        registroActividad.setUsuarioIngreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
         registroActividad.setActivo(true);
         return registroActividad;
     }
@@ -162,8 +162,8 @@ public class RegistroActividadController {
             RegistroActividad registroActividad = createUpdate(new RegistroActividad(), registroActividadDto);
 
             // Set de fecha y hora en la que se realiza el registroActividad
-            registroActividad.setFechaRegistroIngreso(LocalDate.now());
-            registroActividad.setHoraRegistroIngreso(LocalTime.now());
+            registroActividad.setFechaRegistro(LocalDate.now());
+            registroActividad.setHoraRegistro(LocalTime.now());
 
             registroActividadService.save(registroActividad);
 
@@ -217,10 +217,6 @@ public class RegistroActividadController {
         if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
                 registroActividadDto.getHoraEgreso() != null)
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
-
-        registroActividad.setFechaRegistroEgreso(LocalDate.now());
-        registroActividad.setHoraRegistroEgreso(LocalTime.now());
-        registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
 
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesController
                 .deleteRegistroActividad(registroActividad);

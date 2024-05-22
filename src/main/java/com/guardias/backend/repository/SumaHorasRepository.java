@@ -16,7 +16,7 @@ public interface SumaHorasRepository extends JpaRepository<SumaHoras, Long> {
     @Query("SELECT COUNT(sh) > 0 FROM sumaHoras sh WHERE sh.registroMensual.id = :idRegistroMensual")
     boolean existByRegistroMensual(@Param("idRegistroMensual") Long idRegistroMensual);
 
-    @Query("SELECT sh FROM sumaHoras sh WHERE sh.registroMensual.id = :idRegistroMensual AND sh.registroMensual.asistencial.id = :idAsistencial")
+    @Query("SELECT sh FROM sumaHoras sh WHERE sh.registroMensual.id = :idRegistroMensual AND sh.registroMensual.idAsistencial = :idAsistencial")
     List<SumaHoras> findByRegistroMensual(@Param("idRegistroMensual") Long idRegistroMensual,
             @Param("idAsistencial") Long idAsistencial);
 

@@ -89,9 +89,13 @@ public class RegistroMensualController {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
+        if (!registroMensualService.existsByIdAsistencial(idAsistencial))
+            return new ResponseEntity(new Mensaje("El registro mensual no existe"),
+                    HttpStatus.NOT_FOUND);
+
         try {
             RegistroMensual registroMensual = registroMensualService
-                    .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
+                    .findByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
                     .get();
             List<RegistroActividad> list = registroMensual.getRegistroActividad();
             return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
@@ -100,23 +104,21 @@ public class RegistroMensualController {
         }
     }
 
-    // @GetMapping("/detailId/{idAsistencial}/{idEfector}/{mes}/{anio}")
-    // public ResponseEntity<Long>
-    // idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
-    // @PathVariable("idEfector") Long idEfector,
-    // @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
-    // MesesEnum mesEnum = MesesEnum.valueOf(mes);
+    @GetMapping("/detailId/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<Long> idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
-    // try {
-    // Long idRegistroMensual = registroMensualService
-    // .idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
-    // .get();
-    // return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
-    // } catch (Exception e) {
-    // return new ResponseEntity(new Mensaje("Registro no encontrado"),
-    // HttpStatus.BAD_REQUEST);
-    // }
-    // }
+        try {
+            Long idRegistroMensual = registroMensualService
+                    .idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
+                    .get();
+            return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
+        }
+    }
 
     public ResponseEntity<?> validations(RegistroMensualDto registroMensualDto) {
 
@@ -233,12 +235,7 @@ public class RegistroMensualController {
         ResponseEntity<?> respuesta = create(registroMensualDto);
 
         if (respuesta.getStatusCode() == HttpStatus.OK) {
-
-            RegistroMensual registroMensual = registroMensualService
-                    .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
-
-            return registroMensual.getId();
+            return registroMensualService.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio).get();
         } else {
             return null;
         }
@@ -254,10 +251,7 @@ public class RegistroMensualController {
         Long id;
 
         try {
-            RegistroMensual registroMensual = registroMensualService
-                    .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
-            id = registroMensual.getId();
+            id = registroMensualService.idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio).get();
         } catch (Exception exception) {
             System.out.println("id no encontrado");
             id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
