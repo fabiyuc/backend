@@ -30,7 +30,7 @@ public class SumaHoras {
     @OneToOne
     @JoinColumn(name = "registro_mensual_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras" })
+            "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
     private RegistroMensual registroMensual;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
