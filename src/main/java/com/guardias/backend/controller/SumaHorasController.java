@@ -92,6 +92,10 @@ public class SumaHorasController {
             sumaHoras.setRegistroMensual(registroMensualService.findById(sumaHorasDto.getIdRegistroMensual()).get());
         }
 
+        /*
+         * private Long idRegistroMensual;
+         */
+
         sumaHoras.setActivo(true);
         return sumaHoras;
     }

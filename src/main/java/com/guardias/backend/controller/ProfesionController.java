@@ -107,20 +107,21 @@ public class ProfesionController {
         profesion.setAsistencial(profesionDto.getAsistencial());
 
         if (profesionDto.getIdEspecialidades() != null) {
-            List<Long> idList = new ArrayList<Long>();
+            List<Long> idList = new ArrayList<>();
+
+            // Si hay especialidades asignadas a la profesión actualmente, obtener sus IDs
             if (profesion.getEspecialidades() != null) {
                 for (Especialidad especialidad : profesion.getEspecialidades()) {
-                    for (Long id : profesionDto.getIdEspecialidades()) {
-                        if (!especialidad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
+                    idList.add(especialidad.getId());
                 }
             }
-            List<Long> idsToAdd = idList.isEmpty() ? profesionDto.getIdEspecialidades() : idList;
-            for (Long id : idsToAdd) {
-                profesion.getEspecialidades().add(especialidadService.findById(id).get());
-                especialidadService.findById(id).get().setProfesion(profesion);
+
+            // Iterar sobre los IDs proporcionados en el DTO
+            for (Long id : profesionDto.getIdEspecialidades()) {
+                // Si el ID no está presente en la lista actual, agregarlo
+                if (!idList.contains(id)) {
+                    profesion.getEspecialidades().add(especialidadService.findById(id).get());
+                }
             }
         }
 
