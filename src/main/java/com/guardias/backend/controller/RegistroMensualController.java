@@ -59,14 +59,16 @@ public class RegistroMensualController {
     }
 
     @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<RegistroMensual>> listByYearMonthAndEfector(@PathVariable("anio") int anio,
-            @PathVariable("mes") String mes, @PathVariable("idEfector") Long idEfector) {
+    public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCargoReagrupacion(
+        @PathVariable("anio") int anio,
+        @PathVariable("mes") String mes, 
+        @PathVariable("idEfector") Long idEfector) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
         try {
             List<RegistroMensual> registrosMensuales = registroMensualService
-                    .findByAnioAndMesAndEfectorId(anio, mesEnum, idEfector);
+                    .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {

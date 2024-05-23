@@ -26,8 +26,8 @@ public class RegistroMensualService {
         return registroMensualRepository.findAll();
     }
 
-    public List<RegistroMensual> findByAnioAndMesAndEfectorId(int anio, MesesEnum mes, Long idEfector) {
-        return registroMensualRepository.findByAnioAndMesAndEfectorId(anio, mes, idEfector);
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes, Long idEfector) {
+        return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mes, idEfector);
     }
 
     public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
