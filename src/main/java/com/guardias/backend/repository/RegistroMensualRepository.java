@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.RegistroMensual;
@@ -14,8 +16,13 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         Optional<RegistroMensual> findById(Long id);
 
-        List<RegistroMensual> findByAnioAndMesAndEfectorId(int anio, MesesEnum mes, Long idEfector);
+        @Query("SELECT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND (ra.tipoGuardia.id = 1 OR ra.tipoGuardia.id = 2)")
+        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(@Param("anio") int anio, @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
 
+        /*
+         * List<RegistroMensual> findByAnioAndMesAndEfectorIdAndTipoGuardia(int anio,
+         * MesesEnum mes, Long idEfector);
+         */
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
                         MesesEnum mes, int anio);
 

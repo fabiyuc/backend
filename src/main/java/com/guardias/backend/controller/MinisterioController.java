@@ -116,7 +116,7 @@ public class MinisterioController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(new Ministerio(), ministerioDto);
-
+            ministerio.setId(58L);
             ministerioService.save(ministerio);
             return new ResponseEntity(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
         } else {
