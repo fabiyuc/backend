@@ -1,7 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,27 +56,10 @@ public class RegistroActividadController {
 
         ResponseEntity<?> respuestaValidaciones = registroActividadService.validations(registroActividadDto);
 
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK)
+            respuestaValidaciones = registroActividadService.create(registroActividadDto);
 
-            RegistroActividad registroActividad = registroActividadService.createUpdate(new RegistroActividad(),
-                    registroActividadDto);
-
-            // Set de fecha y hora en la que se realiza el registroActividad
-            registroActividad.setFechaRegistro(LocalDate.now());
-            registroActividad.setHoraRegistro(LocalTime.now());
-
-            registroActividadService.save(registroActividad);
-
-            registrosPendientesService.addRegistroActividad(registroActividad);
-
-            if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-                return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
-            } else {
-                return new ResponseEntity(new Mensaje("error"), HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            return respuestaValidaciones;
-        }
+        return respuestaValidaciones;
     }
 
     @PutMapping("/update/{id}")

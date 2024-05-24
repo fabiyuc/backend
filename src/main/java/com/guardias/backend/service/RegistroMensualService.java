@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,8 +23,6 @@ public class RegistroMensualService {
 
     @Autowired
     RegistroMensualRepository registroMensualRepository;
-    @Autowired
-    RegistroActividadService registroActividadService;
     @Autowired
     EfectorService efectorService;
     @Autowired
@@ -110,26 +107,6 @@ public class RegistroMensualService {
             registroMensual.setAsistencial(asistencialService.findById(registroMensualDto.getIdAsistencial()).get());
         }
 
-        if (registroMensualDto.getIdRegistroActividad() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (registroMensual.getRegistroActividad() != null) {
-                for (RegistroActividad registroActividad : registroMensual.getRegistroActividad()) {
-                    for (Long id : registroMensualDto.getIdRegistroActividad()) {
-                        if (!registroActividad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            } else {
-                registroMensual.setRegistroActividad(new ArrayList<>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? registroMensualDto.getIdRegistroActividad() : idList;
-            for (Long id : idsToAdd) {
-                registroMensual.getRegistroActividad().add(registroActividadService.findById(id).get());
-                registroActividadService.findById(id).get().setRegistroMensual(registroMensual);
-            }
-        }
-
         if (registroMensualDto.getIdEfector() != null && (registroMensual.getEfector() == null
                 || !Objects.equals(registroMensual.getEfector().getId(), registroMensualDto.getIdEfector()))) {
             registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
@@ -159,14 +136,13 @@ public class RegistroMensualService {
 
         try {
             RegistroMensual registroMensual = createUpdate(new RegistroMensual(), registroMensualDto);
-
             return registroMensual.getId();
         } catch (Exception e) {
             return null;
         }
     }
 
-    public void setRegistroMensual(RegistroActividad registroActividad) {
+    public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
         Long idEfector = registroActividad.getEfector().getId();
@@ -186,10 +162,10 @@ public class RegistroMensualService {
 
         try {
             registroActividad.setRegistroMensual(findById(id).get());
-            registroActividadService.save(registroActividad);
         } catch (Exception e) {
             System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
         }
+        return registroActividad;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -126,17 +128,35 @@ public class RegistroActividadService {
                                 registroActividadDto.getIdEfector()))) {
             registroActividad.setEfector(efectorService.findById(registroActividadDto.getIdEfector()));
         }
-
-        if (registroActividadDto.getIdRegistroMensual() != null && (registroActividad.getRegistroMensual() == null
-                || !Objects.equals(registroActividad.getRegistroMensual().getId(),
-                        registroActividadDto.getIdRegistroMensual()))) {
-            registroActividad.setRegistroMensual(
-                    registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
-        }
-
         registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
         registroActividad.setActivo(true);
         return registroActividad;
+    }
+
+    public ResponseEntity<?> create(RegistroActividadDto registroActividadDto) {
+
+        ResponseEntity<?> respuestaValidaciones = validations(registroActividadDto);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+
+            RegistroActividad registroActividad = createUpdate(new RegistroActividad(),
+                    registroActividadDto);
+
+            // Set de fecha y hora en la que se realiza el registroActividad
+            registroActividad.setFechaRegistro(LocalDate.now());
+            registroActividad.setHoraRegistro(LocalTime.now());
+
+            registroActividad = registrosPendientesService.addRegistroActividad(registroActividad);
+            save(registroActividad);
+
+            if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+                return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
+            } else {
+                return new ResponseEntity(new Mensaje("error"), HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     public ResponseEntity<?> registrarSalida(Long id, RegistroActividadDto registroActividadDto) {
@@ -155,10 +175,12 @@ public class RegistroActividadService {
                 .deleteRegistroActividad(registroActividad);
 
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
+            // mando y traigo nuevamente el registroActividad para evitar la referencia
+            // ciclica
+            registroActividad = registroMensualService.setRegistroMensual(registroActividad);
             save(registroActividad);
         }
         // enviar el registro de actividad al registro mensual
-        registroMensualService.setRegistroMensual(registroActividad);
 
         return respuestaDeletePendiente;
     }

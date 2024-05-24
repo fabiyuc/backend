@@ -22,8 +22,8 @@ import jakarta.transaction.Transactional;
 public class RegistrosPendientesService {
     @Autowired
     RegistrosPendientesRepository registrosPendientesRepository;
-    @Autowired
-    RegistroActividadService registroActividadService;
+    // @Autowired
+    // RegistroActividadService registroActividadService;
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();
@@ -87,7 +87,7 @@ public class RegistrosPendientesService {
         }
     }
 
-    public void addRegistroActividad(RegistroActividad registroActividad) {
+    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
 
         RegistrosPendientes registrosPendientes = new RegistrosPendientes();
         try {
@@ -101,6 +101,7 @@ public class RegistrosPendientesService {
         registrosPendientes.getRegistrosActividades().add(registroActividad);
         save(registrosPendientes);
         registroActividad.setRegistrosPendientes(registrosPendientes);
-        registroActividadService.save(registroActividad);
+
+        return registroActividad;
     }
 }
