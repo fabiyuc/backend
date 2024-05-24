@@ -18,7 +18,7 @@ public class RegistroMensualService {
     @Autowired
     RegistroMensualRepository registroMensualRepository;
 
-    public List<RegistroMensual> findByActivoTrue() {
+    public Optional<List<RegistroMensual>> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
     }
 
@@ -26,7 +26,8 @@ public class RegistroMensualService {
         return registroMensualRepository.findAll();
     }
 
-    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes, Long idEfector) {
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
+            Long idEfector) {
         return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mes, idEfector);
     }
 
