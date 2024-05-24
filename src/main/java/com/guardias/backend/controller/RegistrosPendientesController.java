@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
@@ -77,47 +76,4 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
-    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
-
-        RegistrosPendientes registrosPendientes = new RegistrosPendientes();
-        try {
-            registrosPendientes = registrosPendientesService
-                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
-                    .get();
-        } catch (Exception e) {
-            registrosPendientes.setEfector(registroActividad.getEfector());
-            registrosPendientes.setFecha(registroActividad.getFechaIngreso());
-            registrosPendientes.setActivo(true);
-        }
-        registrosPendientes.getRegistrosActividades().add(registroActividad);
-        registrosPendientesService.save(registrosPendientes);
-        registroActividad.setRegistrosPendientes(registrosPendientes);
-        registroActividadService.save(registroActividad);
-        return registroActividad;
-    }
-
-    public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
-        Long id = registroActividad.getRegistrosPendientes().getId();
-        try {
-            if (!registrosPendientesService.activo(id))
-                return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
-            RegistrosPendientes registrosPendientes = registrosPendientesService.findById(id).get();
-
-            registroActividad.setRegistrosPendientes(null);
-            registrosPendientes.getRegistrosActividades().remove(registroActividad);
-            registrosPendientesService.save(registrosPendientes);
-
-            // Si el listado de registros de actividad esta vacio, eliminar el registro de
-            // pendientes
-            if (registrosPendientes.getRegistrosActividades().isEmpty()) {
-                registrosPendientes.setEfector(null);
-
-                registrosPendientesService.deleteById(registrosPendientes.getId());
-            }
-
-            return new ResponseEntity(new Mensaje("Registro de Actividad eliminado"), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
-        }
-    }
 }

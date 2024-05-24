@@ -1,12 +1,19 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
@@ -17,6 +24,16 @@ public class RegistroMensualService {
 
     @Autowired
     RegistroMensualRepository registroMensualRepository;
+    @Autowired
+    RegistroActividadService registroActividadService;
+    @Autowired
+    EfectorService efectorService;
+    @Autowired
+    DdjjService ddjjService;
+    @Autowired
+    AsistencialService asistencialService;
+    @Autowired
+    SumaHorasService sumaHorasService;
 
     public List<RegistroMensual> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
@@ -26,7 +43,8 @@ public class RegistroMensualService {
         return registroMensualRepository.findAll();
     }
 
-    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes, Long idEfector) {
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
+            Long idEfector) {
         return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mes, idEfector);
     }
 
@@ -35,12 +53,6 @@ public class RegistroMensualService {
         return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId, mes,
                 anio);
     }
-
-    // public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, Long
-    // idEfector, MesesEnum mes, int anio) {
-    // return registroMensualRepository.idByIdAsistencialAndMes(idAsistencial,
-    // idEfector, mes, anio);
-    // }
 
     public Optional<RegistroMensual> findById(Long id) {
         return registroMensualRepository.findById(id);
@@ -68,6 +80,116 @@ public class RegistroMensualService {
 
     public void deleteById(Long id) {
         registroMensualRepository.deleteById(id);
+    }
+
+    public ResponseEntity<?> validations(RegistroMensualDto registroMensualDto) {
+
+        if (registroMensualDto.getMes() == null)
+            return new ResponseEntity(new Mensaje("El mes es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (registroMensualDto.getAnio() < 1991)
+            return new ResponseEntity(new Mensaje("El año es incorrecto"), HttpStatus.BAD_REQUEST);
+
+        if (registroMensualDto.getIdAsistencial() < 1)
+            return new ResponseEntity(new Mensaje("El id de la persona es incorrecto"), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    public RegistroMensual createUpdate(RegistroMensual registroMensual,
+            RegistroMensualDto registroMensualDto) {
+
+        if (registroMensualDto.getMes() != null && !registroMensualDto.getMes().equals(registroMensual.getMes()))
+            registroMensual.setMes(registroMensualDto.getMes());
+
+        if (registroMensualDto.getAnio() != registroMensual.getAnio())
+            registroMensual.setAnio(registroMensualDto.getAnio());
+
+        if (registroMensualDto.getIdAsistencial() != null && (registroMensual.getAsistencial() == null
+                || !Objects.equals(registroMensual.getAsistencial().getId(), registroMensualDto.getIdAsistencial()))) {
+            registroMensual.setAsistencial(asistencialService.findById(registroMensualDto.getIdAsistencial()).get());
+        }
+
+        if (registroMensualDto.getIdRegistroActividad() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (registroMensual.getRegistroActividad() != null) {
+                for (RegistroActividad registroActividad : registroMensual.getRegistroActividad()) {
+                    for (Long id : registroMensualDto.getIdRegistroActividad()) {
+                        if (!registroActividad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                registroMensual.setRegistroActividad(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? registroMensualDto.getIdRegistroActividad() : idList;
+            for (Long id : idsToAdd) {
+                registroMensual.getRegistroActividad().add(registroActividadService.findById(id).get());
+                registroActividadService.findById(id).get().setRegistroMensual(registroMensual);
+            }
+        }
+
+        if (registroMensualDto.getIdEfector() != null && (registroMensual.getEfector() == null
+                || !Objects.equals(registroMensual.getEfector().getId(), registroMensualDto.getIdEfector()))) {
+            registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
+        }
+
+        if (registroMensualDto.getIdSumaHoras() != null && (registroMensual.getSumaHoras() == null
+                || !Objects.equals(registroMensual.getSumaHoras().getId(), registroMensualDto.getIdSumaHoras()))) {
+            registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
+        }
+
+        if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
+                || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
+            registroMensual.setDdjj(ddjjService.findById(registroMensualDto.getIdDdjj()).get());
+        }
+
+        registroMensual.setActivo(true);
+        return registroMensual;
+    }
+
+    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+        RegistroMensualDto registroMensualDto = new RegistroMensualDto();
+
+        registroMensualDto.setMes(mesEnum);
+        registroMensualDto.setAnio(anio);
+        registroMensualDto.setIdAsistencial(idAsistencial);
+        registroMensualDto.setIdEfector(idEfector);
+
+        try {
+            RegistroMensual registroMensual = createUpdate(new RegistroMensual(), registroMensualDto);
+
+            return registroMensual.getId();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void setRegistroMensual(RegistroActividad registroActividad) {
+
+        Long idAsistencial = registroActividad.getAsistencial().getId();
+        Long idEfector = registroActividad.getEfector().getId();
+        int mes = registroActividad.getFechaIngreso().getMonth().getValue();
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+        int anio = registroActividad.getFechaIngreso().getYear();
+        Long id;
+
+        try {
+            RegistroMensual registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
+                    mesEnum, anio).get();
+            id = registroMensual.getId();
+        } catch (Exception exception) {
+            System.out.println("id no encontrado");
+            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+        }
+
+        try {
+            registroActividad.setRegistroMensual(findById(id).get());
+            registroActividadService.save(registroActividad);
+        } catch (Exception e) {
+            System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
+        }
     }
 
 }

@@ -1,13 +1,19 @@
 package com.guardias.backend.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.repository.RegistroActividadRepository;
+import com.guardias.backend.security.service.UsuarioService;
 
 import jakarta.transaction.Transactional;
 
@@ -16,6 +22,20 @@ import jakarta.transaction.Transactional;
 public class RegistroActividadService {
     @Autowired
     RegistroActividadRepository registroActividadRepository;
+    @Autowired
+    RegistroMensualService registroMensualService;
+    @Autowired
+    RegistrosPendientesService registrosPendientesService;
+    @Autowired
+    ServicioService servicioService;
+    @Autowired
+    EfectorService efectorService;
+    @Autowired
+    AsistencialService asistencialService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
+    @Autowired
+    UsuarioService usuarioService;
 
     public List<RegistroActividad> findByActivo() {
         return registroActividadRepository.findByActivoTrue();
@@ -44,5 +64,102 @@ public class RegistroActividadService {
     public boolean activo(Long id) {
         return (registroActividadRepository.existsById(id)
                 && registroActividadRepository.findById(id).get().isActivo());
+    }
+
+    public ResponseEntity<?> validations(RegistroActividadDto registroActividadDto) {
+
+        if (registroActividadDto.getFechaIngreso() == null)
+            return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (registroActividadDto.getHoraIngreso() == null)
+            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    public RegistroActividad createUpdate(RegistroActividad registroActividad,
+            RegistroActividadDto registroActividadDto) {
+
+        if (registroActividad.getServicio() == null ||
+                (registroActividadDto.getIdServicio() != null &&
+                        !Objects.equals(registroActividad.getServicio().getId(),
+                                registroActividadDto.getIdServicio()))) {
+            registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
+        }
+
+        if (registroActividad.getTipoGuardia() == null ||
+                (registroActividadDto.getIdTipoGuardia() != null &&
+                        !Objects.equals(registroActividad.getTipoGuardia().getId(),
+                                registroActividadDto.getIdTipoGuardia()))) {
+            registroActividad
+                    .setTipoGuardia(tipoGuardiaService.findById(registroActividadDto.getIdTipoGuardia()).get());
+        }
+
+        if (registroActividad.getFechaIngreso() != registroActividadDto.getFechaIngreso() &&
+                registroActividadDto.getFechaIngreso() != null)
+            registroActividad.setFechaIngreso(registroActividadDto.getFechaIngreso());
+
+        if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
+                registroActividadDto.getFechaEgreso() != null)
+            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
+
+        if (registroActividad.getHoraIngreso() != registroActividadDto.getHoraIngreso() &&
+                registroActividadDto.getHoraIngreso() != null)
+            registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
+
+        if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
+                registroActividadDto.getHoraEgreso() != null)
+            registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+
+        if (registroActividad.getAsistencial() == null ||
+                (registroActividadDto.getIdAsistencial() != null &&
+                        !Objects.equals(registroActividad.getAsistencial().getId(),
+                                registroActividadDto.getIdAsistencial()))) {
+            registroActividad
+                    .setAsistencial(asistencialService.findById(registroActividadDto.getIdAsistencial()).get());
+        }
+
+        if (registroActividad.getEfector() == null ||
+                (registroActividadDto.getIdEfector() != null &&
+                        !Objects.equals(registroActividad.getEfector().getId(),
+                                registroActividadDto.getIdEfector()))) {
+            registroActividad.setEfector(efectorService.findById(registroActividadDto.getIdEfector()));
+        }
+
+        if (registroActividadDto.getIdRegistroMensual() != null && (registroActividad.getRegistroMensual() == null
+                || !Objects.equals(registroActividad.getRegistroMensual().getId(),
+                        registroActividadDto.getIdRegistroMensual()))) {
+            registroActividad.setRegistroMensual(
+                    registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
+        }
+
+        registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        registroActividad.setActivo(true);
+        return registroActividad;
+    }
+
+    public ResponseEntity<?> registrarSalida(Long id, RegistroActividadDto registroActividadDto) {
+
+        RegistroActividad registroActividad = findById(id).get();
+
+        if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
+                registroActividadDto.getFechaEgreso() != null)
+            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
+
+        if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
+                registroActividadDto.getHoraEgreso() != null)
+            registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+
+        ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
+                .deleteRegistroActividad(registroActividad);
+
+        if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
+            save(registroActividad);
+        }
+        // enviar el registro de actividad al registro mensual
+        registroMensualService.setRegistroMensual(registroActividad);
+
+        return respuestaDeletePendiente;
     }
 }
