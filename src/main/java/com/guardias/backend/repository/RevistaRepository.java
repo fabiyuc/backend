@@ -12,7 +12,7 @@ import com.guardias.backend.enums.AgrupacionEnum;
 @Repository
 public interface RevistaRepository extends JpaRepository<Revista, Long> {
 
-    List<Revista> findByActivoTrue();
+    Optional<List<Revista>> findByActivoTrue();
 
     Optional<Revista> findById(Long id);
 
