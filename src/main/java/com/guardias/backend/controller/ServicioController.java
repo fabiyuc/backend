@@ -21,7 +21,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.Servicio;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.ServicioService;
 
@@ -50,7 +49,7 @@ public class ServicioController {
             servicio.setRegistrosActividades(activeRegActividades);
             filteredList.add(servicio);
         }
-        
+
         return new ResponseEntity<List<Servicio>>(filteredList, HttpStatus.OK);
     }
 

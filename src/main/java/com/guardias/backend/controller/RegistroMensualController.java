@@ -48,7 +48,7 @@ public class RegistroMensualController {
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroMensual>> list() {
-        List<RegistroMensual> list = registroMensualService.findByActivoTrue();
+        List<RegistroMensual> list = registroMensualService.findByActivoTrue().get();
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
@@ -60,9 +60,9 @@ public class RegistroMensualController {
 
     @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCargoReagrupacion(
-        @PathVariable("anio") int anio,
-        @PathVariable("mes") String mes, 
-        @PathVariable("idEfector") Long idEfector) {
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
@@ -275,7 +275,7 @@ public class RegistroMensualController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!registroMensualService.existsById(id))
+        if (!registroMensualService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         RegistroMensual registroMensual = registroMensualService.findById(id).get();

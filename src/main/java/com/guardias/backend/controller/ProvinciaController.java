@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProvinciaDTO;
+import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.entity.Provincia;
+import com.guardias.backend.service.DepartamentoService;
+import com.guardias.backend.service.PaisService;
 import com.guardias.backend.service.ProvinciaService;
 
 import io.micrometer.common.util.StringUtils;
@@ -30,32 +35,38 @@ public class ProvinciaController {
     @Autowired
     ProvinciaService provinciaService;
 
+    @Autowired
+    PaisService paisService;
+
+    @Autowired
+    DepartamentoService departamentoService;
+
     @GetMapping("/list")
     public ResponseEntity<List<Provincia>> list() {
-        List<Provincia> list = provinciaService.findByActivo();
-        return ResponseEntity.ok(list);
+        List<Provincia> list = provinciaService.findByActivoTrue().get();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Provincia>> listAll() {
         List<Provincia> list = provinciaService.findAll();
-        return ResponseEntity.ok(list);
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Provincia> getById(@PathVariable("id") Long id) {
-        if (!provinciaService.existsById(id))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        if (!provinciaService.activo(id))
+            return new ResponseEntity(new Mensaje("Provincia no existe"), HttpStatus.NOT_FOUND);
         Provincia provincia = provinciaService.findById(id).get();
-        return ResponseEntity.ok(provincia);
+        return new ResponseEntity(provincia, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")
     public ResponseEntity<Provincia> getByNombre(@PathVariable("nombre") String nombre) {
         if (!provinciaService.existsByNombre(nombre))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return new ResponseEntity(new Mensaje("Provincia no existe"), HttpStatus.NOT_FOUND);
         Provincia provincia = provinciaService.findByNombre(nombre).get();
-        return ResponseEntity.ok(provincia);
+        return new ResponseEntity(provincia, HttpStatus.OK);
     }
 
     private ResponseEntity<?> validations(ProvinciaDTO provinciaDto, Long id) {
@@ -70,7 +81,7 @@ public class ProvinciaController {
         // ****** Necesitamos validar que el gentilicio sea unico? en caso de sí agregar
         // esa validacion */
 
-        if (provinciaDto.getPais() == null)
+        if (provinciaDto.getIdPais() == null)
             return new ResponseEntity(new Mensaje("es obligatorio indicar el pais"), HttpStatus.BAD_REQUEST);
 
         if (provinciaService.existsByNombre(provinciaDto.getNombre())
@@ -82,9 +93,43 @@ public class ProvinciaController {
 
     private Provincia createUpdate(Provincia provincia, ProvinciaDTO provinciaDto) {
 
-        provincia.setNombre(provinciaDto.getNombre());
-        provincia.setGentilicio(provinciaDto.getGentilicio());
-        provincia.setPais(provinciaDto.getPais());
+        if (provinciaDto.getNombre() != null
+                && provincia.getNombre() != provinciaDto.getNombre()
+                && !provinciaDto.getNombre().isEmpty())
+            provincia.setNombre(provinciaDto.getNombre());
+
+        if (provinciaDto.getGentilicio() != null
+                && provincia.getGentilicio() != provinciaDto.getGentilicio()
+                && !provinciaDto.getGentilicio().isEmpty())
+            provincia.setGentilicio(provinciaDto.getGentilicio());
+
+        if (provinciaDto.getIdPais() != null) {
+            if (provincia.getPais() == null
+                    || !Objects.equals(provincia.getPais().getId(), provinciaDto.getIdPais())) {
+                provincia.setPais(paisService.findById(provinciaDto.getIdPais()).get());
+            }
+        }
+
+        if (provinciaDto.getIdDepartamentos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (provincia.getDepartamentos() != null) {
+                for (Departamento departamento : provincia.getDepartamentos()) {
+                    for (Long id : provinciaDto.getIdDepartamentos()) {
+                        if (!departamento.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                provincia.setDepartamentos(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? provinciaDto.getIdDepartamentos() : idList;
+            for (Long id : idsToAdd) {
+                provincia.getDepartamentos().add(departamentoService.findById(id).get());
+                departamentoService.findById(id).get().setProvincia(provincia);
+            }
+        }
+
         provincia.setActivo(true);
         return provincia;
     }
@@ -97,7 +142,7 @@ public class ProvinciaController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Provincia provincia = createUpdate(new Provincia(), provinciaDto);
             provinciaService.save(provincia);
-            return ResponseEntity.ok(new Mensaje("Provincia creada correctamente"));
+            return new ResponseEntity<>(new Mensaje("Provincia creada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -114,7 +159,7 @@ public class ProvinciaController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Provincia provincia = createUpdate(provinciaService.findById(id).get(), provinciaDto);
             provinciaService.save(provincia);
-            return ResponseEntity.ok(new Mensaje("Provincia creada correctamente"));
+            return new ResponseEntity<>(new Mensaje("Provincia modificada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -122,13 +167,13 @@ public class ProvinciaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!provinciaService.existsById(id))
+        if (!provinciaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la provincia"), HttpStatus.NOT_FOUND);
 
         Provincia provincia = provinciaService.findById(id).get();
         provincia.setActivo(false);
         provinciaService.save(provincia);
-        return ResponseEntity.ok(new Mensaje("Provincia eliminada correctamente"));
+        return new ResponseEntity(new Mensaje("Provincia eliminada correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
@@ -137,6 +182,6 @@ public class ProvinciaController {
         if (!provinciaService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe la provincia"), HttpStatus.NOT_FOUND);
         provinciaService.deleteById(id);
-        return ResponseEntity.ok(new Mensaje("Provincia eliminada FISICAMENTE"));
+        return new ResponseEntity(new Mensaje("Provincia eliminada FISICAMENTE"), HttpStatus.OK);
     }
 }
