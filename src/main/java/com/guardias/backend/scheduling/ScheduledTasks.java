@@ -3,11 +3,16 @@ package com.guardias.backend.scheduling;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.guardias.backend.service.PendientesSemanalService;
+
 @Component
 public class ScheduledTasks {
+    @Autowired
+    PendientesSemanalService pendientesSemanalService;
 
     // @Scheduled(cron = "42 31 12 15 5")
     // @Scheduled(cron = "SEGUNDOS MINUTOS HORAS DIA MES")
@@ -24,6 +29,7 @@ public class ScheduledTasks {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedNow = now.format(formatter);
         System.out.println("Tarea ejecutada los Sabados a las 0hs - Fecha y hora actual: " + formattedNow);
+        pendientesSemanalService.createPendienteSemanal();
 
     }
 
@@ -39,13 +45,13 @@ public class ScheduledTasks {
     }
 
     // Tarea que se ejecuta una vez por segundo para probar el trigger
-    // @Scheduled(fixedRate = 1000)
-    // public void executeTaskEverySecond() {
-    // LocalDateTime now = LocalDateTime.now();
-    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy
-    // HH:mm:ss");
-    // String formattedNow = now.format(formatter);
-    // System.out.println("Tarea ejecutada cada segundo - Fecha y hora actual: " +
-    // formattedNow);
-    // }
+    @Scheduled(fixedRate = 10000)
+    public void executeTaskEverySecond() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss");
+        String formattedNow = now.format(formatter);
+        System.out.println("Tarea ejecutada cada segundo - Fecha y hora actual: " +
+                formattedNow);
+        pendientesSemanalService.createPendienteSemanal();
+    }
 }

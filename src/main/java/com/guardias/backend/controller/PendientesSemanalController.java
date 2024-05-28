@@ -1,6 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PendientesSemanalDto;
 import com.guardias.backend.entity.PendientesSemanal;
-import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.PendientesSemanalService;
-import com.guardias.backend.service.RegistrosPendientesService;
 
 @RestController
 @RequestMapping("/pendientesSemanal")
@@ -31,10 +27,6 @@ import com.guardias.backend.service.RegistrosPendientesService;
 public class PendientesSemanalController {
     @Autowired
     PendientesSemanalService pendientesSemanalService;
-    @Autowired
-    EfectorService efectorService;
-    @Autowired
-    RegistrosPendientesService registrosPendientesService;
 
     @GetMapping("/list")
     public ResponseEntity<List<PendientesSemanal>> list() {
@@ -72,55 +64,11 @@ public class PendientesSemanalController {
         }
     }
 
-    public PendientesSemanal createUpdate(PendientesSemanal pendientesSemanal,
-            PendientesSemanalDto pendientesSemanalDto) {
-
-        if (pendientesSemanalDto.getFechaInicio() != pendientesSemanal.getFechaInicio()
-                && pendientesSemanalDto.getFechaInicio() != null)
-            pendientesSemanal.setFechaInicio(pendientesSemanalDto.getFechaInicio());
-
-        if (pendientesSemanalDto.getFechaFin() != pendientesSemanal.getFechaFin()
-                && pendientesSemanalDto.getFechaFin() != null)
-            pendientesSemanal.setFechaFin(pendientesSemanalDto.getFechaFin());
-
-        if (pendientesSemanalDto.getMes() != pendientesSemanal.getMes() && pendientesSemanalDto.getMes() != null)
-            pendientesSemanal.setMes(pendientesSemanalDto.getMes());
-
-        if (pendientesSemanalDto.getAnio() != pendientesSemanal.getAnio())
-            pendientesSemanal.setAnio(pendientesSemanalDto.getAnio());
-
-        if (pendientesSemanalDto.getIdEfector() != pendientesSemanal.getEfector().getId()
-                && pendientesSemanalDto.getIdEfector() != null)
-            pendientesSemanal.setEfector(efectorService.findById(pendientesSemanalDto.getIdEfector()));
-
-        if (pendientesSemanalDto.getIdRegistrosPendientes() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (pendientesSemanal.getRegistrosPendientes() != null) {
-                for (RegistrosPendientes registrosPendientes : pendientesSemanal.getRegistrosPendientes()) {
-                    for (Long id : pendientesSemanalDto.getIdRegistrosPendientes()) {
-                        if (!registrosPendientes.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            } else {
-                pendientesSemanal.setRegistrosPendientes(new ArrayList<>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? pendientesSemanalDto.getIdRegistrosPendientes() : idList;
-            for (Long id : idsToAdd) {
-                pendientesSemanal.getRegistrosPendientes().add(registrosPendientesService.findById(id).get());
-                registrosPendientesService.findById(id).get().setPendientesSemanal(pendientesSemanal);
-            }
-        }
-
-        pendientesSemanal.setActivo(true);
-        return pendientesSemanal;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody PendientesSemanalDto pendientesSemanalDto) {
 
-        PendientesSemanal pendientesSemanal = createUpdate(new PendientesSemanal(), pendientesSemanalDto);
+        PendientesSemanal pendientesSemanal = pendientesSemanalService.createUpdate(new PendientesSemanal(),
+                pendientesSemanalDto);
         pendientesSemanalService.save(pendientesSemanal);
         return ResponseEntity.ok(new Mensaje("pendiente semanal registrado correctamente"));
     }
@@ -132,7 +80,8 @@ public class PendientesSemanalController {
         if (!pendientesSemanalService.activo(id))
             return new ResponseEntity(new Mensaje("pendiente semanal no existe"), HttpStatus.NOT_FOUND);
 
-        PendientesSemanal pendientesSemanal = createUpdate(pendientesSemanalService.findById(id).get(),
+        PendientesSemanal pendientesSemanal = pendientesSemanalService.createUpdate(
+                pendientesSemanalService.findById(id).get(),
                 pendientesSemanalDto);
         pendientesSemanalService.save(pendientesSemanal);
 
