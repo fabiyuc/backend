@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.guardias.backend.service.PendientesSemanalService;
 
 @Component
-public class ScheduledTasks {
+public class RegistroActividadesScheduler {
     @Autowired
     PendientesSemanalService pendientesSemanalService;
 
