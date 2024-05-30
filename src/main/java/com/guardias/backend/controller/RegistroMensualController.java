@@ -58,7 +58,7 @@ public class RegistroMensualController {
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
+    @GetMapping("/listAMEcargoyagrup/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCargoReagrupacion(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
@@ -76,7 +76,7 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
+    @GetMapping("/listAMEextra/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaExtra(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
