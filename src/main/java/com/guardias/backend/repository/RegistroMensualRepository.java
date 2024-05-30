@@ -20,6 +20,10 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(@Param("anio") int anio,
                         @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
 
+        @Query("SELECT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND ra.tipoGuardia.id = 3")
+        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtra(@Param("anio") int anio,
+                        @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
+
         /*
          * List<RegistroMensual> findByAnioAndMesAndEfectorIdAndTipoGuardia(int anio,
          * MesesEnum mes, Long idEfector);
