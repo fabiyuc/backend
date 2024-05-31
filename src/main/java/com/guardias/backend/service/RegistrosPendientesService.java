@@ -62,6 +62,24 @@ public class RegistrosPendientesService {
                 && registrosPendientesRepository.findById(id).get().isActivo());
     }
 
+    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
+
+        RegistrosPendientes registrosPendientes = new RegistrosPendientes();
+        try {
+            registrosPendientes = findByEfectorAndFecha(registroActividad.getEfector(),
+                    registroActividad.getFechaIngreso()).get();
+        } catch (Exception e) {
+            registrosPendientes.setEfector(registroActividad.getEfector());
+            registrosPendientes.setFecha(registroActividad.getFechaIngreso());
+            registrosPendientes.setActivo(true);
+        }
+        registrosPendientes.getRegistrosActividades().add(registroActividad);
+        save(registrosPendientes);
+        registroActividad.setRegistrosPendientes(registrosPendientes);
+
+        return registroActividad;
+    }
+
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
         Long id = registroActividad.getRegistrosPendientes().getId();
         try {
@@ -87,21 +105,8 @@ public class RegistrosPendientesService {
         }
     }
 
-    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
+    public void addToRegistoSemanal(RegistrosPendientes registrosPendientes) {
 
-        RegistrosPendientes registrosPendientes = new RegistrosPendientes();
-        try {
-            registrosPendientes = findByEfectorAndFecha(registroActividad.getEfector(),
-                    registroActividad.getFechaIngreso()).get();
-        } catch (Exception e) {
-            registrosPendientes.setEfector(registroActividad.getEfector());
-            registrosPendientes.setFecha(registroActividad.getFechaIngreso());
-            registrosPendientes.setActivo(true);
-        }
-        registrosPendientes.getRegistrosActividades().add(registroActividad);
-        save(registrosPendientes);
-        registroActividad.setRegistrosPendientes(registrosPendientes);
-
-        return registroActividad;
     }
+
 }

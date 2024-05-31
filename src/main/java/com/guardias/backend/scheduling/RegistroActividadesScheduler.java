@@ -44,14 +44,15 @@ public class RegistroActividadesScheduler {
 
     }
 
-    // Tarea que se ejecuta una vez por segundo para probar el trigger
-    @Scheduled(fixedRate = 10000)
-    public void executeTaskEverySecond() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss");
-        String formattedNow = now.format(formatter);
-        System.out.println("Tarea ejecutada cada segundo - Fecha y hora actual: " +
-                formattedNow);
-        pendientesSemanalService.createPendienteSemanal();
-    }
+    // Tarea que se ejecuta una vez cada 10 segundos para probar el trigger
+    // @Scheduled(fixedRate = 10000)
+    // public void executeTaskEverySecond() {
+    // LocalDateTime now = LocalDateTime.now();
+    // DateTimeFormatter formatter =
+    // DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss");
+    // String formattedNow = now.format(formatter);
+    // System.out.println("Tarea ejecutada cada segundo - Fecha y hora actual: " +
+    // formattedNow);
+    // pendientesSemanalService.createPendienteSemanal();
+    // }
 }

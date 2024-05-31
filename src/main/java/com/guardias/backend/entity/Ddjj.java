@@ -44,6 +44,7 @@ public class Ddjj {
     @Column(precision = 20, scale = 2)
     private BigDecimal total;
     private EstadoDdjjEnum estadoDdjj;
+    private String observaciones;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valorGmi")

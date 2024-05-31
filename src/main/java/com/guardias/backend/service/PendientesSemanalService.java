@@ -1,7 +1,6 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,7 +9,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardias.backend.dto.PendientesSemanalDto;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.PendientesSemanal;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.enums.MesesEnum;
@@ -90,26 +92,12 @@ public class PendientesSemanalService {
             }
         }
 
-        if (pendientesSemanalDto.getIdRegistrosPendientes() != null) {
-            List<Long> idList = pendientesSemanalDto.getIdRegistrosPendientes();
-            if (pendientesSemanal.getRegistrosPendientes() == null) {
-                pendientesSemanal.setRegistrosPendientes(new ArrayList<>());
-            }
-
-            for (Long id : idList) {
-                Optional<RegistrosPendientes> registroOpt = registrosPendientesService.findById(id);
-                if (registroOpt.isPresent()) {
-                    RegistrosPendientes registro = registroOpt.get();
-                    if (!pendientesSemanal.getRegistrosPendientes().contains(registro)) {
-                        pendientesSemanal.getRegistrosPendientes().add(registro);
-                        registro.setPendientesSemanal(pendientesSemanal);
-                    }
-                }
-            }
-        }
-
         pendientesSemanal.setActivo(true);
         return pendientesSemanal;
+    }
+
+    public void addRegistrosPendientes(RegistrosPendientes registrosPendientes) {
+
     }
 
     public void createPendienteSemanal() {
@@ -122,24 +110,39 @@ public class PendientesSemanalService {
                 Long idEfector = entry.getKey();
                 List<RegistrosPendientes> registros = entry.getValue();
 
-                PendientesSemanalDto pendientesSemanalDto = new PendientesSemanalDto();
-                pendientesSemanalDto.setFechaInicio(LocalDate.now());
-                pendientesSemanalDto.setFechaFin(LocalDate.now().plusDays(7));
-                pendientesSemanalDto.setAnio(LocalDate.now().getYear());
-                pendientesSemanalDto.setIdEfector(idEfector);
-                pendientesSemanalDto.setIdRegistrosPendientes(
-                        registros.stream().map(RegistrosPendientes::getId).collect(Collectors.toList()));
+                PendientesSemanal pendienteSemanal = new PendientesSemanal();
 
-                PendientesSemanal pendienteSemanal = createUpdate(new PendientesSemanal(), pendientesSemanalDto);
-                save(pendienteSemanal);
-                System.out.println("***************************INICIO**************************************");
-                System.out.println("Id del pendiente semanal: " + pendienteSemanal.getId());
-                System.out.println("Fechas del pendiente semanal: " + pendienteSemanal.getFechaInicio() + " - "
-                        + pendienteSemanal.getFechaFin());
-                System.out.println("Efector del pendiente semanal: " +
-                        (pendienteSemanal.getEfector() != null ? pendienteSemanal.getEfector().getNombre() : "NULL"));
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    // Convertir el Efector del primer registro a JSON
+                    Efector efector = registros.get(0).getEfector();
+                    String efectorJson = objectMapper.writeValueAsString(efector);
+                    pendienteSemanal.setEfectorJson(efectorJson);
 
-                System.out.println("***************************FIN**************************************");
+                    // Convertir la lista de RegistrosPendientes a JSON
+                    String registrosJson = objectMapper.writeValueAsString(registros);
+                    pendienteSemanal.setRegistrosPendientesJson(registrosJson);
+
+                    // Configurar las otras propiedades de PendientesSemanal
+                    pendienteSemanal.setFechaInicio(LocalDate.now());
+                    pendienteSemanal.setFechaFin(LocalDate.now().plusDays(7));
+                    pendienteSemanal.setAnio(LocalDate.now().getYear());
+                    pendienteSemanal.setActivo(true);
+
+                    // Guardar el objeto PendientesSemanal
+                    save(pendienteSemanal);
+
+                    // Imprimir la información para verificar
+                    System.out.println("***************************INICIO**************************************");
+                    System.out.println("Id del pendiente semanal: " + pendienteSemanal.getId());
+                    System.out.println("Fechas del pendiente semanal: " + pendienteSemanal.getFechaInicio() + " - "
+                            + pendienteSemanal.getFechaFin());
+                    System.out.println("Efector del pendiente semanal: " + efector.getNombre());
+                    System.out.println("***************************FIN**************************************");
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                    // Manejar la excepción de manera adecuada según tus necesidades
+                }
             }
         } else {
             System.out.println("No hay registros pendientes en la semana");
