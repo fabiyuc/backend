@@ -17,7 +17,12 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         Optional<RegistroMensual> findById(Long id);
 
         @Query("SELECT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND (ra.tipoGuardia.id = 1 OR ra.tipoGuardia.id = 2)")
-        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(@Param("anio") int anio, @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
+        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(@Param("anio") int anio,
+                        @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
+
+        @Query("SELECT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND ra.tipoGuardia.id = 3")
+        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtra(@Param("anio") int anio,
+                        @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
 
         /*
          * List<RegistroMensual> findByAnioAndMesAndEfectorIdAndTipoGuardia(int anio,
@@ -26,11 +31,15 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
                         MesesEnum mes, int anio);
 
-        List<RegistroMensual> findByActivoTrue();
+        Optional<List<RegistroMensual>> findByActivoTrue();
 
         boolean existsByAnioAndMes(int anio, MesesEnum mes);
 
         boolean existsByAsistencialId(Long asistencialId);
 
         List<RegistroMensual> findByAnioAndMes(int anio, MesesEnum mes);
+
+        boolean existsById(Long id);
+
+        List<RegistroMensual> findByActivo(boolean activo);
 }

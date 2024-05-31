@@ -31,7 +31,7 @@ public class RegistroMensualController {
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroMensual>> list() {
-        List<RegistroMensual> list = registroMensualService.findByActivoTrue();
+        List<RegistroMensual> list = registroMensualService.findByActivoTrue().get();
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
@@ -41,7 +41,7 @@ public class RegistroMensualController {
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listAnioMesEfector/{anio}/{mes}/{idEfector}")
+    @GetMapping("/listAMEcargoyagrup/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCargoReagrupacion(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
@@ -55,7 +55,25 @@ public class RegistroMensualController {
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("Registros mensuales de Cargo y reagrupacion no encontrados"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listAMEextra/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaExtra(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensual> registrosMensuales = registroMensualService
+                    .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registros mensuales extra no encontrados"), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -122,7 +140,7 @@ public class RegistroMensualController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!registroMensualService.existsById(id))
+        if (!registroMensualService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
         RegistroMensual registroMensual = registroMensualService.findById(id).get();

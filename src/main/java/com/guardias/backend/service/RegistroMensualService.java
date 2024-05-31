@@ -32,7 +32,7 @@ public class RegistroMensualService {
     @Autowired
     SumaHorasService sumaHorasService;
 
-    public List<RegistroMensual> findByActivoTrue() {
+    public Optional<List<RegistroMensual>> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
     }
 
@@ -43,6 +43,11 @@ public class RegistroMensualService {
     public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
             Long idEfector) {
         return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mes, idEfector);
+    }
+
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtra(int anio, MesesEnum mes,
+            Long idEfector) {
+        return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaExtra(anio, mes, idEfector);
     }
 
     public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,

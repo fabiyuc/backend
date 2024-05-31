@@ -39,7 +39,7 @@ public class RegistroActividadService {
     @Autowired
     UsuarioService usuarioService;
 
-    public List<RegistroActividad> findByActivo() {
+    public Optional<List<RegistroActividad>> findByActivoTrue() {
         return registroActividadRepository.findByActivoTrue();
     }
 

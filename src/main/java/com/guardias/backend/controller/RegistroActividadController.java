@@ -33,7 +33,7 @@ public class RegistroActividadController {
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroActividad>> list() {
-        List<RegistroActividad> list = registroActividadService.findByActivo();
+        List<RegistroActividad> list = registroActividadService.findByActivoTrue().get();
         return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
     }
 

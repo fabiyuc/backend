@@ -68,7 +68,7 @@ public class DepartamentoController {
         return new ResponseEntity(departamento, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(DepartamentoDto departamentoDto) {
+    private ResponseEntity<?> validations(DepartamentoDto departamentoDto, Long id) {
 
         if (StringUtils.isBlank(departamentoDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -136,7 +136,7 @@ public class DepartamentoController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DepartamentoDto departamentoDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(departamentoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(departamentoDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Departamento departamento = createUpdate(new Departamento(), departamentoDto);
@@ -151,7 +151,7 @@ public class DepartamentoController {
         if (!departamentoService.activo(id))
             return new ResponseEntity(new Mensaje("El departamento no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(departamentoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(departamentoDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Departamento departamento = createUpdate(departamentoService.findById(id).get(), departamentoDto);

@@ -1,5 +1,6 @@
 package com.guardias.backend.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
@@ -17,4 +18,5 @@ public class ServicioDto {
     private boolean activo;
     private List<Long> idRegistrosActividades;
     private int nivel;
+    private List<Long> idEfectores = new ArrayList<>();
 }
