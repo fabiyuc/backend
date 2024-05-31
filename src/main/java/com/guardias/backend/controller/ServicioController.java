@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ServicioDto;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.Servicio;
+import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.ServicioService;
 
@@ -33,6 +35,8 @@ public class ServicioController {
     ServicioService servicioService;
     @Autowired
     RegistroActividadService registroActividadService;
+    @Autowired
+    EfectorService efectorService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Servicio>> list() {
@@ -125,6 +129,37 @@ public class ServicioController {
                 registroActividadService.findById(id).get().setServicio(servicio);
             }
         }
+
+        if (servicioDto.getIdEfectores() != null) {
+            if (servicio.getEfectores() == null) {
+                servicio.setEfectores(new ArrayList<Efector>());
+            }
+            
+            List<Long> idList = new ArrayList<Long>();
+            for (Long id : servicioDto.getIdEfectores()) {
+                boolean exists = false;
+                for (Efector efector : servicio.getEfectores()) {
+                    if (efector.getId().equals(id)) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    idList.add(id);
+                }
+            }
+        
+            for (Long id : idList) {
+                Efector efector = efectorService.findById(id);
+                servicio.getEfectores().add(efector);
+                efector.getServicios().add(servicio);
+            }
+        } else {
+            if (servicio.getEfectores() == null) {
+                servicio.setEfectores(new ArrayList<Efector>());
+            }
+        }
+        
 
         servicio.setActivo(true);
         return servicio;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
 
 import jakarta.persistence.CascadeType;
@@ -18,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,6 +47,10 @@ public class Usuario {
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
             "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "activo", "nombre", "nombreUsuario", "email", "password", "roles",

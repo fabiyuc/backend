@@ -12,6 +12,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +44,12 @@ public class Servicio {
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
             "servicio", "efector", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "servicio_efector", joinColumns = @JoinColumn(name = "id_servicio"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "servicios", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "autoridades", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva", "nivelComplejidad", "caps" })
+  private List<Efector> efectores = new ArrayList<>();
+
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
     // "nivel", "activo", "registrosActividades" })
