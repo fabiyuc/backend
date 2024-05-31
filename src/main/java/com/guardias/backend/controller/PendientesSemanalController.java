@@ -9,14 +9,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.PendientesSemanalDto;
 import com.guardias.backend.entity.PendientesSemanal;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.PendientesSemanalService;
@@ -64,29 +61,34 @@ public class PendientesSemanalController {
         }
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody PendientesSemanalDto pendientesSemanalDto) {
+    // @PostMapping("/create")
+    // public ResponseEntity<?> create(@RequestBody PendientesSemanalDto
+    // pendientesSemanalDto) {
 
-        PendientesSemanal pendientesSemanal = pendientesSemanalService.createUpdate(new PendientesSemanal(),
-                pendientesSemanalDto);
-        pendientesSemanalService.save(pendientesSemanal);
-        return ResponseEntity.ok(new Mensaje("pendiente semanal registrado correctamente"));
-    }
+    // PendientesSemanal pendientesSemanal =
+    // pendientesSemanalService.createUpdate(new PendientesSemanal(),
+    // pendientesSemanalDto);
+    // pendientesSemanalService.save(pendientesSemanal);
+    // return ResponseEntity.ok(new Mensaje("pendiente semanal registrado
+    // correctamente"));
+    // }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id,
-            @RequestBody PendientesSemanalDto pendientesSemanalDto) {
+    // @PutMapping("/update/{id}")
+    // public ResponseEntity<?> update(@PathVariable("id") Long id,
+    // @RequestBody PendientesSemanalDto pendientesSemanalDto) {
 
-        if (!pendientesSemanalService.activo(id))
-            return new ResponseEntity(new Mensaje("pendiente semanal no existe"), HttpStatus.NOT_FOUND);
+    // if (!pendientesSemanalService.activo(id))
+    // return new ResponseEntity(new Mensaje("pendiente semanal no existe"),
+    // HttpStatus.NOT_FOUND);
 
-        PendientesSemanal pendientesSemanal = pendientesSemanalService.createUpdate(
-                pendientesSemanalService.findById(id).get(),
-                pendientesSemanalDto);
-        pendientesSemanalService.save(pendientesSemanal);
+    // PendientesSemanal pendientesSemanal = pendientesSemanalService.createUpdate(
+    // pendientesSemanalService.findById(id).get(),
+    // pendientesSemanalDto);
+    // pendientesSemanalService.save(pendientesSemanal);
 
-        return ResponseEntity.ok(new Mensaje("pendiente semanal modificado correctamente"));
-    }
+    // return ResponseEntity.ok(new Mensaje("pendiente semanal modificado
+    // correctamente"));
+    // }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {

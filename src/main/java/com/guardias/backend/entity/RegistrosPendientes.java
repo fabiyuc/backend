@@ -52,19 +52,6 @@ public class RegistrosPendientes {
             "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_pendiente_semanal")
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-    // "autoridades", "domicilio", "telefono",
-    // "estado", "activo", "observacion", "region", "localidad",
-    // "distribucionesHorarias",
-    // "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva",
-    // "caps", "cabecera",
-    // "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera",
-    // "ministerios", "registrosActividades",
-    // "registroMensual", "ddjjs", "registrosPendientes" })
-    private PendientesSemanal pendientesSemanal;
-
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "fecha", "efector", "registrosActividades" })
 

@@ -1,6 +1,8 @@
 package com.guardias.backend.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.PendientesSemanal;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.repository.RegistrosPendientesRepository;
@@ -22,6 +25,8 @@ import jakarta.transaction.Transactional;
 public class RegistrosPendientesService {
     @Autowired
     RegistrosPendientesRepository registrosPendientesRepository;
+    @Autowired
+    PendientesSemanalService pendientesSemanalService;
     // @Autowired
     // RegistroActividadService registroActividadService;
 
@@ -105,8 +110,28 @@ public class RegistrosPendientesService {
         }
     }
 
-    public void addToRegistoSemanal(RegistrosPendientes registrosPendientes) {
+    // esta funcion debe ser llamada con el scheduler diario
+    public void addToPendienteSemanal(RegistrosPendientes registrosPendientes) {
+        List<RegistrosPendientes> pendientes = findByActivo();
 
+        // trae el sabado anterior al actual (incluso si hoy es sabado)
+        LocalDate previousSaturday = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.SATURDAY));
+
+        PendientesSemanal pendientesSemanal = new PendientesSemanal();
+        if (!pendientes.isEmpty()) {
+            for (RegistrosPendientes registro : pendientes) {
+                try {
+                    pendientesSemanal = pendientesSemanalService
+                            .findByEfectorAndFechaInicio(registro.getEfector(),
+                                    previousSaturday)
+                            .get();
+                } catch (Exception e) {
+                    // caso que no exista el pendiente semanal y haya que crearlo
+                    pendientesSemanal = pendientesSemanalService.create(registro);
+                }
+                pendientesSemanalService.addRegistrosPendientes(pendientesSemanal, registro);
+            }
+        }
     }
 
 }
