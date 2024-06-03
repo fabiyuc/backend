@@ -46,7 +46,7 @@ public class RegistroActividad {
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_tipo_guardia")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales",
-                        "descripcion", "activo", "registrosActividades", "nombre" })
+                         "activo", "registrosActividades", "nombre" })
         private TipoGuardia tipoGuardia;
 
         @Column(columnDefinition = "BIT DEFAULT 1")
@@ -64,18 +64,18 @@ public class RegistroActividad {
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_servicio")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nivel", "activo",
-                        "registrosActividades", "descripcion" })
+                        "registrosActividades", "efectores" })
         private Servicio servicio;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_efector")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
                         "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
                         "legajosUdo", "legajos",
                         "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
                         "tipoCaps",
                         "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual",
-                        "ddjjs", "registrosPendientes" })
+                        "ddjjs", "registrosPendientes","servicios" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
