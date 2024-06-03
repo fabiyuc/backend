@@ -20,4 +20,6 @@ public class ProfesionDto {
     private Boolean activo;
     private List<Long> idEspecialidades;
 
+    @NotBlank
+    private List<Long> idLegajos;
 }

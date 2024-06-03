@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
 
@@ -41,6 +42,10 @@ public class ProfesionService {
         return profesionRepository.findByNombre(nombre);
     }
 
+    public Optional<Profesion> findByEspecialidad(Long idProfesion,Long idEspecialidad){
+        return profesionRepository.findByEspecialidad(idProfesion,idEspecialidad);
+    }
+
     public void save(Profesion profesion) {
         profesionRepository.save(profesion);
     }
@@ -66,5 +71,7 @@ public class ProfesionService {
         return (profesionRepository.existsByNombre(nombre)
                 && profesionRepository.findByNombre(nombre).get().isActivo());
     }
+
+
 
 }

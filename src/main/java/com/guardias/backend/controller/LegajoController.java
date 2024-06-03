@@ -22,6 +22,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.EspecialidadService;
@@ -30,6 +31,8 @@ import com.guardias.backend.service.PersonService;
 import com.guardias.backend.service.ProfesionService;
 import com.guardias.backend.service.RevistaService;
 import com.guardias.backend.service.SuspencionService;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/legajo")
@@ -98,10 +101,13 @@ public class LegajoController {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
                     HttpStatus.BAD_REQUEST);
 
+        if (legajoDto.getIdProfesion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
+                    HttpStatus.BAD_REQUEST);
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
+    private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto,  Long idEspecialidad) {
 
         if (legajoDto.getFechaInicio() != null && legajo.getFechaInicio() != legajoDto.getFechaInicio())
             legajo.setFechaInicio(legajoDto.getFechaInicio());
@@ -133,26 +139,40 @@ public class LegajoController {
         legajo.setActual(legajoDto.getActual());
         legajo.setLegal(legajoDto.getLegal());
 
-        if (legajoDto.getIdEspecialidades() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (legajo.getEspecialidades() != null) {
-                for (Especialidad especialidad : legajo.getEspecialidades()) {
-                    for (Long id : legajoDto.getIdEspecialidades()) {
-                        if (!especialidad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
+        if (legajoDto.getIdProfesion() != null) {
+            Optional<Profesion> profesionOptional = profesionService.findById(legajoDto.getIdProfesion());
+            if (profesionOptional.isPresent()) {
+                Profesion profesion = profesionOptional.get();
+    
+                // Filtrar la lista de especialidades para conservar solo la especialidad deseada
+                List<Especialidad> especialidadesFiltradas = profesion.getEspecialidades().stream()
+                    .filter(especialidad -> Objects.equals(especialidad.getId(), idEspecialidad))
+                    .collect(Collectors.toList());
+    
+                if (!especialidadesFiltradas.isEmpty()) {
+                    // Asignar solo la especialidad filtrada a la profesión
+                    Especialidad especialidad = especialidadesFiltradas.get(0);
+                    profesion.getEspecialidades().clear();
+                    profesion.getEspecialidades().add(especialidad);
+    
+                    // Asociar la profesión filtrada al legajo
+                    legajo.setProfesion(profesion);
+    
+                    // Guardar el legajo y la profesión con la especialidad especificada
+                    legajoService.save(legajo);
+    
+                    // Verificación de especialidades
+                    System.out.println("Especialidades después de asignar a la profesión:");
+                    profesion.getEspecialidades().forEach(especialidadItem -> 
+                        System.out.println("ID: " + especialidadItem.getId() + ", Nombre: " + especialidadItem.getNombre()));
+                } else {
+                    throw new RuntimeException("Especialidad no encontrada en la profesión");
                 }
             } else {
-                legajo.setEspecialidades(new ArrayList<>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEspecialidades() : idList;
-            for (Long id : idsToAdd) {
-                legajo.getEspecialidades().add(especialidadService.findById(id).get());
-                especialidadService.findById(id).get().getLegajos().add(legajo);
+                throw new RuntimeException("Profesion no encontrada");
             }
         }
-
+        
         if (legajoDto.getIdSuspencion() != null) {
             if (legajo.getSuspencion() == null
                     || !Objects.equals(legajo.getSuspencion().getId(), legajoDto.getIdSuspencion())) {
@@ -201,31 +221,27 @@ public class LegajoController {
         return legajo;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
+    @PostMapping("/create/{idEspecialidad}") 
+    public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto,@PathVariable("idEspecialidad") Long idEspecialidad) {
         ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Legajo legajo = createUpdate(new Legajo(), legajoDto);
+            Legajo legajo = createUpdate(new Legajo(), legajoDto, idEspecialidad);
             legajoService.save(legajo);
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
-            /*
-             * return new ResponseEntity(new Mensaje("error al guardar los cambios"),
-             * HttpStatus.BAD_REQUEST);
-             */
             return respuestaValidaciones;
         }
     }
 
-    @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {
+    @PutMapping(("/update/{id}/{idEspecialidad}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @PathVariable("idEspecialidad") Long idEspecialidad,@RequestBody LegajoDto legajoDto) {
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Legajo legajo = createUpdate(legajoService.findById(id).get(), legajoDto);
+            Legajo legajo = createUpdate(legajoService.findById(id).get(), legajoDto,idEspecialidad);
             legajoService.save(legajo);
 
             return new ResponseEntity(new Mensaje("Legajo modificado"), HttpStatus.OK);

@@ -45,4 +45,6 @@ public class LegajoService {
     public void deleteById(Long id) {
         legajoRepository.deleteById(id);
     }
+
+    
 }

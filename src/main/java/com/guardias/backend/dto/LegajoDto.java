@@ -34,6 +34,8 @@ public class LegajoDto {
     private Long idPersona;
     private Long idCargo;
     private List<Long> idEfectores = new ArrayList<>();
-    private List<Long> IdEspecialidades = new ArrayList<>();
+   
+    @NotBlank
+    private Long idProfesion;
 
 }

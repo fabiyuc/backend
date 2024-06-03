@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
 import com.guardias.backend.entity.Especialidad;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.service.EspecialidadService;
 import com.guardias.backend.service.LegajoService;
@@ -105,6 +106,22 @@ public class ProfesionController {
             profesion.setNombre(profesionDto.getNombre());
 
         profesion.setAsistencial(profesionDto.getAsistencial());
+
+        if (profesionDto.getIdLegajos() != null) {
+            List<Long> idList = new ArrayList<>();
+
+            if (profesion.getLegajos() != null) {
+                for (Legajo legajo : profesion.getLegajos()) {
+                    idList.add(legajo.getId());
+                }
+            }
+
+            for (Long id : profesionDto.getIdLegajos()) {
+                if (!idList.contains(id)) {
+                    profesion.getLegajos().add(legajoService.findById(id).get());
+                }
+            }
+        }
 
         if (profesionDto.getIdEspecialidades() != null) {
             List<Long> idList = new ArrayList<>();

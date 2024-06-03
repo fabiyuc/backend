@@ -1,11 +1,7 @@
 package com.guardias.backend.entity;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,15 +33,13 @@ public class Especialidad {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_profesion")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial", "especialidades",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "asistencial", "especialidades",
             "legajos" })
     private Profesion profesion;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "especialidades", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
-            "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
-            "persona", "cargo", "efectores" })
-    private List<Legajo> legajos = new ArrayList<>();
+
+
+
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "esPasiva","activo","profesion","legajos" })

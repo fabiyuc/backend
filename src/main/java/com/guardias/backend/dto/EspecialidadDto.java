@@ -1,7 +1,5 @@
 package com.guardias.backend.dto;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +14,5 @@ public class EspecialidadDto {
     private Long idProfesion;
     private Boolean esPasiva;
     private boolean activo;
-    private List<Long> idLegajos;
 
 }
