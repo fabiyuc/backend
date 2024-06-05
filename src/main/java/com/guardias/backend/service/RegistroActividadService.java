@@ -178,9 +178,13 @@ public class RegistroActividadService {
             // mando y traigo nuevamente el registroActividad para evitar la referencia
             // ciclica
             registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+            // pongo activo en FALSE porque ya esta en el registro mensual
+
+            // VER el registro mensual deberia crear un json para poder eliminar el registro
+            // de actividad a fin de mes!!!!
+            registroActividad.setActivo(false);
             save(registroActividad);
         }
-        // enviar el registro de actividad al registro mensual
 
         return respuestaDeletePendiente;
     }

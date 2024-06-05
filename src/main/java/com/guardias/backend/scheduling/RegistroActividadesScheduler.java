@@ -23,15 +23,16 @@ public class RegistroActividadesScheduler {
 
     // Tarea que se ejecuta todos los sabados a las 0 hs
     // para crear el pendiente semanal
-    @Scheduled(cron = "0 0 0 * * SAT")
-    public void executeWeeklyTask() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String formattedNow = now.format(formatter);
-        System.out.println("Tarea ejecutada los Sabados a las 0hs - Fecha y hora actual: " + formattedNow);
-        pendientesSemanalService.createPendienteSemanal();
 
-    }
+    // @Scheduled(cron = "0 0 0 * * SAT")
+    // public void executeWeeklyTask() {
+    // LocalDateTime now = LocalDateTime.now();
+    // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy
+    // HH:mm:ss");
+    // String formattedNow = now.format(formatter);
+    // System.out.println("Tarea ejecutada los Sabados a las 0hs - Fecha y hora
+    // actual: " + formattedNow);
+    // }
 
     // Tarea que se ejecuta todos los días a las 11 am
     // para avisar los que no registraron la salida
@@ -41,6 +42,7 @@ public class RegistroActividadesScheduler {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedNow = now.format(formatter);
         System.out.println("Tarea ejecutada todos los dias a las 11:00am - Fecha y hora actual: " + formattedNow);
+        // addToPendienteSemanal()
 
     }
 

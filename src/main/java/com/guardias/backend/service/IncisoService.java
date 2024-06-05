@@ -47,7 +47,7 @@ public class IncisoService {
     }
 
     public boolean existsById(Long id) {
-        return incisoRepository.existsById((Long) id);
+        return incisoRepository.existsById(id);
     }
 
     public boolean activo(Long id) {

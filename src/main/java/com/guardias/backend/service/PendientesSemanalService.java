@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.JsonFile;
 import com.guardias.backend.entity.PendientesSemanal;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.enums.MesesEnum;
@@ -29,6 +30,8 @@ public class PendientesSemanalService {
     EfectorService efectorService;
     @Autowired
     RegistrosPendientesService registrosPendientesService;
+    @Autowired
+    JsonFileService jsonFileService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -49,6 +52,11 @@ public class PendientesSemanalService {
     }
 
     public void save(PendientesSemanal pendientesSemanal) {
+        try {
+            jsonFileService.save(pendientesSemanal.getJsonFile());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         pendientesSemanalRepository.save(pendientesSemanal);
     }
 
@@ -72,7 +80,6 @@ public class PendientesSemanalService {
     public PendientesSemanal create(RegistrosPendientes registrosPendientes) {
         PendientesSemanal pendientesSemanal = new PendientesSemanal();
 
-        // trae el sabado anterior al actual (incluso si hoy es sabado)
         LocalDate previousSaturday = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.SATURDAY));
         MesesEnum mes = MesesEnum.fromNumeroMes(previousSaturday.getMonthValue());
 
@@ -80,9 +87,8 @@ public class PendientesSemanalService {
         pendientesSemanal.setMes(mes);
         pendientesSemanal.setAnio(previousSaturday.getYear());
         pendientesSemanal.setEfector(registrosPendientes.getEfector());
-
         pendientesSemanal.setActivo(true);
-        save(pendientesSemanal);
+
         return pendientesSemanal;
     }
 
@@ -94,15 +100,17 @@ public class PendientesSemanalService {
             }
 
             List<RegistrosPendientes> registrosPendientesList = new ArrayList<>();
-            String registrosPendientesJson = pendientesSemanal.getRegistrosPendientesJson();
+            String registrosPendientesJson = jsonFileService
+                    .decodeToJson(pendientesSemanal.getJsonFile());
 
             if (registrosPendientesJson != null && !registrosPendientesJson.isEmpty()) {
                 registrosPendientesList = objectMapper.readValue(registrosPendientesJson,
                         objectMapper.getTypeFactory().constructCollectionType(List.class, RegistrosPendientes.class));
             }
             registrosPendientesList.add(registrosPendientes);
-            String updatedRegistrosPendientesJson = objectMapper.writeValueAsString(registrosPendientesList);
-            pendientesSemanal.setRegistrosPendientesJson(updatedRegistrosPendientesJson);
+
+            JsonFile jsonFile = jsonFileService.encodeToJson(registrosPendientesJson);
+            pendientesSemanal.setJsonFile(jsonFile);
 
             save(pendientesSemanal);
         } catch (JsonProcessingException e) {
