@@ -25,7 +25,6 @@ import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
-import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.TipoGuardiaService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -37,8 +36,7 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
-    @Autowired
-    RegistroActividadService registroActividadService;
+
     @Autowired
     TipoGuardiaService tipoGuardiaService;
 
@@ -114,11 +112,12 @@ public class AsistencialController {
                     }
                 }
             }
-            List<Long> idsToAdd = idList.isEmpty() ? asistencialDto.getIdRegistrosActividades() : idList;
-            for (Long id : idsToAdd) {
-                asistencial.getRegistrosActividades().add(registroActividadService.findById(id).get());
-                registroActividadService.findById(id).get().setAsistencial(asistencial);
-            }
+            // List<Long> idsToAdd = idList.isEmpty() ?
+            // asistencialDto.getIdRegistrosActividades() : idList;
+            // for (Long id : idsToAdd) {
+            // asistencial.getRegistrosActividades().add(registroActividadService.findById(id).get());
+            // registroActividadService.findById(id).get().setAsistencial(asistencial);
+            // }
         }
 
         if (asistencialDto.getIdTiposGuardias() != null) {

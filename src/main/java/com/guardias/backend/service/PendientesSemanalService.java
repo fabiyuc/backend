@@ -29,8 +29,6 @@ public class PendientesSemanalService {
     @Autowired
     EfectorService efectorService;
     @Autowired
-    RegistrosPendientesService registrosPendientesService;
-    @Autowired
     JsonFileService jsonFileService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
