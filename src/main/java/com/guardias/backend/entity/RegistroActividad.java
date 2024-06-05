@@ -46,7 +46,7 @@ public class RegistroActividad {
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_tipo_guardia")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales",
-                         "activo", "registrosActividades", "nombre" })
+                         "activo", "registrosActividades", "descripcion" })
         private TipoGuardia tipoGuardia;
 
         @Column(columnDefinition = "BIT DEFAULT 1")
