@@ -17,12 +17,16 @@ public class TipoCargoService {
     @Autowired
     TipoCargoRepository tipoCargoRepository;
 
-    public List<TipoCargo> list() {
+    public Optional<List<TipoCargo>> findByActivoTrue() {
+        return tipoCargoRepository.findByActivoTrue();
+    }
+
+    public List<TipoCargo> findAll() {
         return tipoCargoRepository.findAll();
     }
 
     public Optional<TipoCargo> findById(Long id) {
-        return tipoCargoRepository.findById(id);
+        return tipoCargoRepository.findById((Long) id);
     }
 
     public Optional<TipoCargo> findByNombre(String nombre) {
@@ -34,8 +38,8 @@ public class TipoCargoService {
 
     }
 
-    public void delete(Long id) {
-        tipoCargoRepository.deleteById(id);
+    public void deleteById(Long id) {
+        tipoCargoRepository.deleteById((Long) id);
     }
 
     public boolean existsById(Long id) {

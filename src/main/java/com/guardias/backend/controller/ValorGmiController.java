@@ -36,7 +36,7 @@ public class ValorGmiController {
 
     @GetMapping("/list")
     public ResponseEntity<List<ValorGmi>> list() {
-        List<ValorGmi> list = valorGmiService.findByActivoTrue();
+        List<ValorGmi> list = valorGmiService.findByActivoTrue().get();
         return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
     }
 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
@@ -16,6 +17,7 @@ import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Notificacion;
+import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
@@ -23,6 +25,7 @@ import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.LocalidadService;
 import com.guardias.backend.service.NotificacionService;
 import com.guardias.backend.service.RegionService;
+import com.guardias.backend.service.ServicioService;
 
 @RestController
 public class EfectorController {
@@ -39,6 +42,8 @@ public class EfectorController {
     AutoridadService autoridadService;
     @Autowired
     LegajoService legajoService;
+    @Autowired
+    ServicioService servicioService;
     @Autowired
     NotificacionService notificacionService;
 
@@ -93,10 +98,10 @@ public class EfectorController {
             efector.setRegion(regionService.findById(efectorDto.getIdRegion()).get());
         }
 
-        //localidad? 
-        //registroActividades?
-        //registro mensual?
-        
+        // localidad?
+        // registroActividades?
+        // registro mensual?
+
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (efector.getDistribucionesHorarias() != null) {
@@ -172,6 +177,24 @@ public class EfectorController {
             }
         }
 
+        if (efectorDto.getIdServicios() != null) {
+            List<Long> idList = new ArrayList();
+            if (efector.getServicios() != null) {
+                for (Servicio servicio : efector.getServicios()) {
+                    for (Long id : efectorDto.getIdServicios()) {
+                        if (!servicio.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdServicios() : idList;
+            for (Long id : idsToAdd) {
+                efector.getServicios().add(servicioService.findById(id).get());
+                servicioService.findById(id).get().getEfectores().add(efector);
+            }
+        }
+
         if (efectorDto.getIdNotificaciones() != null) {
             List<Long> idList = new ArrayList();
             if (efector.getNotificaciones() != null) {
@@ -205,5 +228,4 @@ public class EfectorController {
         return new ResponseEntity(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
     }
 
-    
 }

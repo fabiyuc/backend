@@ -22,7 +22,7 @@ import com.guardias.backend.entity.TipoCargo;
 import com.guardias.backend.service.TipoCargoService;
 
 @RestController
-@RequestMapping("/tipocargo")
+@RequestMapping("/tipoCargo")
 @CrossOrigin(origins = "http://localhost:4200")
 
 public class TipoCargoController {
@@ -31,8 +31,14 @@ public class TipoCargoController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoCargo>> list() {
-        List<TipoCargo> list = tipoCargoService.list();
-        return new ResponseEntity<List<TipoCargo>>(list, HttpStatus.OK);
+        List<TipoCargo> list = tipoCargoService.findByActivoTrue().get();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<TipoCargo>> listAll() {
+        List<TipoCargo> list = tipoCargoService.findAll();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
@@ -53,7 +59,7 @@ public class TipoCargoController {
 
     }
 
-    private ResponseEntity<?> validations(TipoCargoDto tipoCargoDto) {
+    private ResponseEntity<?> validations(TipoCargoDto tipoCargoDto, Long id) {
         if (StringUtils.isBlank(tipoCargoDto.getNombre()))
             return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
         if (tipoCargoDto.getDescripcion() == null)
@@ -64,24 +70,25 @@ public class TipoCargoController {
 
     private TipoCargo createUpdate(TipoCargo tipoCargo, TipoCargoDto tipoCargoDto) {
 
-        if (tipoCargo.getNombre() != tipoCargoDto.getNombre() && tipoCargoDto.getNombre() != null
-                && !tipoCargoDto.getNombre().isEmpty())
+        if (tipoCargoDto.getNombre() != null && !tipoCargoDto.getNombre().isEmpty()
+                && !tipoCargoDto.getNombre().equals(tipoCargo.getNombre()))
             tipoCargo.setNombre(tipoCargoDto.getNombre());
 
-        if (tipoCargo.getDescripcion() != tipoCargoDto.getDescripcion() && tipoCargoDto.getDescripcion() != null
-                && !tipoCargoDto.getDescripcion().isEmpty())
+        if (tipoCargoDto.getDescripcion() != null && !tipoCargoDto.getDescripcion().isEmpty()
+                && !tipoCargoDto.getDescripcion().equals(tipoCargo.getDescripcion()))
             tipoCargo.setDescripcion(tipoCargoDto.getDescripcion());
 
         tipoCargo.setEshospitalario(tipoCargoDto.isEshospitalario());
 
         tipoCargo.setActivo(true);
+
         return tipoCargo;
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoCargoDto tipoCargoDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(tipoCargoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoCargoDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoCargo tipoCargo = createUpdate(new TipoCargo(), tipoCargoDto);
@@ -97,7 +104,7 @@ public class TipoCargoController {
         if (!tipoCargoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(tipoCargoDto);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoCargoDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             TipoCargo tipoCargo = createUpdate(tipoCargoService.findById(id).get(), tipoCargoDto);
@@ -123,7 +130,7 @@ public class TipoCargoController {
     public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!tipoCargoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        tipoCargoService.delete(id);
+        tipoCargoService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Tipo Cargo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 

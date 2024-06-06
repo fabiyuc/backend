@@ -37,7 +37,7 @@ public class TipoRevistaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoRevista>> list() {
-        List<TipoRevista> list = tipoRevistaService.findByActivoTrue();
+        List<TipoRevista> list = tipoRevistaService.findByActivoTrue().get();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -78,7 +78,9 @@ public class TipoRevistaController {
         if (StringUtils.isNotBlank(tipoRevistaDto.getNombre()))
             tipoRevista.setNombre(tipoRevistaDto.getNombre());
 
-        if (tipoRevistaDto.getNombre() != null && tipoRevista.getNombre() != tipoRevistaDto.getNombre())
+        if (tipoRevistaDto.getNombre() != null
+                && tipoRevista.getNombre() != tipoRevistaDto.getNombre()
+                && !tipoRevistaDto.getNombre().isEmpty())
             tipoRevista.setNombre(tipoRevistaDto.getNombre());
 
         if (tipoRevistaDto.getIdRevista() != null) {
@@ -91,6 +93,8 @@ public class TipoRevistaController {
                         }
                     }
                 }
+            } else {
+                tipoRevista.setRevistas(new ArrayList<>());
             }
             List<Long> idsToAdd = idList.isEmpty() ? tipoRevistaDto.getIdRevista() : idList;
             for (Long id : idsToAdd) {

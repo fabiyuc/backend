@@ -33,7 +33,7 @@ public class SumaHorasController {
 
     @GetMapping("/list")
     public ResponseEntity<List<SumaHoras>> list() {
-        List<SumaHoras> list = sumaHorasService.findByActivoTrue();
+        List<SumaHoras> list = sumaHorasService.findByActivoTrue().get();
         return new ResponseEntity<List<SumaHoras>>(list, HttpStatus.OK);
     }
 
@@ -100,8 +100,8 @@ public class SumaHorasController {
         return sumaHoras;
     }
 
-    @PostMapping(("/create"))
-    public ResponseEntity<?> create(@PathVariable("id") Long id, @RequestBody SumaHorasDto sumaHorasDto) {
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody SumaHorasDto sumaHorasDto) {
         ResponseEntity<?> respuestaValidaciones = validations(sumaHorasDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {

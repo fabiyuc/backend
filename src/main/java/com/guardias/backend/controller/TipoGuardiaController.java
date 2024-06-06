@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
@@ -32,6 +34,8 @@ public class TipoGuardiaController {
     TipoGuardiaService tipoGuardiaService;
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoGuardia>> list() {
@@ -48,7 +52,7 @@ public class TipoGuardiaController {
             tipoGuardia.setRegistrosActividades(activeRegActividades);
             filteredList.add(tipoGuardia);
         }
-        
+
         return new ResponseEntity<List<TipoGuardia>>(filteredList, HttpStatus.OK);
     }
 
@@ -92,12 +96,12 @@ public class TipoGuardiaController {
 
     private TipoGuardia createUpdate(TipoGuardia tipoGuardia, TipoGuardiaDto tipoGuardiaDto) {
 
-        if (tipoGuardia.getNombre() != tipoGuardiaDto.getNombre() && tipoGuardiaDto.getNombre() != null
+        if (tipoGuardiaDto.getNombre() != null && !tipoGuardiaDto.getNombre().equals(tipoGuardia.getNombre())
                 && !tipoGuardiaDto.getNombre().isEmpty())
             tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
 
-        if (tipoGuardia.getDescripcion() != tipoGuardiaDto.getDescripcion() && tipoGuardiaDto.getDescripcion() != null
-                && !tipoGuardiaDto.getDescripcion().isEmpty())
+        if (tipoGuardiaDto.getDescripcion() != null && !tipoGuardiaDto.getDescripcion().isEmpty()
+                && !tipoGuardiaDto.getDescripcion().equals(tipoGuardia.getDescripcion()))
             tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
 
         if (tipoGuardiaDto.getIdAsistenciales() != null) {
@@ -122,6 +126,29 @@ public class TipoGuardiaController {
 
             }
         }
+
+        if (tipoGuardiaDto.getIdRegistrosActividades() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (tipoGuardia.getRegistrosActividades() != null) {
+                for (RegistroActividad registroActividad : tipoGuardia.getRegistrosActividades()) {
+                    for (Long id : tipoGuardiaDto.getIdRegistrosActividades()) {
+                        if (!registroActividad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                tipoGuardia.setRegistrosActividades(new ArrayList<RegistroActividad>());
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? tipoGuardiaDto.getIdRegistrosActividades() : idList;
+
+            for (Long id : idsToAdd) {
+                tipoGuardia.getRegistrosActividades().add(registroActividadService.findById(id).get());
+                registroActividadService.findById(id).get().setTipoGuardia(tipoGuardia);
+            }
+        }
+
         tipoGuardia.setActivo(true);
 
         return tipoGuardia;
@@ -137,9 +164,8 @@ public class TipoGuardiaController {
             TipoGuardia tipoGuardia = createUpdate(new TipoGuardia(), tipoGuardiaDto);
             tipoGuardiaService.save(tipoGuardia);
             return new ResponseEntity(new Mensaje("tipo de guardia creado"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
     }
 
     @PutMapping(("/update/{id}"))
@@ -154,9 +180,8 @@ public class TipoGuardiaController {
             TipoGuardia tipoGuardia = createUpdate(tipoGuardiaService.findById(id).get(), tipoGuardiaDto);
             tipoGuardiaService.save(tipoGuardia);
             return new ResponseEntity(new Mensaje("tipo de guardia modificado"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
     }
 
     @PutMapping("/delete/{id}")
