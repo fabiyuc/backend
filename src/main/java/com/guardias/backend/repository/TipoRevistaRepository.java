@@ -10,6 +10,8 @@ import com.guardias.backend.entity.TipoRevista;
 
 @Repository
 public interface TipoRevistaRepository extends JpaRepository<TipoRevista, Long> {
+    Optional<List<TipoRevista>> findByActivoTrue();
+
     Optional<TipoRevista> findByNombre(String nombre);
 
     Optional<TipoRevista> findById(Long id);
@@ -18,14 +20,5 @@ public interface TipoRevistaRepository extends JpaRepository<TipoRevista, Long> 
 
     boolean existsById(Long id);
 
-    List<TipoRevista> findByActivoTrue();
+    List<TipoRevista> findByActivo(boolean activo);
 }
-
-/*
- * Optional<TipoRevista> findByNombre(String nombre);
- * 
- * boolean existsByNombre(String nombre);
- * 
- * List<TipoRevista> findByActivoTrue();
- * }
- */

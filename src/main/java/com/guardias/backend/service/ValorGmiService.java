@@ -16,28 +16,16 @@ public class ValorGmiService {
     @Autowired
     ValorGmiRepository valorGmiRepository;
 
-    public boolean existsById(Long id) {
-        return valorGmiRepository.existsById(id);
-    }
-
-    public Optional<ValorGmi> findById(Long id) {
-        return valorGmiRepository.findById(id);
+    public Optional<List<ValorGmi>> findByActivoTrue() {
+        return valorGmiRepository.findByActivoTrue();
     }
 
     public List<ValorGmi> findAll() {
         return valorGmiRepository.findAll();
     }
 
-    public List<ValorGmi> findByActivoTrue() {
-        return valorGmiRepository.findByActivoTrue();
-    }
-
-    // public List<ValorGmi> findByDate(LocalDate fecha) {
-    // return valorGmiRepository.findByDate(fecha);
-    // }
-
-    public boolean activo(Long id) {
-        return valorGmiRepository.existsById(id) && valorGmiRepository.findById(id).get().isActivo();
+    public Optional<ValorGmi> findById(Long id) {
+        return valorGmiRepository.findById(id);
     }
 
     public void save(ValorGmi valorGmi) {
@@ -47,4 +35,13 @@ public class ValorGmiService {
     public void deleteById(Long id) {
         valorGmiRepository.deleteById(id);
     }
+
+    public boolean existsById(Long id) {
+        return valorGmiRepository.existsById(id);
+    }
+
+    public boolean activo(Long id) {
+        return (valorGmiRepository.existsById(id) && valorGmiRepository.findById(id).get().isActivo());
+    }
+
 }

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class TipoLeyDto {
 
     @NotBlank
-    String descripcion;
+    private String descripcion;
     private boolean activo;
     List<Long> idLeyes;
 }
