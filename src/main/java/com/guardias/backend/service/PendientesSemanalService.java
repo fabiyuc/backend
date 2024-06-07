@@ -106,8 +106,9 @@ public class PendientesSemanalService {
                         objectMapper.getTypeFactory().constructCollectionType(List.class, RegistrosPendientes.class));
             }
             registrosPendientesList.add(registrosPendientes);
+            String updatedJson = objectMapper.writeValueAsString(registrosPendientesList);
 
-            JsonFile jsonFile = jsonFileService.encodeToJson(registrosPendientesJson);
+            JsonFile jsonFile = jsonFileService.encodeToJson(updatedJson);
             pendientesSemanal.setJsonFile(jsonFile);
 
             save(pendientesSemanal);

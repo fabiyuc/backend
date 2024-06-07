@@ -188,7 +188,7 @@ public class RegistroActividadService {
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             // mando y traigo nuevamente el registroActividad para evitar la referencia
             // ciclica
-            registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+            registroActividad = registroMensualService.addToRegistroMensual(registroActividad);
             // pongo activo en FALSE porque ya esta en el registro mensual
 
             // VER el registro mensual deberia crear un json para poder eliminar el registro

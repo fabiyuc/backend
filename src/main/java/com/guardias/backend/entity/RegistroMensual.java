@@ -74,7 +74,7 @@ public class RegistroMensual {
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "mes", "fechaEgreso","anio",
-    // "registroActividad","idAsistencial","efector","ddjj","sumaHoras","asistencial"
+    // "registroActividad","idAsistencial","efector","ddjj","asistencial"
     // })
 
     @Override

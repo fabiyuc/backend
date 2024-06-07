@@ -27,8 +27,6 @@ public class RegistrosPendientesService {
     RegistrosPendientesRepository registrosPendientesRepository;
     @Autowired
     PendientesSemanalService pendientesSemanalService;
-    // @Autowired
-    // RegistroActividadService registroActividadService;
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();

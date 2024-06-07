@@ -41,42 +41,6 @@ public class RegistroMensualController {
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listAMEcargoyagrup/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCargoReagrupacion(
-            @PathVariable("anio") int anio,
-            @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector) {
-
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-        try {
-            List<RegistroMensual> registrosMensuales = registroMensualService
-                    .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Registros mensuales de Cargo y reagrupacion no encontrados"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/listAMEextra/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaExtra(
-            @PathVariable("anio") int anio,
-            @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector) {
-
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-        try {
-            List<RegistroMensual> registrosMensuales = registroMensualService
-                    .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Registros mensuales extra no encontrados"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<RegistroMensual>> getById(@PathVariable("id") Long id) {
         if (!registroMensualService.activo(id))

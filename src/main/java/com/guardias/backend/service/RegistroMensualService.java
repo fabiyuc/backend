@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,8 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.entity.JsonFile;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
@@ -20,6 +24,8 @@ import com.guardias.backend.repository.RegistroMensualRepository;
 @Service
 @Transactional
 public class RegistroMensualService {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     RegistroMensualRepository registroMensualRepository;
@@ -31,6 +37,8 @@ public class RegistroMensualService {
     AsistencialService asistencialService;
     @Autowired
     SumaHorasService sumaHorasService;
+    @Autowired
+    JsonFileService jsonFileService;
 
     public Optional<List<RegistroMensual>> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
@@ -39,22 +47,6 @@ public class RegistroMensualService {
     public List<RegistroMensual> findAll() {
         return registroMensualRepository.findAll();
     }
-
-    // public List<RegistroMensual>
-    // findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
-    // Long idEfector) {
-    // return
-    // registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio,
-    // mes, idEfector);
-    // }
-
-    // public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtra(int
-    // anio, MesesEnum mes,
-    // Long idEfector) {
-    // return
-    // registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaExtra(anio, mes,
-    // idEfector);
-    // }
 
     public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
             MesesEnum mes, int anio) {
@@ -123,11 +115,6 @@ public class RegistroMensualService {
             registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
         }
 
-        if (registroMensualDto.getIdSumaHoras() != null && (registroMensual.getSumaHoras() == null
-                || !Objects.equals(registroMensual.getSumaHoras().getId(), registroMensualDto.getIdSumaHoras()))) {
-            registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
-        }
-
         if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
                 || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
             registroMensual.setDdjj(ddjjService.findById(registroMensualDto.getIdDdjj()).get());
@@ -137,7 +124,7 @@ public class RegistroMensualService {
         return registroMensual;
     }
 
-    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+    public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
         RegistroMensualDto registroMensualDto = new RegistroMensualDto();
 
         registroMensualDto.setMes(mesEnum);
@@ -147,13 +134,13 @@ public class RegistroMensualService {
 
         try {
             RegistroMensual registroMensual = createUpdate(new RegistroMensual(), registroMensualDto);
-            return registroMensual.getId();
+            return registroMensual;
         } catch (Exception e) {
             return null;
         }
     }
 
-    public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
+    public RegistroActividad addToRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
         Long idEfector = registroActividad.getEfector().getId();
@@ -161,22 +148,51 @@ public class RegistroMensualService {
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
         int anio = registroActividad.getFechaIngreso().getYear();
         Long id;
+        RegistroMensual registroMensual;
 
         try {
-            RegistroMensual registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
+            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
                     mesEnum, anio).get();
             id = registroMensual.getId();
         } catch (Exception exception) {
             System.out.println("id no encontrado");
-            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+            registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+            id = registroMensual.getId();
         }
 
         try {
             registroActividad.setRegistroMensual(findById(id).get());
+            addToJson(registroActividad, registroMensual);
+
         } catch (Exception e) {
             System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
         }
         return registroActividad;
+    }
+
+    public void addToJson(RegistroActividad registroActividad, RegistroMensual registroMensual) {
+
+        try {
+
+            List<RegistroActividad> registroActividadList = new ArrayList<>();
+            String registroMensualJson = jsonFileService
+                    .decodeToJson(registroMensual.getJsonFile());
+
+            if (registroMensualJson != null && !registroMensualJson.isEmpty()) {
+                registroActividadList = objectMapper.readValue(registroMensualJson,
+                        objectMapper.getTypeFactory().constructCollectionType(List.class, RegistroActividad.class));
+            }
+            registroActividadList.add(registroActividad);
+
+            String updatedJson = objectMapper.writeValueAsString(registroActividad);
+
+            JsonFile jsonFile = jsonFileService.encodeToJson(updatedJson);
+            registroMensual.setJsonFile(jsonFile);
+
+            save(registroMensual);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
 }
