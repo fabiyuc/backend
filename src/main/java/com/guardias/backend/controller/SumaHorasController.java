@@ -32,7 +32,7 @@ public class SumaHorasController {
 
     @GetMapping("/list")
     public ResponseEntity<List<SumaHoras>> list() {
-        List<SumaHoras> list = sumaHorasService.findByActivoTrue();
+        List<SumaHoras> list = sumaHorasService.findByActivoTrue().get();
         return new ResponseEntity<List<SumaHoras>>(list, HttpStatus.OK);
     }
 

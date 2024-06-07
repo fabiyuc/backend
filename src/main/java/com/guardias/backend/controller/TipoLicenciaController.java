@@ -32,7 +32,13 @@ public class TipoLicenciaController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLicencia>> list() {
-        List<TipoLicencia> list = tipoLicenciaService.list();
+        List<TipoLicencia> list = tipoLicenciaService.findByActivoTrue().get();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<TipoLicencia>> listAll() {
+        List<TipoLicencia> list = tipoLicenciaService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -45,7 +51,7 @@ public class TipoLicenciaController {
     }
 
     @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<List<TipoLicencia>> getById(@PathVariable("nombre") String nombre) {
+    public ResponseEntity<List<TipoLicencia>> getByNombre(@PathVariable("nombre") String nombre) {
         if (!tipoLicenciaService.existsByNombre(nombre))
             return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
         TipoLicencia tipoLicencia = tipoLicenciaService.findByNombre(nombre).get();

@@ -26,7 +26,7 @@ import com.guardias.backend.service.TipoLeyService;
 import io.micrometer.common.util.StringUtils;
 
 @Controller
-@RequestMapping("/tipoley")
+@RequestMapping("/tipoLey")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TipoLeyController {
 
@@ -37,7 +37,7 @@ public class TipoLeyController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLey>> list() {
-        List<TipoLey> list = tipoLeyService.findByActivo();
+        List<TipoLey> list = tipoLeyService.findByActivoTrue().get();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 
@@ -70,9 +70,9 @@ public class TipoLeyController {
 
     private TipoLey createUpdate(TipoLey tipoLey, TipoLeyDto tipoLeyDto) {
 
-        if (tipoLey.getDescripcion() != tipoLeyDto.getDescripcion() && tipoLeyDto.getDescripcion() != null
-                && !tipoLeyDto.getDescripcion().isEmpty())
-            tipoLeyDto.setDescripcion(tipoLeyDto.getDescripcion());
+        if (tipoLeyDto.getDescripcion() != null && !tipoLeyDto.getDescripcion().isEmpty()
+                && !tipoLeyDto.getDescripcion().equals(tipoLey.getDescripcion()))
+            tipoLey.setDescripcion(tipoLeyDto.getDescripcion());
 
         if (tipoLeyDto.getIdLeyes() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -108,9 +108,8 @@ public class TipoLeyController {
             TipoLey tipoLey = createUpdate(new TipoLey(), tipoLeyDto);
             tipoLeyService.save(tipoLey);
             return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley creada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
     }
 
     @PutMapping(("/update/{id}"))
@@ -124,9 +123,8 @@ public class TipoLeyController {
             TipoLey tipoLey = createUpdate(tipoLeyService.findById(id).get(), tipoLeyDto);
             tipoLeyService.save(tipoLey);
             return new ResponseEntity<Mensaje>(new Mensaje("Tipo de Ley modificada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
         }
+        return respuestaValidaciones;
     }
 
     @PutMapping("/delete/{id}")

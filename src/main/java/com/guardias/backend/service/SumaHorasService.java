@@ -34,7 +34,7 @@ public class SumaHorasService {
         return sumaHorasRepository.findAll();
     }
 
-    public List<SumaHoras> findByActivoTrue() {
+    public Optional<List<SumaHoras>> findByActivoTrue() {
         return sumaHorasRepository.findByActivoTrue();
     }
 

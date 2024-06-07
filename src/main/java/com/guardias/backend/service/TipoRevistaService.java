@@ -19,7 +19,7 @@ public class TipoRevistaService {
     @Autowired
     RevistaService revistaService;
 
-    public List<TipoRevista> findByActivoTrue() {
+    public Optional<List<TipoRevista>> findByActivoTrue() {
         return tipoRevistaRepository.findByActivoTrue();
     }
 
@@ -44,12 +44,12 @@ public class TipoRevistaService {
     }
 
     public boolean activoByNombre(String nombre) {
-        return tipoRevistaRepository.existsByNombre(nombre)
-                && tipoRevistaRepository.findByNombre(nombre).get().isActivo();
+        return (tipoRevistaRepository.existsByNombre(nombre)
+                && tipoRevistaRepository.findByNombre(nombre).get().isActivo());
     }
 
     public boolean activo(Long id) {
-        return tipoRevistaRepository.existsById(id) && tipoRevistaRepository.findById(id).get().isActivo();
+        return (tipoRevistaRepository.existsById(id) && tipoRevistaRepository.findById(id).get().isActivo());
     }
 
     public void save(TipoRevista tipoRevista) {

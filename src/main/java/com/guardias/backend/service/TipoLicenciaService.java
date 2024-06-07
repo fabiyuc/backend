@@ -18,7 +18,11 @@ public class TipoLicenciaService {
     @Autowired
     TipoLicenciaRepository tipoLicenciaRepository;
 
-    public List<TipoLicencia> list() {
+    public Optional<List<TipoLicencia>> findByActivoTrue() {
+        return tipoLicenciaRepository.findByActivoTrue();
+    }
+
+    public List<TipoLicencia> findAll() {
         return tipoLicenciaRepository.findAll();
     }
 
