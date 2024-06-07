@@ -73,7 +73,12 @@ public class EspecialidadController {
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
+        if (especialidadDto.getIdProfesion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
+                    HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+
     }
 
     private Especialidad createUpdate(Especialidad especialidad, EspecialidadDto especialidadDto) {

@@ -98,6 +98,10 @@ public class LegajoController {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
                     HttpStatus.BAD_REQUEST);
 
+        if (legajoDto.getIdProfesion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
+                    HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -174,6 +178,7 @@ public class LegajoController {
             }
         }
 
+        // falta validar de no agregar si ya existe el efector
         if (legajoDto.getIdEfectores() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (legajo.getEfectores() != null) {
@@ -193,6 +198,13 @@ public class LegajoController {
             for (Long id : idsToAdd) {
                 legajo.getEfectores().add(efectorService.findById(id));
                 efectorService.findById(id).getLegajos().add(legajo);
+            }
+        }
+
+        if (legajoDto.getIdProfesion() != null) {
+            if (legajo.getProfesion() == null
+                    || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
+                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
             }
         }
 

@@ -19,5 +19,5 @@ public class ProfesionDto {
     private Boolean asistencial;
     private Boolean activo;
     private List<Long> idEspecialidades;
-
+    private List<Long> idLegajos;
 }
