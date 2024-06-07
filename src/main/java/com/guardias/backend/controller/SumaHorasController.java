@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,53 +63,13 @@ public class SumaHorasController {
         return new ResponseEntity<List<SumaHoras>>(list, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(SumaHorasDto sumaHorasDto) {
-
-        if (sumaHorasDto.getIdRegistroMensual() <= 0)
-            return new ResponseEntity(new Mensaje("El registro mensual no existe"),
-                    HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private SumaHoras createUpdate(SumaHoras sumaHoras, SumaHorasDto sumaHorasDto) {
-
-        if (sumaHorasDto.getHorasLav() != sumaHoras.getHorasLav() && (sumaHorasDto.getHorasLav() > 0))
-            sumaHoras.setHorasLav(sumaHorasDto.getHorasLav());
-
-        if (sumaHorasDto.getHorasSdf() != sumaHoras.getHorasSdf() && (sumaHorasDto.getHorasSdf() > 0))
-            sumaHoras.setHorasSdf(sumaHorasDto.getHorasSdf());
-
-        if (sumaHorasDto.getBonoLav() != sumaHoras.getBonoLav() && (sumaHorasDto.getBonoLav() > 0))
-            sumaHoras.setBonoLav(sumaHorasDto.getBonoLav());
-
-        if (sumaHorasDto.getBonoSdf() != sumaHoras.getBonoSdf() && (sumaHorasDto.getBonoSdf() > 0))
-            sumaHoras.setBonoSdf(sumaHorasDto.getBonoSdf());
-
-        if (sumaHorasDto.getIdRegistroMensual() != null && (sumaHoras.getRegistroMensual() == null
-                || !Objects.equals(sumaHoras.getRegistroMensual().getId(), sumaHorasDto.getIdRegistroMensual()))) {
-            sumaHoras.setRegistroMensual(registroMensualService.findById(sumaHorasDto.getIdRegistroMensual()).get());
-        }
-
-        /*
-         * private Long idRegistroMensual;
-         */
-
-        sumaHoras.setActivo(true);
-        return sumaHoras;
-    }
-
     @PostMapping(("/create"))
     public ResponseEntity<?> create(@PathVariable("id") Long id, @RequestBody SumaHorasDto sumaHorasDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(sumaHorasDto);
 
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            SumaHoras sumaHoras = createUpdate(new SumaHoras(), sumaHorasDto);
-            sumaHorasService.save(sumaHoras);
-            return new ResponseEntity(new Mensaje("Suma de horas creada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
+        SumaHoras sumaHoras = sumaHorasService.createUpdate(new SumaHoras(), sumaHorasDto);
+        sumaHorasService.save(sumaHoras);
+        return new ResponseEntity(new Mensaje("Suma de horas creada correctamente"), HttpStatus.OK);
+
     }
 
     @PutMapping(("/update/{id}"))
@@ -119,15 +78,10 @@ public class SumaHorasController {
             return new ResponseEntity(new Mensaje("La suma no existe"),
                     HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(sumaHorasDto);
+        SumaHoras sumaHoras = sumaHorasService.createUpdate(sumaHorasService.findById(id).get(), sumaHorasDto);
+        sumaHorasService.save(sumaHoras);
+        return new ResponseEntity(new Mensaje("Suma de horas modificadas"), HttpStatus.OK);
 
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            SumaHoras sumaHoras = createUpdate(sumaHorasService.findById(id).get(), sumaHorasDto);
-            sumaHorasService.save(sumaHoras);
-            return new ResponseEntity(new Mensaje("Suma de horas modificadas"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
     }
 
     @PutMapping("/delete/{id}")

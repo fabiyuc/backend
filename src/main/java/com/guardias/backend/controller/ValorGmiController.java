@@ -1,7 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ValorGmiDto;
-import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.ValorGmi;
-import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.ValorGmiService;
 
 @RestController
@@ -31,13 +27,11 @@ public class ValorGmiController {
 
     @Autowired
     ValorGmiService valorGmiService;
-    @Autowired
-    DdjjService ddjjService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<ValorGmi>> list() {
-        List<ValorGmi> list = valorGmiService.findByActivoTrue();
-        return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
+    public ResponseEntity<ValorGmi> valorGmiActivo() {
+        ValorGmi activo = valorGmiService.findByActivoTrue();
+        return new ResponseEntity<ValorGmi>(activo, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
@@ -66,65 +60,13 @@ public class ValorGmiController {
     // return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
     // }
 
-    private ResponseEntity<?> validations(ValorGmiDto valorGmiDto) {
-
-        if (valorGmiDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (valorGmiDto.getMonto().compareTo(BigDecimal.ZERO) < 0)
-            return new ResponseEntity(new Mensaje("Monto incorrecto"), HttpStatus.BAD_REQUEST);
-
-        if (valorGmiDto.getTipoGuardia() == null)
-            return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private ValorGmi createUpdate(ValorGmi valorGmi, ValorGmiDto valorGmiDto) {
-
-        if (valorGmiDto.getFechaInicio() != null && !valorGmiDto.getFechaInicio().equals(valorGmi.getFechaInicio()))
-            valorGmi.setFechaInicio(valorGmiDto.getFechaInicio());
-
-        if (valorGmiDto.getFechaFin() != null && !valorGmiDto.getFechaFin().equals(valorGmi.getFechaFin()))
-            valorGmi.setFechaFin(valorGmiDto.getFechaFin());
-
-        if (valorGmiDto.getMonto() != null && !valorGmiDto.getMonto().equals(valorGmi.getMonto()))
-            valorGmi.setMonto(valorGmiDto.getMonto());
-
-        if (valorGmiDto.getTipoGuardia() != null && !valorGmiDto.getTipoGuardia().equals(valorGmi.getTipoGuardia()))
-            valorGmi.setTipoGuardia(valorGmiDto.getTipoGuardia());
-
-        if (valorGmiDto.getIdDdjjs() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (valorGmi.getDdjjs() != null) {
-                for (Ddjj ddjj : valorGmi.getDdjjs()) {
-                    for (Long id : valorGmiDto.getIdDdjjs()) {
-                        if (!ddjj.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            } else {
-                valorGmi.setDdjjs(new ArrayList<>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? valorGmiDto.getIdDdjjs() : idList;
-            for (Long id : idsToAdd) {
-                valorGmi.getDdjjs().add(ddjjService.findById(id).get());
-                ddjjService.findById(id).get().setValorGmi(valorGmi);
-            }
-        }
-
-        valorGmi.setActivo(true);
-        return valorGmi;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ValorGmiDto valorGmiDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(valorGmiDto);
+        ResponseEntity<?> respuestaValidaciones = valorGmiService.validations(valorGmiDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            ValorGmi valorGmi = createUpdate(new ValorGmi(), valorGmiDto);
+            ValorGmi valorGmi = valorGmiService.createUpdate(new ValorGmi(), valorGmiDto);
             valorGmiService.save(valorGmi);
             return new ResponseEntity(new Mensaje("Valor creado correctamente"), HttpStatus.OK);
         } else {
@@ -137,11 +79,11 @@ public class ValorGmiController {
 
         if (!valorGmiService.activo(id))
             return new ResponseEntity(new Mensaje("El valor no existe"), HttpStatus.NOT_FOUND);
-        ResponseEntity<?> respuestaValidaciones = validations(valorGmiDto);
+        ResponseEntity<?> respuestaValidaciones = valorGmiService.validations(valorGmiDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            ValorGmi valorGmi = createUpdate(valorGmiService.findById(id).get(), valorGmiDto);
+            ValorGmi valorGmi = valorGmiService.createUpdate(valorGmiService.findById(id).get(), valorGmiDto);
             valorGmiService.save(valorGmi);
             return new ResponseEntity(new Mensaje("Valor actualizado correctamente"), HttpStatus.OK);
         } else {
@@ -151,13 +93,7 @@ public class ValorGmiController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!valorGmiService.activo(id))
-            return new ResponseEntity(new Mensaje("El valor no existe"), HttpStatus.NOT_FOUND);
-
-        ValorGmi valorGmi = valorGmiService.findById(id).get();
-        valorGmi.setActivo(false);
-        valorGmiService.save(valorGmi);
-        return new ResponseEntity(new Mensaje("Valor actualizado correctamente"), HttpStatus.OK);
+        return valorGmiService.logicDelete(id);
     }
 
     @DeleteMapping("/fisicdelete/{id}")

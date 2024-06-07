@@ -1,13 +1,14 @@
 package com.guardias.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.math.BigDecimal;
+
+import com.guardias.backend.enums.TipoDiaEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,16 +23,16 @@ public class SumaHoras {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private float horasLav;
-    private float horasSdf;
-    private float bonoLav;
-    private float bonoSdf;
+    private float cantidadHoras;
+    private TipoDiaEnum tipoDia; // finde - feriado - bono o normal
 
-    @OneToOne
-    @JoinColumn(name = "registro_mensual_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
-    private RegistroMensual registroMensual;
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoHora;
+    @Column(precision = 20, scale = 2)
+    private BigDecimal totalAPagar;
+
+    @OneToOne(mappedBy = "horas")
+    private RegistroActividad registroActividad;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;

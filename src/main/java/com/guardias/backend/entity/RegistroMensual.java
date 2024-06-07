@@ -16,8 +16,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +40,8 @@ public class RegistroMensual {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_asistencial")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "dni", "suplentes", "fechaNacimiento", "sexo", "telefono",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "suplentes", "fechaNacimiento", "sexo",
+            "telefono",
             "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades",
             "descripcion", "esAsistencial", "registroMensual" })
     private Person asistencial; // para que sea mas facil la busqueda por persona
@@ -48,11 +49,13 @@ public class RegistroMensual {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "registroMensual", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo",  "asistencial",
-             "efector", "registrosPendientes" })
+    // Para mapear el JSON
     private List<RegistroActividad> registroActividad = new ArrayList<>();
+
+    @Lob
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_json_file")
+    private JsonFile jsonFile;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
@@ -68,9 +71,6 @@ public class RegistroMensual {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi" })
     private Ddjj ddjj;
-
-    @OneToOne(mappedBy = "registroMensual")
-    private SumaHoras sumaHoras;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "mes", "fechaEgreso","anio",

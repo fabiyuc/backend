@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -43,11 +44,27 @@ public class RegistroActividad {
         @Temporal(TemporalType.TIME)
         private LocalTime horaEgreso;
 
+        @Temporal(TemporalType.DATE)
+        private LocalDate fechaRegistroIngreso;
+
+        @Temporal(TemporalType.TIME)
+        private LocalTime horaRegistroIngreso;
+
+        @Temporal(TemporalType.DATE)
+        private LocalDate fechaRegistroEgreso;
+
+        @Temporal(TemporalType.TIME)
+        private LocalTime horaRegistroEgreso;
+
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_tipo_guardia")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales",
-                         "activo", "registrosActividades", "nombre" })
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales", "activo",
+                        "registrosActividades", "nombre" })
         private TipoGuardia tipoGuardia;
+
+        @OneToOne
+        @JoinColumn(name = "horas_id")
+        private SumaHoras horas;
 
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
@@ -57,8 +74,10 @@ public class RegistroActividad {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_asistencial")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", 
-                        "estado",  "tipoGuardia","descripcion", "tiposGuardias","registrosActividades","dni","fechaNacimiento", "sexo","telefono", "email","domicilio", "esAsistencial", "activo","suplentes", "autoridades" })
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+                        "estado", "tipoGuardia", "descripcion", "tiposGuardias", "registrosActividades", "dni",
+                        "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo",
+                        "suplentes", "autoridades" })
         private Asistencial asistencial;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -75,13 +94,13 @@ public class RegistroActividad {
                         "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
                         "tipoCaps",
                         "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual",
-                        "ddjjs", "registrosPendientes","servicios" })
+                        "ddjjs", "registrosPendientes", "servicios" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_registro_mensual")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-                        "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras" ,"asistencial"})
+                        "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
         private RegistroMensual registroMensual;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
@@ -95,12 +114,7 @@ public class RegistroActividad {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
                         "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
         Usuario usuario;
-
-        @Temporal(TemporalType.DATE)
-        private LocalDate fechaRegistro;
-
-        @Temporal(TemporalType.TIME)
-        private LocalTime horaRegistro;
+        // DEBERIA haber un usuario para registrar el ingreso y otro para el egreso?
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",

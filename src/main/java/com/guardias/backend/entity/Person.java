@@ -95,9 +95,16 @@ public abstract class Person {
             "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
-    @OneToOne (mappedBy = "person")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+    // "mes", "fechaEgreso", "anio",
+    // "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras",
+    // "asistencial" })
+    List<Factura> facturas = new ArrayList<>();
+
+    @OneToOne(mappedBy = "person")
     private Usuario usuario;
-    
+
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "apellido", "dni", "cuil", "legajos",
     // "novedadesPersonales", "suplentes",

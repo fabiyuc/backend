@@ -37,4 +37,9 @@ public class RegistroActividadDto {
     private Long idRegistroMensual;
     private Long idRegistrosPendientes;
     private Long idUsuario;
+    private LocalDate fechaRegistroIngreso;
+    private LocalTime horaRegistroIngreso;
+    private LocalDate fechaRegistroEgreso;
+    private LocalTime horaRegistroEgreso;
+
 }

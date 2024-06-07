@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
@@ -38,6 +39,8 @@ public class RegistroActividadService {
     TipoGuardiaService tipoGuardiaService;
     @Autowired
     UsuarioService usuarioService;
+    @Autowired
+    SumaHorasService sumaHorasService;
 
     public Optional<List<RegistroActividad>> findByActivoTrue() {
         return registroActividadRepository.findByActivoTrue();
@@ -143,8 +146,8 @@ public class RegistroActividadService {
                     registroActividadDto);
 
             // Set de fecha y hora en la que se realiza el registroActividad
-            registroActividad.setFechaRegistro(LocalDate.now());
-            registroActividad.setHoraRegistro(LocalTime.now());
+            registroActividad.setFechaRegistroIngreso(LocalDate.now());
+            registroActividad.setHoraRegistroIngreso(LocalTime.now());
 
             registroActividad = registrosPendientesService.addRegistroActividad(registroActividad);
             save(registroActividad);
@@ -171,8 +174,16 @@ public class RegistroActividadService {
                 registroActividadDto.getHoraEgreso() != null)
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
 
+        // debe calcular las horas y crear el SUMAHORAS
+        SumaHoras horas = sumaHorasService.calcularHoras(registroActividad);
+        registroActividad.setHoras(horas);
+
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
+
+        // Set de fecha y hora en la que se realiza el registroActividad
+        registroActividad.setFechaRegistroEgreso(LocalDate.now());
+        registroActividad.setHoraRegistroEgreso(LocalTime.now());
 
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             // mando y traigo nuevamente el registroActividad para evitar la referencia
@@ -188,4 +199,5 @@ public class RegistroActividadService {
 
         return respuestaDeletePendiente;
     }
+
 }

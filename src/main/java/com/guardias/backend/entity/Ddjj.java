@@ -30,6 +30,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Ddjj {
 
+    // TODO falta registrar los movimientos (usuario y fechas del cambio de estados)
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

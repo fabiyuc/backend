@@ -33,6 +33,9 @@ public class JsonFile {
     @OneToOne(mappedBy = "jsonFile")
     private PendientesSemanal pendientesSemanal;
 
+    @OneToOne(mappedBy = "jsonFile")
+    private RegistroMensual registroMensual;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
