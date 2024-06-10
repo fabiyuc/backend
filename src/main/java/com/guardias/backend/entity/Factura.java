@@ -33,7 +33,7 @@ public class Factura {
     @Column(precision = 20, scale = 2)
     private BigDecimal monto;
     private boolean activo;
-    private String descripcion;
+    private String detalle;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_asistencial")
