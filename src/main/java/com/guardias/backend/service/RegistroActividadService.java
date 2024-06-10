@@ -16,7 +16,6 @@ import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.repository.RegistroActividadRepository;
-import com.guardias.backend.security.service.UsuarioService;
 
 import jakarta.transaction.Transactional;
 
@@ -37,8 +36,8 @@ public class RegistroActividadService {
     AsistencialService asistencialService;
     @Autowired
     TipoGuardiaService tipoGuardiaService;
-    @Autowired
-    UsuarioService usuarioService;
+    // @Autowired
+    // UsuarioService usuarioService;
     @Autowired
     SumaHorasService sumaHorasService;
 
@@ -131,7 +130,7 @@ public class RegistroActividadService {
                                 registroActividadDto.getIdEfector()))) {
             registroActividad.setEfector(efectorService.findById(registroActividadDto.getIdEfector()));
         }
-        registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        // registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
         registroActividad.setActivo(true);
         return registroActividad;
     }

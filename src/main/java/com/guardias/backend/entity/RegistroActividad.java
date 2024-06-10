@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.security.entity.Usuario;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -97,10 +96,13 @@ public class RegistroActividad {
                         "ddjjs", "registrosPendientes", "servicios" })
         private Efector efector;
 
-        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "id_registro_mensual")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-                        "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
+        // @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade =
+        // CascadeType.REMOVE)
+        // @JoinColumn(name = "id_registro_mensual")
+        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
+        // "mes", "fechaEgreso", "anio",
+        // "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras",
+        // "asistencial" })
         private RegistroMensual registroMensual;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
@@ -109,11 +111,13 @@ public class RegistroActividad {
                         "activo", "fecha", "efector", "registrosActividades" })
         RegistrosPendientes registrosPendientes;
 
-        @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "usuario")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-                        "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
-        Usuario usuario;
+        // @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade =
+        // CascadeType.REMOVE)
+        // @JoinColumn(name = "id_usuario")
+        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+        // "activo", "nombre", "nombreUsuario", "email", "password", "roles",
+        // "registrosActividades" })
+        // Usuario usuario;
         // DEBERIA haber un usuario para registrar el ingreso y otro para el egreso?
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",

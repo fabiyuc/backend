@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.security.entity.Usuario;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -102,8 +100,8 @@ public abstract class Person {
     // "asistencial" })
     List<Factura> facturas = new ArrayList<>();
 
-    @OneToOne(mappedBy = "person")
-    private Usuario usuario;
+    // @OneToOne(mappedBy = "person")
+    // private Usuario usuario;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "apellido", "dni", "cuil", "legajos",
