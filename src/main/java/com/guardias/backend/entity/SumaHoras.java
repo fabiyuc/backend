@@ -27,11 +27,30 @@ public class SumaHoras {
     private float bonoLav;
     private float bonoSdf;
 
+    @Column(precision = 20, scale = 2)
+    private float montoHorasLav;
+    @Column(precision = 20, scale = 2)
+    private float montoHorasSdf;
+    @Column(precision = 20, scale = 2)
+    private float montoBonoLav;
+    @Column(precision = 20, scale = 2)
+    private float montoBonoSdf;
+
+    @Column(precision = 20, scale = 2)
+    private float montoTotal;
+
     @OneToOne
     @JoinColumn(name = "registro_mensual_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
             "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
     private RegistroMensual registroMensual;
+
+    @OneToOne
+    @JoinColumn(name = "registro_actividad_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaIngreso", "fechaEgreso",
+            "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector", "registroMensual",
+            "registrosPendientes", "usuario", "horaRegistro", "fechaRegistro" })
+    private RegistroActividad registroActividad;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;

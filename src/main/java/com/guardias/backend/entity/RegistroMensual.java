@@ -40,7 +40,8 @@ public class RegistroMensual {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_asistencial")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "dni", "suplentes", "fechaNacimiento", "sexo", "telefono",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "suplentes", "fechaNacimiento", "sexo",
+            "telefono",
             "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades",
             "descripcion", "esAsistencial", "registroMensual" })
     private Person asistencial; // para que sea mas facil la busqueda por persona
@@ -50,8 +51,8 @@ public class RegistroMensual {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "registroMensual", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo",  "asistencial",
-             "efector", "registrosPendientes" })
+            "activo", "asistencial",
+            "efector", "registrosPendientes" })
     private List<RegistroActividad> registroActividad = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -69,8 +70,10 @@ public class RegistroMensual {
             "total", "estadoDdjj", "valorGmi" })
     private Ddjj ddjj;
 
+    // Deebo ir sumando las horas totales de todos los asistenciales por efector y
+    // mes
     @OneToOne(mappedBy = "registroMensual")
-    private SumaHoras sumaHoras;
+    private SumaHoras totalHoras;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "mes", "fechaEgreso","anio",

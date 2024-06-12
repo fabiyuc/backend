@@ -14,6 +14,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
 
@@ -128,10 +129,13 @@ public class RegistroMensualService {
             registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
         }
 
-        if (registroMensualDto.getIdSumaHoras() != null && (registroMensual.getSumaHoras() == null
-                || !Objects.equals(registroMensual.getSumaHoras().getId(), registroMensualDto.getIdSumaHoras()))) {
-            registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
-        }
+        // VER las horas se deben ir sumando cada vez que se registra una salida
+        // if (registroMensualDto.getIdSumaHoras() != null &&
+        // (registroMensual.getSumaHoras() == null
+        // || !Objects.equals(registroMensual.getSumaHoras().getId(),
+        // registroMensualDto.getIdSumaHoras()))) {
+        // registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
+        // }
 
         if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
                 || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
@@ -142,7 +146,7 @@ public class RegistroMensualService {
         return registroMensual;
     }
 
-    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+    public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
 
         RegistroMensual registroMensual = new RegistroMensual();
         registroMensual.setMes(mesEnum);
@@ -150,6 +154,13 @@ public class RegistroMensualService {
         registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
         registroMensual.setEfector(efectorService.findById(idEfector));
         registroMensual.setActivo(true);
+        SumaHoras horas = new SumaHoras();
+
+        horas.setHorasLav(0L);
+        horas.setHorasSdf(0L);
+        horas.setBonoLav(0L);
+        horas.setBonoSdf(0L);
+        registroMensual.setTotalHoras(horas);
 
         try {
             save(registroMensual);
@@ -158,7 +169,7 @@ public class RegistroMensualService {
                     mesEnum, anio)
                     .get();
 
-            return registroMensual.getId();
+            return registroMensual;
         } catch (Exception e) {
             System.out.println("error al crear registro mensual -- " + e.getMessage());
             return null;
@@ -173,17 +184,26 @@ public class RegistroMensualService {
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
         int anio = registroActividad.getFechaIngreso().getYear();
         Long id;
+        RegistroMensual registroMensual = new RegistroMensual();
 
         try {
-            RegistroMensual registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
+            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
                     mesEnum, anio)
                     .get();
-            id = registroMensual.getId();
         } catch (Exception exception) {
             System.out.println("id no encontrado");
 
-            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+            registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
+        id = registroMensual.getId();
+
+        // TODO debo sumar las horas del registro de actividades al registro mensual
+        // Para esto debo hacerlo atraves del servicio ded SumaHoras, donde debo
+        // calcular tambien los montos
+
+        SumaHoras horas = sumaHorasService.calcularHoras(registroMensual.getTotalHoras(),
+                registroActividad.getHorasRealizadas());
+        registroMensual.setTotalHoras(horas);
 
         try {
             registroActividad.setRegistroMensual(findById(id).get());

@@ -51,4 +51,12 @@ public class SumaHorasService {
     public void deleteById(Long id) {
         sumaHorasRepository.deleteById(id);
     }
+
+    public SumaHoras calcularHoras(SumaHoras horas, SumaHoras horasaSumar) {
+        SumaHoras totalHoras = new SumaHoras();
+
+        // DEBO sumar tomar horas y sumarle las que vienen de horasaSumar
+
+        return totalHoras;
+    }
 }
