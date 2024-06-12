@@ -46,7 +46,7 @@ public class RegistroActividad {
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_tipo_guardia")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales",
-                         "activo", "registrosActividades", "descripcion" })
+                        "activo", "registrosActividades", "descripcion", "nombre" })
         private TipoGuardia tipoGuardia;
 
         @Column(columnDefinition = "BIT DEFAULT 1")
@@ -57,14 +57,17 @@ public class RegistroActividad {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_asistencial")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", 
-                        "estado",  "tipoGuardia","descripcion", "tiposGuardias","registrosActividades","dni","fechaNacimiento", "sexo","telefono", "email","domicilio", "esAsistencial", "activo","suplentes", "autoridades" })
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "apellido", "dni", "cuil", "legajos",
+                        "novedadesPersonales", "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo",
+                        "telefono", "email", "domicilio", "estado", "activo", "autoridades", "tipoGuardia",
+                        "registrosActividades", "descripcion", "esAsistencial", "tiposGuardias", "usuario",
+                        "registrosMensuales" })
         private Asistencial asistencial;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_servicio")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nivel", "activo",
-                        "registrosActividades", "efectores" })
+                        "registrosActividades", "efectores", "descripcion" })
         private Servicio servicio;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -75,13 +78,13 @@ public class RegistroActividad {
                         "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica",
                         "tipoCaps",
                         "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual",
-                        "ddjjs", "registrosPendientes","servicios" })
+                        "ddjjs", "registrosPendientes", "servicios", "nombre" })
         private Efector efector;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_registro_mensual")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-                        "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras" ,"asistencial"})
+                        "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
         private RegistroMensual registroMensual;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
@@ -91,16 +94,30 @@ public class RegistroActividad {
         RegistrosPendientes registrosPendientes;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "usuario")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-                        "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
-        Usuario usuario;
+        @JoinColumn(name = "usuarioIngreso")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
+                        "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial",
+                        "noAsistencial" })
+        Usuario usuarioIngreso;
+
+        @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "usuarioEgreso")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
+                        "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial",
+                        "noAsistencial" })
+        Usuario usuarioEgreso;
 
         @Temporal(TemporalType.DATE)
-        private LocalDate fechaRegistro;
+        private LocalDate fechaRegistroIngreso;
 
         @Temporal(TemporalType.TIME)
-        private LocalTime horaRegistro;
+        private LocalTime horaRegistroIngreso;
+
+        @Temporal(TemporalType.DATE)
+        private LocalDate fechaRegistroEgreso;
+
+        @Temporal(TemporalType.TIME)
+        private LocalTime horaRegistroEgreso;
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
