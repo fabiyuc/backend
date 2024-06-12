@@ -1,5 +1,7 @@
 package com.guardias.backend.entity;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -28,16 +30,19 @@ public class SumaHoras {
     private float bonoSdf;
 
     @Column(precision = 20, scale = 2)
-    private float montoHorasLav;
-    @Column(precision = 20, scale = 2)
-    private float montoHorasSdf;
-    @Column(precision = 20, scale = 2)
-    private float montoBonoLav;
-    @Column(precision = 20, scale = 2)
-    private float montoBonoSdf;
+    private BigDecimal montoHorasLav;
 
     @Column(precision = 20, scale = 2)
-    private float montoTotal;
+    private BigDecimal montoHorasSdf;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoBonoLav;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoBonoSdf;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoTotal;
 
     @OneToOne
     @JoinColumn(name = "registro_mensual_id")
