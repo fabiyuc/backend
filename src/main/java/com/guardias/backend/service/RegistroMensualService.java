@@ -201,7 +201,7 @@ public class RegistroMensualService {
         // Para esto debo hacerlo atraves del servicio ded SumaHoras, donde debo
         // calcular tambien los montos
 
-        SumaHoras horas = sumaHorasService.calcularHoras(registroMensual.getTotalHoras(),
+        SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
                 registroActividad.getHorasRealizadas());
         registroMensual.setTotalHoras(horas);
 

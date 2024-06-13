@@ -15,6 +15,7 @@ import com.guardias.backend.controller.RegistroMensualController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
@@ -29,7 +30,6 @@ public class RegistroActividadService {
     ServicioService servicioService;
     @Autowired
     TipoGuardiaService tipoGuardiaService;
-
     @Autowired
     AsistencialService asistencialService;
     @Autowired
@@ -38,6 +38,8 @@ public class RegistroActividadService {
     RegistroMensualService registroMensualService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    SumaHorasService sumaHorasService;
 
     @Autowired
     RegistrosPendientesService registrosPendientesService;
@@ -164,6 +166,11 @@ public class RegistroActividadService {
         if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
                 registroActividadDto.getHoraEgreso() != null)
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+
+        SumaHoras horas = sumaHorasService.calcularHoras(registroActividad.getFechaIngreso(),
+                registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
+                registroActividad.getHoraEgreso());
+        registroActividad.setHorasRealizadas(horas);
 
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());

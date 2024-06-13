@@ -1,5 +1,9 @@
 package com.guardias.backend.service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +19,8 @@ import com.guardias.backend.repository.SumaHorasRepository;
 public class SumaHorasService {
     @Autowired
     SumaHorasRepository sumaHorasRepository;
+    @Autowired
+    FeriadoService feriadoService;
 
     public List<SumaHoras> findAll() {
         return sumaHorasRepository.findAll();
@@ -52,10 +58,59 @@ public class SumaHorasService {
         sumaHorasRepository.deleteById(id);
     }
 
-    public SumaHoras calcularHoras(SumaHoras horas, SumaHoras horasaSumar) {
+    public float redondearHoras(float totalHours, float remainingMinutes) {
+
+        float roundedHours;
+
+        if (remainingMinutes < 16) {
+            roundedHours = totalHours;
+        } else if (remainingMinutes <= 45) {
+            roundedHours = totalHours + 0.5f;
+        } else {
+            roundedHours = totalHours + 1;
+        }
+
+        return roundedHours;
+    }
+
+    public SumaHoras calcularHoras(LocalDate fechaIngreso, LocalDate fechaEgreso, LocalTime horaIngreso,
+            LocalTime horaEgreso) {
+
+        // 6 sabado 7 domingo
+        int diaDeLaSemana = fechaIngreso.getDayOfWeek().getValue();
+        LocalDateTime dateTimeIngreso = LocalDateTime.of(fechaIngreso, horaIngreso);
+        LocalDateTime dateTimeEgreso = LocalDateTime.of(fechaEgreso, horaEgreso);
+        Duration duration = Duration.between(dateTimeIngreso, dateTimeEgreso);
+
+        float totalHours = duration.toHours();
+        float remainingMinutes = duration.toMinutes() % 60;
+
+        float roundedHours = redondearHoras(totalHours, remainingMinutes);
         SumaHoras totalHoras = new SumaHoras();
 
-        // DEBO sumar tomar horas y sumarle las que vienen de horasaSumar
+        if (feriadoService.existsByFecha(fechaIngreso) || diaDeLaSemana > 5) {
+            // sabado domingo o feriado
+            totalHoras.setHorasSdf(roundedHours);
+        } else {
+            // dia normal
+            totalHoras.setHorasLav(roundedHours);
+        }
+        return totalHoras;
+    }
+
+    public SumaHoras sumarHorasMensuales(SumaHoras horas, SumaHoras horasASumar) {
+        SumaHoras totalHoras = new SumaHoras();
+        // DEBO tomar horas y sumarle las que vienen de horasaSumar
+
+        totalHoras.getHorasLav();
+        totalHoras.getHorasSdf();
+        totalHoras.getBonoLav();
+        totalHoras.getBonoSdf();
+        totalHoras.getMontoHorasLav();
+        totalHoras.getMontoHorasSdf();
+        totalHoras.getMontoBonoLav();
+        totalHoras.getMontoBonoSdf();
+        totalHoras.getMontoTotal();
 
         return totalHoras;
     }
