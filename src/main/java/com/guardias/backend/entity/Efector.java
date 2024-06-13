@@ -45,6 +45,11 @@ public abstract class Efector {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
+    // el porcentaje va de 1 a 2, 1 es que no tiene porcecntaje, 2 q es el doble del
+    // monto que se paga normalmente, este valor se multiplica en sumaHoras
+    // = 1.0f es para que por defecto sea 1
+    private float porcentajePorZona = 1.0f;
+
     private String observacion;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -116,7 +121,7 @@ public abstract class Efector {
     // "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
     // "areaProgramatica", "tipoCaps",
     // "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-    // "registroMensual", "ddjjs","registrosPendientes" })
+    // "registroMensual", "ddjjs","registrosPendientes","porcentajePorZona" })
 
     @Override
     public boolean equals(Object obj) {

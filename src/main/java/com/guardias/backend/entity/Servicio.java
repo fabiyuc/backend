@@ -39,6 +39,8 @@ public class Servicio {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
+    private boolean servicioCritico;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "servicio", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
@@ -47,12 +49,14 @@ public class Servicio {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "servicio_efector", joinColumns = @JoinColumn(name = "id_servicio"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "servicios", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "autoridades", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva", "nivelComplejidad", "caps" })
-  private List<Efector> efectores = new ArrayList<>();
-
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "servicios", "domicilio", "telefono", "estado", "activo",
+            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "autoridades",
+            "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",
+            "nivelComplejidad", "caps" })
+    private List<Efector> efectores = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
-    // "nivel", "activo", "registrosActividades" })
+    // "nivel", "activo", "registrosActividades","servicioCritico" })
 
     @Override
     public boolean equals(Object obj) {
