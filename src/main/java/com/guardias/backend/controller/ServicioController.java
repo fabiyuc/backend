@@ -98,6 +98,9 @@ public class ServicioController {
             return new ResponseEntity(new Mensaje("el nivel debe ser mayor que 0"),
                     HttpStatus.BAD_REQUEST);
 
+        if (servicioDto.getCritico() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es critico o no"),
+                    HttpStatus.BAD_REQUEST);
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -134,7 +137,7 @@ public class ServicioController {
             if (servicio.getEfectores() == null) {
                 servicio.setEfectores(new ArrayList<Efector>());
             }
-            
+
             List<Long> idList = new ArrayList<Long>();
             for (Long id : servicioDto.getIdEfectores()) {
                 boolean exists = false;
@@ -148,19 +151,18 @@ public class ServicioController {
                     idList.add(id);
                 }
             }
-        
             for (Long id : idList) {
                 Efector efector = efectorService.findById(id);
                 servicio.getEfectores().add(efector);
                 efector.getServicios().add(servicio);
             }
-        } else {
+        } /* else {
             if (servicio.getEfectores() == null) {
                 servicio.setEfectores(new ArrayList<Efector>());
             }
-        }
-        
+        } */
 
+        servicio.setCritico(servicioDto.getCritico());
         servicio.setActivo(true);
         return servicio;
     }

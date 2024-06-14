@@ -2,11 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
@@ -28,12 +30,31 @@ public class RegistroMensualService {
 
     public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
             Long idEfector) {
-        return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mes, idEfector);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
+
+        for (RegistroMensual registroMensual : registrosMensuales) {
+            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
+                    .filter(actividad -> actividad.getTipoGuardia().getId() == 1
+                            || actividad.getTipoGuardia().getId() == 2)
+                    .collect(Collectors.toList());
+            registroMensual.setRegistroActividad(actividadesFiltradas);
+        }
+
+        return registrosMensuales;
     }
 
     public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtra(int anio, MesesEnum mes,
             Long idEfector) {
-        return registroMensualRepository.findByAnioMesEfectorAndTipoGuardiaExtra(anio, mes, idEfector);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
+
+        for (RegistroMensual registroMensual : registrosMensuales) {
+            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
+                    .filter(actividad -> actividad.getTipoGuardia().getId() == 3)
+                    .collect(Collectors.toList());
+            registroMensual.setRegistroActividad(actividadesFiltradas);
+        }
+
+        return registrosMensuales;
     }
 
     public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,

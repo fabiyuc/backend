@@ -39,6 +39,8 @@ public class Servicio {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
+    private boolean critico;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "servicio", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",

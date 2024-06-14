@@ -19,4 +19,6 @@ public class ServicioDto {
     private List<Long> idRegistrosActividades;
     private int nivel;
     private List<Long> idEfectores = new ArrayList<>();
+    @NotBlank
+    private Boolean critico;
 }

@@ -16,12 +16,8 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         Optional<RegistroMensual> findById(Long id);
 
-        @Query("SELECT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND (ra.tipoGuardia.id = 1 OR ra.tipoGuardia.id = 2)")
-        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(@Param("anio") int anio,
-                        @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
-
-        @Query("SELECT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND ra.tipoGuardia.id = 3")
-        List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtra(@Param("anio") int anio,
+        @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector")
+        List<RegistroMensual> findByAnioMesEfector(@Param("anio") int anio,
                         @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
 
         /*
