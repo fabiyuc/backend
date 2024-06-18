@@ -73,6 +73,7 @@ public class SumaHorasService {
         return roundedHours;
     }
 
+    // SOLO CALCULA HORAS no calcula los montos!!!!
     public SumaHoras calcularHoras(LocalDate fechaIngreso, LocalDate fechaEgreso, LocalTime horaIngreso,
             LocalTime horaEgreso) {
 
@@ -100,17 +101,17 @@ public class SumaHorasService {
 
     public SumaHoras sumarHorasMensuales(SumaHoras horas, SumaHoras horasASumar) {
         SumaHoras totalHoras = new SumaHoras();
-        // DEBO tomar horas y sumarle las que vienen de horasaSumar
 
-        totalHoras.getHorasLav();
-        totalHoras.getHorasSdf();
-        totalHoras.getBonoLav();
-        totalHoras.getBonoSdf();
-        totalHoras.getMontoHorasLav();
-        totalHoras.getMontoHorasSdf();
-        totalHoras.getMontoBonoLav();
-        totalHoras.getMontoBonoSdf();
-        totalHoras.getMontoTotal();
+        totalHoras.setHorasLav(totalHoras.getHorasLav() + horasASumar.getHorasLav());
+        totalHoras.setHorasSdf(totalHoras.getHorasSdf() + horasASumar.getHorasSdf());
+        totalHoras.setBonoLav(totalHoras.getBonoLav() + horasASumar.getBonoLav());
+        totalHoras.setBonoSdf(totalHoras.getBonoSdf() + horasASumar.getBonoSdf());
+
+        totalHoras.setMontoHorasLav(totalHoras.getMontoHorasLav().add(horasASumar.getMontoHorasLav()));
+        totalHoras.setMontoHorasSdf(totalHoras.getMontoHorasSdf().add(horasASumar.getMontoHorasSdf()));
+        totalHoras.setMontoBonoLav(totalHoras.getMontoBonoLav().add(horasASumar.getMontoBonoLav()));
+        totalHoras.setMontoBonoSdf(totalHoras.getMontoBonoSdf().add(horasASumar.getMontoBonoSdf()));
+        totalHoras.setMontoTotal(totalHoras.getMontoTotal().add(horasASumar.getMontoTotal()));
 
         return totalHoras;
     }
