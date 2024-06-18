@@ -2,11 +2,13 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +25,16 @@ public class JsonFile {
     private Long id;
 
     @Lob
+    @Column(columnDefinition = "VARBINARY(MAX)")
     private byte[] contenido;
 
+    private boolean activo;
+
     private LocalDateTime fechaGuardado;
+
+    @OneToOne(mappedBy = "jsonFile")
+    private PendientesSemanal pendientesSemanal;
+
+    @OneToOne(mappedBy = "jsonFile")
+    private RegistroMensual registroMensual;
 }
