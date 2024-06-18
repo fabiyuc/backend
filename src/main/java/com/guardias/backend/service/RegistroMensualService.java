@@ -10,8 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.entity.JsonFile;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
@@ -33,6 +37,10 @@ public class RegistroMensualService {
     SumaHorasService sumaHorasService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    JsonFileService jsonFileService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public Optional<List<RegistroMensual>> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
@@ -168,6 +176,28 @@ public class RegistroMensualService {
         }
     }
 
+    public JsonFile addRegistroActividadToJsonFile(JsonFile jsonFile, RegistroActividad registroActividad) {
+        String json = jsonFileService.decodeToJson(jsonFile);
+        JsonFile updatedJsonFile = new JsonFile();
+
+        try {
+            List<RegistroActividad> registroActividadList = objectMapper.readValue(json,
+                    new TypeReference<List<RegistroActividad>>() {
+                    });
+
+            registroActividadList.add(registroActividad);
+            String updatedJson = objectMapper.writeValueAsString(registroActividadList);
+
+            updatedJsonFile = jsonFileService.encodeToJson(updatedJson);
+            updatedJsonFile.setId(jsonFile.getId()); // Set the same ID to update
+            jsonFileService.save(updatedJsonFile);
+
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return updatedJsonFile;
+    }
+
     public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
@@ -196,6 +226,8 @@ public class RegistroMensualService {
 
         try {
             registroActividad.setRegistroMensual(findById(id).get());
+            JsonFile jsonFile = registroMensual.getJsonFile();
+            registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
         } catch (Exception e) {
             System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
         }
