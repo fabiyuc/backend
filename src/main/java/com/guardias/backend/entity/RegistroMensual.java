@@ -16,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -54,6 +55,11 @@ public class RegistroMensual {
             "activo", "asistencial",
             "efector", "registrosPendientes" })
     private List<RegistroActividad> registroActividad = new ArrayList<>();
+
+    @Lob
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_json_file")
+    private JsonFile jsonFile;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
