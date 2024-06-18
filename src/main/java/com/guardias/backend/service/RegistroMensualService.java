@@ -129,14 +129,6 @@ public class RegistroMensualService {
             registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
         }
 
-        // VER las horas se deben ir sumando cada vez que se registra una salida
-        // if (registroMensualDto.getIdSumaHoras() != null &&
-        // (registroMensual.getSumaHoras() == null
-        // || !Objects.equals(registroMensual.getSumaHoras().getId(),
-        // registroMensualDto.getIdSumaHoras()))) {
-        // registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
-        // }
-
         if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
                 || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
             registroMensual.setDdjj(ddjjService.findById(registroMensualDto.getIdDdjj()).get());
@@ -197,10 +189,7 @@ public class RegistroMensualService {
         }
         id = registroMensual.getId();
 
-        // TODO debo sumar las horas del registro de actividades al registro mensual
-        // Para esto debo hacerlo atraves del servicio ded SumaHoras, donde debo
-        // calcular tambien los montos
-
+        // sumo las horas y los montos
         SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
                 registroActividad.getHorasRealizadas());
         registroMensual.setTotalHoras(horas);
