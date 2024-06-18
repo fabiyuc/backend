@@ -114,6 +114,10 @@ public abstract class Efector {
             "activo", "fecha", "efector", "registrosActividades" })
     private List<RegistrosPendientes> registrosPendientes = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<PendientesSemanal> pendientesSemanales = new ArrayList<>();
+
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
     // "autoridades", "domicilio", "telefono",
     // "estado", "activo", "observacion", "region", "localidad",
