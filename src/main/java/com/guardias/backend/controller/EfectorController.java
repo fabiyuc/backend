@@ -84,6 +84,10 @@ public class EfectorController {
                 && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
 
+        if (efectorDto.getPorcentajePorZona() != efector.getPorcentajePorZona()
+                && (efectorDto.getPorcentajePorZona() > 0))
+            efector.setPorcentajePorZona(efectorDto.getPorcentajePorZona());
+
         if (efector.getLocalidad() == null ||
                 (efectorDto.getIdLocalidad() != null &&
                         !Objects.equals(efector.getLocalidad().getId(),

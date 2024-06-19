@@ -34,4 +34,5 @@ public class EfectorDto {
     private List<Long> idRegistroMensual;
     private List<Long> idDdjjs;
 
+    private float porcentajePorZona;
 }

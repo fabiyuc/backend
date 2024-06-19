@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class EspecialidadDto {
     @NotBlank
     private String nombre;
+    @NotBlank
     private Long idProfesion;
     private Boolean esPasiva;
     private boolean activo;

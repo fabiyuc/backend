@@ -24,7 +24,6 @@ public class LegajoDto {
     private boolean activo;
     private String matriculaNacional;
     private String matriculaProvincial;
-    @NotBlank
     private Long idSuspencion;
     @NotBlank
     private Long idRevista;
@@ -35,5 +34,8 @@ public class LegajoDto {
     private Long idCargo;
     private List<Long> idEfectores = new ArrayList<>();
     private List<Long> IdEspecialidades = new ArrayList<>();
+
+    @NotBlank
+    private Long idProfesion;
 
 }

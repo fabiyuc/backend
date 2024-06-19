@@ -20,4 +20,6 @@ public class ServicioDto {
     private int nivel;
     private boolean servicioCritico;
     private List<Long> idEfectores = new ArrayList<>();
+    @NotBlank
+    private Boolean critico;
 }
