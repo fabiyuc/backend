@@ -18,5 +18,6 @@ public class ServicioDto {
     private boolean activo;
     private List<Long> idRegistrosActividades;
     private int nivel;
+    private boolean servicioCritico;
     private List<Long> idEfectores = new ArrayList<>();
 }

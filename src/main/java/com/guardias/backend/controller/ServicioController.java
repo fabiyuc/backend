@@ -134,7 +134,7 @@ public class ServicioController {
             if (servicio.getEfectores() == null) {
                 servicio.setEfectores(new ArrayList<Efector>());
             }
-            
+
             List<Long> idList = new ArrayList<Long>();
             for (Long id : servicioDto.getIdEfectores()) {
                 boolean exists = false;
@@ -148,7 +148,7 @@ public class ServicioController {
                     idList.add(id);
                 }
             }
-        
+
             for (Long id : idList) {
                 Efector efector = efectorService.findById(id);
                 servicio.getEfectores().add(efector);
@@ -159,8 +159,8 @@ public class ServicioController {
                 servicio.setEfectores(new ArrayList<Efector>());
             }
         }
-        
 
+        servicio.setServicioCritico(servicioDto.isServicioCritico());
         servicio.setActivo(true);
         return servicio;
     }
