@@ -2,6 +2,8 @@ package com.guardias.backend.dto;
 
 import java.util.List;
 
+import com.guardias.backend.enums.TipoGuardiaEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class TipoGuardiaDto {
 
     @NotBlank
-    private String nombre;
+    private TipoGuardiaEnum nombre;
     @NotBlank
     private String descripcion;
     private Boolean activo;

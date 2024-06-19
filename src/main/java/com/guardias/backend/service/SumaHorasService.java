@@ -84,7 +84,12 @@ public class SumaHorasService {
         Duration duration = Duration.between(dateTimeIngreso, dateTimeEgreso);
 
         float totalHours = duration.toHours();
+
         float remainingMinutes = duration.toMinutes() % 60;
+
+        if (totalHours < 4) {
+            System.out.println("error!!!!! son pocas horas");
+        }
 
         float roundedHours = redondearHoras(totalHours, remainingMinutes);
         SumaHoras totalHoras = new SumaHoras();

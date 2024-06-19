@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ValorGmiDto;
 import com.guardias.backend.entity.ValorGmi;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.ValorGmiRepository;
 
 @Service
@@ -50,8 +51,12 @@ public class ValorGmiService {
         return (valorGmiRepository.existsById(id) && valorGmiRepository.findById(id).get().isActivo());
     }
 
-    public Optional<ValorGmi> getValorGmiByFecha(LocalDate fecha) {
-        return valorGmiRepository.findByFechaInRange(fecha);
+    public Optional<List<ValorGmi>> getByFecha(LocalDate fecha) {
+        return valorGmiRepository.getByFecha(fecha);
+    }
+
+    public Optional<ValorGmi> getByFechaAndTipoGuardia(LocalDate fecha, TipoGuardiaEnum tipoGuardia) {
+        return valorGmiRepository.getByFechaAndTipoGuardia(fecha, tipoGuardia);
     }
 
     public ResponseEntity<?> validations(ValorGmiDto valorGmiDto) {

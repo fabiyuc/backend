@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,7 +30,7 @@ public class TipoGuardia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "VARCHAR(30)")
-    private String nombre;
+    private TipoGuardiaEnum nombre;
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
     @Column(columnDefinition = "BIT DEFAULT 1")

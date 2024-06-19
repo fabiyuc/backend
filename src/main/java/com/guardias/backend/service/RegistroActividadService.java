@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -17,7 +16,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
-import com.guardias.backend.entity.ValorGmi;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
@@ -159,32 +157,35 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        // para calcular ZONA porcentajePorZona
-        float zona = registroActividad.getEfector().getPorcentajePorZona();
+        // // para calcular ZONA porcentajePorZona
+        // float zona = registroActividad.getEfector().getPorcentajePorZona();
 
-        // Valor de la GMI segun la fecha de inicio de la guardia
-        ValorGmi valorGmi = valorGmiService.getValorGmiByFecha(registroActividad.getFechaIngreso()).get();
+        // // Valor de la GMI segun la fecha de inicio de la guardia
+        // ValorGmi valorGmi =
+        // valorGmiService.getByFecha(registroActividad.getFechaIngreso()).get();
 
-        // Valor de la hora segun la GMI correspondiente a la fechaInicio y a la zona
-        BigDecimal valorHora = BigDecimal.valueOf(zona).multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
+        // // Valor de la hora segun la GMI correspondiente a la fechaInicio y a la zona
+        // BigDecimal valorHora =
+        // BigDecimal.valueOf(zona).multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
 
-        // calcula BONO
-        if (registroActividad.getServicio().isServicioCritico()) {
-            horas.setBonoLav(horas.getHorasLav());
-            horas.setBonoSdf(horas.getHorasSdf());
-        } else {
-            horas.setBonoLav(0);
-            horas.setBonoSdf(0);
-        }
+        // // calcula BONO
+        // if (registroActividad.getServicio().isServicioCritico()) {
+        // horas.setBonoLav(horas.getHorasLav());
+        // horas.setBonoSdf(horas.getHorasSdf());
+        // } else {
+        // horas.setBonoLav(0);
+        // horas.setBonoSdf(0);
+        // }
+        // // FALTA calcular el tipo de guardia para multiplicar con el montoHoras....
 
-        horas.setMontoHorasLav(valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
-        horas.setMontoHorasSdf(valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
-        horas.setMontoBonoLav(valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
-        horas.setMontoBonoSdf(valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
+        // horas.setMontoHorasLav(valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
+        // horas.setMontoHorasSdf(valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
+        // horas.setMontoBonoLav(valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
+        // horas.setMontoBonoSdf(valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
 
-        BigDecimal total = horas.getMontoHorasLav()
-                .add(horas.getMontoHorasSdf().add(horas.getMontoBonoLav().add(horas.getMontoBonoSdf())));
-        horas.setMontoTotal(total);
+        // BigDecimal total = horas.getMontoHorasLav()
+        // .add(horas.getMontoHorasSdf().add(horas.getMontoBonoLav().add(horas.getMontoBonoSdf())));
+        // horas.setMontoTotal(total);
 
         return horas;
     }

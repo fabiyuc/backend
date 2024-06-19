@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,7 +86,7 @@ public class TipoGuardiaController {
     }
 
     private ResponseEntity<?> validations(TipoGuardiaDto tipoGuardiaDto) {
-        if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
+        if (tipoGuardiaDto.getNombre() == null)
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
@@ -96,8 +95,7 @@ public class TipoGuardiaController {
 
     private TipoGuardia createUpdate(TipoGuardia tipoGuardia, TipoGuardiaDto tipoGuardiaDto) {
 
-        if (tipoGuardiaDto.getNombre() != null && !tipoGuardiaDto.getNombre().equals(tipoGuardia.getNombre())
-                && !tipoGuardiaDto.getNombre().isEmpty())
+        if (tipoGuardiaDto.getNombre() != null && !tipoGuardiaDto.getNombre().equals(tipoGuardia.getNombre()))
             tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
 
         if (tipoGuardiaDto.getDescripcion() != null && !tipoGuardiaDto.getDescripcion().isEmpty()

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ValorGmiDto;
 import com.guardias.backend.entity.ValorGmi;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.service.ValorGmiService;
 
 @RestController
@@ -52,11 +53,29 @@ public class ValorGmiController {
         return new ResponseEntity(valorGmi, HttpStatus.OK);
     }
 
-    // VER ESTO!!!!
+    // @GetMapping("/detailByFecha/{fecha}")
+    // public ResponseEntity<ValorGmi> getValorGmiByFecha(
+    // @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha)
+    // {
+    // Optional<ValorGmi> valorGmi = valorGmiService.getValorGmiByFecha(fecha);
+    // return valorGmi.map(ResponseEntity::ok)
+    // .orElseGet(() -> ResponseEntity.notFound().build());
+    // }
+
+    @GetMapping("/detailByFechaAndTipoGuardia/{fecha}/{tipoGuardia}")
+    public ResponseEntity<ValorGmi> getByFechaAndTipoGuardia(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @PathVariable("tipoGuardia") String tipoGuardia) {
+        TipoGuardiaEnum guardia = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
+        Optional<ValorGmi> valorGmi = valorGmiService.getByFechaAndTipoGuardia(fecha, guardia);
+        return valorGmi.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/detailByFecha/{fecha}")
-    public ResponseEntity<ValorGmi> getValorGmiByFecha(
+    public ResponseEntity<List<ValorGmi>> getByFecha(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        Optional<ValorGmi> valorGmi = valorGmiService.getValorGmiByFecha(fecha);
+        Optional<List<ValorGmi>> valorGmi = valorGmiService.getByFecha(fecha);
         return valorGmi.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
