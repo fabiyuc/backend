@@ -170,7 +170,7 @@ public class RegistroActividadService {
         BigDecimal valorHora = BigDecimal.valueOf(zona).multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
 
         // calcula BONO
-        if (registroActividad.getServicio().isServicioCritico()) {
+        if (registroActividad.getServicio().isCritico()) {
             horas.setBonoLav(horas.getHorasLav());
             horas.setBonoSdf(horas.getHorasSdf());
         } else {
