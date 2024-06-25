@@ -58,7 +58,7 @@ public class SumaHoras {
     private RegistroActividad registroActividad;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
-    private boolean activo;
+    private boolean activo = true;
 
     @Override
     public boolean equals(Object obj) {

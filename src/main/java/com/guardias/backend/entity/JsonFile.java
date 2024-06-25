@@ -26,9 +26,9 @@ public class JsonFile {
 
     @Lob
     @Column(columnDefinition = "VARBINARY(MAX)")
-    private byte[] contenido;
+    private byte[] contenido = new byte[0];
 
-    private boolean activo;
+    private boolean activo = true;
 
     private LocalDateTime fechaGuardado;
 

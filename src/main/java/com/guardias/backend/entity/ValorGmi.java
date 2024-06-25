@@ -29,7 +29,7 @@ public class ValorGmi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "BIT DEFAULT 1")
-    private boolean activo;
+    private boolean activo = true;
 
     private LocalDate fechaInicio;
 

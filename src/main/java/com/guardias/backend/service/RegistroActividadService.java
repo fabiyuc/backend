@@ -18,6 +18,7 @@ import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.entity.ValorGmi;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
@@ -160,14 +161,31 @@ public class RegistroActividadService {
                 registroActividad.getHoraEgreso());
 
         // para calcular ZONA porcentajePorZona
-        float zona = registroActividad.getEfector().getPorcentajePorZona();
+        Float porcentajePorZona = registroActividad.getEfector().getPorcentajePorZona();
+        float zona = porcentajePorZona != null ? porcentajePorZona : 1.0f;
 
         // Valor de la GMI segun la fecha de inicio de la guardia
-        ValorGmi valorGmi = valorGmiService.getByFechaAndTipoGuardia(registroActividad.getFechaIngreso(),
-                registroActividad.getTipoGuardia().getNombre()).get();
+        TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
+        System.out.println(tipoGuardia);
+        ValorGmi valorGmi = new ValorGmi();
+        try {
+            valorGmi = valorGmiService.getByFechaAndTipoGuardia(registroActividad.getFechaIngreso(), tipoGuardia)
+                    .get();
+            System.out.println(valorGmi);
+
+        } catch (Exception e) {
+            System.out.println(" registroActividadService Ln177 - valor GMI no encontrado: " + e.getMessage());
+        }
 
         // Valor de la hora segun la GMI correspondiente a la fechaInicio y a la zona
-        BigDecimal valorHora = BigDecimal.valueOf(zona).multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
+        BigDecimal valorHora = new BigDecimal(0);
+        try {
+            valorHora = BigDecimal.valueOf(zona)
+                    .multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
+
+        } catch (Exception e) {
+            System.out.println("error registroActividadService Ln187 - " + e.getMessage());
+        }
 
         // calcula BONO
         if (registroActividad.getServicio().isCritico()) {
@@ -209,6 +227,7 @@ public class RegistroActividadService {
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
 
         SumaHoras horas = calcularHoras(registroActividad);
+        sumaHorasService.save(horas);
         registroActividad.setHorasRealizadas(horas);
 
         registroActividad.setHoraRegistroEgreso(LocalTime.now());

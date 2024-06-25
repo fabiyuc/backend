@@ -112,11 +112,34 @@ public class SumaHorasService {
         totalHoras.setBonoLav(totalHoras.getBonoLav() + horasASumar.getBonoLav());
         totalHoras.setBonoSdf(totalHoras.getBonoSdf() + horasASumar.getBonoSdf());
 
-        totalHoras.setMontoHorasLav(totalHoras.getMontoHorasLav().add(horasASumar.getMontoHorasLav()));
-        totalHoras.setMontoHorasSdf(totalHoras.getMontoHorasSdf().add(horasASumar.getMontoHorasSdf()));
-        totalHoras.setMontoBonoLav(totalHoras.getMontoBonoLav().add(horasASumar.getMontoBonoLav()));
-        totalHoras.setMontoBonoSdf(totalHoras.getMontoBonoSdf().add(horasASumar.getMontoBonoSdf()));
-        totalHoras.setMontoTotal(totalHoras.getMontoTotal().add(horasASumar.getMontoTotal()));
+        if (totalHoras.getMontoHorasLav() != null) {
+            totalHoras.setMontoHorasLav(totalHoras.getMontoHorasLav().add(horasASumar.getMontoHorasLav()));
+        } else {
+            totalHoras.setMontoHorasLav(horasASumar.getMontoHorasLav());
+        }
+        if (totalHoras.getMontoHorasSdf() != null) {
+            totalHoras.setMontoHorasSdf(totalHoras.getMontoHorasSdf().add(horasASumar.getMontoHorasSdf()));
+        } else {
+            totalHoras.setMontoHorasSdf(horasASumar.getMontoHorasSdf());
+        }
+
+        if (totalHoras.getMontoBonoLav() != null) {
+            totalHoras.setMontoBonoLav(totalHoras.getMontoBonoLav().add(horasASumar.getMontoBonoLav()));
+        } else {
+            totalHoras.setMontoBonoLav(horasASumar.getMontoBonoLav());
+        }
+
+        if (totalHoras.getMontoBonoSdf() != null) {
+            totalHoras.setMontoBonoSdf(totalHoras.getMontoBonoSdf().add(horasASumar.getMontoBonoSdf()));
+        } else {
+            totalHoras.setMontoBonoSdf(horasASumar.getMontoBonoSdf());
+        }
+
+        if (totalHoras.getMontoTotal() != null) {
+            totalHoras.setMontoTotal(totalHoras.getMontoTotal().add(horasASumar.getMontoTotal()));
+        } else {
+            totalHoras.setMontoTotal(horasASumar.getMontoBonoSdf());
+        }
 
         return totalHoras;
     }

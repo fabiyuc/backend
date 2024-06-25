@@ -41,6 +41,7 @@ public class JsonFileService {
             jsonFile.setFechaGuardado(LocalDateTime.now());
             jsonFileRepository.save(jsonFile);
         } catch (Exception e) {
+            System.out.println("Error al intentar guardar el archivo Json JsonFileService Ln44 - " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -54,18 +55,20 @@ public class JsonFileService {
 
             return jsonFile;
         } catch (Exception e) {
+            System.out.println("Error Json JsonFileService Ln58 - " + e.getMessage());
             e.printStackTrace();
             return null;
         }
     }
 
-    public String decodeToJson(JsonFile jsonFile) {
+    public String decodeToString(JsonFile jsonFile) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(jsonFile.getContenido());
             return new String(decodedBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
+            System.out.println("Error Json JsonFileService Ln69 - " + e.getMessage());
             e.printStackTrace();
-            return "";
+            return null;
         }
     }
 

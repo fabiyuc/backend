@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -185,34 +186,40 @@ public class RegistroMensualService {
         try {
             save(registroMensual);
 
-            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
-                    mesEnum, anio)
-                    .get();
+            // registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial,
+            // idEfector,
+            // mesEnum, anio)
+            // .get();
 
             return registroMensual;
         } catch (Exception e) {
-            System.out.println("error al crear registro mensual -- " + e.getMessage());
+            System.out.println("error al crear registro mensual  registroMensualService Ln196 -- " + e.getMessage());
             return null;
         }
     }
 
     public JsonFile addRegistroActividadToJsonFile(JsonFile jsonFile, RegistroActividad registroActividad) {
-        String json = jsonFileService.decodeToJson(jsonFile);
-        JsonFile updatedJsonFile = new JsonFile();
+        String json = null;
+        JsonFile updatedJsonFile = jsonFile;
+        List<RegistroActividad> registroActividadList = new ArrayList<RegistroActividad>();
 
         try {
-            List<RegistroActividad> registroActividadList = objectMapper.readValue(json,
-                    new TypeReference<List<RegistroActividad>>() {
-                    });
-
+            json = jsonFileService.decodeToString(jsonFile);
+            registroActividadList = objectMapper.readValue(json, new TypeReference<List<RegistroActividad>>() {
+            });
+        } catch (Exception e) {
+            System.out.println("JsonFile nulo - " + e.getMessage());
+        }
+        try {
             registroActividadList.add(registroActividad);
             String updatedJson = objectMapper.writeValueAsString(registroActividadList);
-
+            System.out.println(updatedJson);
             updatedJsonFile = jsonFileService.encodeToJson(updatedJson);
-            updatedJsonFile.setId(jsonFile.getId()); // Set the same ID to update
+            updatedJsonFile.setId(jsonFile.getId());
             jsonFileService.save(updatedJsonFile);
 
         } catch (JsonProcessingException e) {
+            System.out.println("Error procesando Json registroMensualService Ln222 - " + e.getMessage());
             e.printStackTrace();
         }
         return updatedJsonFile;
@@ -233,8 +240,7 @@ public class RegistroMensualService {
                     mesEnum, anio)
                     .get();
         } catch (Exception exception) {
-            System.out.println("id no encontrado");
-
+            System.out.println("id no encontrado registroMensualService Ln243 - " + exception.getMessage());
             registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
         id = registroMensual.getId();
@@ -242,15 +248,20 @@ public class RegistroMensualService {
         // sumo las horas y los montos
         SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
                 registroActividad.getHorasRealizadas());
+        sumaHorasService.save(horas);
         registroMensual.setTotalHoras(horas);
-
+        JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(), registroActividad);
         try {
             registroActividad.setRegistroMensual(findById(id).get());
-            JsonFile jsonFile = registroMensual.getJsonFile();
-            registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
+            if (registroMensual.getJsonFile() != null) {
+                jsonFile = registroMensual.getJsonFile();
+            }
         } catch (Exception e) {
-            System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
+            System.out.println("error: idRegistroMensual nulo  registroMensualService Ln259 -- " + e.getMessage());
         }
+        jsonFileService.save(jsonFile);
+        registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
+
         return registroActividad;
     }
 
