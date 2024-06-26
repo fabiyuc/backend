@@ -116,7 +116,6 @@ public class LegajoController {
         if (legajoDto.getMatriculaNacional() != null
                 && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional())
             legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
-
         if (legajoDto.getMatriculaProvincial() != null
                 && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
             legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
@@ -132,28 +131,6 @@ public class LegajoController {
             if (legajo.getUdo() == null
                     || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
                 legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
-            }
-        }
-        legajo.setActual(legajoDto.getActual());
-        legajo.setLegal(legajoDto.getLegal());
-
-        if (legajoDto.getIdEspecialidades() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (legajo.getEspecialidades() != null) {
-                for (Especialidad especialidad : legajo.getEspecialidades()) {
-                    for (Long id : legajoDto.getIdEspecialidades()) {
-                        if (!especialidad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            } else {
-                legajo.setEspecialidades(new ArrayList<>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEspecialidades() : idList;
-            for (Long id : idsToAdd) {
-                legajo.getEspecialidades().add(especialidadService.findById(id).get());
-                especialidadService.findById(id).get().getLegajos().add(legajo);
             }
         }
 
@@ -178,28 +155,97 @@ public class LegajoController {
             }
         }
 
-        // falta validar de no agregar si ya existe el efector
-        if (legajoDto.getIdEfectores() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (legajo.getEfectores() != null) {
-                for (Efector efector : legajo.getEfectores()) {
-                    for (Long id : legajoDto.getIdEfectores()) {
-                        if (!efector.getId().equals(id)) {
-                            idList.add(id);
-                        }
+        if (legajoDto.getIdEspecialidades() != null) {
+            if (legajo.getEspecialidades() == null) {
+                legajo.setEspecialidades(new ArrayList<>());
+            }
+
+            List<Especialidad> especialidadesParaEliminar = new ArrayList<>();
+            for (Especialidad especialidad : legajo.getEspecialidades()) {
+                if (!legajoDto.getIdEspecialidades().contains(especialidad.getId())) {
+                    especialidadesParaEliminar.add(especialidad);
+                }
+            }
+           
+            for (Especialidad especialidad : especialidadesParaEliminar) {
+                legajo.getEspecialidades().remove(especialidad);
+                especialidad.getLegajos().remove(legajo);
+            }
+
+            // Agrego nuevas especialidades al legajo si no están presentes
+            for (Long id : legajoDto.getIdEspecialidades()) {
+                boolean found = false;
+                for (Especialidad especialidad : legajo.getEspecialidades()) {
+                    if (especialidad.getId().equals(id)) {
+                        found = true;
+                        break;
                     }
                 }
-            } else {
-                legajo.setEfectores(new ArrayList<Efector>());
-            }
-
-            List<Long> idsToAdd = idList.isEmpty() ? legajoDto.getIdEfectores() : idList;
-
-            for (Long id : idsToAdd) {
-                legajo.getEfectores().add(efectorService.findById(id));
-                efectorService.findById(id).getLegajos().add(legajo);
+                if (!found) {
+                    Especialidad especialidadToAdd = especialidadService.findById(id).orElse(null);
+                    if (especialidadToAdd != null) {
+                        legajo.getEspecialidades().add(especialidadToAdd);
+                        especialidadToAdd.getLegajos().add(legajo);
+                    }
+                }
             }
         }
+
+        if (legajoDto.getIdEfectores() != null) {
+            if (legajo.getEfectores() == null) {
+                legajo.setEfectores(new ArrayList<>());
+            }
+
+            // Crea una nueva lista para almacenar los efectores actualizados
+            List<Efector> efectoresActualizados = new ArrayList<>();
+            for (Efector efector : legajo.getEfectores()) {
+                if (legajoDto.getIdEfectores().contains(efector.getId())) {
+                    efectoresActualizados.add(efector);
+                } else {
+                    // Remover el legajo de los efectores que se eliminarán
+                    efector.getLegajos().remove(legajo);
+                }
+            }
+            legajo.setEfectores(efectoresActualizados);
+
+           //agrega nuevos efectores si no estan presentes
+            for (Long id : legajoDto.getIdEfectores()) {
+                boolean found = false;
+                for (Efector efector : legajo.getEfectores()) {
+                    if (efector.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Efector efectorToAdd = efectorService.findById(id);
+                    if (efectorToAdd != null) {
+                        legajo.getEfectores().add(efectorToAdd);
+                        efectorToAdd.getLegajos().add(legajo);
+                    } else {
+                        throw new RuntimeException("No se encontró el efector con ID: " + id);
+                    }
+                }
+            }
+        } /* else {
+            // Si legajoDto.getIdEfectores() es null, eliminamos todos los efectores
+            System.out.println("3.  si legajoDto.getIdEfectores(): es  null " + legajoDto.getIdEfectores());
+
+            // donde controlo si legajo.getEfectores() es null?????
+            if (legajo.getEfectores() != null) {
+                for (Efector efector : legajo.getEfectores()) {
+                    efector.getLegajos().remove(legajo);
+                    System.out.println("3.1 legajo borrado de efector");
+
+                }
+
+                legajo.getEfectores().clear();
+
+                System.out.println("3.2 efectores borrados de legajo" + legajo.getEfectores());
+
+            }
+
+        } */
 
         if (legajoDto.getIdProfesion() != null) {
             if (legajo.getProfesion() == null
@@ -208,6 +254,8 @@ public class LegajoController {
             }
         }
 
+        legajo.setActual(legajoDto.getActual());
+        legajo.setLegal(legajoDto.getLegal());
         legajo.setActivo(true);
 
         return legajo;
