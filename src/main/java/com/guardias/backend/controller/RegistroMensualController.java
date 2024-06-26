@@ -156,24 +156,6 @@ public class RegistroMensualController {
         }
     }
 
-    // @GetMapping("/detailId/{idAsistencial}/{idEfector}/{mes}/{anio}")
-    // public ResponseEntity<Long>
-    // idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
-    // @PathVariable("idEfector") Long idEfector,
-    // @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
-    // MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-    // try {
-    // Long idRegistroMensual = registroMensualService
-    // .idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
-    // .get();
-    // return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
-    // } catch (Exception e) {
-    // return new ResponseEntity(new Mensaje("Registro no encontrado"),
-    // HttpStatus.BAD_REQUEST);
-    // }
-    // }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroMensualDto registroMensualDto) {
         ResponseEntity<?> respuestaValidaciones = registroMensualService.validations(registroMensualDto);
