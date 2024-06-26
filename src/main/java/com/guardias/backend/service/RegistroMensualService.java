@@ -214,9 +214,9 @@ public class RegistroMensualService {
             registroActividadList.add(registroActividad);
             String updatedJson = objectMapper.writeValueAsString(registroActividadList);
             System.out.println(updatedJson);
-            updatedJsonFile = jsonFileService.encodeToJson(updatedJson);
-            updatedJsonFile.setId(jsonFile.getId());
-            jsonFileService.save(updatedJsonFile);
+            updatedJsonFile = jsonFileService.encodeToJsonAndSave(updatedJson);
+            // updatedJsonFile.setId(jsonFile.getId());
+            // jsonFileService.save(updatedJsonFile);
 
         } catch (JsonProcessingException e) {
             System.out.println("Error procesando Json registroMensualService Ln222 - " + e.getMessage());
@@ -250,7 +250,9 @@ public class RegistroMensualService {
                 registroActividad.getHorasRealizadas());
         sumaHorasService.save(horas);
         registroMensual.setTotalHoras(horas);
-        JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(), registroActividad);
+        // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
+        // registroActividad);
+        JsonFile jsonFile = new JsonFile();
         try {
             registroActividad.setRegistroMensual(findById(id).get());
             if (registroMensual.getJsonFile() != null) {
@@ -259,7 +261,7 @@ public class RegistroMensualService {
         } catch (Exception e) {
             System.out.println("error: idRegistroMensual nulo  registroMensualService Ln259 -- " + e.getMessage());
         }
-        jsonFileService.save(jsonFile);
+        // jsonFileService.save(jsonFile);
         registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
 
         return registroActividad;
