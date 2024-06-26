@@ -1,5 +1,8 @@
 package com.guardias.backend.service;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
@@ -23,6 +27,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
+import com.guardias.backend.security.service.UsuarioService;
 
 @Service
 @Transactional
@@ -43,6 +48,12 @@ public class RegistroMensualService {
     JsonFileService jsonFileService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    UsuarioService usuarioService;
+    @Autowired
+    ServicioService servicioService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     public Optional<List<RegistroMensual>> findByActivoTrue() {
         return registroMensualRepository.findByActivoTrue();
@@ -196,6 +207,51 @@ public class RegistroMensualService {
             System.out.println("error al crear registro mensual  registroMensualService Ln196 -- " + e.getMessage());
             return null;
         }
+    }
+
+    public List<RegistroActividad> mapFromJson(String jsonString) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(jsonString);
+        List<RegistroActividad> registrosActividades = new ArrayList<>();
+
+        for (JsonNode node : rootNode) {
+            RegistroActividad registroActividad = new RegistroActividad();
+
+            // Asignar los valores del JSON al objeto RegistroActividad manualmente
+            registroActividad.setId(node.get("id").asLong());
+            registroActividad.setFechaIngreso(LocalDate.parse(node.get("fechaIngreso").asText()));
+            registroActividad.setFechaEgreso(LocalDate.parse(node.get("fechaEgreso").asText()));
+            registroActividad.setHoraIngreso(LocalTime.parse(node.get("horaIngreso").asText()));
+            registroActividad.setHoraEgreso(LocalTime.parse(node.get("horaEgreso").asText()));
+            registroActividad.setActivo(node.get("activo").asBoolean());
+
+            registroActividad
+                    .setTipoGuardia(tipoGuardiaService.findById(node.get("tipoGuardia").get("id").asLong()).get());
+
+            registroActividad
+                    .setAsistencial(asistencialService.findById(node.get("asistencial").get("id").asLong()).get());
+
+            registroActividad.setServicio(servicioService.findById(node.get("servicio").get("id").asLong()).get());
+
+            registroActividad.setEfector(efectorService.findById(node.get("efector").get("id").asLong()));
+
+            registroActividad.setRegistroMensual(findById(node.get("registroMensual").get("id").asLong()).get());
+
+            registroActividad
+                    .setUsuarioIngreso(usuarioService.findById(node.get("usuarioIngreso").get("id").asLong()).get());
+
+            registroActividad
+                    .setUsuarioEgreso(usuarioService.findById(node.get("usuarioEgreso").get("id").asLong()).get());
+
+            registroActividad.setFechaRegistroIngreso(LocalDate.parse(node.get("fechaRegistroIngreso").asText()));
+            registroActividad.setHoraRegistroIngreso(LocalTime.parse(node.get("horaRegistroIngreso").asText()));
+            registroActividad.setFechaRegistroEgreso(LocalDate.parse(node.get("fechaRegistroEgreso").asText()));
+            registroActividad.setHoraRegistroEgreso(LocalTime.parse(node.get("horaRegistroEgreso").asText()));
+
+            registrosActividades.add(registroActividad);
+        }
+
+        return registrosActividades;
     }
 
     public JsonFile addRegistroActividadToJsonFile(JsonFile jsonFile, RegistroActividad registroActividad) {

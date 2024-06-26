@@ -3,6 +3,7 @@ package com.guardias.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.MesesEnum;
 
@@ -41,10 +42,13 @@ public class RegistroMensual {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_asistencial")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "suplentes", "fechaNacimiento", "sexo",
-            "telefono",
-            "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades",
-            "descripcion", "esAsistencial", "registroMensual" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes",
+            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+            "domicilio",
+            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial", "tiposGuardias", "registrosMensuales", "usuario" })
     private Person asistencial; // para que sea mas facil la busqueda por persona
 
     @Column(columnDefinition = "BIT DEFAULT 1")
@@ -53,12 +57,13 @@ public class RegistroMensual {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "registroMensual", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "asistencial",
-            "efector", "registrosPendientes" })
+            "efector", "registrosPendientes", "registroMensual" })
     private List<RegistroActividad> registroActividad = new ArrayList<>();
 
     @Lob
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_json_file")
+    @JsonIgnore
     private JsonFile jsonFile;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -67,7 +72,7 @@ public class RegistroMensual {
             "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
             "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
             "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-            "registroMensual", "ddjjs", "registrosPendientes", "servicios" })
+            "registroMensual", "ddjjs", "registrosPendientes", "servicios", "nombre", "porcentajePorZona" })
     private Efector efector;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

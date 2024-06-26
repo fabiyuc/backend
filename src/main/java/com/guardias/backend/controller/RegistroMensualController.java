@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.service.JsonFileService;
 import com.guardias.backend.service.RegistroMensualService;
 
 @RestController
@@ -28,16 +30,36 @@ import com.guardias.backend.service.RegistroMensualService;
 public class RegistroMensualController {
     @Autowired
     RegistroMensualService registroMensualService;
+    @Autowired
+    JsonFileService jsonFileService;
 
     @GetMapping("/list")
     public ResponseEntity<List<RegistroMensual>> list() {
         List<RegistroMensual> list = registroMensualService.findByActivoTrue().get();
+
+        for (RegistroMensual registroMensual : list) {
+            try {
+                String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<RegistroMensual>> listAll() {
         List<RegistroMensual> list = registroMensualService.findAll();
+        for (RegistroMensual registroMensual : list) {
+            try {
+                String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return new ResponseEntity<List<RegistroMensual>>(list, HttpStatus.OK);
     }
 
@@ -52,6 +74,14 @@ public class RegistroMensualController {
         try {
             List<RegistroMensual> registrosMensuales = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
+            for (RegistroMensual registroMensual : registrosMensuales) {
+                try {
+                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
@@ -71,6 +101,14 @@ public class RegistroMensualController {
         try {
             List<RegistroMensual> registrosMensuales = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
+            for (RegistroMensual registroMensual : registrosMensuales) {
+                try {
+                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
@@ -79,11 +117,25 @@ public class RegistroMensualController {
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<List<RegistroMensual>> getById(@PathVariable("id") Long id) {
-        if (!registroMensualService.activo(id))
-            return new ResponseEntity(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
-        RegistroMensual registroMensual = registroMensualService.findById(id).get();
-        return new ResponseEntity(registroMensual, HttpStatus.OK);
+    public ResponseEntity<?> getById(@PathVariable("id") Long id) {
+        if (!registroMensualService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
+        }
+
+        RegistroMensual registroMensual = registroMensualService.findById(id).orElse(null);
+        if (registroMensual == null) {
+            return new ResponseEntity<>(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+            registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al mapear el JSON"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(registroMensual, HttpStatus.OK);
     }
 
     @GetMapping("/listMes/{idAsistencial}/{idEfector}/{mes}/{anio}")
