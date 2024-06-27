@@ -39,8 +39,10 @@ public class RegistroMensualController {
 
         for (RegistroMensual registroMensual : list) {
             try {
-                String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                if (registroMensual.getJsonFile() != null) {
+                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -54,8 +56,10 @@ public class RegistroMensualController {
         List<RegistroMensual> list = registroMensualService.findAll();
         for (RegistroMensual registroMensual : list) {
             try {
-                String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                if (registroMensual.getJsonFile() != null) {
+                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -76,8 +80,10 @@ public class RegistroMensualController {
                     .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
             for (RegistroMensual registroMensual : registrosMensuales) {
                 try {
-                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                    if (registroMensual.getJsonFile() != null) {
+                        String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                        registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -103,8 +109,10 @@ public class RegistroMensualController {
                     .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
             for (RegistroMensual registroMensual : registrosMensuales) {
                 try {
-                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                    if (registroMensual.getJsonFile() != null) {
+                        String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                        registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -122,14 +130,12 @@ public class RegistroMensualController {
             return new ResponseEntity<>(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
         }
 
-        RegistroMensual registroMensual = registroMensualService.findById(id).orElse(null);
-        if (registroMensual == null) {
-            return new ResponseEntity<>(new Mensaje("El registro mensual no existe"), HttpStatus.NOT_FOUND);
-        }
-
+        RegistroMensual registroMensual = registroMensualService.findById(id).get();
         try {
-            String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-            registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+            if (registroMensual.getJsonFile() != null) {
+                String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return new ResponseEntity<>(new Mensaje("Error al mapear el JSON"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -149,6 +155,14 @@ public class RegistroMensualController {
             RegistroMensual registroMensual = registroMensualService
                     .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
                     .get();
+            try {
+                if (registroMensual.getJsonFile() != null) {
+                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
+                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             List<RegistroActividad> list = registroMensual.getRegistroActividad();
             return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
         } catch (Exception e) {
