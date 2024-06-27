@@ -44,7 +44,8 @@ public class RegistroMensualController {
             try {
                 if (registroMensual.getJsonFile() != null) {
                     String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                    registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
+                    registroActividad = registroMensualService.mapFromJson(jsonContent);
+                    registroMensual.setRegistroActividad(registroActividad);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
