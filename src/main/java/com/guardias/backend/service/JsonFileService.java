@@ -36,16 +36,6 @@ public class JsonFileService {
         return jsonFileRepository.findAll();
     }
 
-    // public void save(JsonFile jsonFile) {
-    // try {
-
-    // } catch (Exception e) {
-    // System.out.println("Error al intentar guardar el archivo Json JsonFileService
-    // Ln44 - " + e.getMessage());
-    // e.printStackTrace();
-    // }
-    // }
-
     public JsonFile encodeToJsonAndSave(String json) {
         try {
             byte[] encodedJson = Base64.getEncoder().encode(json.getBytes(StandardCharsets.UTF_8));

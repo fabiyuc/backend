@@ -20,12 +20,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.JsonFile;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.entity.SumaHoras;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
+import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.service.UsuarioService;
 
 @Service
@@ -224,23 +229,51 @@ public class RegistroMensualService {
             registroActividad.setHoraEgreso(LocalTime.parse(node.get("horaEgreso").asText()));
             registroActividad.setActivo(node.get("activo").asBoolean());
 
-            registroActividad
-                    .setTipoGuardia(tipoGuardiaService.findById(node.get("tipoGuardia").get("id").asLong()).get());
+            if (node.has("tipoGuardia") && node.get("tipoGuardia").has("id")) {
+                registroActividad
+                        .setTipoGuardia(tipoGuardiaService.findById(node.get("tipoGuardia").get("id").asLong()).get());
+            } else {
+                registroActividad.setTipoGuardia(new TipoGuardia());
+            }
 
-            registroActividad
-                    .setAsistencial(asistencialService.findById(node.get("asistencial").get("id").asLong()).get());
+            if (node.has("asistencial") && node.get("asistencial").has("id")) {
+                registroActividad
+                        .setAsistencial(asistencialService.findById(node.get("asistencial").get("id").asLong()).get());
+            } else {
+                registroActividad.setAsistencial(new Asistencial());
+            }
 
-            registroActividad.setServicio(servicioService.findById(node.get("servicio").get("id").asLong()).get());
+            if (node.has("servicio") && node.get("servicio").has("id")) {
+                registroActividad.setServicio(servicioService.findById(node.get("servicio").get("id").asLong()).get());
+            } else {
+                registroActividad.setServicio(new Servicio());
+            }
 
-            registroActividad.setEfector(efectorService.findById(node.get("efector").get("id").asLong()));
+            if (node.has("efector") && node.get("efector").has("id")) {
+                registroActividad.setEfector(efectorService.findById(node.get("efector").get("id").asLong()));
+            } else {
+                registroActividad.setEfector(new Hospital());
+            }
 
-            registroActividad.setRegistroMensual(findById(node.get("registroMensual").get("id").asLong()).get());
+            if (node.has("registroMensual") && node.get("registroMensual").has("id")) {
+                registroActividad.setRegistroMensual(findById(node.get("registroMensual").get("id").asLong()).get());
+            } else {
+                registroActividad.setRegistroMensual(new RegistroMensual());
+            }
 
-            registroActividad
-                    .setUsuarioIngreso(usuarioService.findById(node.get("usuarioIngreso").get("id").asLong()).get());
+            if (node.has("usuarioIngreso") && node.get("usuarioIngreso").has("id")) {
+                registroActividad.setUsuarioIngreso(
+                        usuarioService.findById(node.get("usuarioIngreso").get("id").asLong()).get());
+            } else {
+                registroActividad.setUsuarioIngreso(new Usuario());
+            }
 
-            registroActividad
-                    .setUsuarioEgreso(usuarioService.findById(node.get("usuarioEgreso").get("id").asLong()).get());
+            if (node.has("usuarioEgreso") && node.get("usuarioEgreso").has("id")) {
+                registroActividad
+                        .setUsuarioEgreso(usuarioService.findById(node.get("usuarioEgreso").get("id").asLong()).get());
+            } else {
+                registroActividad.setUsuarioEgreso(new Usuario());
+            }
 
             registroActividad.setFechaRegistroIngreso(LocalDate.parse(node.get("fechaRegistroIngreso").asText()));
             registroActividad.setHoraRegistroIngreso(LocalTime.parse(node.get("horaRegistroIngreso").asText()));
