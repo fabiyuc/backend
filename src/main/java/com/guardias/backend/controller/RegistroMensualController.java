@@ -34,30 +34,7 @@ public class RegistroMensualController {
     @Autowired
     JsonFileService jsonFileService;
 
-    @GetMapping("/list")
-    public ResponseEntity<List<RegistroMensual>> list() {
-        List<RegistroMensual> registrosMensuales = registroMensualService.findByActivoTrue().get();
-
-        for (RegistroMensual registroMensual : registrosMensuales) {
-            List<RegistroActividad> registroActividad = new ArrayList<>();
-            registroMensual.setRegistroActividad(registroActividad);
-            try {
-                if (registroMensual.getJsonFile() != null) {
-                    String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                    registroActividad = registroMensualService.mapFromJson(jsonContent);
-                    registroMensual.setRegistroActividad(registroActividad);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("error RegistroMensualController Ln51 -- " + e.getMessage());
-            }
-        }
-        return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
-    }
-
-    @GetMapping("/listAll")
-    public ResponseEntity<List<RegistroMensual>> listAll() {
-        List<RegistroMensual> registrosMensuales = registroMensualService.findAll();
+    public List<RegistroMensual> mapList(List<RegistroMensual> registrosMensuales) {
 
         for (RegistroMensual registroMensual : registrosMensuales) {
             List<RegistroActividad> registroActividad = new ArrayList<>();
@@ -72,6 +49,21 @@ public class RegistroMensualController {
                 System.out.println("error RegistroMensualController Ln48 -- " + e.getMessage());
             }
         }
+
+        return registrosMensuales;
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<RegistroMensual>> list() {
+        List<RegistroMensual> list = registroMensualService.findByActivoTrue().get();
+        List<RegistroMensual> registrosMensuales = mapList(list);
+        return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAll")
+    public ResponseEntity<List<RegistroMensual>> listAll() {
+        List<RegistroMensual> list = registroMensualService.findAll();
+        List<RegistroMensual> registrosMensuales = mapList(list);
         return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
     }
 
@@ -84,22 +76,9 @@ public class RegistroMensualController {
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
         try {
-            List<RegistroMensual> registrosMensuales = registroMensualService
+            List<RegistroMensual> list = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
-            List<RegistroActividad> registroActividad = new ArrayList<>();
-
-            for (RegistroMensual registroMensual : registrosMensuales) {
-                registroMensual.setRegistroActividad(registroActividad);
-                try {
-                    if (registroMensual.getJsonFile() != null) {
-                        String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                        registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("error RegistroMensualController Ln48 -- " + e.getMessage());
-                }
-            }
+            List<RegistroMensual> registrosMensuales = mapList(list);
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
@@ -117,22 +96,9 @@ public class RegistroMensualController {
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
 
         try {
-            List<RegistroMensual> registrosMensuales = registroMensualService
+            List<RegistroMensual> list = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
-            List<RegistroActividad> registroActividad = new ArrayList<>();
-
-            for (RegistroMensual registroMensual : registrosMensuales) {
-                registroMensual.setRegistroActividad(registroActividad);
-                try {
-                    if (registroMensual.getJsonFile() != null) {
-                        String jsonContent = jsonFileService.decodeToString(registroMensual.getJsonFile());
-                        registroMensual.setRegistroActividad(registroMensualService.mapFromJson(jsonContent));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("error RegistroMensualController Ln48 -- " + e.getMessage());
-                }
-            }
+            List<RegistroMensual> registrosMensuales = mapList(list);
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
