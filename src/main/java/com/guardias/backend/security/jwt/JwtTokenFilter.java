@@ -17,8 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * se ejecuta por cada peticion , comprueba si es valido el token por medio de la
- * clase provider, si es valido permite el acceso, caso contrario lanza excepcion
+ * se ejecuta por cada peticion , comprueba si es valido el token por medio de la clase provider, si es valido permite el acceso, caso contrario lanza excepcion
  */
 
  @Component
@@ -28,9 +27,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     JwtProvider jwtProvider;
+    
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+    //se ejecuta 1 vez por cada petición. Comprueba que el token es valido utilizando el JwtProvider permitiendo el acceso al recurso diciendo el usuario autenticado
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
             throws ServletException, IOException {
@@ -44,7 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (Exception e) {
-            logger.error("fail en el método doFilter" + e.getMessage());
+            logger.error("fail en el método doFilterInternal" + e.getMessage());
         }
         filterChain.doFilter(req, res);
         

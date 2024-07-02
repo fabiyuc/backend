@@ -19,6 +19,9 @@ import com.guardias.backend.security.service.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
+/* @EnableGlobalMethodSecurity(prePostEnabled=true) parametro para indicar a que metodos puede acceder solo el administrador
+Los metodos que no llevan una anotacion pueden hacerlo tanto el admin como un usuario generico
+ */
 @EnableMethodSecurity
 public class MainSecurity {
    
@@ -35,6 +38,7 @@ public class MainSecurity {
     JwtTokenFilter jwtTokenFilter;
 
     AuthenticationManager authenticationManager;
+     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);

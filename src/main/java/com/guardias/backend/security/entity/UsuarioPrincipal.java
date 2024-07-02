@@ -9,10 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class UsuarioPrincipal implements UserDetails{
 
+    // coviente la clase usuario encargada de acceder a la BD donde la clase rol es convertida a la clase GrantedAuthority propia de Spring Security
     private String nombre;
     private String nombreUsuario;
     private String email;
     private String password;
+    //GrantedAuthority obtiene la autorizacion del usuario  (lo que puede o no hacer)
     private Collection<? extends GrantedAuthority> authorities;
     
 
@@ -25,7 +27,10 @@ public class UsuarioPrincipal implements UserDetails{
         this.authorities = authorities;
     }
 
+    //convierte un usuario que representa a la entidad de la BD en un usuario principal que utilizamos para saber los privilegios de cada usuario
     public static UsuarioPrincipal build(Usuario usuario){
+        //obtenemos una lista de GrantedAuthority a partir de los roles
+        //convertimos la clase rol en clase GrantedAuthority
         List<GrantedAuthority> authorities =
             usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol
             .getRolNombre().name())).collect(Collectors.toList());

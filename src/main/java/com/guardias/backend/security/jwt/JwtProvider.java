@@ -16,7 +16,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 /**
- * genera el token, y lo valida q no esté expirado
+ * genera el token, y valida q esté bien formado y no esté expirado
  */
 @Component
 public class JwtProvider {
@@ -54,7 +54,7 @@ public class JwtProvider {
         } catch (UnsupportedJwtException e) {
             logger.error("token no soportado");
         } catch (ExpiredJwtException e) {
-            logger.error("token expirado");
+            logger.error("Token expirado");
         } catch (IllegalArgumentException e) {
             logger.error("token vacio");
         } catch (SecurityException e) {

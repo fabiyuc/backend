@@ -58,7 +58,7 @@ public class AuthController {
     @PostMapping("/create")
     public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
-            return new ResponseEntity(new Mensaje("campos mal puestos o email invaldo"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("campos mal puestos o email invalido"), HttpStatus.BAD_REQUEST);
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
@@ -72,19 +72,23 @@ public class AuthController {
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
 
         Set<Rol> roles = new HashSet<>();
+        //por defecto todos van a ser USER
         roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
+        System.out.println("####### antes del if: " + nuevoUsuario.getRoles().contains("admin"));
         if (nuevoUsuario.getRoles().contains("admin"))
+            System.out.println("##### entroooo");
             roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
         usuario.setRoles(roles);
         usuarioService.save(usuario);
-        return new ResponseEntity(new Mensaje("usuario gurdado"), HttpStatus.CREATED);
+        return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
     }
 
+    //devuelve un token
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             return new ResponseEntity(new Mensaje("campos mal puestos"), HttpStatus.BAD_REQUEST);
-        System.out.println("nombre susuario " + loginUsuario.getNombreUsuario());
+        System.out.println("nombre usuario " + loginUsuario.getNombreUsuario());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUsuario.getNombreUsuario(), loginUsuario.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);

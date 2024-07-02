@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//usamos para mandar un nuevoUsuario
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

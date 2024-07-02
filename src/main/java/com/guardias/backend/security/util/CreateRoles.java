@@ -7,6 +7,7 @@ import com.guardias.backend.security.entity.Rol;
 import com.guardias.backend.security.enums.RolNombre;
 import com.guardias.backend.security.service.RolService;
 
+// clase para crear los roles en la BD, solo se ejecutan una vez por eso se encuentra comentada la clase
 @Component
 public class CreateRoles implements CommandLineRunner{
     @Autowired

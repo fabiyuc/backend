@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+//lo utilizamos en el momento que hagamos un login, devuelve el responseEntity del controlador, un json web tok en
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

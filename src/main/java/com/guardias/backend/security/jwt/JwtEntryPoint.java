@@ -16,13 +16,14 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtEntryPoint implements AuthenticationEntryPoint{
     
+    //para ver cual es el metodo que esté dando error en caso de que no funcione la aplicacion
     private final static Logger logger = LoggerFactory.getLogger(JwtEntryPoint.class);
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse res,
             AuthenticationException e) throws IOException, ServletException {
 
-        logger.error("fail en el metodo commnece");
-        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "no autorizadooooooo");
+        logger.error("Fail en el metodo commence, clase JwtEntryPoint");
+        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "NO AUTORIZADO...");
     }
 }

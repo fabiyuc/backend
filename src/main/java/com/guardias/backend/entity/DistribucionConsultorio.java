@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DistribucionConsultorio extends DistribucionHoraria {
     @Column(columnDefinition = "VARCHAR(50)")
-    private String lugar; // donde realiza el consultorio
+    private String lugar; // donde realiza el consultorio(lugar interno del hospital)
     @Column(columnDefinition = "VARCHAR(50)")
     private String especialidad; // especialidad del consultorio no del profesional
     private int cantidadTurnos;

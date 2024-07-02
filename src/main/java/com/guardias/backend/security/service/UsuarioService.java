@@ -11,7 +11,7 @@ import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.repository.UsuarioRepository;
 
 @Service
-@Transactional
+@Transactional // para mantener la coherencia con la BD
 public class UsuarioService {
 
     @Autowired
