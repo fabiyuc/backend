@@ -102,10 +102,6 @@ public class EfectorController {
             efector.setRegion(regionService.findById(efectorDto.getIdRegion()).get());
         }
 
-        // localidad?
-        // registroActividades?
-        // registro mensual?
-
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (efector.getDistribucionesHorarias() != null) {
