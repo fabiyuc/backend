@@ -74,7 +74,6 @@ public class AuthController {
         Set<Rol> roles = new HashSet<>();
         //por defecto todos van a ser USER
         roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
-        System.out.println("####### antes del if: " + nuevoUsuario.getRoles().contains("admin"));
         if (nuevoUsuario.getRoles().contains("admin"))
             System.out.println("##### entroooo");
             roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
