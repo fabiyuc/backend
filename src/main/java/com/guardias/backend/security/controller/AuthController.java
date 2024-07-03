@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.security.dto.JwtDto;
 import com.guardias.backend.security.dto.LoginUsuario;
 import com.guardias.backend.security.dto.NuevoUsuario;
@@ -32,6 +33,7 @@ import com.guardias.backend.security.enums.RolNombre;
 import com.guardias.backend.security.jwt.JwtProvider;
 import com.guardias.backend.security.service.RolService;
 import com.guardias.backend.security.service.UsuarioService;
+import com.guardias.backend.service.PersonService;
 
 import jakarta.validation.Valid;
 
@@ -51,6 +53,9 @@ public class AuthController {
 
     @Autowired
     RolService rolService;
+
+    @Autowired
+    PersonService personService; 
 
     @Autowired
     JwtProvider jwtProvider;
@@ -77,6 +82,16 @@ public class AuthController {
         if (nuevoUsuario.getRoles().contains("admin"))
             roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
         usuario.setRoles(roles);
+
+        // Asociar la entidad Person
+        if (nuevoUsuario.getIdPerson() != null) {
+            if (personService.activoById(nuevoUsuario.getIdPerson())){
+                    
+                Person person = personService.findById(nuevoUsuario.getIdPerson());
+                usuario.setPerson(person);
+            }
+        }
+        
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
     }

@@ -50,6 +50,8 @@ public class Usuario {
 
     @OneToOne
     @JoinColumn(name = "person_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "usuario" })
     private Person person;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
