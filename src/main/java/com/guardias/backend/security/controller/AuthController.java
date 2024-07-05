@@ -1,5 +1,6 @@
 package com.guardias.backend.security.controller;
 
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,12 +18,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.person.PersonBasicPanelDto;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.security.dto.JwtDto;
 import com.guardias.backend.security.dto.LoginUsuario;
@@ -101,7 +104,6 @@ public class AuthController {
     public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             return new ResponseEntity(new Mensaje("campos mal puestos"), HttpStatus.BAD_REQUEST);
-        System.out.println("nombre usuario " + loginUsuario.getNombreUsuario());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUsuario.getNombreUsuario(), loginUsuario.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -117,5 +119,25 @@ public class AuthController {
     public ResponseEntity<List<Usuario>> list() {
         List<Usuario> list = usuarioService.findAll();
         return new ResponseEntity<List<Usuario>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{nombreUsuario}")
+    public ResponseEntity<List<Usuario>> getByNombreUsuario(@PathVariable("nombreUsuario") String nombreUsuario) {
+        Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario).get();
+        return new ResponseEntity(usuario, HttpStatus.OK);
+    }
+
+    /* La clase Principal es parte del paquete java.security, que proporciona una interfaz que representa la identidad de un usuario en un contexto de seguridad, el objeto Principal generalmente contiene el nombre de usuario del usuario autenticado. */
+    @GetMapping("/detailPersonBasicPanel")
+    public ResponseEntity<PersonBasicPanelDto> obtenerPerfil(Principal principal) {
+        // Obtiene el nombre de usuario del usuario autenticado
+        String username = principal.getName();
+
+        Usuario usuario = usuarioService.findByNombreUsuario(username).get();
+        
+        // Convierte la entidad Persona asociada al usuario en un DTO
+        PersonBasicPanelDto dto = personService.convertirAPersonaBasicaPanelDTO(usuario.getPerson());
+ 
+        return new ResponseEntity(dto, HttpStatus.OK);
     }
 }
