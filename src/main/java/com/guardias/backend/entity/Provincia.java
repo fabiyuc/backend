@@ -37,7 +37,7 @@ public class Provincia {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_pais")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "activo", "nacionalidad", "codigo",
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nacionalidad", "codigo",
                         "provincias" })
         Pais pais;
 
