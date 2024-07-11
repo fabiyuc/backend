@@ -48,7 +48,7 @@ public class RegistrosPendientes {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "registrosPendientes", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
+            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
             "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 

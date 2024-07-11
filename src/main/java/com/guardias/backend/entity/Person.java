@@ -96,6 +96,7 @@ public abstract class Person {
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @OneToOne (mappedBy = "person")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person","nombre","email","password","registrosActividades"})
     private Usuario usuario;
     
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
