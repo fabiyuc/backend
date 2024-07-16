@@ -66,6 +66,22 @@ public class RevistaController {
         return new ResponseEntity(revista, HttpStatus.OK);
     }
 
+    @PostMapping("/check")
+    public ResponseEntity<Revista> checkRevista(@RequestBody RevistaDto revistaDto) {
+        Revista existingRevista = revistaService.findByAttributes(
+            revistaDto.getIdTipoRevista(),
+            revistaDto.getIdCategoria(),
+            revistaDto.getIdAdicional(),
+            revistaDto.getIdCargaHoraria(),
+            revistaDto.getAgrupacion()
+        );
+        if (existingRevista != null) {
+            return ResponseEntity.ok(existingRevista);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     public ResponseEntity<?> validations(RevistaDto revistaDto, Long id) {
 
         if (revistaDto.getAgrupacion() == null)
