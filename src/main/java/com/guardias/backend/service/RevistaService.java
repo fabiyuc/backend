@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.Revista;
+import com.guardias.backend.enums.AgrupacionEnum;
 import com.guardias.backend.repository.RevistaRepository;
 
 @Service
@@ -46,6 +47,10 @@ public class RevistaService {
 
     public void deleteById(Long id) {
         revistaRepository.deleteById(id);
+    }
+
+    public Revista findByAttributes(Long idTipoRevista, Long idCategoria, Long idAdicional, Long idCargaHoraria, AgrupacionEnum agrupacion) {
+        return revistaRepository.findByAttributes(idTipoRevista, idCategoria, idAdicional, idCargaHoraria, agrupacion);
     }
 
 }
