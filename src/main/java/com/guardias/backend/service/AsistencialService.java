@@ -77,7 +77,18 @@ public class AsistencialService {
 
         tipoGuardia.getAsistenciales().add(asistencial);
         asistencial.getTiposGuardias().add(tipoGuardia);
-        
+
+    }
+
+    //// metodo para verificar si una persona es contrafactura///////
+    public boolean esContraFactura(Long idPersona) {
+        Optional<Asistencial> asistencial = asistencialRepository.findById(idPersona);
+        if (asistencial.isPresent()) {
+            Asistencial persona = asistencial.get();
+            return persona.getTiposGuardias().stream()
+                    .anyMatch(tipoGuardia -> tipoGuardia.getNombre().equalsIgnoreCase("CONTRAFACTURA"));
+        }
+        return false;
     }
 
 }

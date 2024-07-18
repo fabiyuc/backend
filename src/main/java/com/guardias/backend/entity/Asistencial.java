@@ -41,4 +41,16 @@ public class Asistencial extends Person {
         // "domicilio",
         // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
         // "descripcion","esAsistencial","tiposGuardias" })
+
+        ///// metodo para contrafactura /////
+
+        // Getter para tiposGuardias
+        public List<TipoGuardia> getTiposGuardias() {
+                return tiposGuardias;
+        }
+
+        // Setter para tiposGuardias
+        public void setTiposGuardias(List<TipoGuardia> tiposGuardias) {
+                this.tiposGuardias = tiposGuardias;
+        }
 }
