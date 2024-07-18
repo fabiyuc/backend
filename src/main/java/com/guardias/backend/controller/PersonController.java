@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.LegajoService;
@@ -40,6 +42,8 @@ public class PersonController {
     AutoridadService autoridadService;
     @Autowired
     RegistroMensualService registroMensualService;
+    @Autowired
+    UsuarioService usuarioService;
 
     public ResponseEntity<?> validations(PersonDto personDto, Long id) {
         if (StringUtils.isBlank(personDto.getNombre())) {
@@ -68,6 +72,9 @@ public class PersonController {
         if (personService.existsByCuil(personDto.getCuil())
                 && (personService.findByCuil(personDto.getCuil()).getId() != id))
             return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (personDto.getIdUsuario() == null)
+            return new ResponseEntity<>(new Mensaje("ingresar usuario"), HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -222,6 +229,14 @@ public class PersonController {
             for (Long id : idsToAdd) {
                 person.getRegistrosMensuales().add(registroMensualService.findById(id).get());
                 registroMensualService.findById(id).get().setAsistencial(person);
+            }
+        }
+
+        if (personDto.getIdUsuario() != null) {
+
+            if (person.getUsuario() == null
+                    || !Objects.equals(person.getUsuario().getId(), personDto.getIdUsuario())) {
+                person.setUsuario(usuarioService.findById(personDto.getIdUsuario()).get());
             }
         }
         return person;

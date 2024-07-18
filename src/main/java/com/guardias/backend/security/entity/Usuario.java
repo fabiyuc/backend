@@ -48,8 +48,7 @@ public class Usuario {
             "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
-    @OneToOne
-    @JoinColumn(name = "person_id")
+    @OneToOne(mappedBy = "usuario")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "usuario" })
     private Person person;
