@@ -96,9 +96,22 @@ public class AsistencialController {
             return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
         Asistencial asistencial = asistencialService.findByDni(dni).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
-
     }
 
+    private ResponseEntity<?> validations(AsistencialDto asistencialDto){
+        System.out.println("entra al metodo");
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, 0L);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            System.out.println("lo que contiene la lista de id tipo guardia " + asistencialDto.getIdTiposGuardias());
+            if (asistencialDto.getIdTiposGuardias() == null){
+                System.out.println("entroo, lista no es null");
+            return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
         Person person = personController.createUpdate(asistencial, asistencialDto);
         asistencial = (Asistencial) person;
@@ -144,7 +157,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, 0L);
+        ResponseEntity<?> respuestaValidaciones = validations(asistencialDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
