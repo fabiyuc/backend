@@ -99,6 +99,21 @@ public class AsistencialController {
 
     }
 
+    public ResponseEntity<?> validations(AsistencialDto asistencialDto, Long id) {
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, id);
+
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            return respuestaValidaciones;
+        }
+
+        // Validar que idTiposGuardias no sea null y tenga al menos un elemento
+        if (asistencialDto.getIdTiposGuardias() == null || asistencialDto.getIdTiposGuardias().isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("Debe indicar al menos un tipo de guardia"), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(new Mensaje("valido"), HttpStatus.OK);
+    }
+
     private Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
         Person person = personController.createUpdate(asistencial, asistencialDto);
         asistencial = (Asistencial) person;
@@ -144,7 +159,7 @@ public class AsistencialController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AsistencialDto asistencialDto) {
 
-        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, 0L);
+        ResponseEntity<?> respuestaValidaciones = validations(asistencialDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Asistencial asistencial = createUpdate(new Asistencial(), asistencialDto);
