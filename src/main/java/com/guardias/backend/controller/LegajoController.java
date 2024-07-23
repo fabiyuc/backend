@@ -22,6 +22,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.EspecialidadService;
@@ -52,6 +53,8 @@ public class LegajoController {
     CargoService cargoService;
     @Autowired
     EspecialidadService especialidadService;
+     @Autowired
+    AsistencialService asistencialService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
@@ -90,11 +93,15 @@ public class LegajoController {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getIdUdo() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar la UdO"),
-                    HttpStatus.BAD_REQUEST);
+        boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
+        if (!esContraFactura && legajoDto.getIdUdo() == null) {
+            return new ResponseEntity<>(new Mensaje("indicar la UdO"), HttpStatus.BAD_REQUEST);
+        }
 
-        if (legajoDto.getIdRevista() == null)
+        if (!esContraFactura && legajoDto.getIdCargo() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"), HttpStatus.BAD_REQUEST);
+
+        if (!esContraFactura && legajoDto.getIdRevista() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
                     HttpStatus.BAD_REQUEST);
 
