@@ -99,15 +99,28 @@ public class LegajoController {
             return new ResponseEntity<>(new Mensaje("indicar la UdO"), HttpStatus.BAD_REQUEST);
         }
 
+        if (!esContraFactura) {
+            if (legajoDto.getIdCargo() == null)
+                return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (!esContraFactura) {
+            if (legajoDto.getIdRevista() == null)
+                return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
+                        HttpStatus.BAD_REQUEST);
+        }
+
         /*
          * if (legajoDto.getIdUdo() == null)
          * return new ResponseEntity<Mensaje>(new Mensaje("indicar la UdO"),
          * HttpStatus.BAD_REQUEST);
          */
-
-        if (legajoDto.getIdRevista() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
-                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (legajoDto.getIdRevista() == null)
+         * return new ResponseEntity<Mensaje>(new
+         * Mensaje("indicar la situacion de revista"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (legajoDto.getIdProfesion() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
