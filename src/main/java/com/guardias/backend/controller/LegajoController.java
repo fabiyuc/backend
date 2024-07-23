@@ -166,7 +166,7 @@ public class LegajoController {
                     especialidadesParaEliminar.add(especialidad);
                 }
             }
-           
+
             for (Especialidad especialidad : especialidadesParaEliminar) {
                 legajo.getEspecialidades().remove(especialidad);
                 especialidad.getLegajos().remove(legajo);
@@ -208,7 +208,7 @@ public class LegajoController {
             }
             legajo.setEfectores(efectoresActualizados);
 
-           //agrega nuevos efectores si no estan presentes
+            // agrega nuevos efectores si no estan presentes
             for (Long id : legajoDto.getIdEfectores()) {
                 boolean found = false;
                 for (Efector efector : legajo.getEfectores()) {
@@ -227,25 +227,7 @@ public class LegajoController {
                     }
                 }
             }
-        } /* else {
-            // Si legajoDto.getIdEfectores() es null, eliminamos todos los efectores
-            System.out.println("3.  si legajoDto.getIdEfectores(): es  null " + legajoDto.getIdEfectores());
-
-            // donde controlo si legajo.getEfectores() es null?????
-            if (legajo.getEfectores() != null) {
-                for (Efector efector : legajo.getEfectores()) {
-                    efector.getLegajos().remove(legajo);
-                    System.out.println("3.1 legajo borrado de efector");
-
-                }
-
-                legajo.getEfectores().clear();
-
-                System.out.println("3.2 efectores borrados de legajo" + legajo.getEfectores());
-
-            }
-
-        } */
+        }
 
         if (legajoDto.getIdProfesion() != null) {
             if (legajo.getProfesion() == null

@@ -108,7 +108,8 @@ public class AsistencialController {
 
         // Validar que idTiposGuardias no sea null y tenga al menos un elemento
         if (asistencialDto.getIdTiposGuardias() == null || asistencialDto.getIdTiposGuardias().isEmpty()) {
-            return new ResponseEntity<>(new Mensaje("Debe indicar al menos un tipo de guardia"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("Debe indicar al menos un tipo de guardia"),
+                    HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(new Mensaje("valido"), HttpStatus.OK);
@@ -137,17 +138,39 @@ public class AsistencialController {
         }
 
         if (asistencialDto.getIdTiposGuardias() != null) {
-            for (Long idTipoGuar : asistencialDto.getIdTiposGuardias()) {
-                boolean idRepetido = false;
+            if (asistencial.getTiposGuardias() == null) {
+                asistencial.setTiposGuardias(new ArrayList<>());
+            }
+
+            // Crea una nueva lista para almacenar los tipos de guardias actualizados
+            List<TipoGuardia> tiposGuardiasActualizados = new ArrayList<>();
+            for (TipoGuardia tipoGuardia : asistencial.getTiposGuardias()) {
+                if (asistencialDto.getIdTiposGuardias().contains(tipoGuardia.getId())) {
+                    tiposGuardiasActualizados.add(tipoGuardia);
+                } else {
+                    // Remover el asistencial de los tipos de guardias que se eliminarán
+                    tipoGuardia.getAsistenciales().remove(asistencial);
+                }
+            }
+            asistencial.setTiposGuardias(tiposGuardiasActualizados);
+
+            // agrega nuevos efectores si no estan presentes
+            for (Long id : asistencialDto.getIdTiposGuardias()) {
+                boolean found = false;
                 for (TipoGuardia tipoGuardia : asistencial.getTiposGuardias()) {
-                    if (tipoGuardia.getId().equals(idTipoGuar)) {
-                        idRepetido = true;
+                    if (tipoGuardia.getId().equals(id)) {
+                        found = true;
                         break;
                     }
                 }
-                if (!idRepetido) {
-                    asistencial.getTiposGuardias().add(tipoGuardiaService.findById(idTipoGuar).get());
-                    tipoGuardiaService.findById(idTipoGuar).get().getAsistenciales().add(asistencial);
+                if (!found) {
+                    TipoGuardia tipoGuardiaToAdd = tipoGuardiaService.findById(id).get();
+                    if (tipoGuardiaToAdd != null) {
+                        asistencial.getTiposGuardias().add(tipoGuardiaToAdd);
+                        tipoGuardiaToAdd.getAsistenciales().add(asistencial);
+                    } else {
+                        throw new RuntimeException("No se encontró el tipo de guardia con ID: " + id);
+                    }
                 }
             }
         }
