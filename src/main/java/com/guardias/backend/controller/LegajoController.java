@@ -233,6 +233,7 @@ public class LegajoController {
             legajo.setEfectores(efectoresActualizados);
 
             // agrega nuevos efectores si no estan presentes
+            // agrega nuevos efectores si no estan presentes
             for (Long id : legajoDto.getIdEfectores()) {
                 boolean found = false;
                 for (Efector efector : legajo.getEfectores()) {

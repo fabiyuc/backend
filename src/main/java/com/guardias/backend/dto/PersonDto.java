@@ -28,6 +28,7 @@ public class PersonDto {
     private String telefono;
     private String email;
     private String domicilio;
+    @NotBlank
     private Boolean esAsistencial;
     private boolean activo;
 
