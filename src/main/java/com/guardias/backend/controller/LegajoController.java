@@ -113,6 +113,12 @@ public class LegajoController {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                     HttpStatus.BAD_REQUEST);
 
+        // Valida que IdEfectores no sea null y tenga al menos un elemento
+        if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("Debe indicar al menos un efector"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
