@@ -23,6 +23,7 @@ public class NuevoUsuario {
     @NotBlank
     private String password;
     private Set<String> roles = new HashSet<>();
+    private Long idPerson;
     
     
 }

@@ -1,8 +1,15 @@
 package com.guardias.backend.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.guardias.backend.dto.person.PersonBasicPanelDto;
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.repository.AsistencialRepository;
@@ -93,5 +100,30 @@ public class PersonService {
             NoAsistencial noAsistencial = (NoAsistencial) persona;
             noAsistencialService.save(noAsistencial);
         }
+    }
+
+    public PersonBasicPanelDto convertirAPersonaBasicaPanelDTO(Person persona) {
+        PersonBasicPanelDto dto = new PersonBasicPanelDto();
+        dto.setNombre(persona.getNombre());
+        dto.setApellido(persona.getApellido());
+
+        // Obtener el Legajo actual
+        Legajo legajoActual = persona.getLegajos().stream()
+                .filter(Legajo::getActual)
+                .findFirst()
+                .orElse(null);
+
+        if (legajoActual != null) {
+            dto.setNombreUdo(legajoActual.getUdo() != null ? legajoActual.getUdo().getNombre() : null);
+
+            // Obtiene los nombres de todos los efectores
+            List<String> nombresEfectores = legajoActual.getEfectores().stream()
+                    .map(Efector::getNombre)
+                    .collect(Collectors.toList());
+
+            dto.setNombresEfectores(nombresEfectores);
+        }
+
+        return dto;
     }
 }

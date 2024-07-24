@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,7 +66,8 @@ public class NoAsistencialController {
         Person person = personController.createUpdate(noAsistencial, noAsistencialDto);
         noAsistencial = (NoAsistencial) person;
 
-        if (!noAsistencialDto.getDescripcion().equals(noAsistencial.getDescripcion()))
+        if (noAsistencial.getDescripcion() == null || (noAsistencialDto.getDescripcion() != null
+                && !Objects.equals(noAsistencial.getDescripcion(), noAsistencialDto.getDescripcion())))
             noAsistencial.setDescripcion(noAsistencialDto.getDescripcion());
 
         noAsistencial.setActivo(true);
@@ -81,7 +83,7 @@ public class NoAsistencialController {
             NoAsistencial noAsistencial = createUpdate(new NoAsistencial(), noAsistencialDto);
 
             noAsistencialService.save(noAsistencial);
-            return new ResponseEntity(new Mensaje("Persona creada correctamente"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("No asistencial creado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
