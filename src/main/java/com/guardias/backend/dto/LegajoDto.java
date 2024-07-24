@@ -22,6 +22,7 @@ public class LegajoDto {
     private Boolean legal;
     private boolean activo;
     private String matriculaNacional;
+    @NotBlank
     private String matriculaProvincial;
     private Long idSuspencion;
     @NotBlank

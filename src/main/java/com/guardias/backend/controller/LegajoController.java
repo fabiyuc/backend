@@ -53,7 +53,7 @@ public class LegajoController {
     CargoService cargoService;
     @Autowired
     EspecialidadService especialidadService;
-     @Autowired
+    @Autowired
     AsistencialService asistencialService;
 
     @GetMapping("/list")
@@ -91,6 +91,10 @@ public class LegajoController {
 
         if (legajoDto.getIdPersona() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (legajoDto.getMatriculaProvincial() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
         boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
