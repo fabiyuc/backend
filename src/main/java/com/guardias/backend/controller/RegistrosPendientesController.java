@@ -81,10 +81,12 @@ public class RegistrosPendientesController {
 
         RegistrosPendientes registrosPendientes = new RegistrosPendientes();
         try {
+            // Busca un registro pendiente existente basado en el efector y la fecha de ingreso del registro de actividad
             registrosPendientes = registrosPendientesService
                     .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
                     .get();
         } catch (Exception e) {
+            // Si no se encuentra un registro pendiente, crea uno nuevo y establece sus atributos
             registrosPendientes.setEfector(registroActividad.getEfector());
             registrosPendientes.setFecha(registroActividad.getFechaIngreso());
             registrosPendientes.setActivo(true);

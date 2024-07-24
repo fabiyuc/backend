@@ -166,9 +166,11 @@ public class RegistroActividadController {
             registroActividad.setHoraRegistro(LocalTime.now());
 
             registroActividadService.save(registroActividad);
-
+            
+            //que hago con este registroActividad ya actualizado con su registro pendiente???
             registroActividad = registrosPendientesController.addRegistroActividad(registroActividad);
 
+            //ya está ésta validacion en el if previo???
             if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
                 return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
             } else {
