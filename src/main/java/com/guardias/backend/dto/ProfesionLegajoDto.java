@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class ProfesionLegajoDto {
-    private String nombreProfesion;
+    private String nombre;
 
 }

@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -80,10 +79,8 @@ public class LegajoController {
     }
 
     @GetMapping("/profesiones")
-    public ResponseEntity<List<ProfesionLegajoDto>> listProfesionNames() {
-        List<ProfesionLegajoDto> profesiones = legajoService.findAllProfesionNames().stream()
-                .map(nombre -> new ProfesionLegajoDto(nombre))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<ProfesionLegajoDto>> getProfesiones() {
+        List<ProfesionLegajoDto> profesiones = profesionService.findAllProfesiones();
         return new ResponseEntity<>(profesiones, HttpStatus.OK);
     }
 

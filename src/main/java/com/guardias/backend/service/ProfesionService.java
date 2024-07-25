@@ -2,11 +2,13 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.dto.ProfesionLegajoDto;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
 
@@ -67,4 +69,9 @@ public class ProfesionService {
                 && profesionRepository.findByNombre(nombre).get().isActivo());
     }
 
+    public List<ProfesionLegajoDto> findAllProfesiones() {
+        return profesionRepository.findAll().stream()
+                .map(profesion -> new ProfesionLegajoDto(profesion.getNombre()))
+                .collect(Collectors.toList());
+    }
 }

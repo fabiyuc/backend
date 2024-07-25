@@ -2,7 +2,6 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,9 +46,12 @@ public class LegajoService {
         legajoRepository.deleteById(id);
     }
 
-    public List<String> findAllProfesionNames() {
-        return legajoRepository.findAll().stream()
-                .map(legajo -> legajo.getProfesion().getNombre())
-                .collect(Collectors.toList());
-    }
+    /*
+     * public List<ProfesionLegajoDto> findProfesiones() {
+     * return legajoRepository.findAll().stream()
+     * .map(legajo -> new ProfesionLegajoDto(legajo.getProfesion().getNombre()))
+     * .distinct()
+     * .collect(Collectors.toList());
+     * }
+     */
 }
