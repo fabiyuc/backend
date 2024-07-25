@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.ProfesionLegajoDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
@@ -77,6 +79,14 @@ public class LegajoController {
         return new ResponseEntity(legajo, HttpStatus.OK);
     }
 
+    @GetMapping("/profesiones")
+    public ResponseEntity<List<ProfesionLegajoDto>> listProfesionNames() {
+        List<ProfesionLegajoDto> profesiones = legajoService.findAllProfesionNames().stream()
+                .map(nombre -> new ProfesionLegajoDto(nombre))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(profesiones, HttpStatus.OK);
+    }
+
     private ResponseEntity<?> validations(LegajoDto legajoDto) {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -95,6 +105,7 @@ public class LegajoController {
 
         //////// verifica que es contra factura /////////////
         boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
+
         if (!esContraFactura && legajoDto.getIdUdo() == null) {
             return new ResponseEntity<>(new Mensaje("indicar la UdO"), HttpStatus.BAD_REQUEST);
         }
