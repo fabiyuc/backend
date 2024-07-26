@@ -2,10 +2,12 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.EspecialidadLegajoDto;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.repository.EspecialidadRepository;
 
@@ -57,5 +59,21 @@ public class EspecialidadService {
     public boolean activoByNombre(String nombre) {
         return (especialidadRepository.existsByNombre(nombre)
                 && especialidadRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    /*
+     * public List<EspecialidadLegajoDto> findAllEspecialidades() {
+     * return especialidadRepository.findAll().stream()
+     * .map(especialidad -> new EspecialidadLegajoDto(especialidad.getNombre()))
+     * .collect(Collectors.toList());
+     * }
+     */
+
+    public List<Especialidad> findAllEspecialidades() {
+        return especialidadRepository.findAll();
+    }
+
+    public List<Especialidad> findEspecialidadesByProfesionId(Long profesionId) {
+        return especialidadRepository.findByProfesionId(profesionId);
     }
 }

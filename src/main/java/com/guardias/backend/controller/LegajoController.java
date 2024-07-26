@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardias.backend.dto.EspecialidadLegajoDto;
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionLegajoDto;
@@ -82,6 +84,24 @@ public class LegajoController {
     public ResponseEntity<List<ProfesionLegajoDto>> getProfesiones() {
         List<ProfesionLegajoDto> profesiones = profesionService.findAllProfesiones();
         return new ResponseEntity<>(profesiones, HttpStatus.OK);
+    }
+
+    /*
+     * @GetMapping("/especialidades")
+     * public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidades() {
+     * List<EspecialidadLegajoDto> especialidades =
+     * especialidadService.findAllEspecialidades();
+     * return new ResponseEntity<>(especialidades, HttpStatus.OK);
+     * }
+     */
+
+    @GetMapping("/especialidades/profesion/{profesionId}")
+    public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidadesByProfesion(@PathVariable Long profesionId) {
+        List<Especialidad> especialidades = especialidadService.findEspecialidadesByProfesionId(profesionId);
+        List<EspecialidadLegajoDto> especialidadesDto = especialidades.stream()
+                .map(especialidad -> new EspecialidadLegajoDto(especialidad.getNombre()))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(especialidadesDto, HttpStatus.OK);
     }
 
     private ResponseEntity<?> validations(LegajoDto legajoDto) {

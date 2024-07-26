@@ -22,4 +22,6 @@ public interface EspecialidadRepository extends JpaRepository<Especialidad, Long
     boolean existsById(Long id);
 
     List<Especialidad> findByActivo(boolean activo);
+
+    List<Especialidad> findByProfesionId(Long profesionId);
 }
