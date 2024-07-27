@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -91,16 +92,40 @@ public class RegistroActividad {
         RegistrosPendientes registrosPendientes;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "usuarioIngreso")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
+                        "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial",
+                        "noAsistencial" })
+        Usuario usuarioIngreso;
+
+        @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "usuarioEgreso")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
+                        "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial",
+                        "noAsistencial" })
+        Usuario usuarioEgreso;
+
+        /* @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "usuario")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
                         "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
-        Usuario usuario;
+        Usuario usuario; */
 
         @Temporal(TemporalType.DATE)
-        private LocalDate fechaRegistro;
+        private LocalDate fechaRegistroIngreso;
 
         @Temporal(TemporalType.TIME)
-        private LocalTime horaRegistro;
+        private LocalTime horaRegistroIngreso;
+
+        @Temporal(TemporalType.DATE)
+        private LocalDate fechaRegistroEgreso;
+
+        @Temporal(TemporalType.TIME)
+        private LocalTime horaRegistroEgreso;
+
+        @OneToOne(mappedBy = "registroActividad")
+        private SumaHoras horasRealizadas;
+
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",

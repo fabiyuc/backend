@@ -77,25 +77,6 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
-    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
-
-        RegistrosPendientes registrosPendientes = new RegistrosPendientes();
-        try {
-            registrosPendientes = registrosPendientesService
-                    .findByEfectorAndFecha(registroActividad.getEfector(), registroActividad.getFechaIngreso())
-                    .get();
-        } catch (Exception e) {
-            registrosPendientes.setEfector(registroActividad.getEfector());
-            registrosPendientes.setFecha(registroActividad.getFechaIngreso());
-            registrosPendientes.setActivo(true);
-        }
-        registrosPendientes.getRegistrosActividades().add(registroActividad);
-        registrosPendientesService.save(registrosPendientes);
-        registroActividad.setRegistrosPendientes(registrosPendientes);
-        registroActividadService.save(registroActividad);
-        return registroActividad;
-    }
-
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
         Long id = registroActividad.getRegistrosPendientes().getId();
         try {

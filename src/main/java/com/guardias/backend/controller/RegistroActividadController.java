@@ -91,7 +91,7 @@ public class RegistroActividadController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    private RegistroActividad createUpdate(RegistroActividad registroActividad,
+    /* private RegistroActividad createUpdate(RegistroActividad registroActividad,
             RegistroActividadDto registroActividadDto) {
 
         if (registroActividad.getServicio() == null ||
@@ -151,23 +151,18 @@ public class RegistroActividadController {
         registroActividad.setActivo(true);
         return registroActividad;
     }
-
+ */
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(registroActividadDto);
+        ResponseEntity<?> respuestaValidaciones = registroActividadService.validations(registroActividadDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            RegistroActividad registroActividad = createUpdate(new RegistroActividad(), registroActividadDto);
+            RegistroActividad registroActividad = registroActividadService.createUpdate(new RegistroActividad(), registroActividadDto);
 
-            // Set de fecha y hora en la que se realiza el registroActividad
-            registroActividad.setFechaRegistro(LocalDate.now());
-            registroActividad.setHoraRegistro(LocalTime.now());
-
+            registroActividad = registrosPendientesService.addRegistroActividad(registroActividad);
             registroActividadService.save(registroActividad);
-
-            registroActividad = registrosPendientesController.addRegistroActividad(registroActividad);
 
             if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
                 return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
@@ -185,11 +180,11 @@ public class RegistroActividadController {
         if (!registroActividadService.activo(id))
             return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(registroActividadDto);
+        ResponseEntity<?> respuestaValidaciones = registroActividadService.validations(registroActividadDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            RegistroActividad registroActividad = createUpdate(registroActividadService.findById(id).get(),
+            RegistroActividad registroActividad = registroActividadService.createUpdate(registroActividadService.findById(id).get(),
                     registroActividadDto);
             registroActividadService.save(registroActividad);
             return new ResponseEntity(new Mensaje("Registro de Actividad modificada"), HttpStatus.OK);
@@ -200,6 +195,18 @@ public class RegistroActividadController {
 
     // VER que tipo de registro recibirá desde el front para la salida
     @PutMapping("/registrarSalida/{id}")
+    public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
+            @RequestBody RegistroActividadDto registroActividadDto) {
+
+        if (!registroActividadService.activo(id))
+            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
+
+        ResponseEntity<?> registrarSalida = registroActividadService.registrarSalida(id, registroActividadDto);
+
+        return registrarSalida;
+    }
+    
+    /* @PutMapping("/registrarSalida/{id}")
     public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
             @RequestBody RegistroActividadDto registroActividadDto) {
 
@@ -228,7 +235,7 @@ public class RegistroActividadController {
         registroMensualController.setRegistroMensual(registroActividad);
 
         return respuestaDeletePendiente;
-    }
+    } */
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
