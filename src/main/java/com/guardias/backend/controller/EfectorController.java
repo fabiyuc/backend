@@ -64,7 +64,7 @@ public class EfectorController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public Efector createUpdate(Efector efector, EfectorDto efectorDto) {
+    public Efector  createUpdate(Efector efector, EfectorDto efectorDto) {
 
         if (efector.getNombre() == null
                 || (efectorDto.getNombre() != null && !Objects.equals(efector.getNombre(), efectorDto.getNombre())))
@@ -158,40 +158,80 @@ public class EfectorController {
                 legajoService.findById(id).get().setUdo(efector);
             }
         }
-
+    
         if (efectorDto.getIdLegajos() != null) {
-            List<Long> idList = new ArrayList();
-            if (efector.getLegajos() != null) {
-                for (Legajo legajo : efector.getLegajos()) {
-                    for (Long id : efectorDto.getIdLegajos()) {
-                        if (!legajo.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
+            if (efector.getLegajos() == null) {
+                efector.setLegajos(new ArrayList<>());
+            }
+
+            // Crea una nueva lista para almacenar los legajos actualizados
+            List<Legajo> legajosActualizados = new ArrayList<>();
+            for (Legajo legajo : efector.getLegajos()) {
+                if (efectorDto.getIdLegajos().contains(legajo.getId())) {
+                    legajosActualizados.add(legajo);
+                } else {
+                    // Remover el efector de los legajos que se eliminarán
+                    legajo.getEfectores().remove(efector);
                 }
             }
-            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdLegajos() : idList;
-            for (Long id : idsToAdd) {
-                efector.getLegajos().add(legajoService.findById(id).get());
-                legajoService.findById(id).get().getEfectores().add(efector);
+            efector.setLegajos(legajosActualizados);
+
+            // agrega nuevos legajos si no estan presentes
+            for (Long id : efectorDto.getIdLegajos()) {
+                boolean found = false;
+                for (Legajo legajo : efector.getLegajos()) {
+                    if (legajo.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Legajo legajoToAdd = legajoService.findById(id).get();
+                    if (legajoToAdd != null) {
+                        efector.getLegajos().add(legajoToAdd);
+                        legajoToAdd.getEfectores().add(efector);
+                    } else {
+                        throw new RuntimeException("No se encontró el legajo con ID: " + id);
+                    }
+                }
             }
         }
 
         if (efectorDto.getIdServicios() != null) {
-            List<Long> idList = new ArrayList();
-            if (efector.getServicios() != null) {
-                for (Servicio servicio : efector.getServicios()) {
-                    for (Long id : efectorDto.getIdServicios()) {
-                        if (!servicio.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
+            if (efector.getServicios() == null) {
+                efector.setServicios(new ArrayList<>());
+            }
+
+            // Crea una nueva lista para almacenar los servicios actualizados
+            List<Servicio> serviciosActualizados = new ArrayList<>();
+            for (Servicio servicio : efector.getServicios()) {
+                if (efectorDto.getIdServicios().contains(servicio.getId())) {
+                    serviciosActualizados.add(servicio);
+                } else {
+                    // Remover el efector de los servicios que se eliminarán
+                    servicio.getEfectores().remove(efector);
                 }
             }
-            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdServicios() : idList;
-            for (Long id : idsToAdd) {
-                efector.getServicios().add(servicioService.findById(id).get());
-                servicioService.findById(id).get().getEfectores().add(efector);
+            efector.setServicios(serviciosActualizados);
+
+            // agrega nuevos servicios si no estan presentes
+            for (Long id : efectorDto.getIdServicios()) {
+                boolean found = false;
+                for (Servicio servicio : efector.getServicios()) {
+                    if (servicio.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Servicio servicioToAdd = servicioService.findById(id).get();
+                    if (servicioToAdd != null) {
+                        efector.getServicios().add(servicioToAdd);
+                        servicioToAdd.getEfectores().add(efector);
+                    } else {
+                        throw new RuntimeException("No se encontró el servicio con ID: " + id);
+                    }
+                }
             }
         }
 
