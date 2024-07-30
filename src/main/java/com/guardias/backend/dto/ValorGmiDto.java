@@ -20,5 +20,6 @@ public class ValorGmiDto {
     private LocalDate fechaFin;
     private BigDecimal monto;
     private TipoGuardiaEnum tipoGuardia;
+    private Boolean esLav;
     private List<Long> idDdjjs;
 }

@@ -70,6 +70,9 @@ public class ValorGmiService {
         if (valorGmiDto.getTipoGuardia() == null)
             return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST);
 
+        if (valorGmiDto.getEsLav() == null)
+            return new ResponseEntity(new Mensaje("Es obligatorio indicar si es un valor de Lunes a viernes"), HttpStatus.BAD_REQUEST);
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -86,6 +89,9 @@ public class ValorGmiService {
 
         if (valorGmiDto.getTipoGuardia() != null && !valorGmiDto.getTipoGuardia().equals(valorGmi.getTipoGuardia()))
             valorGmi.setTipoGuardia(valorGmiDto.getTipoGuardia());
+        
+        if (valorGmiDto.getEsLav() != null && !valorGmiDto.getEsLav().equals(valorGmi.isEsLav()))
+            valorGmi.setEsLav(valorGmiDto.getEsLav());
 
         valorGmi.setActivo(true);
         return valorGmi;
