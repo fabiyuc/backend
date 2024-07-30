@@ -1,8 +1,6 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -87,6 +85,24 @@ public class RegistroMensualController {
         try {
             List<RegistroMensual> registrosMensuales = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registros mensuales extra no encontrados"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listAMEcf/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCF(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensual> registrosMensuales = registroMensualService
+                    .findByAnioMesEfectorAndTipoGuardiaCF(anio, mesEnum, idEfector);
 
             return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {

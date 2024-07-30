@@ -17,6 +17,7 @@ import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistroMensualRepository;
 
 @Service
@@ -48,8 +49,8 @@ public class RegistroMensualService {
 
         for (RegistroMensual registroMensual : registrosMensuales) {
             List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                    .filter(actividad -> actividad.getTipoGuardia().getId() == 1
-                            || actividad.getTipoGuardia().getId() == 2)
+                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                            || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
                     .collect(Collectors.toList());
             registroMensual.setRegistroActividad(actividadesFiltradas);
         }
@@ -63,7 +64,21 @@ public class RegistroMensualService {
 
         for (RegistroMensual registroMensual : registrosMensuales) {
             List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                    .filter(actividad -> actividad.getTipoGuardia().getId() == 3)
+                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                    .collect(Collectors.toList());
+            registroMensual.setRegistroActividad(actividadesFiltradas);
+        }
+
+        return registrosMensuales;
+    }
+    
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCF(int anio, MesesEnum mes,
+            Long idEfector) {
+        List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
+
+        for (RegistroMensual registroMensual : registrosMensuales) {
+            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
+                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
                     .collect(Collectors.toList());
             registroMensual.setRegistroActividad(actividadesFiltradas);
         }
