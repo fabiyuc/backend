@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class UsuarioPrincipal implements UserDetails{
 
     // coviente la clase usuario encargada de acceder a la BD donde la clase rol es convertida a la clase GrantedAuthority propia de Spring Security
-    private String nombre;
+    //private String nombre;
     private String nombreUsuario;
     private String email;
     private String password;
@@ -18,9 +18,9 @@ public class UsuarioPrincipal implements UserDetails{
     private Collection<? extends GrantedAuthority> authorities;
     
 
-    public UsuarioPrincipal(String nombre, String nombreUsuario, String email, String password,
+    public UsuarioPrincipal(/* String nombre,  */String nombreUsuario, String email, String password,
             Collection<? extends GrantedAuthority> authorities) {
-        this.nombre = nombre;
+        //this.nombre = nombre;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
@@ -35,7 +35,7 @@ public class UsuarioPrincipal implements UserDetails{
             usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol
             .getRolNombre().name())).collect(Collectors.toList());
 
-        return new UsuarioPrincipal(usuario.getNombre(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getPassword(), authorities);
+        return new UsuarioPrincipal(/* usuario.getNombre(),  */usuario.getNombreUsuario(), usuario.getEmail(), usuario.getPassword(), authorities);
     }
 
     @Override
@@ -66,9 +66,9 @@ public class UsuarioPrincipal implements UserDetails{
     public boolean isEnabled() {
         return true;
     }
-    public String getNombre() {
+    /* public String getNombre() {
         return nombre;
-    }
+    } */
     public String getEmail() {
         return email;
     }

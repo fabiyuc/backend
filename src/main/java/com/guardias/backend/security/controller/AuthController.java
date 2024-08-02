@@ -74,7 +74,7 @@ public class AuthController {
             return new ResponseEntity(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
         Usuario usuario = new Usuario();
 
-        usuario.setNombre(nuevoUsuario.getNombre());
+        //usuario.setNombre(nuevoUsuario.getNombre());
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
         usuario.setEmail(nuevoUsuario.getEmail());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
