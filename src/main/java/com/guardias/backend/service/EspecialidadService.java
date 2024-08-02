@@ -61,16 +61,10 @@ public class EspecialidadService {
                 && especialidadRepository.findByNombre(nombre).get().isActivo());
     }
 
-    /*
-     * public List<EspecialidadLegajoDto> findAllEspecialidades() {
-     * return especialidadRepository.findAll().stream()
-     * .map(especialidad -> new EspecialidadLegajoDto(especialidad.getNombre()))
-     * .collect(Collectors.toList());
-     * }
-     */
-
-    public List<Especialidad> findAllEspecialidades() {
-        return especialidadRepository.findAll();
+    public List<EspecialidadLegajoDto> findAllEspecialidades() {
+        return especialidadRepository.findAll().stream()
+                .map(especialidad -> new EspecialidadLegajoDto(especialidad.getNombre()))
+                .collect(Collectors.toList());
     }
 
     public List<Especialidad> findEspecialidadesByProfesionId(Long profesionId) {

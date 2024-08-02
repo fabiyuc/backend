@@ -86,14 +86,11 @@ public class LegajoController {
         return new ResponseEntity<>(profesiones, HttpStatus.OK);
     }
 
-    /*
-     * @GetMapping("/especialidades")
-     * public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidades() {
-     * List<EspecialidadLegajoDto> especialidades =
-     * especialidadService.findAllEspecialidades();
-     * return new ResponseEntity<>(especialidades, HttpStatus.OK);
-     * }
-     */
+    @GetMapping("/especialidades")
+    public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidades() {
+        List<EspecialidadLegajoDto> especialidades = especialidadService.findAllEspecialidades();
+        return new ResponseEntity<>(especialidades, HttpStatus.OK);
+    }
 
     @GetMapping("/especialidades/profesion/{profesionId}")
     public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidadesByProfesion(@PathVariable Long profesionId) {
