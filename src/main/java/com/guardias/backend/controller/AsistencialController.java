@@ -106,7 +106,7 @@ public class AsistencialController {
             return respuestaValidaciones;
         }
 
-        // Validar que idTiposGuardias no sea null y tenga al menos un elemento
+        // Valida que idTiposGuardias no sea null y tenga al menos un elemento
         if (asistencialDto.getIdTiposGuardias() == null || asistencialDto.getIdTiposGuardias().isEmpty()) {
             return new ResponseEntity<>(new Mensaje("Debe indicar al menos un tipo de guardia"),
                     HttpStatus.BAD_REQUEST);

@@ -1,5 +1,7 @@
 package com.guardias.backend.entity;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -27,11 +29,33 @@ public class SumaHoras {
     private float bonoLav;
     private float bonoSdf;
 
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoHorasLav;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoHorasSdf;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoBonoLav;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoBonoSdf;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal montoTotal;
+
     @OneToOne
     @JoinColumn(name = "registro_mensual_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
             "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
     private RegistroMensual registroMensual;
+
+    @OneToOne
+    @JoinColumn(name = "registro_actividad_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaIngreso", "fechaEgreso",
+            "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector", "registroMensual",
+            "registrosPendientes", "usuario", "horaRegistro", "fechaRegistro" })
+    private RegistroActividad registroActividad;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;

@@ -117,9 +117,11 @@ public class LegajoController {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
 
-        //////// verifica que es contra factura /////////////
-        boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
+        if (legajoDto.getMatriculaProvincial() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
 
+        boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
         if (!esContraFactura && legajoDto.getIdUdo() == null) {
             return new ResponseEntity<>(new Mensaje("indicar la UdO"), HttpStatus.BAD_REQUEST);
         }
@@ -146,6 +148,12 @@ public class LegajoController {
         if (legajoDto.getIdProfesion() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                     HttpStatus.BAD_REQUEST);
+
+        // Valida que IdEfectores no sea null y tenga al menos un elemento
+        if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("Debe indicar al menos un efector"),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }

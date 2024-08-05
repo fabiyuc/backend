@@ -1,8 +1,6 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -94,6 +92,24 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/listAMEcf/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensual>> listByYearMonthEfectorAndTipoGuardiaCF(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensual> registrosMensuales = registroMensualService
+                    .findByAnioMesEfectorAndTipoGuardiaCF(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Registros mensuales extra no encontrados"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<RegistroMensual>> getById(@PathVariable("id") Long id) {
         if (!registroMensualService.activo(id))
@@ -138,84 +154,13 @@ public class RegistroMensualController {
     // }
     // }
 
-    public ResponseEntity<?> validations(RegistroMensualDto registroMensualDto) {
-
-        if (registroMensualDto.getMes() == null)
-            return new ResponseEntity(new Mensaje("El mes es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (registroMensualDto.getAnio() < 1991)
-            return new ResponseEntity(new Mensaje("El año es incorrecto"), HttpStatus.BAD_REQUEST);
-
-        if (registroMensualDto.getIdAsistencial() < 1)
-            return new ResponseEntity(new Mensaje("El id de la persona es incorrecto"), HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private RegistroMensual createUpdate(RegistroMensual registroMensual,
-            RegistroMensualDto registroMensualDto) {
-
-        if (registroMensualDto.getMes() != null && !registroMensualDto.getMes().equals(registroMensual.getMes()))
-            registroMensual.setMes(registroMensualDto.getMes());
-
-        if (registroMensualDto.getAnio() != registroMensual.getAnio())
-            registroMensual.setAnio(registroMensualDto.getAnio());
-
-        // if (registroMensualDto.getIdAsistencial() !=
-        // registroMensual.getIdAsistencial())
-        // registroMensual.setIdAsistencial(registroMensualDto.getIdAsistencial());
-
-        if (registroMensualDto.getIdAsistencial() != null && (registroMensual.getAsistencial() == null
-                || !Objects.equals(registroMensual.getAsistencial().getId(), registroMensualDto.getIdAsistencial()))) {
-            registroMensual.setAsistencial(asistencialService.findById(registroMensualDto.getIdAsistencial()).get());
-        }
-
-        if (registroMensualDto.getIdRegistroActividad() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (registroMensual.getRegistroActividad() != null) {
-                for (RegistroActividad registroActividad : registroMensual.getRegistroActividad()) {
-                    for (Long id : registroMensualDto.getIdRegistroActividad()) {
-                        if (!registroActividad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            } else {
-                registroMensual.setRegistroActividad(new ArrayList<>());
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? registroMensualDto.getIdRegistroActividad() : idList;
-            for (Long id : idsToAdd) {
-                registroMensual.getRegistroActividad().add(registroActividadService.findById(id).get());
-                registroActividadService.findById(id).get().setRegistroMensual(registroMensual);
-            }
-        }
-
-        if (registroMensualDto.getIdEfector() != null && (registroMensual.getEfector() == null
-                || !Objects.equals(registroMensual.getEfector().getId(), registroMensualDto.getIdEfector()))) {
-            registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
-        }
-
-        if (registroMensualDto.getIdSumaHoras() != null && (registroMensual.getSumaHoras() == null
-                || !Objects.equals(registroMensual.getSumaHoras().getId(), registroMensualDto.getIdSumaHoras()))) {
-            registroMensual.setSumaHoras(sumaHorasService.findById(registroMensualDto.getIdSumaHoras()).get());
-        }
-
-        if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
-                || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
-            registroMensual.setDdjj(ddjjService.findById(registroMensualDto.getIdDdjj()).get());
-        }
-
-        registroMensual.setActivo(true);
-        return registroMensual;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroMensualDto registroMensualDto) {
-        ResponseEntity<?> respuestaValidaciones = validations(registroMensualDto);
+        ResponseEntity<?> respuestaValidaciones = registroMensualService.validations(registroMensualDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            RegistroMensual registroMensual = createUpdate(new RegistroMensual(), registroMensualDto);
+            RegistroMensual registroMensual = registroMensualService.createUpdate(new RegistroMensual(), registroMensualDto);
             registroMensualService.save(registroMensual);
             return new ResponseEntity(new Mensaje("Registro de Actividad creado"), HttpStatus.OK);
         } else {
@@ -229,11 +174,11 @@ public class RegistroMensualController {
         if (!registroMensualService.activo(id))
             return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(registroMensualDto);
+        ResponseEntity<?> respuestaValidaciones = registroMensualService.validations(registroMensualDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            RegistroMensual registroMensual = createUpdate(registroMensualService.findById(id).get(),
+            RegistroMensual registroMensual = registroMensualService.createUpdate(registroMensualService.findById(id).get(),
                     registroMensualDto);
             registroMensualService.save(registroMensual);
             return new ResponseEntity(new Mensaje("Registro de Actividad modificado"), HttpStatus.OK);
@@ -242,29 +187,7 @@ public class RegistroMensualController {
         }
     }
 
-    public Long createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
-        RegistroMensualDto registroMensualDto = new RegistroMensualDto();
-
-        registroMensualDto.setMes(mesEnum);
-        registroMensualDto.setAnio(anio);
-        registroMensualDto.setIdAsistencial(idAsistencial);
-        registroMensualDto.setIdEfector(idEfector);
-
-        ResponseEntity<?> respuesta = create(registroMensualDto);
-
-        if (respuesta.getStatusCode() == HttpStatus.OK) {
-
-            RegistroMensual registroMensual = registroMensualService
-                    .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
-
-            return registroMensual.getId();
-        } else {
-            return null;
-        }
-    }
-
-    public void setRegistroMensual(RegistroActividad registroActividad) {
+    /* public void setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
         Long idEfector = registroActividad.getEfector().getId();
@@ -290,7 +213,7 @@ public class RegistroMensualController {
             System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
         }
     }
-
+ */
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!registroMensualService.activo(id))

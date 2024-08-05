@@ -1,8 +1,10 @@
 package com.guardias.backend.security.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.security.entity.Rol;
 import com.guardias.backend.security.enums.RolNombre;
 import com.guardias.backend.security.repository.RolRepository;
@@ -22,4 +24,7 @@ public class RolService {
         rolRepository.save(rol);
     }
     
+    public List<Rol> findAll() {
+        return rolRepository.findAll();
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.TipoGuardiaRepository;
 
@@ -87,6 +88,16 @@ public class AsistencialService {
             Asistencial persona = asistencial.get();
             return persona.getTiposGuardias().stream()
                     .anyMatch(tipoGuardia -> tipoGuardia.getNombre().equalsIgnoreCase("CONTRAFACTURA"));
+        }
+        return false;
+    }
+
+    public boolean esContraFactura(Long idPersona) {
+        Optional<Asistencial> asistencial = asistencialRepository.findById(idPersona);
+        if (asistencial.isPresent()) {
+            Asistencial persona = asistencial.get();
+            return persona.getTiposGuardias().stream()
+                    .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CONTRAFACTURA);
         }
         return false;
     }

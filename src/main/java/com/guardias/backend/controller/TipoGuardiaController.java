@@ -87,7 +87,7 @@ public class TipoGuardiaController {
     }
 
     private ResponseEntity<?> validations(TipoGuardiaDto tipoGuardiaDto) {
-        if (StringUtils.isBlank(tipoGuardiaDto.getNombre()))
+        if (tipoGuardiaDto.getNombre()==null)
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
@@ -97,7 +97,7 @@ public class TipoGuardiaController {
     private TipoGuardia createUpdate(TipoGuardia tipoGuardia, TipoGuardiaDto tipoGuardiaDto) {
 
         if (tipoGuardiaDto.getNombre() != null && !tipoGuardiaDto.getNombre().equals(tipoGuardia.getNombre())
-                && !tipoGuardiaDto.getNombre().isEmpty())
+                /* && !tipoGuardiaDto.getNombre().isEmpty() */)
             tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
 
         if (tipoGuardiaDto.getDescripcion() != null && !tipoGuardiaDto.getDescripcion().isEmpty()

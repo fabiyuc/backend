@@ -33,7 +33,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nombre;
+    //private String nombre;
     private String nombreUsuario;
     private String email;
     private String password;
@@ -42,11 +42,17 @@ public class Usuario {
     @JoinTable(name = "usuario_role", joinColumns = @JoinColumn(name = "usuario_ide", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private Set<Rol> roles = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuarioIngreso", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
             "servicio", "efector", "registroMensual", "registrosPendientes" })
-    private List<RegistroActividad> registrosActividades = new ArrayList<>();
+    private List<RegistroActividad> registrosIngresos = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuarioEgreso", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
+            "servicio", "efector", "registroMensual", "registrosPendientes" })
+    private List<RegistroActividad> registrosEgresos = new ArrayList<>();
 
     @OneToOne(mappedBy = "usuario")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",

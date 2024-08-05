@@ -70,7 +70,7 @@ public class RegistroMensual {
     private Ddjj ddjj;
 
     @OneToOne(mappedBy = "registroMensual")
-    private SumaHoras sumaHoras;
+    private SumaHoras totalHoras;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
     // "mes", "fechaEgreso","anio",
