@@ -132,7 +132,7 @@ public class AuthController {
         }
     }
 
-    /* La clase Principal es parte del paquete java.security, que proporciona una interfaz que representa la identidad de un usuario en un contexto de seguridad, el objeto Principal generalmente contiene el nombre de usuario del usuario autenticado. */
+    /* La clase "Principal" es parte del paquete java.security, que proporciona una interfaz que representa la identidad de un usuario en un contexto de seguridad, el objeto Principal generalmente contiene el nombre de usuario del usuario autenticado. */
     @GetMapping("/detailPersonBasicPanel")
     public ResponseEntity<PersonBasicPanelDto> obtenerPerfil(Principal principal) {
         // Obtiene el nombre de usuario del usuario autenticado

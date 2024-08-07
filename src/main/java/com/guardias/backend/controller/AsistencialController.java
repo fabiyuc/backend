@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
@@ -47,28 +48,22 @@ public class AsistencialController {
     PersonController personController;
 
     @GetMapping("/list")
-    public ResponseEntity<List<Asistencial>> list() {
-        List<Asistencial> asistencialList = asistencialService.findByActivoTrue().orElse(new ArrayList<>());
-        List<Asistencial> filteredList = new ArrayList<>();
-
-        for (Asistencial asistencial : asistencialList) {
-            List<RegistroActividad> activeRegActividades = new ArrayList<>();
-            for (RegistroActividad registroActividad : asistencial.getRegistrosActividades()) {
-                if (registroActividad.isActivo()) {
-                    activeRegActividades.add(registroActividad);
-                }
-            }
-            asistencial.setRegistrosActividades(activeRegActividades);
-            filteredList.add(asistencial);
-        }
-
-        return new ResponseEntity<List<Asistencial>>(filteredList, HttpStatus.OK);
+    public ResponseEntity<List<AsistencialSummaryDto>> list() {
+        List<AsistencialSummaryDto> summaryList = asistencialService.getAsistencialSummaryList();
+        return new ResponseEntity<>(summaryList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Asistencial>> listAll() {
         List<Asistencial> list = asistencialService.findAll();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listSummary")
+    public ResponseEntity<List<AsistencialSummaryDto>> listSummary() {
+        List<AsistencialSummaryDto> summaryList = asistencialService.getAsistencialSummaryList();
+       
+        return new ResponseEntity<List<AsistencialSummaryDto>>(summaryList, HttpStatus.OK);
     }
 
     @GetMapping("/legajos/{id}")
