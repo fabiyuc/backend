@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.TipoGuardia;
@@ -114,6 +115,24 @@ public class AsistencialService {
         }
 
         return summaryDtoList;
+    }
+
+    public List<AsistencialListDto> getAsistencialList() {
+        List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        return asistenciales.stream()
+                .map(asistencial -> new AsistencialListDto(
+                        asistencial.getId(),
+                        asistencial.getNombre(),
+                        asistencial.getApellido(),
+                        asistencial.getDni(),
+                        asistencial.getCuil(),
+                        asistencial.getFechaNacimiento(),
+                        asistencial.getSexo(),
+                        asistencial.getTelefono(),
+                        asistencial.getEmail(),
+                        asistencial.getDomicilio()
+                ))
+                .collect(Collectors.toList());
     }
 
 }
