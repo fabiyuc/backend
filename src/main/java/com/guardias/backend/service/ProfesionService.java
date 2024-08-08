@@ -2,11 +2,14 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.dto.especialidad.EspecialidadSummaryDto;
+import com.guardias.backend.dto.profesion.ProfesionSummaryDto;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
 
@@ -65,6 +68,20 @@ public class ProfesionService {
     public boolean activoByNombre(String nombre) {
         return (profesionRepository.existsByNombre(nombre)
                 && profesionRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    public List<ProfesionSummaryDto> getProfesionesSummary() {
+        List<Profesion> profesiones = profesionRepository.findByActivoTrueAndAsistencialTrue();
+
+        List<ProfesionSummaryDto> profesionesDto = profesiones.stream().map(profesion -> {
+            List<EspecialidadSummaryDto> especialidadesDto = profesion.getEspecialidades().stream()
+                    .map(especialidad -> new EspecialidadSummaryDto(especialidad.getId(), especialidad.getNombre()))
+                    .collect(Collectors.toList());
+
+            return new ProfesionSummaryDto(profesion.getId(), profesion.getNombre(), especialidadesDto);
+        }).collect(Collectors.toList());
+
+        return profesionesDto;
     }
 
 }

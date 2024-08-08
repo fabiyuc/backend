@@ -48,9 +48,22 @@ public class AsistencialController {
     PersonController personController;
 
     @GetMapping("/list")
-    public ResponseEntity<List<AsistencialSummaryDto>> list() {
-        List<AsistencialSummaryDto> summaryList = asistencialService.getAsistencialSummaryList();
-        return new ResponseEntity<>(summaryList, HttpStatus.OK);
+    public ResponseEntity<List<Asistencial>> list() {
+        List<Asistencial> asistencialList = asistencialService.findByActivoTrue().orElse(new ArrayList<>());
+        List<Asistencial> filteredList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistencialList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : asistencial.getRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            asistencial.setRegistrosActividades(activeRegActividades);
+            filteredList.add(asistencial);
+        }
+
+        return new ResponseEntity<List<Asistencial>>(filteredList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
