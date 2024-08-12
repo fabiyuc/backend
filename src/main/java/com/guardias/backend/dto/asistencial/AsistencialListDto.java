@@ -1,6 +1,7 @@
 package com.guardias.backend.dto.asistencial;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,4 +22,5 @@ public class AsistencialListDto {
     private String telefono;
     private String email;
     private String domicilio;
+    private List<Long> idTiposGuardias;
 }

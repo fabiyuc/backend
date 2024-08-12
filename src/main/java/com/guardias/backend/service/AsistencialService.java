@@ -119,20 +119,30 @@ public class AsistencialService {
 
     public List<AsistencialListDto> getAsistencialList() {
         List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
-        return asistenciales.stream()
-                .map(asistencial -> new AsistencialListDto(
-                        asistencial.getId(),
-                        asistencial.getNombre(),
-                        asistencial.getApellido(),
-                        asistencial.getDni(),
-                        asistencial.getCuil(),
-                        asistencial.getFechaNacimiento(),
-                        asistencial.getSexo(),
-                        asistencial.getTelefono(),
-                        asistencial.getEmail(),
-                        asistencial.getDomicilio()
-                ))
-                .collect(Collectors.toList());
+        List<AsistencialListDto> DtoList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            List<Long> idTiposGuardias = asistencial.getTiposGuardias().stream()
+                    .map(tipoGuardia -> tipoGuardia.getId()) 
+                    .collect(Collectors.toList());
+
+            AsistencialListDto dto = new AsistencialListDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getDni(),
+                    asistencial.getCuil(),
+                    asistencial.getFechaNacimiento(),
+                    asistencial.getSexo(),
+                    asistencial.getTelefono(),
+                    asistencial.getEmail(),
+                    asistencial.getDomicilio(),
+                    idTiposGuardias);
+
+                    DtoList.add(dto);
+        }
+
+        return DtoList;
     }
 
 }
