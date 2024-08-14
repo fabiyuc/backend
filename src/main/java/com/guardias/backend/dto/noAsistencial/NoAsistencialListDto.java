@@ -1,7 +1,6 @@
-package com.guardias.backend.dto.asistencial;
+package com.guardias.backend.dto.noAsistencial;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AsistencialListDto {
-    
+public class NoAsistencialListDto {
     private Long id;
     private String nombre;
     private String apellido;
@@ -22,6 +20,4 @@ public class AsistencialListDto {
     private String telefono;
     private String email;
     private String domicilio;
-    private List<String> nombresTiposGuardias;
-    /* private List<Long> idTiposGuardias; */
 }

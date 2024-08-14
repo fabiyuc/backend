@@ -1,11 +1,13 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.repository.NoAsistencialRepository;
 
@@ -65,5 +67,29 @@ public class NoAsistencialService {
 
     public boolean activoDni(int dni) {
         return (noAsistencialRepository.existsByDni(dni) && noAsistencialRepository.findByDni(dni).get().isActivo());
+    }
+
+    
+    public List<NoAsistencialListDto> getNoAsistencialList() {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        List<NoAsistencialListDto> DtoList = new ArrayList<>();
+
+        for (NoAsistencial noAsistencial : noAsistenciales) {
+           
+            NoAsistencialListDto dto = new NoAsistencialListDto(
+                noAsistencial.getId(),
+                noAsistencial.getNombre(),
+                noAsistencial.getApellido(),
+                noAsistencial.getDni(),
+                noAsistencial.getCuil(),
+                noAsistencial.getFechaNacimiento(),
+                noAsistencial.getSexo(),
+                noAsistencial.getTelefono(),
+                noAsistencial.getEmail(),
+                noAsistencial.getDomicilio());
+
+                DtoList.add(dto);
+        }
+        return DtoList;
     }
 }

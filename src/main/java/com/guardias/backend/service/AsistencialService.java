@@ -110,10 +110,8 @@ public class AsistencialService {
                     asistencial.getNombre(),
                     asistencial.getApellido(),
                     nombresTiposGuardias);
-
             summaryDtoList.add(dto);
         }
-
         return summaryDtoList;
     }
 
@@ -122,8 +120,10 @@ public class AsistencialService {
         List<AsistencialListDto> DtoList = new ArrayList<>();
 
         for (Asistencial asistencial : asistenciales) {
-            List<Long> idTiposGuardias = asistencial.getTiposGuardias().stream()
-                    .map(tipoGuardia -> tipoGuardia.getId()) 
+            List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
+            /* List<Long> idTiposGuardias = asistencial.getTiposGuardias().stream() */
+                   // .map(tipoGuardia -> tipoGuardia.getId()) 
+                   .map(tipoGuardia -> tipoGuardia.getNombre().name()) // Usa el método name() del enum
                     .collect(Collectors.toList());
 
             AsistencialListDto dto = new AsistencialListDto(
@@ -137,7 +137,7 @@ public class AsistencialService {
                     asistencial.getTelefono(),
                     asistencial.getEmail(),
                     asistencial.getDomicilio(),
-                    idTiposGuardias);
+                    nombresTiposGuardias);
 
                     DtoList.add(dto);
         }
