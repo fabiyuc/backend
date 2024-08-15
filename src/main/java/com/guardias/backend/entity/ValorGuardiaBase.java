@@ -57,6 +57,11 @@ public abstract class ValorGuardiaBase {
      @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private ValorGmi valorGmi;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bono_uti_id")
+     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private BonoUti bonoUti;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
