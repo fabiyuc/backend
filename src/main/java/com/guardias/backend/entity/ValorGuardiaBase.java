@@ -2,59 +2,60 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "ValoresGmi")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValorGmi {
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@SequenceGenerator(name = "valor_guardia_sequence", sequenceName = "valor_guardia_sequence", allocationSize = 1)
+
+public abstract class ValorGuardiaBase {
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "valor_guardia_sequence")
     private Long id;
+
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(20)")
+    private TipoGuardiaEnum tipoGuardia;
+
+    private int nivelComplejidad;
 
     private LocalDate fechaInicio;
 
     private LocalDate fechaFin;
 
     @Column(precision = 20, scale = 2)
-    private BigDecimal monto;
+    private BigDecimal total;
 
-    private TipoGuardiaEnum tipoGuardia;
-
-    private String documentoLegal;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
-            "total", "estadoDdjj", "valorGmi" })
-    private List<Ddjj> ddjjs = new ArrayList<>();
-
-    @OneToOne(mappedBy = "valorGmi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "valorGmi" })
-    private ValorGuardiaBase valorGuardia;
-
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "valor_gmi_id")
+     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private ValorGmi valorGmi;
 
     @Override
     public boolean equals(Object obj) {
@@ -64,7 +65,7 @@ public class ValorGmi {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ValorGmi other = (ValorGmi) obj;
+        ValorGuardiaBase other = (ValorGuardiaBase) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

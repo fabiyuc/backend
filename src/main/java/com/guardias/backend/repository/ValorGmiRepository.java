@@ -33,6 +33,6 @@ public interface ValorGmiRepository extends JpaRepository<ValorGmi, Long> {
 
     boolean existsById(Long id);
 
-    List<ValorGmi> findByActivo(boolean activo);
+    //List<ValorGmi> findByActivo(boolean activo);
 
 }
