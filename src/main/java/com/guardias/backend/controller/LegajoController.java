@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.guardias.backend.dto.EspecialidadLegajoDto;
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.ProfesionLegajoDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
@@ -80,27 +77,6 @@ public class LegajoController {
         return new ResponseEntity(legajo, HttpStatus.OK);
     }
 
-    @GetMapping("/profesiones")
-    public ResponseEntity<List<ProfesionLegajoDto>> getProfesiones() {
-        List<ProfesionLegajoDto> profesiones = profesionService.findAllProfesiones();
-        return new ResponseEntity<>(profesiones, HttpStatus.OK);
-    }
-
-    @GetMapping("/especialidades")
-    public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidades() {
-        List<EspecialidadLegajoDto> especialidades = especialidadService.findAllEspecialidades();
-        return new ResponseEntity<>(especialidades, HttpStatus.OK);
-    }
-
-    @GetMapping("/especialidades/profesion/{profesionId}")
-    public ResponseEntity<List<EspecialidadLegajoDto>> getEspecialidadesByProfesion(@PathVariable Long profesionId) {
-        List<Especialidad> especialidades = especialidadService.findEspecialidadesByProfesionId(profesionId);
-        List<EspecialidadLegajoDto> especialidadesDto = especialidades.stream()
-                .map(especialidad -> new EspecialidadLegajoDto(especialidad.getNombre()))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(especialidadesDto, HttpStatus.OK);
-    }
-
     private ResponseEntity<?> validations(LegajoDto legajoDto) {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -132,18 +108,6 @@ public class LegajoController {
         if (!esContraFactura && legajoDto.getIdRevista() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
                     HttpStatus.BAD_REQUEST);
-
-        /*
-         * if (legajoDto.getIdUdo() == null)
-         * return new ResponseEntity<Mensaje>(new Mensaje("indicar la UdO"),
-         * HttpStatus.BAD_REQUEST);
-         */
-        /*
-         * if (legajoDto.getIdRevista() == null)
-         * return new ResponseEntity<Mensaje>(new
-         * Mensaje("indicar la situacion de revista"),
-         * HttpStatus.BAD_REQUEST);
-         */
 
         if (legajoDto.getIdProfesion() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
@@ -262,7 +226,6 @@ public class LegajoController {
             legajo.setEfectores(efectoresActualizados);
 
             // agrega nuevos efectores si no estan presentes
-            // agrega nuevos efectores si no estan presentes
             for (Long id : legajoDto.getIdEfectores()) {
                 boolean found = false;
                 for (Efector efector : legajo.getEfectores()) {
@@ -281,29 +244,7 @@ public class LegajoController {
                     }
                 }
             }
-        } /*
-           * else {
-           * // Si legajoDto.getIdEfectores() es null, eliminamos todos los efectores
-           * System.out.println("3.  si legajoDto.getIdEfectores(): es  null " +
-           * legajoDto.getIdEfectores());
-           * 
-           * // donde controlo si legajo.getEfectores() es null?????
-           * if (legajo.getEfectores() != null) {
-           * for (Efector efector : legajo.getEfectores()) {
-           * efector.getLegajos().remove(legajo);
-           * System.out.println("3.1 legajo borrado de efector");
-           * 
-           * }
-           * 
-           * legajo.getEfectores().clear();
-           * 
-           * System.out.println("3.2 efectores borrados de legajo" +
-           * legajo.getEfectores());
-           * 
-           * }
-           * 
-           * }
-           */
+        }
 
         if (legajoDto.getIdProfesion() != null) {
             if (legajo.getProfesion() == null
@@ -323,12 +264,15 @@ public class LegajoController {
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
         ResponseEntity<?> respuestaValidaciones = validations(legajoDto);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-
             Legajo legajo = createUpdate(new Legajo(), legajoDto);
             legajoService.save(legajo);
 
-            return new ResponseEntity<>(new Mensaje("Legajo creado"), HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
+            /*
+             * return new ResponseEntity(new Mensaje("error al guardar los cambios"),
+             * HttpStatus.BAD_REQUEST);
+             */
             return respuestaValidaciones;
         }
     }
