@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
+import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.NoAsistencialService;
@@ -38,6 +39,14 @@ public class NoAsistencialController {
         List<NoAsistencial> list = noAsistencialService.findByActivoTrue().get();
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
+
+    @GetMapping("/listDtos")
+    public ResponseEntity<List<NoAsistencialListDto>> listDtos() {
+        List<NoAsistencialListDto> noAsistencialListDtos = noAsistencialService.getNoAsistencialList();
+       
+        return new ResponseEntity<List<NoAsistencialListDto>>(noAsistencialListDtos, HttpStatus.OK);
+    }
+
 
     @GetMapping("/listAll")
     public ResponseEntity<List<NoAsistencial>> listAll() {

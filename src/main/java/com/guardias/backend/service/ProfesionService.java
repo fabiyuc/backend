@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.guardias.backend.dto.ProfesionLegajoDto;
+import com.guardias.backend.dto.especialidad.EspecialidadSummaryDto;
+import com.guardias.backend.dto.profesion.ProfesionSummaryDto;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.repository.ProfesionRepository;
 
@@ -69,9 +70,18 @@ public class ProfesionService {
                 && profesionRepository.findByNombre(nombre).get().isActivo());
     }
 
-    public List<ProfesionLegajoDto> findAllProfesiones() {
-        return profesionRepository.findAll().stream()
-                .map(profesion -> new ProfesionLegajoDto(profesion.getNombre()))
-                .collect(Collectors.toList());
+    public List<ProfesionSummaryDto> getProfesionesSummary() {
+        List<Profesion> profesiones = profesionRepository.findByActivoTrueAndAsistencialTrue();
+
+        List<ProfesionSummaryDto> profesionesDto = profesiones.stream().map(profesion -> {
+            List<EspecialidadSummaryDto> especialidadesDto = profesion.getEspecialidades().stream()
+                    .map(especialidad -> new EspecialidadSummaryDto(especialidad.getId(), especialidad.getNombre()))
+                    .collect(Collectors.toList());
+
+            return new ProfesionSummaryDto(profesion.getId(), profesion.getNombre(), especialidadesDto);
+        }).collect(Collectors.toList());
+
+        return profesionesDto;
     }
+
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ProfesionDto;
+import com.guardias.backend.dto.profesion.ProfesionSummaryDto;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Profesion;
 import com.guardias.backend.service.EspecialidadService;
@@ -49,6 +50,12 @@ public class ProfesionController {
     public ResponseEntity<List<Profesion>> listAll() {
         List<Profesion> list = profesionService.findAll();
         return new ResponseEntity<List<Profesion>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listProfesionesSummary")
+    public ResponseEntity<List<ProfesionSummaryDto>> getProfesionesSummary() {
+        List<ProfesionSummaryDto> profesiones = profesionService.getProfesionesSummary();
+        return new ResponseEntity<>(profesiones, HttpStatus.OK);
     }
 
     @GetMapping("/listasistenciales")

@@ -24,4 +24,6 @@ public interface ProfesionRepository extends JpaRepository<Profesion, Long> {
     List<Profesion> findByAsistencialFalse();
 
     List<Profesion> findByActivo(boolean activo);
+
+    List<Profesion> findByActivoTrueAndAsistencialTrue();
 }

@@ -17,6 +17,8 @@ import com.guardias.backend.entity.ValorGmi;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.ValorGmiRepository;
 
+import io.micrometer.common.util.StringUtils;
+
 @Service
 @Transactional
 public class ValorGmiService {
@@ -70,9 +72,9 @@ public class ValorGmiService {
         if (valorGmiDto.getTipoGuardia() == null)
             return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST);
 
-        if (valorGmiDto.getEsLav() == null)
-            return new ResponseEntity(new Mensaje("Es obligatorio indicar si es un valor de Lunes a viernes"), HttpStatus.BAD_REQUEST);
-
+        if (StringUtils.isBlank(valorGmiDto.getDocumentoLegal())) {
+            return new ResponseEntity<>(new Mensaje("es obligatorio indicar el documento legal"), HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -90,8 +92,9 @@ public class ValorGmiService {
         if (valorGmiDto.getTipoGuardia() != null && !valorGmiDto.getTipoGuardia().equals(valorGmi.getTipoGuardia()))
             valorGmi.setTipoGuardia(valorGmiDto.getTipoGuardia());
         
-        if (valorGmiDto.getEsLav() != null && !valorGmiDto.getEsLav().equals(valorGmi.isEsLav()))
-            valorGmi.setEsLav(valorGmiDto.getEsLav());
+        if (valorGmiDto.getDocumentoLegal() != null && !valorGmiDto.getDocumentoLegal().equals(valorGmi.getDocumentoLegal())
+            && !valorGmiDto.getDocumentoLegal().isEmpty())
+        valorGmi.setDocumentoLegal(valorGmiDto.getDocumentoLegal());
 
         valorGmi.setActivo(true);
         return valorGmi;

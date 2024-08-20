@@ -1,11 +1,15 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.asistencial.AsistencialListDto;
+import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -104,6 +108,56 @@ public class AsistencialService {
                     .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CONTRAFACTURA);
         }
         return false;
+    }
+
+    // Método para obtener la lista de Asistenciales y convertirlos a AsistencialSummaryDto
+    public List<AsistencialSummaryDto> getAsistencialSummaryList() {
+        List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        List<AsistencialSummaryDto> summaryDtoList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
+                    .map(tipoGuardia -> tipoGuardia.getNombre().name()) // Usa el método name() del enum
+                    .collect(Collectors.toList());
+
+            AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    nombresTiposGuardias);
+            summaryDtoList.add(dto);
+        }
+        return summaryDtoList;
+    }
+
+    public List<AsistencialListDto> getAsistencialList() {
+        List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        List<AsistencialListDto> DtoList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
+            /* List<Long> idTiposGuardias = asistencial.getTiposGuardias().stream() */
+                   // .map(tipoGuardia -> tipoGuardia.getId()) 
+                   .map(tipoGuardia -> tipoGuardia.getNombre().name()) // Usa el método name() del enum
+                    .collect(Collectors.toList());
+
+            AsistencialListDto dto = new AsistencialListDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getDni(),
+                    asistencial.getCuil(),
+                    asistencial.getFechaNacimiento(),
+                    asistencial.getSexo(),
+                    asistencial.getTelefono(),
+                    asistencial.getEmail(),
+                    asistencial.getDomicilio(),
+                    nombresTiposGuardias);
+
+                    DtoList.add(dto);
+        }
+
+        return DtoList;
     }
 
 }

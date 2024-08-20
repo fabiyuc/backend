@@ -3,6 +3,7 @@ package com.guardias.backend.security.controller;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +70,9 @@ public class AuthController {
             return new ResponseEntity(new Mensaje("campos mal puestos o email invalido"), HttpStatus.BAD_REQUEST);
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
-            return new ResponseEntity(new Mensaje("ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
         if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST);
         Usuario usuario = new Usuario();
 
         //usuario.setNombre(nuevoUsuario.getNombre());
@@ -122,12 +123,16 @@ public class AuthController {
     }
 
     @GetMapping("/detail/{nombreUsuario}")
-    public ResponseEntity<List<Usuario>> getByNombreUsuario(@PathVariable("nombreUsuario") String nombreUsuario) {
-        Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario).get();
-        return new ResponseEntity(usuario, HttpStatus.OK);
+    public ResponseEntity<Usuario> getByNombreUsuario(@PathVariable("nombreUsuario") String nombreUsuario) {
+        Optional<Usuario> usuario = usuarioService.findByNombreUsuario(nombreUsuario);
+        if (usuario.isPresent()) {
+            return new ResponseEntity<>(usuario.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
-    /* La clase Principal es parte del paquete java.security, que proporciona una interfaz que representa la identidad de un usuario en un contexto de seguridad, el objeto Principal generalmente contiene el nombre de usuario del usuario autenticado. */
+    /* La clase "Principal" es parte del paquete java.security, que proporciona una interfaz que representa la identidad de un usuario en un contexto de seguridad, el objeto Principal generalmente contiene el nombre de usuario del usuario autenticado. */
     @GetMapping("/detailPersonBasicPanel")
     public ResponseEntity<PersonBasicPanelDto> obtenerPerfil(Principal principal) {
         // Obtiene el nombre de usuario del usuario autenticado
@@ -140,4 +145,5 @@ public class AuthController {
  
         return new ResponseEntity(dto, HttpStatus.OK);
     }
+
 }
