@@ -2,6 +2,7 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,8 +39,9 @@ public class BonoUti {
     @Column(precision = 20, scale = 2)
     private BigDecimal monto;
 
-    @OneToOne(mappedBy = "bonoUti", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bonoUti", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "bonoUti" })
-    private ValorGuardiaBase valorGuardia;
+    private List<ValorGuardiaBase> valoresGuardias;
+
 }

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
@@ -53,12 +55,12 @@ public abstract class ValorGuardiaBase {
     private BigDecimal total;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "valor_gmi_id")
+    @JoinColumn(name = "id_valor_gmi")
      @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private ValorGmi valorGmi;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bono_uti_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_bono_uti")
      @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private BonoUti bonoUti;
 
