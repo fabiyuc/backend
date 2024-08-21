@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.TipoGuardiaGmi;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,7 +39,7 @@ public class ValorGmi {
     @Column(precision = 20, scale = 2)
     private BigDecimal monto;
 
-    private TipoGuardiaEnum tipoGuardia;
+    private TipoGuardiaGmi tipoGuardia;
 
     private String documentoLegal;
 

@@ -15,16 +15,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValorGuardiaCargoYagrup extends ValorGuardiaBase {
-    
-    @Column(precision = 20, scale = 2)
-    private BigDecimal decreto1178Lav; // para cargo y agrup 
-    
-    @Column(precision = 20, scale = 2)
-    private BigDecimal decreto1178Sdf; 
-    
-    @Column(precision = 20, scale = 2)
-    private BigDecimal decreto1657Lav; // para cargo y agrup
 
     @Column(precision = 20, scale = 2)
-    private BigDecimal decreto1657Sdf; 
+    private BigDecimal decreto1178Lav;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal decreto1178Sdf;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal decreto1657Lav;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal decreto1657Sdf;
 }

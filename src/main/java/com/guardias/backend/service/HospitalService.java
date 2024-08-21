@@ -62,4 +62,14 @@ public class HospitalService {
         return (hospitalRepository.existsByNombre(nombre) && hospitalRepository.findByNombre(nombre).get().isActivo());
     }
 
+    // Encuentra todos los hospitales por nivel de complejidad
+  
+    public List<String> findHospitalesPorNivel(int nivelComplejidad) {
+        return hospitalRepository.findHospitalesPorNivel(nivelComplejidad);
+    }
+
+    public List<String> obtenerHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir) {
+        return hospitalRepository.findHospitalesPorNivelExcluyendo(nivelComplejidad,  nombreAExcluir);
+    }
+
 }

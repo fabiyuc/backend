@@ -2,9 +2,10 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.TipoGuardiaGmi;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,7 +34,7 @@ import lombok.NoArgsConstructor;
 @SequenceGenerator(name = "valor_guardia_sequence", sequenceName = "valor_guardia_sequence", allocationSize = 1)
 
 public abstract class ValorGuardiaBase {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "valor_guardia_sequence")
     private Long id;
@@ -43,9 +44,11 @@ public abstract class ValorGuardiaBase {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)")
-    private TipoGuardiaEnum tipoGuardia;
+    private TipoGuardiaGmi tipoGuardia;
 
     private int nivelComplejidad;
+    
+    private List<String> efectores;
 
     private LocalDate fechaInicio;
 
@@ -56,13 +59,15 @@ public abstract class ValorGuardiaBase {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_valor_gmi")
-     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private ValorGmi valorGmi;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_bono_uti")
-     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private BonoUti bonoUti;
+
+  
 
     @Override
     public boolean equals(Object obj) {

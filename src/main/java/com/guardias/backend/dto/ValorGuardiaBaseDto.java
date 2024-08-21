@@ -13,13 +13,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValorGmiDto {
-
+public class ValorGuardiaBaseDto {
+    
     private boolean activo;
+    private TipoGuardiaGmi tipoGuardia;
+    private int nivelComplejidad;
+    private List<String> efectores;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private BigDecimal monto;
-    private TipoGuardiaGmi tipoGuardia;
-    private String documentoLegal;
-    private List<Long> idDdjjs;
+    private BigDecimal total;
+    private Long idValorGmi;
+    private Long idBonoUti;
+    
 }
