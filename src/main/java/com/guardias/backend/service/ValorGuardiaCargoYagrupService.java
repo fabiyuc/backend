@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -129,7 +130,66 @@ public class ValorGuardiaCargoYagrupService {
         valorGuardia.setFechaFin(valorGmi.getFechaFin());
         valorGuardia.setValorGmi(valorGmiService.findById(valorGmi.getId()).get());
         valorGuardia.setBonoUti(bonoUtiService.findById(idBonoUti).get());
-        
+        //temporal
+        valorGuardia.setTotal(valorGmi.getMonto());
+        BigDecimal montoValorGmi = valorGmi.getMonto();
+    BigDecimal montoMultiplicado = montoValorGmi.multiply(BigDecimal.valueOf(2));
+
+    switch (nivel) {
+        case 4:
+            valorGuardia.setDecreto1178Lav(montoMultiplicado);
+            valorGuardia.setDecreto1178Sdf(montoMultiplicado.add(montoMultiplicado.multiply(BigDecimal.valueOf(0.10))));
+            valorGuardia.setDecreto1657Lav(null);
+            valorGuardia.setDecreto1657Sdf(null);
+            break;
+
+        case 3:
+            BigDecimal seventyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(0.70));
+            valorGuardia.setDecreto1178Lav(seventyPercent);
+            valorGuardia.setDecreto1178Sdf(seventyPercent.add(seventyPercent.multiply(BigDecimal.valueOf(0.10))));
+            valorGuardia.setDecreto1657Lav(montoMultiplicado.subtract(seventyPercent));
+            valorGuardia.setDecreto1657Sdf(valorGuardia.getDecreto1657Lav().add(seventyPercent.multiply(BigDecimal.valueOf(0.10))));
+            break;
+
+        case 2:
+            BigDecimal seventyPercent2 = valorGmi.getMonto().multiply(BigDecimal.valueOf(2)).multiply(BigDecimal.valueOf(0.70));
+
+            if (efectores.contains("Uro")) {
+                BigDecimal eightyPercentOfSeventyPercent = seventyPercent2.multiply(BigDecimal.valueOf(0.80)).multiply(BigDecimal.valueOf(2));
+                valorGuardia.setDecreto1178Lav(eightyPercentOfSeventyPercent);
+                valorGuardia.setDecreto1178Sdf(eightyPercentOfSeventyPercent.add(eightyPercentOfSeventyPercent.multiply(BigDecimal.valueOf(0.10))));
+                valorGuardia.setDecreto1657Lav(montoMultiplicado.subtract(eightyPercentOfSeventyPercent));
+                valorGuardia.setDecreto1657Sdf(valorGuardia.getDecreto1657Lav().add(eightyPercentOfSeventyPercent.multiply(BigDecimal.valueOf(0.10))));
+            } else {
+                BigDecimal sixtyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(0.60));
+                valorGuardia.setDecreto1178Lav(sixtyPercent);
+                valorGuardia.setDecreto1178Sdf(sixtyPercent.add(sixtyPercent.multiply(BigDecimal.valueOf(0.10))));
+                valorGuardia.setDecreto1657Lav(montoMultiplicado);
+                valorGuardia.setDecreto1657Sdf(montoMultiplicado);
+            }
+            break;
+
+        case 1:
+            if (efectores.contains("Susques")) {
+                BigDecimal oneFortyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(1.40));
+                valorGuardia.setDecreto1178Lav(oneFortyPercent);
+                valorGuardia.setDecreto1178Sdf(oneFortyPercent.add(oneFortyPercent.multiply(BigDecimal.valueOf(0.10))));
+                valorGuardia.setDecreto1657Lav(montoMultiplicado);
+                valorGuardia.setDecreto1657Sdf(montoMultiplicado);
+            } else {
+                BigDecimal fiftyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(0.50));
+                valorGuardia.setDecreto1178Lav(fiftyPercent);
+                valorGuardia.setDecreto1178Sdf(fiftyPercent.add(fiftyPercent.multiply(BigDecimal.valueOf(0.10))));
+                valorGuardia.setDecreto1657Lav(montoMultiplicado);
+                valorGuardia.setDecreto1657Sdf(montoMultiplicado);
+            }
+            break;
+
+        default:
+            throw new IllegalArgumentException("Nivel de complejidad no soportado: " + nivel);
+    }
         return valorGuardia;
     }
+
+
 }
