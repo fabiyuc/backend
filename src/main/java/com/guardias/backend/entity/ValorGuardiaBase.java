@@ -54,10 +54,10 @@ public abstract class ValorGuardiaBase {
     @Column(precision = 20, scale = 2)
     private BigDecimal total;
 
-    @OneToOne(fetch = FetchType.LAZY)
+   /*  @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_valor_gmi")
      @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private ValorGmi valorGmi;
+    private ValorGmi valorGmi; */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_bono_uti")

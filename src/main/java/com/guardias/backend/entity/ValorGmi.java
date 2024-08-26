@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.TipoGuardiaGmi;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,7 +40,7 @@ public class ValorGmi {
     @Column(precision = 20, scale = 2)
     private BigDecimal monto;
 
-    private TipoGuardiaEnum tipoGuardia;
+    private TipoGuardiaGmi tipoGuardia;
 
     private String documentoLegal;
 
@@ -48,10 +49,10 @@ public class ValorGmi {
             "total", "estadoDdjj", "valorGmi" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
-    @OneToOne(mappedBy = "valorGmi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    /* @OneToOne(mappedBy = "valorGmi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "valorGmi" })
-    private ValorGuardiaBase valorGuardia;
+    private ValorGuardiaBase valorGuardia; */
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })

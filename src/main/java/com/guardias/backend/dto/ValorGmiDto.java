@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.TipoGuardiaGmi;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class ValorGmiDto {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private BigDecimal monto;
-    private TipoGuardiaEnum tipoGuardia;
+    private TipoGuardiaGmi tipoGuardia;
     private String documentoLegal;
     private List<Long> idDdjjs;
 }
