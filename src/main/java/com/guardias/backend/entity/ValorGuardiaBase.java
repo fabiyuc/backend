@@ -20,7 +20,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -54,20 +53,21 @@ public abstract class ValorGuardiaBase {
 
     private LocalDate fechaFin;
 
-    @Column(precision = 20, scale = 2)
-    private BigDecimal total;
-
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valor_gmi")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id","activo", "fechaInicio","fechaFin","documentoLegal","ddjjs"})
     private ValorGmi valorGmi;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_bono_uti")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo","documentoLegal","fechaInicio","fechaFin" })
     private BonoUti bonoUti;
 
-  
+    @Column(precision = 20, scale = 2)
+    private BigDecimal totalLav;
+    
+    @Column(precision = 20, scale = 2)
+    private BigDecimal totalSdf;
 
     @Override
     public boolean equals(Object obj) {

@@ -48,10 +48,10 @@ public class ValorGmi {
             "total", "estadoDdjj", "valorGmi" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
-    @OneToOne(mappedBy = "valorGmi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL )
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "valorGmi" })
-    private ValorGuardiaBase valorGuardia;
+            "valorGmi" ,"activo","fechaInicio","fechaFin","bonoUti","decreto1178Lav","decreto1178Sdf","decreto1657Lav","decreto1657Sdf"})
+    private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })

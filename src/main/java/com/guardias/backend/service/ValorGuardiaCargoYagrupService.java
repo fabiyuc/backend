@@ -130,10 +130,9 @@ public class ValorGuardiaCargoYagrupService {
         valorGuardia.setFechaFin(valorGmi.getFechaFin());
         valorGuardia.setValorGmi(valorGmiService.findById(valorGmi.getId()).get());
         valorGuardia.setBonoUti(bonoUtiService.findById(idBonoUti).get());
-        //temporal
-        valorGuardia.setTotal(valorGmi.getMonto());
+        
         BigDecimal montoValorGmi = valorGmi.getMonto();
-    BigDecimal montoMultiplicado = montoValorGmi.multiply(BigDecimal.valueOf(2));
+        BigDecimal montoMultiplicado = montoValorGmi.multiply(BigDecimal.valueOf(2));
 
     switch (nivel) {
         case 4:
@@ -141,14 +140,34 @@ public class ValorGuardiaCargoYagrupService {
             valorGuardia.setDecreto1178Sdf(montoMultiplicado.add(montoMultiplicado.multiply(BigDecimal.valueOf(0.10))));
             valorGuardia.setDecreto1657Lav(null);
             valorGuardia.setDecreto1657Sdf(null);
+            valorGuardia.setTotalLav(
+                valorGuardia.getDecreto1178Lav()
+                    .add(valorGuardia.getBonoUti().getMonto()));
+            valorGuardia.setTotalSdf(
+                valorGuardia.getDecreto1178Sdf()
+                    .add(valorGuardia.getBonoUti().getMonto())
+                    .add(valorGuardia.getBonoUti().getMonto().multiply(BigDecimal.valueOf(0.10)))
+);
             break;
 
         case 3:
             BigDecimal seventyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(0.70));
             valorGuardia.setDecreto1178Lav(seventyPercent);
-            valorGuardia.setDecreto1178Sdf(seventyPercent.add(seventyPercent.multiply(BigDecimal.valueOf(0.10))));
+            valorGuardia.setDecreto1178Sdf(seventyPercent
+                .add(seventyPercent.multiply(BigDecimal.valueOf(0.10))));
+
             valorGuardia.setDecreto1657Lav(montoMultiplicado.subtract(seventyPercent));
-            valorGuardia.setDecreto1657Sdf(valorGuardia.getDecreto1657Lav().add(seventyPercent.multiply(BigDecimal.valueOf(0.10))));
+
+            valorGuardia.setDecreto1657Sdf(
+                valorGuardia.getDecreto1657Lav()
+                    .add(valorGuardia.getDecreto1657Lav().multiply(BigDecimal.valueOf(0.10))));
+            
+            valorGuardia.setTotalLav(valorGuardia.getDecreto1178Lav()
+                .add(valorGuardia.getDecreto1657Lav()));
+            
+            valorGuardia.setTotalSdf(
+                valorGuardia.getDecreto1178Sdf()
+                .add(valorGuardia.getDecreto1657Sdf()));
             break;
 
         case 2:
@@ -164,8 +183,15 @@ public class ValorGuardiaCargoYagrupService {
                 BigDecimal sixtyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(0.60));
                 valorGuardia.setDecreto1178Lav(sixtyPercent);
                 valorGuardia.setDecreto1178Sdf(sixtyPercent.add(sixtyPercent.multiply(BigDecimal.valueOf(0.10))));
-                valorGuardia.setDecreto1657Lav(montoMultiplicado);
-                valorGuardia.setDecreto1657Sdf(montoMultiplicado);
+                valorGuardia.setDecreto1657Lav( montoMultiplicado
+                .subtract(valorGuardia.getDecreto1178Lav()));
+                valorGuardia.setDecreto1657Sdf(
+                    valorGuardia.getDecreto1657Lav()
+                    .add(valorGuardia.getDecreto1657Lav().multiply(BigDecimal.valueOf(0.10))));
+                valorGuardia.setTotalLav( valorGuardia.getDecreto1178Lav()
+                    .add(valorGuardia.getDecreto1657Lav()));
+                valorGuardia.setTotalSdf(valorGuardia.getDecreto1178Sdf()
+                    .add(valorGuardia.getDecreto1657Sdf()));
             }
             break;
 
@@ -180,8 +206,13 @@ public class ValorGuardiaCargoYagrupService {
                 BigDecimal fiftyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(0.50));
                 valorGuardia.setDecreto1178Lav(fiftyPercent);
                 valorGuardia.setDecreto1178Sdf(fiftyPercent.add(fiftyPercent.multiply(BigDecimal.valueOf(0.10))));
-                valorGuardia.setDecreto1657Lav(montoMultiplicado);
-                valorGuardia.setDecreto1657Sdf(montoMultiplicado);
+                valorGuardia.setDecreto1657Lav(montoMultiplicado.subtract(valorGuardia.getDecreto1178Lav()));
+                valorGuardia.setDecreto1657Sdf(valorGuardia.getDecreto1657Lav()
+                    .add(valorGuardia.getDecreto1657Lav().multiply(BigDecimal.valueOf(0.10))));
+                valorGuardia.setTotalLav( valorGuardia.getDecreto1178Lav()
+                    .add(valorGuardia.getDecreto1657Lav()));
+                valorGuardia.setTotalSdf(valorGuardia.getDecreto1178Sdf()
+                    .add(valorGuardia.getDecreto1657Sdf()));
             }
             break;
 

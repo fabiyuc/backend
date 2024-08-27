@@ -2,6 +2,7 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -42,6 +43,6 @@ public class BonoUti {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bonoUti", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "bonoUti" })
-    private List<ValorGuardiaBase> valoresGuardias;
+    private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
 
 }
