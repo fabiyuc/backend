@@ -55,12 +55,12 @@ public abstract class ValorGuardiaBase {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valor_gmi")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id","activo", "fechaInicio","fechaFin","documentoLegal","ddjjs"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id","activo", "fechaInicio","fechaFin","ddjjs"})
     private ValorGmi valorGmi;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_bono_uti")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo","documentoLegal","fechaInicio","fechaFin" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo","fechaInicio","fechaFin" })
     private BonoUti bonoUti;
 
     @Column(precision = 20, scale = 2)
