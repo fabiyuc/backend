@@ -64,6 +64,12 @@ public abstract class ValorGuardiaBase {
     private BonoUti bonoUti;
 
     @Column(precision = 20, scale = 2)
+    private BigDecimal bono1580Lav;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal bono1580Sdf;
+
+    @Column(precision = 20, scale = 2)
     private BigDecimal totalLav;
     
     @Column(precision = 20, scale = 2)

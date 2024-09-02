@@ -140,13 +140,16 @@ public class ValorGuardiaCargoYagrupService {
             valorGuardia.setDecreto1178Sdf(montoMultiplicado.add(montoMultiplicado.multiply(BigDecimal.valueOf(0.10))));
             valorGuardia.setDecreto1657Lav(null);
             valorGuardia.setDecreto1657Sdf(null);
+
+            valorGuardia.setBono1580Lav(valorGuardia.getBonoUti().getMonto().multiply(BigDecimal.valueOf(2)));
+            valorGuardia.setBono1580Sdf(valorGuardia.getBono1580Lav().add(valorGuardia.getBono1580Lav().multiply(BigDecimal.valueOf(0.10))));
+
             valorGuardia.setTotalLav(
                 valorGuardia.getDecreto1178Lav()
-                    .add(valorGuardia.getBonoUti().getMonto()));
+                    .add(valorGuardia.getBono1580Lav()));
             valorGuardia.setTotalSdf(
                 valorGuardia.getDecreto1178Sdf()
-                    .add(valorGuardia.getBonoUti().getMonto())
-                    .add(valorGuardia.getBonoUti().getMonto().multiply(BigDecimal.valueOf(0.10)))
+                    .add(valorGuardia.getBono1580Sdf())
 );
             break;
 
