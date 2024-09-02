@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistribucionOtra extends DistribucionHoraria {
+    
     @Column(columnDefinition = "VARCHAR(100)")
     private String descripcion;
+
+     @Column(columnDefinition = "VARCHAR(50)")
+    private String lugar;
 }

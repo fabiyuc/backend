@@ -21,4 +21,6 @@ public class DistribucionGuardia extends DistribucionHoraria {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(15)")
     private TipoGuardiaEnum tipoGuardia;
+
+    //falta agregar relacion con servicio
 }
