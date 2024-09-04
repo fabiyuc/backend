@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistribucionGira extends DistribucionHoraria {
-   /*  @Column(columnDefinition = "VARCHAR(50)")
-    private String destino; */
-    @Column(columnDefinition = "VARCHAR(100)")
-    private String descripcion;
+    
+    @Column(columnDefinition = "VARCHAR(50)")
+    private String puestoSalud;
+    /* @Column(columnDefinition = "VARCHAR(100)")
+    private String descripcion; */
 }

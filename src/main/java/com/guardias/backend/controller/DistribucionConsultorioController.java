@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionConsultorioService;
+import com.guardias.backend.service.ServicioService;
 
 @RestController
 @RequestMapping("/distribucionConsultorio")
@@ -32,6 +34,9 @@ public class DistribucionConsultorioController {
 
     @Autowired
     DistribucionConsultorioService distribucionConsultorioService;
+
+    @Autowired
+    ServicioService servicioService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionConsultorio>> list() {
@@ -87,15 +92,27 @@ public class DistribucionConsultorioController {
 
         distribucionConsultorio = (DistribucionConsultorio) distribucionHoraria;
 
+        if (distribucionConsultorio.getServicio() == null ||
+                (distribucionConsultorioDto.getIdServicio() != null &&
+                        !Objects.equals(distribucionConsultorio.getServicio().getId(),
+                                distribucionConsultorioDto.getIdServicio()))) {
+            distribucionConsultorio.setServicio(servicioService.findById(distribucionConsultorioDto.getIdServicio()).get());
+        }
+
+        if (distribucionConsultorioDto.getTipoConsultorio() != distribucionConsultorio.getTipoConsultorio()
+                && distribucionConsultorioDto.getTipoConsultorio() != null)
+            distribucionConsultorio.setTipoConsultorio(distribucionConsultorioDto.getTipoConsultorio());
+
         if (distribucionConsultorioDto.getLugar() != distribucionConsultorio.getLugar()
                 && distribucionConsultorioDto.getLugar() != null)
             distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
-        if (distribucionConsultorioDto.getEspecialidad() != distribucionConsultorio.getEspecialidad()
+
+        /* if (distribucionConsultorioDto.getEspecialidad() != distribucionConsultorio.getEspecialidad()
                 && distribucionConsultorioDto.getEspecialidad() != null)
             distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
         if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
             distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
-
+ */
         distribucionConsultorio.setActivo(true);
         return distribucionConsultorio;
     }

@@ -19,16 +19,17 @@ public class DistribucionHorariaDto {
     @NotNull
     private DiasEnum dia;
     @NotNull
+    private BigDecimal cantidadHoras;
+    private boolean activo;
+    @NotNull
+    private Long idPersona;
+    @NotNull
+    private Long idEfector;
+    
+    @NotNull
     private LocalDate fechaInicio;
     private LocalDate fechaFinalizacion;
     @NotNull
     private LocalTime horaIngreso;
-    @NotNull
-    private BigDecimal cantidadHoras;
-    @NotNull
-    private Long idEfector;
-    @NotNull
-    private Long idPersona;
-    private boolean activo;
 
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class DistribucionGiraDto extends DistribucionHorariaDto {
-    private String destino;
-    private String descripcion;
+    
+    private String puestoSalud;
+    //private String descripcion;
 }

@@ -79,9 +79,9 @@ public abstract class Person {
     private List<NovedadPersonal> suplentes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dia", "fechaInicio", "fechaFinalizacion",
-            "horaIngreso", "cantidadHoras", "activo", "efector", "persona", "lugar", "especialidad", "cantidadTurnos",
-            "destino", "descripcion", "tipoGuardia" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","dia", "fechaInicio", "fechaFinalizacion",
+    "horaIngreso", "cantidadHoras", "activo", "efector", "persona", "lugar", "especialidad", "cantidadTurnos",
+    "destino", "descripcion", "tipoGuardia"})
     private List<DistribucionHoraria> distribucionesHorarias = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)

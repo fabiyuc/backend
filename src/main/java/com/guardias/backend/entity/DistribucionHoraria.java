@@ -48,21 +48,23 @@ public abstract class DistribucionHoraria {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","distribucionesHorarias", "dni", "cuil",
+            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes"})
     private Person persona;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+    "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
+    "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+    "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
+    "registroMensual", "ddjjs", "registrosPendientes"})
     private Efector efector;
 
     private LocalDate fechaInicio;
     private LocalDate fechaFinalizacion;
     private LocalTime horaIngreso;
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "dia","fechaInicio","fechaFinalizacion","horaIngreso","cantidadHoras","activo","efector","persona","lugar","especialidad","cantidadTurnos","destino","descripcion","tipoGuardia"
-    // })
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

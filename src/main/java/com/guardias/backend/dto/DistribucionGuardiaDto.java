@@ -12,5 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class DistribucionGuardiaDto extends DistribucionHorariaDto {
+    
     private TipoGuardiaEnum tipoGuardia;
+
+    private Long idServicio;
 }
