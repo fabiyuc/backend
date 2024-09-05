@@ -137,10 +137,16 @@ public class TipoRevistaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!tipoRevistaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        if (!tipoRevistaService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("el tipo revista no existe"), HttpStatus.NOT_FOUND);
+        }
+        TipoRevista tipoRevista = tipoRevistaService.findById(id).orElse(null);
 
-        TipoRevista tipoRevista = tipoRevistaService.findById(id).get();
+        if (tipoRevista != null && !tipoRevista.getRevistas().isEmpty()) {
+            return new ResponseEntity<>(
+                    new Mensaje("el tipo revista no se puede eliminar, tiene revistas asociadas"),
+                    HttpStatus.BAD_REQUEST);
+        }
         tipoRevista.setActivo(false);
         tipoRevistaService.save(tipoRevista);
         return new ResponseEntity<>(new Mensaje("Tipo Revista eliminado correctamente"), HttpStatus.OK);

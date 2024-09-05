@@ -147,13 +147,18 @@ public class CargaHorariaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!cargaHorariaService.activo(id))
+        if (!cargaHorariaService.activo(id)) {
             return new ResponseEntity(new Mensaje("no existe la carga horaria"), HttpStatus.NOT_FOUND);
+        }
+        CargaHoraria cargaHoraria = cargaHorariaService.findById(id).orElse(null);
 
-        CargaHoraria cargaHoraria = cargaHorariaService.findById(id).get();
+        if (cargaHoraria != null && !cargaHoraria.getRevistas().isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("La carga horaria no se puede eliminar, tiene revistas asociadas"),
+                    HttpStatus.BAD_REQUEST);
+        }
         cargaHoraria.setActivo(false);
         cargaHorariaService.save(cargaHoraria);
-        return new ResponseEntity(new Mensaje("carga horaria eliminada correctamente"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("carga horaria eliminada correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")

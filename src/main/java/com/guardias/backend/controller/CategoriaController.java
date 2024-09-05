@@ -132,9 +132,15 @@ public class CategoriaController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!categoriaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe categoria con ese ID"), HttpStatus.NOT_FOUND);
-        Categoria categoria = categoriaService.findById(id).get();
+        if (!categoriaService.activo(id)) {
+            return new ResponseEntity(new Mensaje("La categoria no existe"), HttpStatus.NOT_FOUND);
+        }
+        Categoria categoria = categoriaService.findById(id).orElse(null);
+
+        if (categoria != null && !categoria.getRevistas().isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("La categoria no se puede eliminar, tiene revistas asociadas"),
+                    HttpStatus.BAD_REQUEST);
+        }
         categoria.setActivo(false);
         categoriaService.save(categoria);
         return new ResponseEntity<>(new Mensaje("Categoria eliminada correctamente"), HttpStatus.OK);

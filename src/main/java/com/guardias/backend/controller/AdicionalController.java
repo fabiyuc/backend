@@ -153,9 +153,15 @@ public class AdicionalController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<Mensaje> logicDelete(@PathVariable("id") long id) {
-        if (!adicionalService.activo(id))
-            return new ResponseEntity<>(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-        Adicional adicional = adicionalService.findById(id).get();
+        if (!adicionalService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("El adicional no existe"), HttpStatus.NOT_FOUND);
+        }
+        Adicional adicional = adicionalService.findById(id).orElse(null);
+
+        if (adicional != null && !adicional.getRevistas().isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se puede eliminar el adicional porque está en uso"),
+                    HttpStatus.BAD_REQUEST);
+        }
         adicional.setActivo(false);
         adicionalService.save(adicional);
         return new ResponseEntity<>(new Mensaje("Adicional eliminado correctamente"), HttpStatus.OK);

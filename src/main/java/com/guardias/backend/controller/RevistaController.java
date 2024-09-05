@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RevistaDto;
+import com.guardias.backend.entity.CargaHoraria;
+import com.guardias.backend.entity.Categoria;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.service.AdicionalService;
@@ -69,12 +71,11 @@ public class RevistaController {
     @PostMapping("/check")
     public ResponseEntity<Revista> checkRevista(@RequestBody RevistaDto revistaDto) {
         Revista existingRevista = revistaService.findByAttributes(
-            revistaDto.getIdTipoRevista(),
-            revistaDto.getIdCategoria(),
-            revistaDto.getIdAdicional(),
-            revistaDto.getIdCargaHoraria(),
-            revistaDto.getAgrupacion()
-        );
+                revistaDto.getIdTipoRevista(),
+                revistaDto.getIdCategoria(),
+                revistaDto.getIdAdicional(),
+                revistaDto.getIdCargaHoraria(),
+                revistaDto.getAgrupacion());
         if (existingRevista != null) {
             return ResponseEntity.ok(existingRevista);
         } else {
@@ -95,13 +96,61 @@ public class RevistaController {
         if (revistaDto.getIdCategoria() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La categoria es obligatoria"),
                     HttpStatus.BAD_REQUEST);
-
-        if (revistaDto.getIdAdicional() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El adicional es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (revistaDto.getIdAdicional() == null)
+         * return new ResponseEntity<Mensaje>(new
+         * Mensaje("El adicional es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (revistaDto.getIdCargaHoraria() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La carga horaria es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        // Obtener categoría y carga horaria
+        Categoria categoria = categoriaService.findById(revistaDto.getIdCategoria()).orElse(null);
+        CargaHoraria cargaHoraria = cargaHorariaService.findById(revistaDto.getIdCargaHoraria()).orElse(null);
+
+        // Verificación de cantidad de horas y categoría
+        if (cargaHoraria != null) {
+            if (cargaHoraria.getCantidad() == 30) {
+                // Si la cantidad de horas es 30
+                if (revistaDto.getIdAdicional() != null) {
+                    return new ResponseEntity<>(new Mensaje("La cantidad de horas de 30 no puede tener adicional"),
+                            HttpStatus.BAD_REQUEST);
+                }
+                if (categoria != null && "24 HS".equals(categoria.getNombre())) {
+                    return new ResponseEntity<>(
+                            new Mensaje("La cantidad de horas de 30 no puede ser para la categoría 24 HS"),
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else if (cargaHoraria.getCantidad() == 24) {
+                // Verificar que la cantidad de horas sea 24
+                if (categoria != null && !"24 HS".equals(categoria.getNombre())) {
+                    return new ResponseEntity<>(
+                            new Mensaje("La categoría debe ser 24 HS para una carga horaria de 24 horas"),
+                            HttpStatus.BAD_REQUEST);
+                }
+
+                // Verificar que no tenga adicional
+                if (revistaDto.getIdAdicional() != null) {
+                    return new ResponseEntity<>(new Mensaje("La categoría 24 HS no puede tener adicional"),
+                            HttpStatus.BAD_REQUEST);
+                }
+            } else if (categoria != null && "24 HS".equals(categoria.getNombre())) {
+                return new ResponseEntity<>(
+                        new Mensaje("La carga horaria debe ser de 24 horas para la categoría 24 HS"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        // Verificación para categorías distintas de "24 HS" y cantidad de horas no es
+        // 30
+        if (categoria != null && !"24 HS".equals(categoria.getNombre()) && cargaHoraria != null
+                && cargaHoraria.getCantidad() != 30) {
+            if (revistaDto.getIdAdicional() == null) {
+                return new ResponseEntity<>(new Mensaje("El adicional es obligatorio"), HttpStatus.BAD_REQUEST);
+            }
+        }
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
 
