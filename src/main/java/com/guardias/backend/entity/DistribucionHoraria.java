@@ -40,31 +40,31 @@ public abstract class DistribucionHoraria {
     @Column(columnDefinition = "VARCHAR(20)")
     @Enumerated(EnumType.STRING)
     private DiasEnum dia;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFinalizacion;
-    private LocalTime horaIngreso;
+
     private BigDecimal cantidadHoras; // para calcular el dia y horario de salida
+    
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
-            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
-            "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-            "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-            "registroMensual", "ddjjs", "registrosPendientes" })
-    private Efector efector;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesHorarias", "dni", "cuil",
-            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","distribucionesHorarias", "dni", "cuil",
+            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes"})
     private Person persona;
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "dia","fechaInicio","fechaFinalizacion","horaIngreso","cantidadHoras","activo","efector","persona","lugar","especialidad","cantidadTurnos","destino","descripcion","tipoGuardia"
-    // })
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_efector")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+    "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
+    "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
+    "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
+    "registroMensual", "ddjjs", "registrosPendientes"})
+    private Efector efector;
+
+    private LocalDate fechaInicio;
+    private LocalDate fechaFinalizacion;
+    private LocalTime horaIngreso;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

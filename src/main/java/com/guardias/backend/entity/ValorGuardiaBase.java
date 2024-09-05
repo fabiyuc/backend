@@ -2,10 +2,12 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.TipoGuardiaGmi;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +33,7 @@ import lombok.NoArgsConstructor;
 @SequenceGenerator(name = "valor_guardia_sequence", sequenceName = "valor_guardia_sequence", allocationSize = 1)
 
 public abstract class ValorGuardiaBase {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "valor_guardia_sequence")
     private Long id;
@@ -41,26 +43,31 @@ public abstract class ValorGuardiaBase {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)")
-    private TipoGuardiaEnum tipoGuardia;
+    private TipoGuardiaGmi tipoGuardia;
 
     private int nivelComplejidad;
+    
+    private List<String> efectores;
 
     private LocalDate fechaInicio;
 
     private LocalDate fechaFin;
 
-    @Column(precision = 20, scale = 2)
-    private BigDecimal total;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "valor_gmi_id")
-     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_valor_gmi")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id","activo", "fechaInicio","fechaFin","ddjjs"})
     private ValorGmi valorGmi;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bono_uti_id")
-     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_bono_uti")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo","fechaInicio","fechaFin" })
     private BonoUti bonoUti;
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal totalLav;
+    
+    @Column(precision = 20, scale = 2)
+    private BigDecimal totalSdf;
 
     @Override
     public boolean equals(Object obj) {

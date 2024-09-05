@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 @Entity(name = "servicios")
 @Data
 @AllArgsConstructor
-// @RequiredArgsConstructor
 @NoArgsConstructor
 public class Servicio {
 
@@ -49,12 +48,16 @@ public class Servicio {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "servicio_efector", joinColumns = @JoinColumn(name = "id_servicio"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "servicios", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "autoridades", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva", "nivelComplejidad", "caps" })
-  private List<Efector> efectores = new ArrayList<>();
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "servicios", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "autoridades", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva", "nivelComplejidad", "caps" })
+    private List<Efector> efectores = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "servicio", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio" })
+    private List<DistribucionGuardia> distribucionesGuardias = new ArrayList<>();
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
-    // "nivel", "activo", "registrosActividades" })
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "servicio", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio", "distribucionesGuardias"})
+    private List<DistribucionConsultorio> distribucionesConsultorios = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

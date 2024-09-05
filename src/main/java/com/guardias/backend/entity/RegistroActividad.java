@@ -64,8 +64,7 @@ public class RegistroActividad {
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_servicio")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nivel", "activo",
-                        "registrosActividades", "efectores" })
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nivel", "activo", "registrosActividades", "efectores" })
         private Servicio servicio;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

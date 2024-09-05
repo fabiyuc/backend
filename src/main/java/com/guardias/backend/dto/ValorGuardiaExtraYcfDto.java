@@ -1,5 +1,7 @@
 package com.guardias.backend.dto;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,9 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class DistribucionGiraDto extends DistribucionHorariaDto {
+public class ValorGuardiaExtraYcfDto extends ValorGuardiaBaseDto{
     
-    private String puestoSalud;
-    
-    //private String descripcion;
+     private BigDecimal resolucion2575Lav;
+    private BigDecimal resolucion2575Sdf;
 }

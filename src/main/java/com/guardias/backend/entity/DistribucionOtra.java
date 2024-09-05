@@ -9,10 +9,14 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "distribucionesOtras")
 @Data
-@EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistribucionOtra extends DistribucionHoraria {
+    
     @Column(columnDefinition = "VARCHAR(100)")
     private String descripcion;
+
+     @Column(columnDefinition = "VARCHAR(50)")
+    private String lugar;
 }

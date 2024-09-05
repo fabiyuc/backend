@@ -24,6 +24,7 @@ import com.guardias.backend.entity.ValorGmi;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.ValorGmiService;
+import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 
 @RestController
 @RequestMapping("/valorGmi")
@@ -32,6 +33,9 @@ public class ValorGmiController {
 
     @Autowired
     ValorGmiService valorGmiService;
+
+    @Autowired 
+    ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
     @Autowired
     DdjjService ddjjService;
 
@@ -82,6 +86,10 @@ public class ValorGmiController {
 
             ValorGmi valorGmi = valorGmiService.createUpdate(new ValorGmi(), valorGmiDto);
             valorGmiService.save(valorGmi);
+
+             // Llamada al método para crear valores de guardia cargo y agrup
+            valorGuardiaCargoYagrupService.crearValoresGuardiaCargoYagrup();
+
             return new ResponseEntity(new Mensaje("Valor creado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

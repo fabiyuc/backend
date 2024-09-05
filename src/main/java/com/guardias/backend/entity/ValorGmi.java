@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.TipoGuardiaGmi;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,7 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,7 +38,7 @@ public class ValorGmi {
     @Column(precision = 20, scale = 2)
     private BigDecimal monto;
 
-    private TipoGuardiaEnum tipoGuardia;
+    private TipoGuardiaGmi tipoGuardia;
 
     private String documentoLegal;
 
@@ -48,10 +47,10 @@ public class ValorGmi {
             "total", "estadoDdjj", "valorGmi" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
-    @OneToOne(mappedBy = "valorGmi", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL )
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "valorGmi" })
-    private ValorGuardiaBase valorGuardia;
+            "valorGmi" ,"activo","fechaInicio","fechaFin","bonoUti","decreto1178Lav","decreto1178Sdf","decreto1657Lav","decreto1657Sdf"})
+    private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })

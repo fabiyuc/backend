@@ -83,12 +83,16 @@ public class DistribucionGiraController {
                 distribucionGiraDto);
         distribucionGira = (DistribucionGira) distribucionHoraria;
 
-        if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
+        if (distribucionGiraDto.getPuestoSalud() != distribucionGira.getPuestoSalud()
+                && distribucionGiraDto.getPuestoSalud() != null)
+            distribucionGira.setPuestoSalud(distribucionGiraDto.getPuestoSalud());
+        
+       /*  if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
                 && distribucionGiraDto.getDestino() != null)
             distribucionGira.setDestino(distribucionGiraDto.getDestino());
         if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
                 && distribucionGiraDto.getDescripcion() != null)
-            distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
+            distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion()); */
 
         distribucionGira.setActivo(true);
 

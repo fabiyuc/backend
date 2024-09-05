@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionGuardiaService;
+import com.guardias.backend.service.ServicioService;
 
 @RestController
 @RequestMapping("/distribucionGuardia")
@@ -31,6 +33,8 @@ public class DistribucionGuardiaController {
     DistribucionGuardiaService distribucionGuardiaService;
     @Autowired
     DistribucionHorariaController distribucionHorariaController;
+    @Autowired
+    ServicioService servicioService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
@@ -79,6 +83,7 @@ public class DistribucionGuardiaController {
 
     DistribucionGuardia createUpdate(DistribucionGuardia distribucionGuardia,
             DistribucionGuardiaDto distribucionGuardiaDto) {
+
         DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionGuardia,
                 distribucionGuardiaDto);
         distribucionGuardia = (DistribucionGuardia) distribucionHoraria;
@@ -86,6 +91,13 @@ public class DistribucionGuardiaController {
         if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
                 && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
+        
+        if (distribucionGuardia.getServicio() == null ||
+                (distribucionGuardiaDto.getIdServicio() != null &&
+                        !Objects.equals(distribucionGuardia.getServicio().getId(),
+                                distribucionGuardiaDto.getIdServicio()))) {
+            distribucionGuardia.setServicio(servicioService.findById(distribucionGuardiaDto.getIdServicio()).get());
+        }
 
         distribucionGuardia.setActivo(true);
 

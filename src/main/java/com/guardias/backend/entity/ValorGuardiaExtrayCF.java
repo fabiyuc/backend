@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValorGuardiaExtrayCF extends ValorGuardiaBase{
-    
+public class ValorGuardiaExtrayCF extends ValorGuardiaBase {
+
     @Column(precision = 20, scale = 2)
     private BigDecimal resolucion2575Lav; // para extra y CF
 

@@ -26,4 +26,11 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     boolean existsByNombre(String nombre);
 
     List<Hospital> findByActivo(boolean activo);
+
+    @Query("SELECT h.nombre FROM Hospital h WHERE h.nivelComplejidad = ?1")
+    List<String> findHospitalesPorNivel(int nivelComplejidad);
+
+    @Query("SELECT h.nombre FROM Hospital h WHERE h.nivelComplejidad = ?1 AND h.nombre <> ?2")
+    List<String> findHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir);
+
 }

@@ -87,6 +87,10 @@ public class DistribucionOtraController {
                 && distribucionOtraDto.getDescripcion() != null)
             distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
 
+        if (distribucionOtraDto.getLugar() != (distribucionOtra.getLugar())
+                && distribucionOtraDto.getLugar() != null)
+            distribucionOtra.setLugar(distribucionOtraDto.getLugar());
+
         distribucionOtra.setActivo(true);
 
         return distribucionOtra;
