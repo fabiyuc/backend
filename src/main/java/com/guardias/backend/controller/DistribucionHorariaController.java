@@ -13,7 +13,6 @@ import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.PersonService;
-import com.guardias.backend.service.ServicioService;
 
 @RestController
 public class DistribucionHorariaController {
@@ -23,8 +22,6 @@ public class DistribucionHorariaController {
     EfectorService efectorService;
     @Autowired
     PersonService personService;
-    @Autowired
-    ServicioService servicioService;
 
     public ResponseEntity<?> validations(DistribucionHorariaDto distribucionHorariaDto) {
         if (distribucionHorariaDto.getDia() == null)
@@ -78,8 +75,6 @@ public class DistribucionHorariaController {
                                 distribucionHorariaDto.getIdEfector()))) {
             distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto.getIdEfector()));
         }
-
-        
 
         if (distribucionHorariaDto.getFechaInicio() != distribucionHoraria.getFechaInicio()
                 && distribucionHorariaDto.getFechaInicio() != null)

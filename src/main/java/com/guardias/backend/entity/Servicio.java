@@ -55,17 +55,9 @@ public class Servicio {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio" })
     private List<DistribucionGuardia> distribucionesGuardias = new ArrayList<>();
 
-    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "servicio", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio", "distribucionesGuardias"})
-    private List<DistribucionGuardia> distribucionesGuardias = new ArrayList<>(); */
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "servicio", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "servicio", "distribucionesGuardias"})
     private List<DistribucionConsultorio> distribucionesConsultorios = new ArrayList<>();
-
-
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
-    // "nivel", "activo", "registrosActividades" })
 
     @Override
     public boolean equals(Object obj) {

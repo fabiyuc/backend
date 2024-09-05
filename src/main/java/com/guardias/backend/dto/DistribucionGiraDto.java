@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class DistribucionGiraDto extends DistribucionHorariaDto {
     
     private String puestoSalud;
+    
     //private String descripcion;
 }

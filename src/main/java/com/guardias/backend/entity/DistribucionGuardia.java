@@ -32,8 +32,4 @@ public class DistribucionGuardia extends DistribucionHoraria {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesGuardias" })
     private Servicio servicio;
 
-    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_servicio")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesGuardias" })
-    private Servicio servicio; */
 }

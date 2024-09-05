@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "distribucionesOtras")
 @Data
-@EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistribucionOtra extends DistribucionHoraria {
