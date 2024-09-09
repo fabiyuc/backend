@@ -91,7 +91,7 @@ public class DistribucionGuardiaController {
         if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
                 && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
-        
+
         if (distribucionGuardia.getServicio() == null ||
                 (distribucionGuardiaDto.getIdServicio() != null &&
                         !Objects.equals(distribucionGuardia.getServicio().getId(),
@@ -120,25 +120,93 @@ public class DistribucionGuardiaController {
         }
     }
 
+    DistribucionGuardia createNew(DistribucionGuardia distribucionGuardiaExistente,
+            DistribucionGuardiaDto distribucionGuardiaDto) {
+
+        // Crear una nueva instancia de DistribucionGuardia
+        DistribucionGuardia nuevaDistribucionGuardia = new DistribucionGuardia();
+
+        // Copiar los datos que no han cambiado de la distribución existente
+        nuevaDistribucionGuardia.setDia(distribucionGuardiaExistente.getDia());
+        nuevaDistribucionGuardia.setCantidadHoras(distribucionGuardiaExistente.getCantidadHoras());
+        nuevaDistribucionGuardia.setFechaInicio(distribucionGuardiaExistente.getFechaInicio());
+        nuevaDistribucionGuardia.setHoraIngreso(distribucionGuardiaExistente.getHoraIngreso());
+        nuevaDistribucionGuardia.setPersona(distribucionGuardiaExistente.getPersona());
+        nuevaDistribucionGuardia.setEfector(distribucionGuardiaExistente.getEfector());
+
+        // Actualizar los datos modificados
+        if (distribucionGuardiaDto.getTipoGuardia() != null &&
+                !distribucionGuardiaDto.getTipoGuardia().equals(distribucionGuardiaExistente.getTipoGuardia())) {
+            nuevaDistribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
+        }
+
+        if (distribucionGuardiaDto.getIdServicio() != null &&
+                !Objects.equals(distribucionGuardiaExistente.getServicio().getId(),
+                        distribucionGuardiaDto.getIdServicio())) {
+            nuevaDistribucionGuardia
+                    .setServicio(servicioService.findById(distribucionGuardiaDto.getIdServicio()).get());
+        }
+
+        // La nueva distribución siempre estará activa
+        nuevaDistribucionGuardia.setActivo(true);
+
+        return nuevaDistribucionGuardia;
+    }
+
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
+        // Verificar si la distribución está activa
         if (!distribucionGuardiaService.activo(id))
-            return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
+        // Realizar las validaciones
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGuardiaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionGuardia distribucionGuardia = createUpdate(
-                    distribucionGuardiaService.findById(id).get(),
+            // Obtener la distribución existente
+            DistribucionGuardia distribucionGuardiaExistente = distribucionGuardiaService.findById(id).get();
+
+            // Hacer la baja lógica del registro actual
+            distribucionGuardiaExistente.setActivo(false);
+            System.out.println("estado: " + distribucionGuardiaExistente.isActivo());
+            distribucionGuardiaService.save(distribucionGuardiaExistente);
+
+            System.out.println("estado2: " + distribucionGuardiaExistente.isActivo());
+            // Crear una nueva distribución con los datos modificados
+            DistribucionGuardia nuevaDistribucionGuardia = createUpdate(distribucionGuardiaExistente,
                     distribucionGuardiaDto);
-            distribucionGuardiaService.save(distribucionGuardia);
-            return new ResponseEntity(new Mensaje("Distribucion horaria modificada correctamente"),
-                    HttpStatus.OK);
+            distribucionGuardiaService.save(nuevaDistribucionGuardia);
+
+            System.out.println("estado3: " + distribucionGuardiaExistente.isActivo());
+            System.out.println("estado4: " + nuevaDistribucionGuardia.isActivo());
+
+            return new ResponseEntity<>(new Mensaje("Distribución horaria modificada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
+
+        /*
+         * if (!distribucionGuardiaService.activo(id))
+         * return new ResponseEntity(new Mensaje("La distribucion no existe"),
+         * HttpStatus.NOT_FOUND);
+         * 
+         * ResponseEntity<?> respuestaValidaciones =
+         * distribucionHorariaController.validations(distribucionGuardiaDto);
+         * 
+         * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+         * DistribucionGuardia distribucionGuardia = createUpdate(
+         * distribucionGuardiaService.findById(id).get(),
+         * distribucionGuardiaDto);
+         * distribucionGuardiaService.save(distribucionGuardia);
+         * return new ResponseEntity(new
+         * Mensaje("Distribucion horaria modificada correctamente"),
+         * HttpStatus.OK);
+         * } else {
+         * return respuestaValidaciones;
+         * }
+         */
     }
 
     @PutMapping("/delete/{id}")
