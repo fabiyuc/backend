@@ -21,7 +21,11 @@ import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
+import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.DistribucionGuardiaService;
+import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.PersonService;
 import com.guardias.backend.service.ServicioService;
 
 @RestController
@@ -35,6 +39,10 @@ public class DistribucionGuardiaController {
     DistribucionHorariaController distribucionHorariaController;
     @Autowired
     ServicioService servicioService;
+    @Autowired
+    PersonService personService;
+    @Autowired
+    EfectorService efectorService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
@@ -123,64 +131,92 @@ public class DistribucionGuardiaController {
     DistribucionGuardia createNew(DistribucionGuardia distribucionGuardiaExistente,
             DistribucionGuardiaDto distribucionGuardiaDto) {
 
-        // Crear una nueva instancia de DistribucionGuardia
-        DistribucionGuardia nuevaDistribucionGuardia = new DistribucionGuardia();
+        if (distribucionGuardiaDto.getDia() != distribucionGuardiaExistente.getDia())
+        distribucionGuardiaExistente.setDia(distribucionGuardiaDto.getDia());
 
-        // Copiar los datos que no han cambiado de la distribución existente
-        nuevaDistribucionGuardia.setDia(distribucionGuardiaExistente.getDia());
-        nuevaDistribucionGuardia.setCantidadHoras(distribucionGuardiaExistente.getCantidadHoras());
-        nuevaDistribucionGuardia.setFechaInicio(distribucionGuardiaExistente.getFechaInicio());
-        nuevaDistribucionGuardia.setHoraIngreso(distribucionGuardiaExistente.getHoraIngreso());
-        nuevaDistribucionGuardia.setPersona(distribucionGuardiaExistente.getPersona());
-        nuevaDistribucionGuardia.setEfector(distribucionGuardiaExistente.getEfector());
+        if (distribucionGuardiaDto.getCantidadHoras() != distribucionGuardiaExistente.getCantidadHoras())
+                distribucionGuardiaExistente.setCantidadHoras(distribucionGuardiaDto.getCantidadHoras());
 
-        // Actualizar los datos modificados
-        if (distribucionGuardiaDto.getTipoGuardia() != null &&
-                !distribucionGuardiaDto.getTipoGuardia().equals(distribucionGuardiaExistente.getTipoGuardia())) {
-            nuevaDistribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
+        distribucionGuardiaExistente.setActivo(distribucionGuardiaDto.isActivo());
+
+        if (distribucionGuardiaExistente.getPersona() == null ||
+                (distribucionGuardiaDto.getIdPersona() != null &&
+                        !Objects.equals(distribucionGuardiaExistente.getPersona().getId(),
+                        distribucionGuardiaDto.getIdPersona()))) {
+                                    distribucionGuardiaExistente.setPersona(personService.findById(distribucionGuardiaDto.getIdPersona()));
         }
 
-        if (distribucionGuardiaDto.getIdServicio() != null &&
-                !Objects.equals(distribucionGuardiaExistente.getServicio().getId(),
-                        distribucionGuardiaDto.getIdServicio())) {
-            nuevaDistribucionGuardia
-                    .setServicio(servicioService.findById(distribucionGuardiaDto.getIdServicio()).get());
+        // Verifica si la persona tiene legajos y si el UDO del legajo coincide con el Efector del DTO
+        if (distribucionGuardiaExistente.getPersona() != null && distribucionGuardiaExistente.getPersona().getLegajos() != null) {
+            Legajo legajoActual = distribucionGuardiaExistente.getPersona().getLegajos().stream()
+                    .filter(Legajo::getActual) // Filtrar el legajo actual
+                    .findFirst()
+                    .orElse(null);
+
+            if (legajoActual != null && legajoActual.getUdo() != null) {
+                Efector udoPersona = legajoActual.getUdo();
+                Efector efectorDto = efectorService.findById(distribucionGuardiaDto.getIdEfector());
+
+                // Compara el UDO de la persona con el Efector del DTO antes de asignar
+                if (Objects.equals(udoPersona.getId(), efectorDto.getId())) {
+                    distribucionGuardiaExistente.setEfector(efectorDto);
+                } else {
+                    throw new IllegalArgumentException("El Efector del DTO no coincide con el UDO de la persona.");
+                }
+
+            }
         }
 
-        // La nueva distribución siempre estará activa
-        nuevaDistribucionGuardia.setActivo(true);
+        if (distribucionGuardiaDto.getFechaInicio() != distribucionGuardiaExistente.getFechaInicio())
+                distribucionGuardiaExistente.setFechaInicio(distribucionGuardiaDto.getFechaInicio());
 
-        return nuevaDistribucionGuardia;
+        if (distribucionGuardiaDto.getFechaFinalizacion() != distribucionGuardiaExistente.getFechaFinalizacion())
+                distribucionGuardiaExistente.setFechaFinalizacion(distribucionGuardiaDto.getFechaFinalizacion());
+
+        if (distribucionGuardiaDto.getHoraIngreso() != distribucionGuardiaExistente.getHoraIngreso())
+                distribucionGuardiaExistente.setHoraIngreso(distribucionGuardiaDto.getHoraIngreso());
+
+        
+        if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardiaExistente.getTipoGuardia()
+                && distribucionGuardiaDto.getTipoGuardia() != null)
+                distribucionGuardiaExistente.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
+
+        if (distribucionGuardiaExistente.getServicio() == null ||
+                (distribucionGuardiaDto.getIdServicio() != null &&
+                        !Objects.equals(distribucionGuardiaExistente.getServicio().getId(),
+                                distribucionGuardiaDto.getIdServicio()))) {
+                                    distribucionGuardiaExistente.setServicio(servicioService.findById(distribucionGuardiaDto.getIdServicio()).get());
+        }
+
+        return distribucionGuardiaExistente;
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
-        // Verificar si la distribución está activa
+        // Verifica si está activa la distribución que quiero modificar 
         if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity<>(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        // Realizar las validaciones
+        // Realizar las validaciones de la distribucion con los datos modificados
         ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGuardiaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            // Obtener la distribución existente
+            
+            // Obtener la distribución que quiero modificar
             DistribucionGuardia distribucionGuardiaExistente = distribucionGuardiaService.findById(id).get();
 
-            // Hacer la baja lógica del registro actual
-            distribucionGuardiaExistente.setActivo(false);
-            System.out.println("estado: " + distribucionGuardiaExistente.isActivo());
-            distribucionGuardiaService.save(distribucionGuardiaExistente);
-
-            System.out.println("estado2: " + distribucionGuardiaExistente.isActivo());
-            // Crear una nueva distribución con los datos modificados
-            DistribucionGuardia nuevaDistribucionGuardia = createUpdate(distribucionGuardiaExistente,
-                    distribucionGuardiaDto);
+            DistribucionGuardia nuevaDistribucionGuardia = createNew(distribucionGuardiaExistente,
+            distribucionGuardiaDto);
+            System.out.println("nuevaDistribucionGuardia" + nuevaDistribucionGuardia.getDia());
             distribucionGuardiaService.save(nuevaDistribucionGuardia);
 
-            System.out.println("estado3: " + distribucionGuardiaExistente.isActivo());
-            System.out.println("estado4: " + nuevaDistribucionGuardia.isActivo());
+
+            // Hacer la baja lógica del registro actual
+
+            distribucionGuardiaService.logicDelete(id);
+
 
             return new ResponseEntity<>(new Mensaje("Distribución horaria modificada correctamente"), HttpStatus.OK);
         } else {

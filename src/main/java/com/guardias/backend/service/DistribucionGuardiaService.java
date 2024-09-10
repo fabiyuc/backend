@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
 
@@ -67,11 +70,21 @@ public class DistribucionGuardiaService {
     }
 
     public void save(DistribucionGuardia distribucionGuardia) {
+        System.out.println("llego al save" + distribucionGuardia.getDia());
         distribucionGuardiaRepository.save(distribucionGuardia);
+        System.out.println("en teoria ya guardo");
     }
 
     public void deleteById(Long id) {
         distribucionGuardiaRepository.deleteById(id);
     }
+
+     public ResponseEntity<?> logicDelete(Long id) {
+        DistribucionGuardia distribucionGuardia = findById(id).get();
+        distribucionGuardia.setActivo(false);
+        save(distribucionGuardia);
+        return new ResponseEntity(new Mensaje("Valor actualizado correctamente"), HttpStatus.OK);
+    }
+
 
 }
