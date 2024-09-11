@@ -14,15 +14,26 @@ public class EfectorDto {
 
     @NotBlank
     private String nombre;
+    
     @NotBlank
     private String domicilio;
+    
     private String telefono;
-    @NotBlank
+    
     private boolean estado;
+    
     private boolean activo;
+    
     private String observacion;
+    
+    @NotBlank
     private Long idRegion;
+    
+    @NotBlank
     private Long idLocalidad;
+
+    @NotBlank
+    private Float porcentajePorZona;
 
     private List<Long> idDistribucionesHorarias;
     private List<Long> idLegajosUdo;
@@ -32,6 +43,5 @@ public class EfectorDto {
     private List<Long> idAutoridades;
     private List<Long> idRegistroMensual;
     private List<Long> idDdjjs;
-
-    private float porcentajePorZona;
+    
 }

@@ -54,6 +54,14 @@ public class EfectorController {
         if (StringUtils.isBlank(efectorDto.getDomicilio()))
             return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
                     HttpStatus.BAD_REQUEST);
+        if (efectorDto.getIdRegion() == null)
+                    return new ResponseEntity(new Mensaje("es obligatorio indicar la region"), HttpStatus.BAD_REQUEST);
+        if (efectorDto.getIdLocalidad() == null)
+                    return new ResponseEntity(new Mensaje("es obligatorio indicar la localidad"), HttpStatus.BAD_REQUEST);
+        if (efectorDto.getPorcentajePorZona() == null)
+                    return new ResponseEntity(new Mensaje("es obligatorio indicar el porcentaje por zona"), HttpStatus.BAD_REQUEST);
+       
+        
 
         // SI EXISTEN CAPS CON NOMBRES IGUALES!!!!!!!!!!!!!!!!!!!!!!
         // VER si conviene comparar segun ele tipo de efector
@@ -78,22 +86,13 @@ public class EfectorController {
                 && !Objects.equals(efector.getTelefono(), efectorDto.getTelefono())))
             efector.setTelefono(efectorDto.getTelefono());
 
-        efector.setEstado(efectorDto.isEstado());
-
+        efector.setActivo(true);
+        
+        /* efector.setEstado(efectorDto.isEstado());
+ */
         if (efector.getObservacion() == null || (efectorDto.getObservacion() != null
                 && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
-
-        if (efectorDto.getPorcentajePorZona() != efector.getPorcentajePorZona()
-                && (efectorDto.getPorcentajePorZona() > 0))
-            efector.setPorcentajePorZona(efectorDto.getPorcentajePorZona());
-
-        if (efector.getLocalidad() == null ||
-                (efectorDto.getIdLocalidad() != null &&
-                        !Objects.equals(efector.getLocalidad().getId(),
-                                efectorDto.getIdLocalidad()))) {
-            efector.setLocalidad(localidadService.findById(efectorDto.getIdLocalidad()).get());
-        }
 
         if (efector.getRegion() == null ||
                 (efectorDto.getIdRegion() != null &&
@@ -101,6 +100,17 @@ public class EfectorController {
                                 efectorDto.getIdRegion()))) {
             efector.setRegion(regionService.findById(efectorDto.getIdRegion()).get());
         }
+
+        if (efector.getLocalidad() == null ||
+                (efectorDto.getIdLocalidad() != null &&
+                        !Objects.equals(efector.getLocalidad().getId(),
+                                efectorDto.getIdLocalidad()))) {
+            efector.setLocalidad(localidadService.findById(efectorDto.getIdLocalidad()).get());
+        }
+        
+        if (efectorDto.getPorcentajePorZona() != efector.getPorcentajePorZona()
+                && (efectorDto.getPorcentajePorZona() > 0))
+            efector.setPorcentajePorZona(efectorDto.getPorcentajePorZona());
 
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -123,24 +133,6 @@ public class EfectorController {
             }
         }
 
-        if (efectorDto.getIdAutoridades() != null) {
-            List<Long> idList = new ArrayList();
-            if (efector.getAutoridades() != null) {
-                for (Autoridad autoridad : efector.getAutoridades()) {
-                    for (Long id : efectorDto.getIdAutoridades()) {
-                        if (!autoridad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdAutoridades() : idList;
-            for (Long id : idsToAdd) {
-                efector.getAutoridades().add(autoridadService.findById(id).get());
-                autoridadService.findById(id).get().setEfector(efector);
-            }
-        }
-
         if (efectorDto.getIdLegajosUdo() != null) {
             List<Long> idList = new ArrayList();
             if (efector.getLegajosUdo() != null) {
@@ -158,7 +150,7 @@ public class EfectorController {
                 legajoService.findById(id).get().setUdo(efector);
             }
         }
-    
+        
         if (efectorDto.getIdLegajos() != null) {
             if (efector.getLegajos() == null) {
                 efector.setLegajos(new ArrayList<>());
@@ -253,7 +245,23 @@ public class EfectorController {
             }
         }
 
-        efector.setActivo(true);
+        if (efectorDto.getIdAutoridades() != null) {
+            List<Long> idList = new ArrayList();
+            if (efector.getAutoridades() != null) {
+                for (Autoridad autoridad : efector.getAutoridades()) {
+                    for (Long id : efectorDto.getIdAutoridades()) {
+                        if (!autoridad.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdAutoridades() : idList;
+            for (Long id : idsToAdd) {
+                efector.getAutoridades().add(autoridadService.findById(id).get());
+                autoridadService.findById(id).get().setEfector(efector);
+            }
+        }
 
         return efector;
     }

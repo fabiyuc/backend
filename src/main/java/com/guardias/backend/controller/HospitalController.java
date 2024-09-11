@@ -90,8 +90,8 @@ public class HospitalController {
         Efector efector = efectorController.createUpdate(hospital, hospitalDto);
         hospital = (Hospital) efector;
 
-        hospital.setEsCabecera(hospitalDto.isEsCabecera());
-        hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
+        hospital.setEsCabecera(hospitalDto.getEsCabecera());
+        hospital.setAdmitePasiva(hospitalDto.getAdmitePasiva());
         hospital.setNivelComplejidad(hospitalDto.getNivelComplejidad());
 
         if (hospitalDto.getIdCaps() != null) {
@@ -120,6 +120,18 @@ public class HospitalController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody HospitalDto hospitalDto) {
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto, 0L);
+
+        if (hospitalDto.getEsCabecera() == null) {
+            return new ResponseEntity<>(new Mensaje("Indicar si es cabecera o no"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (hospitalDto.getAdmitePasiva() == null) {
+            return new ResponseEntity<>(new Mensaje("Indicar si admite pasiva o no"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (hospitalDto.getNivelComplejidad() == null) {
+            return new ResponseEntity<>(new Mensaje("Indicar el nivel de complejidad"), HttpStatus.BAD_REQUEST);
+        }
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(new Hospital(), hospitalDto);

@@ -23,9 +23,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false) // no modifica los metodos Equals y Hash de la supereclase, pero si los utiliza
 public class Hospital extends Efector {
 
-    private boolean esCabecera;
-    private boolean admitePasiva;
-    private int nivelComplejidad;
+    private Boolean esCabecera;
+    private Boolean admitePasiva;
+    private Long nivelComplejidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })
