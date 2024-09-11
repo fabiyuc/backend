@@ -276,4 +276,5 @@ public class EfectorController {
         return new ResponseEntity(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
     }
 
+    
 }
