@@ -14,23 +14,22 @@ public class EfectorDto {
 
     @NotBlank
     private String nombre;
-
     @NotBlank
     private String domicilio;
     private String telefono;
     @NotBlank
     private boolean estado;
-    private String observacion;
     private boolean activo;
-
-    private Long idLocalidad;
+    private String observacion;
     private Long idRegion;
+    private Long idLocalidad;
+
     private List<Long> idDistribucionesHorarias;
-    private List<Long> idAutoridades;
     private List<Long> idLegajosUdo;
     private List<Long> idLegajos;
     private List<Long> idServicios;
     private List<Long> idNotificaciones;
+    private List<Long> idAutoridades;
     private List<Long> idRegistroMensual;
     private List<Long> idDdjjs;
 
