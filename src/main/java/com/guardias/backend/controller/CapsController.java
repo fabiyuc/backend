@@ -89,13 +89,12 @@ public class CapsController {
                                 capsDto.getIdRegion()))) {
             caps.setCabecera(hospitalService.findById(capsDto.getIdCabecera()).get());
         }
+        if (!Objects.equals(caps.getAreaProgramatica(), capsDto.getAreaProgramatica()))
+            caps.setAreaProgramatica(capsDto.getAreaProgramatica());
 
         if (caps.getTipoCaps() == null
                 || (capsDto.getTipoCaps() != null && !Objects.equals(caps.getTipoCaps(), capsDto.getTipoCaps())))
             caps.setTipoCaps(capsDto.getTipoCaps());
-
-        if (!Objects.equals(caps.getAreaProgramatica(), capsDto.getAreaProgramatica()))
-            caps.setAreaProgramatica(capsDto.getAreaProgramatica());
 
         return caps;
     }
@@ -104,6 +103,10 @@ public class CapsController {
     public ResponseEntity<?> create(@RequestBody CapsDto capsDto) {
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(capsDto, 0L);
 
+        if (capsDto.getTipoCaps() == null)
+            return new ResponseEntity(new Mensaje("es obligatorio indicar el tipo de Caps"),
+                    HttpStatus.BAD_REQUEST);
+                    
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(new Caps(), capsDto);
             caps.setActivo(true);
