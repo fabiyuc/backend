@@ -1,10 +1,13 @@
 package com.guardias.backend.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum AgrupacionEnum {
     ADMINISTRATIVO("Administrativo"),
     MANTENIMIENTO_Y_PRODUCCION("Mantenimiento y Producción"),
-    SERVICIOS_GENERALES("servicios Generales"),
-    TECNICOS("Tecnicos"),
+    SERVICIOS_GENERALES("Servicios Generales"),
+    TECNICOS("Técnicos"),
     PROFESIONALES("Profesionales");
 
     private final String displayName;
@@ -16,5 +19,9 @@ public enum AgrupacionEnum {
     @Override
     public String toString() {
         return displayName;
+    }
+
+    public static List<AgrupacionEnum> getAll() {
+        return Arrays.asList(values());
     }
 }

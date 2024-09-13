@@ -84,81 +84,60 @@ public class RevistaController {
     }
 
     public ResponseEntity<?> validations(RevistaDto revistaDto, Long id) {
-
         if (revistaDto.getAgrupacion() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La agrupacion es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("La agrupación es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getIdTipoRevista() == null)
-            return new ResponseEntity(new Mensaje("El tipo de revista es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (revistaDto.getIdCategoria() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La categoria es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
         /*
-         * if (revistaDto.getIdAdicional() == null)
-         * return new ResponseEntity<Mensaje>(new
-         * Mensaje("El adicional es obligatorio"),
+         * if (revistaDto.getIdTipoRevista() == null)
+         * return new ResponseEntity<>(new Mensaje("El tipo de revista es obligatorio"),
          * HttpStatus.BAD_REQUEST);
          */
+        if (revistaDto.getIdCategoria() == null)
+            return new ResponseEntity<>(new Mensaje("La categoría es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (revistaDto.getIdCargaHoraria() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La carga horaria es obligatoria"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("La carga horaria es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // Obtener categoría y carga horaria
         Categoria categoria = categoriaService.findById(revistaDto.getIdCategoria()).orElse(null);
         CargaHoraria cargaHoraria = cargaHorariaService.findById(revistaDto.getIdCargaHoraria()).orElse(null);
 
-        // Verificación de cantidad de horas y categoría
-        if (cargaHoraria != null) {
-            if (cargaHoraria.getCantidad() == 30) {
-                // Si la cantidad de horas es 30
-                if (revistaDto.getIdAdicional() != null) {
-                    return new ResponseEntity<>(new Mensaje("La cantidad de horas de 30 no puede tener adicional"),
-                            HttpStatus.BAD_REQUEST);
-                }
-                if (categoria != null && "24 HS".equals(categoria.getNombre())) {
-                    return new ResponseEntity<>(
-                            new Mensaje("La cantidad de horas de 30 no puede ser para la categoría 24 HS"),
-                            HttpStatus.BAD_REQUEST);
-                }
-            } else if (cargaHoraria.getCantidad() == 24) {
-                // Verificar que la cantidad de horas sea 24
-                if (categoria != null && !"24 HS".equals(categoria.getNombre())) {
-                    return new ResponseEntity<>(
-                            new Mensaje("La categoría debe ser 24 HS para una carga horaria de 24 horas"),
-                            HttpStatus.BAD_REQUEST);
-                }
+        if (categoria == null || cargaHoraria == null) {
+            return new ResponseEntity<>(new Mensaje("Categoría o carga horaria no encontrada"), HttpStatus.BAD_REQUEST);
+        }
 
-                // Verificar que no tenga adicional
-                if (revistaDto.getIdAdicional() != null) {
-                    return new ResponseEntity<>(new Mensaje("La categoría 24 HS no puede tener adicional"),
-                            HttpStatus.BAD_REQUEST);
-                }
-            } else if (categoria != null && "24 HS".equals(categoria.getNombre())) {
+        if (cargaHoraria.getCantidad() == 24) {
+            if (!"24 HS".equals(categoria.getNombre())) {
+                return new ResponseEntity<>(new Mensaje("Si la carga horaria es 24, la categoría debe ser '24 HS'"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            if (revistaDto.getIdAdicional() != null) {
                 return new ResponseEntity<>(
-                        new Mensaje("La carga horaria debe ser de 24 horas para la categoría 24 HS"),
+                        new Mensaje("La categoría '24 HS' con carga horaria de 24 horas no permite adicionales"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            revistaDto.setIdAdicional(null); // Remover el adicional si existe
+        } else if (cargaHoraria.getCantidad() == 30) {
+            if ("24 HS".equals(categoria.getNombre())) {
+                return new ResponseEntity<>(new Mensaje("La carga horaria de 30 horas no permite la categoría '24 HS'"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            if (revistaDto.getIdAdicional() != null) {
+                return new ResponseEntity<>(new Mensaje("La carga horaria de 30 horas no permite adicionales"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            if (revistaDto.getIdAdicional() == null) {
+                return new ResponseEntity<>(
+                        new Mensaje("El adicional es obligatorio para esta categoría y carga horaria"),
                         HttpStatus.BAD_REQUEST);
             }
         }
 
-        // Verificación para categorías distintas de "24 HS" y cantidad de horas no es
-        // 30
-        if (categoria != null && !"24 HS".equals(categoria.getNombre()) && cargaHoraria != null
-                && cargaHoraria.getCantidad() != 30) {
-            if (revistaDto.getIdAdicional() == null) {
-                return new ResponseEntity<>(new Mensaje("El adicional es obligatorio"), HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-
+        return new ResponseEntity<>(new Mensaje("Válido"), HttpStatus.OK);
     }
 
     public Revista createUpdate(Revista revista, RevistaDto revistaDto) {
-        if (revistaDto.getAgrupacion() != null
-                && revista.getAgrupacion() != revistaDto.getAgrupacion())
+        if (revistaDto.getAgrupacion() != null && revista.getAgrupacion() != revistaDto.getAgrupacion())
             revista.setAgrupacion(revistaDto.getAgrupacion());
 
         if (revistaDto.getIdTipoRevista() != null) {
@@ -180,7 +159,15 @@ public class RevistaController {
                     || !Objects.equals(revista.getAdicional().getId(), revistaDto.getIdAdicional())) {
                 revista.setAdicional(adicionalService.findById(revistaDto.getIdAdicional()).get());
             }
+        } else {
+            // En caso de que se haya validado y eliminado el adicional en la validación,
+            // asegurarse de que no se mantenga en la entidad.
+            if (revista.getAdicional() != null && "24 HS".equals(revista.getCategoria().getNombre())
+                    && revista.getCargaHoraria().getCantidad() == 24) {
+                revista.setAdicional(null);
+            }
         }
+
         if (revistaDto.getIdCargaHoraria() != null) {
             if (revista.getCargaHoraria() == null
                     || !Objects.equals(revista.getCargaHoraria().getId(), revistaDto.getIdCargaHoraria())) {
@@ -206,7 +193,6 @@ public class RevistaController {
                 revista.getLegajos().add(legajoService.findById(id).get());
                 legajoService.findById(id).get().setRevista(revista);
             }
-
         }
         revista.setActivo(true);
         return revista;
@@ -229,13 +215,18 @@ public class RevistaController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody RevistaDto revistaDto) {
         if (!revistaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
-        ResponseEntity<?> respuestaValidaciones = validations(revistaDto, id);
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            return new ResponseEntity<>(new Mensaje("No existe la revista"), HttpStatus.NOT_FOUND);
 
-            Revista revista = createUpdate(revistaService.findById(id).get(), revistaDto);
+        ResponseEntity<?> respuestaValidaciones = validations(revistaDto, id);
+
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            // Obtener la revista existente para la comparación
+            Revista existingRevista = revistaService.findById(id).get();
+
+            // Crear/actualizar la revista sin modificar el adicional si no está permitido
+            Revista revista = createUpdate(existingRevista, revistaDto);
             revistaService.save(revista);
-            return new ResponseEntity(new Mensaje("revista actualizada correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Revista actualizada correctamente"), HttpStatus.OK);
         }
         return respuestaValidaciones;
     }
@@ -243,19 +234,19 @@ public class RevistaController {
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!revistaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Mensaje("No existe la revista"), HttpStatus.NOT_FOUND);
 
         Revista revista = revistaService.findById(id).get();
         revista.setActivo(false);
         revistaService.save(revista);
-        return new ResponseEntity(new Mensaje("revista eliminada correctamente"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Revista eliminada correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
     public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
         if (!revistaService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe la revista"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Mensaje("No existe la revista"), HttpStatus.NOT_FOUND);
         revistaService.deleteById(id);
-        return new ResponseEntity(new Mensaje("revista eliminada FISICAMENTE"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Revista eliminada físicamente"), HttpStatus.OK);
     }
 }
