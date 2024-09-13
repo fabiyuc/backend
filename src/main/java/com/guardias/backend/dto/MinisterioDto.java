@@ -2,6 +2,7 @@ package com.guardias.backend.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class MinisterioDto extends EfectorDto {
 
+    @NotBlank
     private Long idCabecera;
     private List<Long> idMinisterios;
 
