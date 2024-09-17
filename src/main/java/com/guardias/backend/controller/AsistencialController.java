@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
+import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
@@ -85,6 +86,13 @@ public class AsistencialController {
         List<AsistencialListDto> asistencialListDtos = asistencialService.getAsistencialList();
        
         return new ResponseEntity<List<AsistencialListDto>>(asistencialListDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/listForLegajosDtos")
+    public ResponseEntity<List<AsistencialListForLegajosDto>> listForLegajosDtos() {
+        List<AsistencialListForLegajosDto> asistencialListForLegajosDtos = asistencialService.getAsistencialListForLegajos();
+       
+        return new ResponseEntity<List<AsistencialListForLegajosDto>>(asistencialListForLegajosDtos, HttpStatus.OK);
     }
 
    
