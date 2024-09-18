@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
@@ -68,6 +69,17 @@ public class HospitalController {
     public ResponseEntity<List<Hospital>> listPasivas() {
         List<Hospital> list = hospitalService.findByAdmitePasiva();
         return new ResponseEntity<List<Hospital>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listCaps/{hospitalId}")
+    public ResponseEntity<?> listActiveCapsByHospitalId(@PathVariable Long hospitalId) {
+        List<CapsNameDto> capsList = hospitalService.findActiveCapsByHospitalId(hospitalId);
+
+        if (capsList != null) {
+            return new ResponseEntity<>(capsList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Hospital no encontrado o no está activo", HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/detail/{id}")

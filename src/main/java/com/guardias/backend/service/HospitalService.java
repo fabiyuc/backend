@@ -2,10 +2,12 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.repository.HospitalRepository;
 
@@ -70,6 +72,20 @@ public class HospitalService {
 
     public List<String> obtenerHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir) {
         return hospitalRepository.findHospitalesPorNivelExcluyendo(nivelComplejidad,  nombreAExcluir);
+    }
+
+    public List<CapsNameDto> findActiveCapsByHospitalId(Long hospitalId) {
+        Optional<Hospital> hospital = hospitalRepository.findByIdAndActivoTrue(hospitalId);
+        
+        if (hospital.isPresent()) {
+            List<CapsNameDto> capsList = hospital.get().getCaps().stream()
+                    .filter(caps -> caps.isActivo()) // Filtrar solo los CAPS activos
+                    .map(caps -> new CapsNameDto(caps.getId(), caps.getNombre())) // Mapear a DTO
+                    .collect(Collectors.toList());
+            return capsList;
+        }
+        
+        return null;
     }
 
 }

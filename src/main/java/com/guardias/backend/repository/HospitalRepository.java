@@ -33,4 +33,5 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     @Query("SELECT h.nombre FROM Hospital h WHERE h.nivelComplejidad = ?1 AND h.nombre <> ?2")
     List<String> findHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir);
 
+    Optional<Hospital> findByIdAndActivoTrue(Long id);
 }
