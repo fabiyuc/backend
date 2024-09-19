@@ -73,21 +73,21 @@ public class AsistencialController {
         List<Asistencial> list = asistencialService.findAll();
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
-
+    //lista asistenciales con datos personales resumido
     @GetMapping("/listSummary")
     public ResponseEntity<List<AsistencialSummaryDto>> listSummary() {
         List<AsistencialSummaryDto> summaryList = asistencialService.getAsistencialSummaryList();
        
         return new ResponseEntity<List<AsistencialSummaryDto>>(summaryList, HttpStatus.OK);
     }
-
+    //lista asistenciales con datos personales completos
     @GetMapping("/listDtos")
     public ResponseEntity<List<AsistencialListDto>> listDtos() {
         List<AsistencialListDto> asistencialListDtos = asistencialService.getAsistencialList();
        
         return new ResponseEntity<List<AsistencialListDto>>(asistencialListDtos, HttpStatus.OK);
     }
-
+    //lista asistenciales habilitados para crear legajo segun tipoGuardia
     @GetMapping("/listForLegajosDtos")
     public ResponseEntity<List<AsistencialListForLegajosDto>> listForLegajosDtos() {
         List<AsistencialListForLegajosDto> asistencialListForLegajosDtos = asistencialService.getAsistencialListForLegajos();
@@ -95,8 +95,15 @@ public class AsistencialController {
         return new ResponseEntity<List<AsistencialListForLegajosDto>>(asistencialListForLegajosDtos, HttpStatus.OK);
     }
 
-   
+    //lista asistenciales habilitados de un hospital para crear distribuciones horarias (CARGO Y AGRUP)
+    @GetMapping("/listForDistHorariaDtos")
+    public ResponseEntity<List<AsistencialListForLegajosDto>> listForDistHoraria() {
+        List<AsistencialListForLegajosDto> asistencialListForLegajosDtos = asistencialService.getAsistencialListForLegajos();
+       
+        return new ResponseEntity<List<AsistencialListForLegajosDto>>(asistencialListForLegajosDtos, HttpStatus.OK);
+    }
 
+    //lista legajos segun id Asistencial
     @GetMapping("/legajos/{id}")
     public ResponseEntity<?> getLegajosByAsistencial(@PathVariable("id") Long id) {
         if (!asistencialService.activo(id))
@@ -106,6 +113,17 @@ public class AsistencialController {
         List<Legajo> legajos = asistencial.getLegajos();
 
         return new ResponseEntity<>(legajos, HttpStatus.OK);
+    }
+
+    //Lista asistenciales segun Udo con tipoGuardia CARGO Y/O AGRUPACION
+    @GetMapping("/listByUdoAndTipoGuardia/{idUdo}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByUdoAndTipoGuardia(@PathVariable Long idUdo) {
+        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByUdoAndTipoGuardia(idUdo);
+        
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

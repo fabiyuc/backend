@@ -159,7 +159,7 @@ public class AsistencialService {
             .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CONTRAFACTURA"));
 
         if (!hasContrafactura) {
-            // Mapeamos los nombres de los tipos de guardia a una lista de strings
+            // Mapea los nombres de los tipos de guardia a una lista de strings
             List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
                 .map(tipoGuardia -> tipoGuardia.getNombre().name())
                 .collect(Collectors.toList());
@@ -177,5 +177,37 @@ public class AsistencialService {
 
     return dtoList; 
     }
+
+    public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
+
+        List<Asistencial> asistenciales = asistencialRepository.findByUdoAndActivoTrue(udoId);
+    
+        List<AsistencialSummaryDto> dtoList = new ArrayList<>();
+    
+        for (Asistencial asistencial : asistenciales) {
+            
+            boolean hasCargoOrAgrupacion = asistencial.getTiposGuardias().stream()
+                .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CARGO") || tipoGuardia.getNombre().name().equals("AGRUPACION"));
+    
+            if (hasCargoOrAgrupacion) {
+                // Mapeam los nombres de los tipos de guardia a una lista de strings
+                List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
+                    .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                    .collect(Collectors.toList());
+    
+                AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    nombresTiposGuardias
+                );
+    
+                dtoList.add(dto);
+            }
+        }
+    
+        return dtoList;
+    }
+    
 
 }
