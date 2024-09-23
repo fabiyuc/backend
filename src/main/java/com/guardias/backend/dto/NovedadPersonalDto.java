@@ -27,7 +27,13 @@ public class NovedadPersonalDto {
 
     @NotNull
     private Long idPersona;
+
+    @NotNull
     private Long idSuplente;
+    
+    @NotNull
     private Long idArticulo;
+
+    @NotNull
     private Long idInciso;
 }
