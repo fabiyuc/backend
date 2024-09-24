@@ -52,7 +52,7 @@ public class Legajo {
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_revista")
   @JsonIgnoreProperties({ "hibernateLazyInitializer",
-      "legajos", "agrupacion", "activo" })
+      "legajos" })
   private Revista revista;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

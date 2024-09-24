@@ -97,7 +97,7 @@ public abstract class Person {
 
     @OneToOne
     @JoinColumn(name = "usuario_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","password","email","registrosActividades","person","nombre" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","email","registrosActividades","person","nombre" })
     private Usuario usuario;
     
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",

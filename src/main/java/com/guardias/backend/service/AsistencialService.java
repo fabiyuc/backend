@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
+import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.TipoGuardia;
@@ -159,5 +160,69 @@ public class AsistencialService {
 
         return DtoList;
     }
+
+    // Verifica si alguno de los tipos de guardias del Asistencial es 'CONTRAFACTURA' para excluirlo de la lista
+    public List<AsistencialListForLegajosDto> getAsistencialListForLegajos() {
+    
+    List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+
+    List<AsistencialListForLegajosDto> dtoList = new ArrayList<>();
+
+    for (Asistencial asistencial : asistenciales) {
+        
+        boolean hasContrafactura = asistencial.getTiposGuardias().stream()
+            .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CONTRAFACTURA"));
+
+        if (!hasContrafactura) {
+            // Mapea los nombres de los tipos de guardia a una lista de strings
+            List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
+                .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                .collect(Collectors.toList());
+
+            AsistencialListForLegajosDto dto = new AsistencialListForLegajosDto(
+                asistencial.getId(),
+                asistencial.getNombre(),
+                asistencial.getApellido(),
+                nombresTiposGuardias
+            );
+
+            dtoList.add(dto);
+        }
+    }
+
+    return dtoList; 
+    }
+
+    public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
+
+        List<Asistencial> asistenciales = asistencialRepository.findByUdoAndActivoTrue(udoId);
+    
+        List<AsistencialSummaryDto> dtoList = new ArrayList<>();
+    
+        for (Asistencial asistencial : asistenciales) {
+            
+            boolean hasCargoOrAgrupacion = asistencial.getTiposGuardias().stream()
+                .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CARGO") || tipoGuardia.getNombre().name().equals("AGRUPACION"));
+    
+            if (hasCargoOrAgrupacion) {
+                // Mapeam los nombres de los tipos de guardia a una lista de strings
+                List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
+                    .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                    .collect(Collectors.toList());
+    
+                AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    nombresTiposGuardias
+                );
+    
+                dtoList.add(dto);
+            }
+        }
+    
+        return dtoList;
+    }
+    
 
 }

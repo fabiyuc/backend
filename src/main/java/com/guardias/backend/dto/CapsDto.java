@@ -23,6 +23,4 @@ public class CapsDto extends EfectorDto {
     @NotBlank
     private TipoCaps tipoCaps;
 
-    private boolean activo;
-
 }

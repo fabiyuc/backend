@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DistribucionHorariaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionHoraria;
+import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.PersonService;
@@ -69,12 +71,33 @@ public class DistribucionHorariaController {
             distribucionHoraria.setPersona(personService.findById(distribucionHorariaDto.getIdPersona()));
         }
 
-        if (distribucionHoraria.getEfector() == null ||
+        // Verifica si la persona tiene legajos y si el UDO del legajo coincide con el Efector del DTO
+        if (distribucionHoraria.getPersona() != null && distribucionHoraria.getPersona().getLegajos() != null) {
+            Legajo legajoActual = distribucionHoraria.getPersona().getLegajos().stream()
+                    .filter(Legajo::getActual) // Filtrar el legajo actual
+                    .findFirst()
+                    .orElse(null);
+
+            if (legajoActual != null && legajoActual.getUdo() != null) {
+                Efector udoPersona = legajoActual.getUdo();
+                Efector efectorDto = efectorService.findById(distribucionHorariaDto.getIdEfector());
+
+                // Compara el UDO de la persona con el Efector del DTO antes de asignar
+                if (Objects.equals(udoPersona.getId(), efectorDto.getId())) {
+                    distribucionHoraria.setEfector(efectorDto);
+                } else {
+                    throw new IllegalArgumentException("El Efector del DTO no coincide con el UDO de la persona.");
+                }
+
+            }
+        }
+
+        /* if (distribucionHoraria.getEfector() == null ||
                 (distribucionHorariaDto.getIdEfector() != null &&
                         !Objects.equals(distribucionHoraria.getEfector().getId(),
                                 distribucionHorariaDto.getIdEfector()))) {
             distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto.getIdEfector()));
-        }
+        } */
 
         if (distribucionHorariaDto.getFechaInicio() != distribucionHoraria.getFechaInicio()
                 && distribucionHorariaDto.getFechaInicio() != null)

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
@@ -70,6 +71,17 @@ public class HospitalController {
         return new ResponseEntity<List<Hospital>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listCaps/{hospitalId}")
+    public ResponseEntity<?> listActiveCapsByHospitalId(@PathVariable Long hospitalId) {
+        List<CapsNameDto> capsList = hospitalService.findActiveCapsByHospitalId(hospitalId);
+
+        if (capsList != null) {
+            return new ResponseEntity<>(capsList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Hospital no encontrado o no está activo", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<Hospital> getById(@PathVariable("id") Long id) {
         if (!hospitalService.activo(id))
@@ -90,8 +102,8 @@ public class HospitalController {
         Efector efector = efectorController.createUpdate(hospital, hospitalDto);
         hospital = (Hospital) efector;
 
-        hospital.setEsCabecera(hospitalDto.isEsCabecera());
-        hospital.setAdmitePasiva(hospitalDto.isAdmitePasiva());
+        hospital.setEsCabecera(hospitalDto.getEsCabecera());
+        hospital.setAdmitePasiva(hospitalDto.getAdmitePasiva());
         hospital.setNivelComplejidad(hospitalDto.getNivelComplejidad());
 
         if (hospitalDto.getIdCaps() != null) {
@@ -120,6 +132,18 @@ public class HospitalController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody HospitalDto hospitalDto) {
         ResponseEntity<?> respuestaValidaciones = efectorController.validations(hospitalDto, 0L);
+
+        if (hospitalDto.getEsCabecera() == null) {
+            return new ResponseEntity<>(new Mensaje("Indicar si es cabecera o no"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (hospitalDto.getAdmitePasiva() == null) {
+            return new ResponseEntity<>(new Mensaje("Indicar si admite pasiva o no"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (hospitalDto.getNivelComplejidad() == null) {
+            return new ResponseEntity<>(new Mensaje("Indicar el nivel de complejidad"), HttpStatus.BAD_REQUEST);
+        }
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(new Hospital(), hospitalDto);
