@@ -2,6 +2,8 @@ package com.guardias.backend.dto;
 
 import java.time.LocalDate;
 
+import com.guardias.backend.enums.TipoNovedadEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,7 @@ public class NovedadPersonalDto {
     private boolean activo;
 
     @NotBlank
-    private String descripcion;
+    private TipoNovedadEnum descripcion;
 
     @NotNull
     private Long idPersona;

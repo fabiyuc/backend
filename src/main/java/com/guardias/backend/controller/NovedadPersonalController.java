@@ -117,8 +117,7 @@ public class NovedadPersonalController {
         novedadPersonal.setActual(novedadPersonalDto.isActual());
 
         if (novedadPersonalDto.getDescripcion() != null
-                && !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion())
-                && !novedadPersonalDto.getDescripcion().isEmpty())
+                && !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion()))
             novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
 
         if (novedadPersonal.getPersona() == null ||
