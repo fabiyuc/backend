@@ -2,8 +2,6 @@ package com.guardias.backend.dto;
 
 import java.util.List;
 
-import com.guardias.backend.enums.AgrupacionEnum;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,13 +18,13 @@ public class RevistaDto {
 
     @NotBlank
     private Long idCategoria;
-    @NotBlank
+    @NotNull
     private Long idAdicional;
 
     @NotBlank
     private Long idCargaHoraria;
     private List<Long> idLegajos;
     @NotNull
-    private AgrupacionEnum agrupacion;
+    private String agrupacion; // Cambiado a String para el displayName
 
 }

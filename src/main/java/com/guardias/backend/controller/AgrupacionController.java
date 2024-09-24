@@ -13,11 +13,9 @@ import com.guardias.backend.enums.AgrupacionEnum;
 @RestController
 @RequestMapping("/agrupacion")
 @CrossOrigin(origins = "http://localhost:4200")
-
 public class AgrupacionController {
     @GetMapping
-    public ResponseEntity<List<AgrupacionEnum>> getAllAgrupaciones() {
-        return ResponseEntity.ok(AgrupacionEnum.getAll());
+    public ResponseEntity<List<AgrupacionEnum.AgrupacionEnumDto>> getAllAgrupaciones() {
+        return ResponseEntity.ok(AgrupacionEnum.getAllAgrupaciones());
     }
-
 }

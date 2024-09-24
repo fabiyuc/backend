@@ -23,6 +23,7 @@ import com.guardias.backend.entity.CargaHoraria;
 import com.guardias.backend.entity.Categoria;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Revista;
+import com.guardias.backend.enums.AgrupacionEnum;
 import com.guardias.backend.service.AdicionalService;
 import com.guardias.backend.service.CargaHorariaService;
 import com.guardias.backend.service.CategoriaService;
@@ -70,12 +71,17 @@ public class RevistaController {
 
     @PostMapping("/check")
     public ResponseEntity<Revista> checkRevista(@RequestBody RevistaDto revistaDto) {
+        // Convertir el String de agrupación a AgrupacionEnum
+        AgrupacionEnum agrupacionEnum = AgrupacionEnum.fromDisplayName(revistaDto.getAgrupacion());
+
+        // Verificar que el enum no sea nulo
+
         Revista existingRevista = revistaService.findByAttributes(
                 revistaDto.getIdTipoRevista(),
                 revistaDto.getIdCategoria(),
                 revistaDto.getIdAdicional(),
                 revistaDto.getIdCargaHoraria(),
-                revistaDto.getAgrupacion());
+                agrupacionEnum);
         if (existingRevista != null) {
             return ResponseEntity.ok(existingRevista);
         } else {
@@ -105,27 +111,19 @@ public class RevistaController {
             return new ResponseEntity<>(new Mensaje("Categoría o carga horaria no encontrada"), HttpStatus.BAD_REQUEST);
         }
 
-        if (cargaHoraria.getCantidad() == 24) {
-            if (!"24 HS".equals(categoria.getNombre())) {
-                return new ResponseEntity<>(new Mensaje("Si la carga horaria es 24, la categoría debe ser '24 HS'"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            if (revistaDto.getIdAdicional() != null) {
-                return new ResponseEntity<>(
-                        new Mensaje("La categoría '24 HS' con carga horaria de 24 horas no permite adicionales"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            revistaDto.setIdAdicional(null); // Remover el adicional si existe
-        } else if (cargaHoraria.getCantidad() == 30) {
+        if (cargaHoraria.getCantidad() == 24 || cargaHoraria.getCantidad() == 30) {
             if ("24 HS".equals(categoria.getNombre())) {
-                return new ResponseEntity<>(new Mensaje("La carga horaria de 30 horas no permite la categoría '24 HS'"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            if (revistaDto.getIdAdicional() != null) {
-                return new ResponseEntity<>(new Mensaje("La carga horaria de 30 horas no permite adicionales"),
-                        HttpStatus.BAD_REQUEST);
+                // La categoría '24 HS' no permite adicionales
+                if (revistaDto.getIdAdicional() != null) {
+                    return new ResponseEntity<>(
+                            new Mensaje(
+                                    "La categoría '24 HS' con carga horaria de 24 o 30 horas no permite adicionales"),
+                            HttpStatus.BAD_REQUEST);
+                }
+                revistaDto.setIdAdicional(null); // Asegurarse de que sea null
             }
         } else {
+            // Validaciones para otras combinaciones
             if (revistaDto.getIdAdicional() == null) {
                 return new ResponseEntity<>(
                         new Mensaje("El adicional es obligatorio para esta categoría y carga horaria"),
@@ -137,8 +135,17 @@ public class RevistaController {
     }
 
     public Revista createUpdate(Revista revista, RevistaDto revistaDto) {
-        if (revistaDto.getAgrupacion() != null && revista.getAgrupacion() != revistaDto.getAgrupacion())
-            revista.setAgrupacion(revistaDto.getAgrupacion());
+        // Convertir el displayName de agrupación a su correspondiente enum
+        if (revistaDto.getAgrupacion() != null) {
+            AgrupacionEnum agrupacionEnum = AgrupacionEnum.fromDisplayName(revistaDto.getAgrupacion());
+            if (agrupacionEnum != null) {
+                revista.setAgrupacion(agrupacionEnum);
+            } else {
+                // Log o lanzar excepción si no se encuentra la agrupación
+                System.out.println("Agrupación no encontrada para: " + revistaDto.getAgrupacion());
+
+            }
+        }
 
         if (revistaDto.getIdTipoRevista() != null) {
             if (revista.getTipoRevista() == null
@@ -160,14 +167,9 @@ public class RevistaController {
                 revista.setAdicional(adicionalService.findById(revistaDto.getIdAdicional()).get());
             }
         } else {
-            // En caso de que se haya validado y eliminado el adicional en la validación,
-            // asegurarse de que no se mantenga en la entidad.
-            if (revista.getAdicional() != null && "24 HS".equals(revista.getCategoria().getNombre())
-                    && revista.getCargaHoraria().getCantidad() == 24) {
-                revista.setAdicional(null);
-            }
+            // Si se ha validado que el adicional debe ser nulo
+            revista.setAdicional(null);
         }
-
         if (revistaDto.getIdCargaHoraria() != null) {
             if (revista.getCargaHoraria() == null
                     || !Objects.equals(revista.getCargaHoraria().getId(), revistaDto.getIdCargaHoraria())) {
