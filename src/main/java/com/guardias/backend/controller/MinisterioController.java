@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,11 +78,15 @@ public class MinisterioController {
         Efector efector = efectorController.createUpdate(ministerio, ministerioDto);
         ministerio = (Ministerio) efector;
 
-        if (ministerio.getCabecera() == null ||
-                (ministerioDto.getIdCabecera() != null &&
-                        !Objects.equals(ministerio.getCabecera().getId(),
-                                ministerioDto.getIdRegion()))) {
-            ministerio.setCabecera(ministerioService.findById(ministerioDto.getIdCabecera()).get());
+        // Asignamos la cabecera solo si idCabecera no es nulo
+        if (ministerioDto.getIdCabecera() != null) {
+            Ministerio cabecera = ministerioService.findById(ministerioDto.getIdCabecera())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "No se encontró un Ministerio con id: " + ministerioDto.getIdCabecera()));
+            ministerio.setCabecera(cabecera);
+        } else {
+            // Si idCabecera es nulo, asignamos null a la cabecera
+            ministerio.setCabecera(null);
         }
 
         if (ministerioDto.getIdMinisterios() != null) {
