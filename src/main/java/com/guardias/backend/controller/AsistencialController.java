@@ -105,7 +105,7 @@ public class AsistencialController {
 
     //lista legajos segun id Asistencial
     @GetMapping("/legajos/{id}")
-    public ResponseEntity<?> getLegajosByAsistencial(@PathVariable("id") Long id) {
+    public ResponseEntity<List<Legajo>> getLegajosByAsistencial(@PathVariable("id") Long id) {
         if (!asistencialService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
 
