@@ -83,7 +83,7 @@ public class AuthController {
         Set<Rol> roles = new HashSet<>();
         //por defecto todos van a ser USER
         roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
-        if (nuevoUsuario.getRoles().contains("admin"))
+        if (nuevoUsuario.getRoles().contains("ROLE_ADMIN"))
             roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
         usuario.setRoles(roles);
 
