@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class IncisoDto extends LeyDto {
 
     private Long idIncisoPadre;
-    private Long idArticulo;
+    private Long idArticulo; // obligatorio y no vacío para inciso
     private List<Long> idNovedadesPersonales;
     private boolean activo;
 }

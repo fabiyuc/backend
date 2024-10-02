@@ -37,7 +37,7 @@ public class NovedadPersonal {
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
-    
+
     @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
     private boolean actual; // Si la novedad es actual(1) o pasada(0)
 
@@ -69,14 +69,14 @@ public class NovedadPersonal {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_articulo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
             "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
             "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private Articulo articulo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_inciso")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
             "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
             "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private Inciso inciso;
