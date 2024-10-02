@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class NovedadPersonalDto {
 
     @NotNull
-    private LocalDate fechaInicio;
+    private LocalDate fechaInicio; // obligatorio y no vacío para novedad personal
     private LocalDate fechaFinal;
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
@@ -32,7 +32,7 @@ public class NovedadPersonalDto {
 
     @NotNull
     private Long idSuplente;
-    
+
     @NotNull
     private Long idArticulo;
 

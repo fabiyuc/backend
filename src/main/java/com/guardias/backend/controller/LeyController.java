@@ -39,9 +39,12 @@ public class LeyController {
         if (leyDto.getEstado() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El estado es obligatorio"),
                     HttpStatus.BAD_REQUEST);
-        if (leyDto.getFechaAlta() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de alta es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (leyDto.getFechaAlta() == null)
+         * return new ResponseEntity<Mensaje>(new
+         * Mensaje("La fecha de alta es obligatoria"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (leyDto.getIdTipoLey() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("El tipo de Ley es obligatoria"),

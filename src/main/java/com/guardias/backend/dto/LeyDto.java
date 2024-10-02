@@ -15,18 +15,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LeyDto {
     @NotEmpty
-    private String numero;
+    private String numero; // obligatorio y no vacío para articulo e inciso
     @NotEmpty
-    private String denominacion;
-    private String detalle;
+    private String denominacion; // obligatorio y no vacío para articulo e inciso
     @NotEmpty
-    private EstadoLey estado;
+    private String detalle; // obligatorio y no vacío para articulo e inciso
     @NotEmpty
+    private EstadoLey estado; // obligatorio y no vacío para articulo e inciso
+
     private LocalDate fechaAlta;
     private LocalDate fechaBaja;
     private LocalDate fechaModificacion;
     private String motivoModificacion;
     private boolean activo;
     @NotNull
-    Long idTipoLey;
+    Long idTipoLey; // obligatorio y no vacío para articulo e inciso
 }
