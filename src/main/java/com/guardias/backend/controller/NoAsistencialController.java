@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.NoAsistencialService;
@@ -47,11 +48,21 @@ public class NoAsistencialController {
         return new ResponseEntity<List<NoAsistencialListDto>>(noAsistencialListDtos, HttpStatus.OK);
     }
 
-
     @GetMapping("/listAll")
     public ResponseEntity<List<NoAsistencial>> listAll() {
         List<NoAsistencial> list = noAsistencialService.findAll();
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/legajos/{id}")
+    public ResponseEntity<List<Legajo>> getLegajosByNoAsistencial(@PathVariable("id") Long id) {
+        if (!noAsistencialService.activo(id))
+            return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
+
+        NoAsistencial noAsistencial = noAsistencialService.findById(id).get();
+        List<Legajo> legajos = noAsistencial.getLegajos();
+
+        return new ResponseEntity<>(legajos, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
