@@ -67,7 +67,7 @@ public class TipoLicencia {
             "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
             "novedadesPersonales",
             "tipoLey", "articuloPadre", "incisoPadre", "incisos", "subIncisos", "subArticulos",
-            "tipoLicencia" })
+            "tipoLicencia", "articulo" })
     private List<Inciso> incisos = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

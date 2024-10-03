@@ -214,7 +214,7 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("La novedad no exixte"), HttpStatus.NOT_FOUND);
 
         NovedadPersonal novedadPersonal = novedadPersonalService.findById(id).get();
-        novedadPersonal.setActual(false);
+        novedadPersonal.setActivo(false);
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity<>(new Mensaje("novedad eliminada correctamente"), HttpStatus.OK);
     }

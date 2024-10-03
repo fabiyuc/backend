@@ -3,7 +3,6 @@ package com.guardias.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -65,7 +64,9 @@ public class Inciso extends Ley {
         private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-        @JsonIgnore
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "tipoLicencias",
+                        "articulo",
+                        "articulo" })
         @JoinColumn(name = "id_tipo_licencia")
         private TipoLicencia tipoLicencia;
 
