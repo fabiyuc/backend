@@ -1,6 +1,8 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,10 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoLicenciaDto;
+import com.guardias.backend.entity.Articulo;
+import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.TipoLicencia;
+import com.guardias.backend.service.ArticuloService;
+import com.guardias.backend.service.IncisoService;
+import com.guardias.backend.service.TipoLeyService;
 import com.guardias.backend.service.TipoLicenciaService;
-
-import io.micrometer.common.util.StringUtils;
 
 @Controller
 @RequestMapping("/tipoLicencia")
@@ -29,6 +34,12 @@ public class TipoLicenciaController {
 
     @Autowired
     TipoLicenciaService tipoLicenciaService;
+    @Autowired
+    ArticuloService articuloService;
+    @Autowired
+    IncisoService incisoService;
+    @Autowired
+    TipoLeyService tipoLeyService;
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoLicencia>> list() {
@@ -58,66 +69,131 @@ public class TipoLicenciaController {
         return new ResponseEntity(tipoLicencia, HttpStatus.OK);
     }
 
+    private ResponseEntity<?> validations(TipoLicenciaDto tipoLicenciaDto, Long id) {
+        if (tipoLicenciaDto.getNombre() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("El nombre es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+        if (tipoLicenciaDto.getIdTipoLey() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("La ley es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (tipoLicenciaDto.getIdArticulos() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("El articulo es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (tipoLicenciaDto.getIdIncisos() == null)
+         * return new ResponseEntity<Mensaje>(new Mensaje("El inciso es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
+
+        if (tipoLicenciaService.existsByNombre(tipoLicenciaDto.getNombre())
+                && (!tipoLicenciaService.findByNombre(tipoLicenciaDto.getNombre()).get().getId().equals(id)))
+            return new ResponseEntity<Mensaje>(new Mensaje("Ese nombre ya existe"),
+                    HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private TipoLicencia createUpdate(TipoLicencia tipoLicencia, TipoLicenciaDto tipoLicenciaDto) {
+
+        if (tipoLicenciaDto.getNombre() != null && !tipoLicenciaDto.getNombre().isEmpty()
+                && !tipoLicenciaDto.getNombre().equals(tipoLicencia.getNombre())) {
+            tipoLicencia.setNombre(tipoLicenciaDto.getNombre());
+        }
+
+        if (tipoLicenciaDto.getIdArticulos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (tipoLicencia.getArticulos() != null) {
+                for (Articulo articulo : tipoLicencia.getArticulos()) {
+                    for (Long id : tipoLicenciaDto.getIdArticulos()) {
+                        if (!articulo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                tipoLicencia.setArticulos(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? tipoLicenciaDto.getIdArticulos() : idList;
+            for (Long id : idsToAdd) {
+                tipoLicencia.getArticulos().add(articuloService.findById(id).get());
+                articuloService.findById(id).get().setTipoLicencia(tipoLicencia);
+            }
+        }
+
+        if (tipoLicenciaDto.getIdIncisos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (tipoLicencia.getIncisos() != null) {
+                for (Inciso inciso : tipoLicencia.getIncisos()) {
+                    for (Long id : tipoLicenciaDto.getIdIncisos()) {
+                        if (!inciso.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                tipoLicencia.setIncisos(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? tipoLicenciaDto.getIdIncisos() : idList;
+            for (Long id : idsToAdd) {
+                tipoLicencia.getIncisos().add(incisoService.findById(id).get());
+                incisoService.findById(id).get().setTipoLicencia(tipoLicencia);
+            }
+        }
+
+        if (tipoLicencia.getTipoLey() == null ||
+                (tipoLicenciaDto.getIdTipoLey() != null &&
+                        !Objects.equals(tipoLicencia.getTipoLey().getId(),
+                                tipoLicenciaDto.getIdTipoLey()))) {
+            tipoLicencia.setTipoLey(tipoLeyService.findById(tipoLicenciaDto.getIdTipoLey()).get());
+        }
+
+        tipoLicencia.setActivo(true);
+        return tipoLicencia;
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody TipoLicenciaDto tipoLicenciaDto) {
-        if (StringUtils.isBlank(tipoLicenciaDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(tipoLicenciaDto.getLey()))
-            return new ResponseEntity(new Mensaje("el numero de ley es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        ResponseEntity<?> respuestaValidaciones = validations(tipoLicenciaDto, 0L);
 
-        TipoLicencia tipoLicencia = new TipoLicencia();
-
-        tipoLicencia.setNombre(tipoLicenciaDto.getNombre());
-        tipoLicencia.setLey(tipoLicenciaDto.getLey());
-        tipoLicencia.setArticulo(tipoLicenciaDto.getArticulo());
-        tipoLicencia.setInciso(tipoLicenciaDto.getInciso());
-
-        tipoLicenciaService.save(tipoLicencia);
-        return new ResponseEntity(new Mensaje("Tipo de licencia creada correctamente"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            TipoLicencia tipoLicencia = createUpdate(new TipoLicencia(), tipoLicenciaDto);
+            tipoLicenciaService.save(tipoLicencia);
+            return new ResponseEntity<Mensaje>(new Mensaje("Tipo de licencia creado correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody TipoLicenciaDto tipoLicenciaDto) {
-        if (!tipoLicenciaService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el tipo de licencia"), HttpStatus.NOT_FOUND);
-        if (StringUtils.isBlank(tipoLicenciaDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
 
-        if (StringUtils.isBlank(tipoLicenciaDto.getLey()))
-            return new ResponseEntity(new Mensaje("el numero de ley es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        if (!tipoLicenciaService.activo(id))
+            return new ResponseEntity<>(new Mensaje("El tipo de licencia no existe"), HttpStatus.NOT_FOUND);
 
-        TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).get();
+        ResponseEntity<?> respuestaValidaciones = validations(tipoLicenciaDto, id);
 
-        if (!tipoLicenciaDto.getNombre().equals(tipoLicencia.getNombre()))
-            tipoLicencia.setNombre(tipoLicenciaDto.getNombre());
-
-        if (!tipoLicenciaDto.getLey().equals(tipoLicencia.getLey()))
-            tipoLicencia.setLey(tipoLicenciaDto.getLey());
-
-        if (!tipoLicenciaDto.getArticulo().equals(tipoLicencia.getArticulo()))
-            tipoLicencia.setArticulo(tipoLicenciaDto.getArticulo());
-
-        if (!tipoLicenciaDto.getInciso().equals(tipoLicencia.getInciso()))
-            tipoLicencia.setInciso(tipoLicenciaDto.getInciso());
-
-        tipoLicenciaService.save(tipoLicencia);
-        return new ResponseEntity(new Mensaje("Tipo de licencia modificado correctamente"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            TipoLicencia tipoLicencia = createUpdate(tipoLicenciaService.findById(id).get(), tipoLicenciaDto);
+            tipoLicenciaService.save(tipoLicencia);
+            return new ResponseEntity<Mensaje>(new Mensaje("Tipo de licencia modificado correctamente"), HttpStatus.OK);
+        }
+        return respuestaValidaciones;
     }
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!tipoLicenciaService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+        if (!tipoLicenciaService.activo(id)) {
+            return new ResponseEntity(new Mensaje("Tipo de licencia no encontrada"), HttpStatus.NOT_FOUND);
+        }
+        TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).orElse(null);
 
-        TipoLicencia tipoLicencia = tipoLicenciaService.findById(id).get();
+        if (tipoLicencia != null && !tipoLicencia.getArticulos().isEmpty()) {
+            return new ResponseEntity(new Mensaje("No se puede eliminar el tipo licencia, esta en uso"),
+                    HttpStatus.BAD_REQUEST);
+        }
         tipoLicencia.setActivo(false);
         tipoLicenciaService.save(tipoLicencia);
-        return new ResponseEntity<>(new Mensaje("Tipo Licencia eliminado correctamente"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("Tipo de licencia eliminado logicamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")

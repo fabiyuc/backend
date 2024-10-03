@@ -1,12 +1,21 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -27,12 +36,16 @@ public class TipoLicencia {
     private Long id;
     @Column(columnDefinition = "VARCHAR(30)")
     private String nombre;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String ley;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String articulo;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String inciso;
+    /*
+     * @Column(columnDefinition = "VARCHAR(10)")
+     * private String ley;
+     * 
+     * @Column(columnDefinition = "VARCHAR(10)")
+     * private String articulo;
+     * 
+     * @Column(columnDefinition = "VARCHAR(10)")
+     * private String inciso;
+     */
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
     @Temporal(TemporalType.DATE)
@@ -41,8 +54,32 @@ public class TipoLicencia {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFin;
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "nombre","ley", "articulo", "inciso","fechaInicio","fechaFin", "activo" })
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLicencia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
+            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
+            "novedadesPersonales",
+            "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos", "articulo",
+            "incisoPadre", "tipoLicencia" })
+    private List<Articulo> articulos = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLicencia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
+            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
+            "novedadesPersonales",
+            "tipoLey", "articuloPadre", "incisoPadre", "incisos", "subIncisos", "subArticulos",
+            "tipoLicencia" })
+    private List<Inciso> incisos = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_tipo_ley")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "tipoLicencias" })
+    private TipoLey tipoLey;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLicencia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia",
+            "cobraSueldo", "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "articuloPadre",
+            "incisoPadre", "activo" })
+    private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

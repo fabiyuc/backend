@@ -54,4 +54,9 @@ public class Articulo extends Ley {
                         "inciso",
                         "activo" })
         private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
+
+        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_tipo_licencia")
+        @JsonIgnore
+        private TipoLicencia tipoLicencia;
 }

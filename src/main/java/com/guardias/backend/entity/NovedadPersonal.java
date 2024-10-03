@@ -3,7 +3,6 @@ package com.guardias.backend.entity;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoNovedadEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -41,8 +40,10 @@ public class NovedadPersonal {
     @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
     private boolean actual; // Si la novedad es actual(1) o pasada(0)
 
-    @Column(columnDefinition = "VARCHAR(80)")
-    private TipoNovedadEnum descripcion;
+    /*
+     * @Column(columnDefinition = "VARCHAR(80)")
+     * private TipoNovedadEnum descripcion;
+     */
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
@@ -81,9 +82,11 @@ public class NovedadPersonal {
             "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
     private Inciso inciso;
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer",
-    // "handler","fechaInicio","fechaFinal","puedeRealizarGuardia","cobraSueldo","necesitaReemplazo","actual","descripcion","persona","suplente","ley","articulo","inciso",
-    // "activo" })
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_tipo_licencia")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaInicio", "fechaFin",
+            "tipoLey", "novedadesPersonales" })
+    private TipoLicencia tipoLicencia;
 
     @Override
     public boolean equals(Object obj) {

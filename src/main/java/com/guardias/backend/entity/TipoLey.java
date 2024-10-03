@@ -3,6 +3,7 @@ package com.guardias.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -31,13 +32,18 @@ public class TipoLey {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLey", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "denominacion", "detalle", "estado",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "detalle", "estado",
             "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
-            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+            "tipoLey", "inciso", "subIncisos", "subArticulos" })
     private List<Ley> leyes = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "descripcion","leyes", "activo" })
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLey", cascade = CascadeType.ALL)
+
+    @JsonIgnore
+    private List<TipoLicencia> tipoLicencias = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {
