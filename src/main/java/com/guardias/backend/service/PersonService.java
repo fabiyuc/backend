@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.EfectorDto;
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.dto.person.PersonBasicPanelDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
@@ -114,14 +116,22 @@ public class PersonService {
                 .orElse(null);
 
         if (legajoActual != null) {
-            dto.setNombreUdo(legajoActual.getUdo() != null ? legajoActual.getUdo().getNombre() : null);
+            
+            // Asignar el EfectorSummaryDto para la UDO
+            if (legajoActual.getUdo() != null) {
+                EfectorSummaryDto udoDto = new EfectorSummaryDto(legajoActual.getUdo().getId(),
+                        legajoActual.getUdo().getNombre());
+                dto.setUdo(udoDto);
+            } else {
+                dto.setUdo(null);
+            }
 
             // Obtiene los nombres de todos los efectores
-            List<String> nombresEfectores = legajoActual.getEfectores().stream()
-                    .map(Efector::getNombre)
+            List<EfectorSummaryDto> efectores = legajoActual.getEfectores().stream()
+                    .map(efector -> new EfectorSummaryDto(efector.getId(), efector.getNombre()))
                     .collect(Collectors.toList());
 
-            dto.setNombresEfectores(nombresEfectores);
+            dto.setEfectores(efectores);
         }
 
         return dto;
