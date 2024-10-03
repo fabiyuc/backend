@@ -6,11 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.dto.person.PersonBasicPanelDto;
 import com.guardias.backend.entity.Asistencial;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
