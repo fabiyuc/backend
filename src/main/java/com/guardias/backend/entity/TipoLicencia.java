@@ -72,7 +72,7 @@ public class TipoLicencia {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_ley")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "tipoLicencias" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "tipoLicencias" })
     private TipoLey tipoLey;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLicencia", cascade = CascadeType.ALL)

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,9 +31,7 @@ public class TipoLey {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLey", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "numero", "detalle", "estado",
-            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
-            "tipoLey", "inciso", "subIncisos", "subArticulos" })
+    @JsonIgnore
     private List<Ley> leyes = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
