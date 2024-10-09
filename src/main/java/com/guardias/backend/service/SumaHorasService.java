@@ -63,10 +63,13 @@ public class SumaHorasService {
         float roundedHours;
 
         if (remainingMinutes < 16) {
+            //Menos de 16 minutos: No se redondea, las horas permanecen iguales
             roundedHours = totalHours;
         } else if (remainingMinutes <= 45) {
+            //Entre 16 y 45 minutos: Se redondea a media hora adicional
             roundedHours = totalHours + 0.5f;
         } else {
+            //Más de 45 minutos: Se redondea a una hora adicional
             roundedHours = totalHours + 1;
         }
 
@@ -77,28 +80,37 @@ public class SumaHorasService {
     public SumaHoras calcularHoras(LocalDate fechaIngreso, LocalDate fechaEgreso, LocalTime horaIngreso,
             LocalTime horaEgreso) {
 
-        // 6 sabado 7 domingo
+        // obtiene el día de la semana como un número, 6 sabado 7 domingo
         int diaDeLaSemana = fechaIngreso.getDayOfWeek().getValue();
+        
+        //combino la fecha y hora para obtener un instante completo en el tiempo (LocalDateTime)
         LocalDateTime dateTimeIngreso = LocalDateTime.of(fechaIngreso, horaIngreso);
         LocalDateTime dateTimeEgreso = LocalDateTime.of(fechaEgreso, horaEgreso);
+
+        //calcula el tiempo transcurrido entre las dos marcas de tiempo
         Duration duration = Duration.between(dateTimeIngreso, dateTimeEgreso);
 
+        //obtengo el total de horas de esa duración
         float totalHours = duration.toHours();
 
+        //calcula los minutos sobrantes
         float remainingMinutes = duration.toMinutes() % 60;
 
+        //que accion desencadena un minimo de 4hs????
         if (totalHours < 4) {
             System.out.println("error!!!!! son pocas horas");
         }
 
+        //ajusta las horas trabajadas basándose en los minutos sobrantes
         float roundedHours = redondearHoras(totalHours, remainingMinutes);
+
         SumaHoras totalHoras = new SumaHoras();
 
         if (feriadoService.existsByFecha(fechaIngreso) || diaDeLaSemana > 5) {
-            // sabado domingo o feriado
+            //Si el día es un sábado, domingo o feriado
             totalHoras.setHorasSdf(roundedHours);
         } else {
-            // dia normal
+            // Si el día es un día laboral
             totalHoras.setHorasLav(roundedHours);
         }
         return totalHoras;

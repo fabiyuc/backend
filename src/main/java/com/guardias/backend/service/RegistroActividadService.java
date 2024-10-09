@@ -168,17 +168,24 @@ public class RegistroActividadService {
         System.out.println(tipoGuardia);
         ValorGmi valorGmi = new ValorGmi();
         try {
+
+            System.out.println("fecha ingreso: "+registroActividad.getFechaIngreso());
+
             valorGmi = valorGmiService.getByFechaAndTipoGuardia(registroActividad.getFechaIngreso(), tipoGuardia)
                     .get();
-            System.out.println(valorGmi);
+            System.out.println("valor gmi: "+valorGmi);
 
         } catch (Exception e) {
             System.out.println(" registroActividadService Ln177 - valor GMI no encontrado: " + e.getMessage());
         }
 
-        // Valor de la hora segun la GMI correspondiente a la fechaInicio y a la zona
+        // Valor por hora de la guardia segun la GMI correspondiente a la fechaInicio y a la zona
         BigDecimal valorHora = new BigDecimal(0);
         try {
+
+            
+            System.out.println("###### monto" + valorGmi.getMonto() );
+            //Divide el monto de la GMI entre 24 para obtener el valor por hora y multiplica por ek valor de zona
             valorHora = BigDecimal.valueOf(zona)
                     .multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
 
