@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -173,7 +174,6 @@ public class RegistroActividadService {
 
             valorGmi = valorGmiService.getByFechaAndTipoGuardia(registroActividad.getFechaIngreso(), tipoGuardia)
                     .get();
-            System.out.println("valor gmi: "+valorGmi);
 
         } catch (Exception e) {
             System.out.println(" registroActividadService Ln177 - valor GMI no encontrado: " + e.getMessage());
@@ -187,7 +187,9 @@ public class RegistroActividadService {
             System.out.println("###### monto" + valorGmi.getMonto() );
             //Divide el monto de la GMI entre 24 para obtener el valor por hora y multiplica por ek valor de zona
             valorHora = BigDecimal.valueOf(zona)
-                    .multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
+                    .multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP));
+
+                    System.out.println("valor hora: "+valorHora);
 
         } catch (Exception e) {
             System.out.println("error registroActividadService Ln187 - " + e.getMessage());
@@ -195,6 +197,7 @@ public class RegistroActividadService {
 
         // calcula BONO
         if (registroActividad.getServicio().isCritico()) {
+            //está pasando las horas
             horas.setBonoLav(horas.getHorasLav());
             horas.setBonoSdf(horas.getHorasSdf());
         } else {
@@ -204,9 +207,18 @@ public class RegistroActividadService {
         // FALTA calcular el tipo de guardia para multiplicar con el montoHoras....
 
         horas.setMontoHorasLav(valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
+        System.out.println("valor hora-----" + valorHora);
+        System.out.println("horas ------" + horas.getHorasLav());
+        System.out.println("set montohorasLav: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
+
         horas.setMontoHorasSdf(valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
+        System.out.println("setMontoHorasSdf: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
+
         horas.setMontoBonoLav(valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
+        System.out.println("setMontoBonoLav: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
+        
         horas.setMontoBonoSdf(valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
+        System.out.println("setMontoBonoSdf: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
 
         BigDecimal total = horas.getMontoHorasLav()
                 .add(horas.getMontoHorasSdf().add(horas.getMontoBonoLav().add(horas.getMontoBonoSdf())));
