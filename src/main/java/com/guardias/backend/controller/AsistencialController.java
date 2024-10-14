@@ -126,6 +126,17 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
+    //Lista asistenciales segun efector con tipoGuardia CARGO Y/O AGRUPACION
+    @GetMapping("/listByEfectorAndTipoGuardia/{idEfector}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndTipoGuardia(@PathVariable Long idEfector) {
+        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByEfectorAndTipoGuardia(idEfector);
+        
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<Asistencial> getById(@PathVariable("id") Long id) {
         if (!asistencialService.activo(id))
