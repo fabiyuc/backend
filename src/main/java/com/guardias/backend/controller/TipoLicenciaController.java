@@ -77,9 +77,11 @@ public class TipoLicenciaController {
             return new ResponseEntity<Mensaje>(new Mensaje("La ley es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        if (tipoLicenciaDto.getIdArticulos() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El articulo es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (tipoLicenciaDto.getIdArticulos() == null)
+         * return new ResponseEntity<Mensaje>(new Mensaje("El articulo es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
         /*
          * if (tipoLicenciaDto.getIdIncisos() == null)
          * return new ResponseEntity<Mensaje>(new Mensaje("El inciso es obligatorio"),
