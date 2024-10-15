@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,5 +31,9 @@ public class Hospital extends Efector {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })
     private List<Caps> caps = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "hospitales", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private List<ValorGuardiaBase> valoresGuardiaBase = new ArrayList<>();
 
 }

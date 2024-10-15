@@ -121,36 +121,23 @@ public class SumaHorasService {
 
         totalHoras.setHorasLav(totalHoras.getHorasLav() + horasASumar.getHorasLav());
         totalHoras.setHorasSdf(totalHoras.getHorasSdf() + horasASumar.getHorasSdf());
-        totalHoras.setBonoLav(totalHoras.getBonoLav() + horasASumar.getBonoLav());
-        totalHoras.setBonoSdf(totalHoras.getBonoSdf() + horasASumar.getBonoSdf());
+       
 
-        if (totalHoras.getMontoHorasLav() != null) {
-            totalHoras.setMontoHorasLav(totalHoras.getMontoHorasLav().add(horasASumar.getMontoHorasLav()));
+        if (totalHoras.getMontoLav() != null) {
+            totalHoras.setMontoLav(totalHoras.getMontoLav().add(horasASumar.getMontoLav()));
         } else {
-            totalHoras.setMontoHorasLav(horasASumar.getMontoHorasLav());
+            totalHoras.setMontoLav(horasASumar.getMontoLav());
         }
-        if (totalHoras.getMontoHorasSdf() != null) {
-            totalHoras.setMontoHorasSdf(totalHoras.getMontoHorasSdf().add(horasASumar.getMontoHorasSdf()));
+        if (totalHoras.getMontoSdf() != null) {
+            totalHoras.setMontoSdf(totalHoras.getMontoSdf().add(horasASumar.getMontoSdf()));
         } else {
-            totalHoras.setMontoHorasSdf(horasASumar.getMontoHorasSdf());
-        }
-
-        if (totalHoras.getMontoBonoLav() != null) {
-            totalHoras.setMontoBonoLav(totalHoras.getMontoBonoLav().add(horasASumar.getMontoBonoLav()));
-        } else {
-            totalHoras.setMontoBonoLav(horasASumar.getMontoBonoLav());
-        }
-
-        if (totalHoras.getMontoBonoSdf() != null) {
-            totalHoras.setMontoBonoSdf(totalHoras.getMontoBonoSdf().add(horasASumar.getMontoBonoSdf()));
-        } else {
-            totalHoras.setMontoBonoSdf(horasASumar.getMontoBonoSdf());
+            totalHoras.setMontoSdf(horasASumar.getMontoSdf());
         }
 
         if (totalHoras.getMontoTotal() != null) {
             totalHoras.setMontoTotal(totalHoras.getMontoTotal().add(horasASumar.getMontoTotal()));
         } else {
-            totalHoras.setMontoTotal(horasASumar.getMontoBonoSdf());
+            totalHoras.setMontoTotal(horasASumar.getMontoTotal());
         }
 
         return totalHoras;

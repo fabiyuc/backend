@@ -35,6 +35,18 @@ public class EfectorService {
         return efector;
     }
 
+    public Efector findByNombre(String nombreEfector) {
+        Efector efector = capsService.findByNombre(nombreEfector).orElse(null);
+
+        if (efector == null)
+            efector = hospitalService.findByNombre(nombreEfector).orElse(null);
+
+        if (efector == null)
+            efector = ministerioService.findByNombre(nombreEfector).orElse(null);
+
+        return efector;
+    }
+
     public boolean existsByName(String nombre) {
         boolean exists = capsService.existsByNombre(nombre);
 
@@ -86,4 +98,6 @@ public class EfectorService {
             ministerioService.save((Ministerio) efector);
         }
     }
+
+
 }

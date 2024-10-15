@@ -29,6 +29,10 @@ public class ValorGuardiaExtraYcfService {
     public Optional<ValorGuardiaExtrayCF> findById(Long id) {
         return valorGuardiaExtraYcfRepository.findById(id);
     }
+    
+    public Optional<ValorGuardiaExtrayCF> findByEfectorNombre(String nombreEfector) {
+        return valorGuardiaExtraYcfRepository.findByEfectorNombre(nombreEfector);
+    }
 
     public boolean existsById(Long id) {
         return valorGuardiaExtraYcfRepository.existsById(id);

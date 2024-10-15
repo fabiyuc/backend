@@ -184,8 +184,6 @@ public class RegistroMensualService {
 
         horas.setHorasLav(0L);
         horas.setHorasSdf(0L);
-        horas.setBonoLav(0L);
-        horas.setBonoSdf(0L);
         registroMensual.setTotalHoras(horas);
 
         try {

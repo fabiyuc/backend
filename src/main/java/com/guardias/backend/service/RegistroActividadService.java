@@ -12,13 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.guardias.backend.controller.RegistroMensualController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
-import com.guardias.backend.entity.ValorGmi;
+import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
+import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
@@ -48,6 +47,12 @@ public class RegistroActividadService {
     ValorGmiService valorGmiService;
     @Autowired
     RegistrosPendientesService registrosPendientesService;
+
+    @Autowired
+    ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
+    
+    @Autowired
+    ValorGuardiaExtraYcfService valorGuardiaExtraYcfService;
    /*  @Autowired
     RegistroMensualController registroMensualController; */
 
@@ -160,69 +165,68 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        // para calcular ZONA porcentajePorZona
+      /*   // para calcular ZONA porcentajePorZona
         Float porcentajePorZona = registroActividad.getEfector().getPorcentajePorZona();
-        float zona = porcentajePorZona != null ? porcentajePorZona : 1.0f;
+        float zona = porcentajePorZona != null ? porcentajePorZona : 1.0f; */
 
         // Valor de la GMI segun la fecha de inicio de la guardia
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
         System.out.println(tipoGuardia);
-        ValorGmi valorGmi = new ValorGmi();
-        try {
 
-            System.out.println("fecha ingreso: "+registroActividad.getFechaIngreso());
+        String nombreEfector = registroActividad.getEfector().getNombre();
+        System.out.println(nombreEfector);
+       
 
-            valorGmi = valorGmiService.getByFechaAndTipoGuardia(registroActividad.getFechaIngreso(), tipoGuardia)
-                    .get();
-
-        } catch (Exception e) {
-            System.out.println(" registroActividadService Ln177 - valor GMI no encontrado: " + e.getMessage());
-        }
-
-        // Valor por hora de la guardia segun la GMI correspondiente a la fechaInicio y a la zona
-        BigDecimal valorHora = new BigDecimal(0);
-        try {
-
+        if (tipoGuardia.equals("CARGO") || tipoGuardia.equals("AGRUPACION")) {
+            System.out.println("es tipo guardia cargo o agrup");
             
-            System.out.println("###### monto" + valorGmi.getMonto() );
-            //Divide el monto de la GMI entre 24 para obtener el valor por hora y multiplica por ek valor de zona
-            valorHora = BigDecimal.valueOf(zona)
-                    .multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP));
+            try {
+                ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService.findByHospitalesNombre(nombreEfector).get();
 
-                    System.out.println("valor hora: "+valorHora);
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
 
-        } catch (Exception e) {
-            System.out.println("error registroActividadService Ln187 - " + e.getMessage());
-        }
+                BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
 
-        // calcula BONO
-        if (registroActividad.getServicio().isCritico()) {
-            //está pasando las horas
-            horas.setBonoLav(horas.getHorasLav());
-            horas.setBonoSdf(horas.getHorasSdf());
+                horas.setMontoLav(totalMontoLav);
+
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+
+                horas.setMontoSdf(totalMontoSdf);
+
+                BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
+                horas.setMontoTotal(total); 
+
+
+            } catch (Exception e) {
+                System.out.println("Error al buscar ValorGuardiaCargoYagrup: " + e.getMessage());
+            }
         } else {
-            horas.setBonoLav(0);
-            horas.setBonoSdf(0);
+            System.out.println("es tipo guardia extra o cf");
+            try {
+                ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService.findByEfectorNombre(nombreEfector).get();
+
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
+
+                horas.setMontoLav(totalMontoLav);
+
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+
+                horas.setMontoSdf(totalMontoSdf);
+
+                BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
+                horas.setMontoTotal(total); 
+                
+            } catch (Exception e) {
+                System.out.println("Error al buscar ValorGuardiaExtraYcf: " + e.getMessage());
+            }
         }
-        // FALTA calcular el tipo de guardia para multiplicar con el montoHoras....
 
-        horas.setMontoHorasLav(valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
-        System.out.println("valor hora-----" + valorHora);
-        System.out.println("horas ------" + horas.getHorasLav());
-        System.out.println("set montohorasLav: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
-
-        horas.setMontoHorasSdf(valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
-        System.out.println("setMontoHorasSdf: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
-
-        horas.setMontoBonoLav(valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
-        System.out.println("setMontoBonoLav: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
-        
-        horas.setMontoBonoSdf(valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
-        System.out.println("setMontoBonoSdf: ####"+ valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
-
-        BigDecimal total = horas.getMontoHorasLav()
-                .add(horas.getMontoHorasSdf().add(horas.getMontoBonoLav().add(horas.getMontoBonoSdf())));
-        horas.setMontoTotal(total);
 
         return horas;
     }
