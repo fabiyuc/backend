@@ -14,14 +14,15 @@ public class TipoLicenciaDto {
 
     @NotBlank
     private String nombre;
+    /*
+     * @NotBlank
+     * private String ley;
+     */
 
-    @NotBlank
-    private String ley;
-
-    private String articulo;
     private boolean activo;
-
-    private String inciso;
+    private List<Long> idArticulos;
+    private List<Long> idIncisos;
+    private Long idTipoLey;
 
     private List<Long> idNovedadesPersonales;
 

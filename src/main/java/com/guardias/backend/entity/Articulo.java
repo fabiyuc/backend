@@ -34,7 +34,7 @@ public class Articulo extends Ley {
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articuloPadre", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
-                        "novedadesPersonales",
+                        "novedadesPersonales", "tipoLicencia",
                         "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos", "articulo",
                         "incisoPadre" })
         private List<Articulo> subArticulos = new ArrayList<>();
@@ -44,14 +44,17 @@ public class Articulo extends Ley {
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",
                         "novedadesPersonales",
                         "tipoLey", "articuloPadre", "inciso", "incisos", "subIncisos", "subArticulos", "articulo",
-                        "incisoPadre" })
+                        "incisoPadre", "tipoLicencia" })
         private List<Inciso> incisos = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
-        @JsonIgnoreProperties({ "hibernateLazyInitializer",
-                        "handler", "fechaInicio", "fechaFinal", "puedeRealizarGuardia", "cobraSueldo",
-                        "necesitaReemplazo", "actual", "descripcion", "persona", "suplente", "ley", "articuloPadre",
-                        "inciso",
-                        "activo" })
+        @JsonIgnore
         private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
+
+        @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_tipo_licencia")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "tipoLicencias",
+                        "tipoLey", "articulo", "articulos", "articulo", "novedadesPersonales", "incisos", "fechaInicio",
+                        "fechaFin" })
+        private TipoLicencia tipoLicencia;
 }
