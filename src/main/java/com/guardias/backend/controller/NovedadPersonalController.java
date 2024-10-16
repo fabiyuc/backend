@@ -24,6 +24,7 @@ import com.guardias.backend.service.ArticuloService;
 import com.guardias.backend.service.IncisoService;
 import com.guardias.backend.service.NovedadPersonalService;
 import com.guardias.backend.service.PersonService;
+import com.guardias.backend.service.TipoLicenciaService;
 
 @Controller
 @RequestMapping("/novedadPersonal")
@@ -38,6 +39,8 @@ public class NovedadPersonalController {
     ArticuloService articuloService;
     @Autowired
     IncisoService incisoService;
+    @Autowired
+    TipoLicenciaService tipoLicenciaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
@@ -86,17 +89,19 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("la persona es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        if (novedadPersonalDto.getIdArticulo() == null)
-            return new ResponseEntity(new Mensaje("el articulo es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (novedadPersonalDto.getIdInciso() == null)
-            return new ResponseEntity(new Mensaje("el inciso es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (novedadPersonalDto.getIdSuplente() == null)
-            return new ResponseEntity(new Mensaje("el suplente es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (novedadPersonalDto.getIdArticulo() == null)
+         * return new ResponseEntity(new Mensaje("el articulo es obligatorio"),
+         * HttpStatus.BAD_REQUEST); // borrar despues
+         * 
+         * if (novedadPersonalDto.getIdInciso() == null)
+         * return new ResponseEntity(new Mensaje("el inciso es obligatorio"),
+         * HttpStatus.BAD_REQUEST); // borrar despues
+         * 
+         * if (novedadPersonalDto.getIdSuplente() == null)
+         * return new ResponseEntity(new Mensaje("el suplente es obligatorio"),
+         * HttpStatus.BAD_REQUEST); // comentar
+         */
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -114,39 +119,56 @@ public class NovedadPersonalController {
         novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
         novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
-        novedadPersonal.setActual(novedadPersonalDto.isActual());
+        /* novedadPersonal.setActual(novedadPersonalDto.isActual()); */ // comentar
 
-        if (novedadPersonalDto.getDescripcion() != null
-                && !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion()))
-            novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
+        /*
+         * if (novedadPersonalDto.getDescripcion() != null
+         * &&
+         * !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion())
+         * )
+         * novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
+         */
 
+        // Si el suplente es nulo, se puede asignar null
         if (novedadPersonal.getPersona() == null ||
                 (novedadPersonalDto.getIdPersona() != null &&
-                        !Objects.equals(novedadPersonal.getPersona().getId(),
-                                novedadPersonalDto.getIdPersona()))) {
+                        !Objects.equals(novedadPersonal.getPersona().getId(), novedadPersonalDto.getIdPersona()))) {
             novedadPersonal.setPersona(personaService.findById(novedadPersonalDto.getIdPersona()));
         }
 
-        if (novedadPersonal.getSuplente() == null ||
+        // Si el suplente es nulo, se puede asignar null
+        if (novedadPersonalDto.getIdSuplente() == null) {
+            novedadPersonal.setSuplente(null);
+        } else if (novedadPersonal.getSuplente() == null ||
                 (novedadPersonalDto.getIdSuplente() != null &&
-                        !Objects.equals(novedadPersonal.getSuplente().getId(),
-                                novedadPersonalDto.getIdSuplente()))) {
+                        !Objects.equals(novedadPersonal.getSuplente().getId(), novedadPersonalDto.getIdSuplente()))) {
             novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.getIdSuplente()));
         }
 
-        if (novedadPersonal.getArticulo() == null ||
-                (novedadPersonalDto.getIdArticulo() != null &&
-                        !Objects.equals(novedadPersonal.getArticulo().getId(),
-                                novedadPersonalDto.getIdArticulo()))) {
-            novedadPersonal.setArticulo(articuloService.findById(novedadPersonalDto.getIdArticulo()).get());
+        /*
+         * if (novedadPersonal.getArticulo() == null ||
+         * (novedadPersonalDto.getIdArticulo() != null &&
+         * !Objects.equals(novedadPersonal.getArticulo().getId(),
+         * novedadPersonalDto.getIdArticulo()))) {
+         * novedadPersonal.setArticulo(articuloService.findById(novedadPersonalDto.
+         * getIdArticulo()).get());
+         * }
+         * 
+         * if (novedadPersonal.getInciso() == null ||
+         * (novedadPersonalDto.getIdInciso() != null &&
+         * !Objects.equals(novedadPersonal.getInciso().getId(),
+         * novedadPersonalDto.getIdInciso()))) {
+         * novedadPersonal.setInciso(incisoService.findById(novedadPersonalDto.
+         * getIdInciso()).get());
+         * }
+         */
+        if (novedadPersonal.getTipoLicencia() == null ||
+                (novedadPersonalDto.getIdTipoLicencia() != null &&
+                        !Objects.equals(novedadPersonal.getTipoLicencia().getId(),
+                                novedadPersonalDto.getIdTipoLicencia()))) {
+            novedadPersonal.setTipoLicencia(tipoLicenciaService.findById(novedadPersonalDto.getIdTipoLicencia()).get());
         }
 
-        if (novedadPersonal.getInciso() == null ||
-                (novedadPersonalDto.getIdInciso() != null &&
-                        !Objects.equals(novedadPersonal.getInciso().getId(),
-                                novedadPersonalDto.getIdInciso()))) {
-            novedadPersonal.setInciso(incisoService.findById(novedadPersonalDto.getIdInciso()).get());
-        }
         novedadPersonal.setActivo(true);
         return novedadPersonal;
     }
@@ -192,7 +214,7 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("La novedad no exixte"), HttpStatus.NOT_FOUND);
 
         NovedadPersonal novedadPersonal = novedadPersonalService.findById(id).get();
-        novedadPersonal.setActual(false);
+        novedadPersonal.setActivo(false);
         novedadPersonalService.save(novedadPersonal);
         return new ResponseEntity<>(new Mensaje("novedad eliminada correctamente"), HttpStatus.OK);
     }

@@ -2,8 +2,8 @@ package com.guardias.backend.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoNovedadEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,11 +38,14 @@ public class NovedadPersonal {
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;
 
-    @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
-    private boolean actual; // Si la novedad es actual(1) o pasada(0)
-
-    @Column(columnDefinition = "VARCHAR(80)")
-    private TipoNovedadEnum descripcion;
+    /*
+     * @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
+     * private boolean actual; // Si la novedad es actual(1) o pasada(0)
+     */
+    /*
+     * @Column(columnDefinition = "VARCHAR(80)")
+     * private TipoNovedadEnum descripcion;
+     */
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
@@ -69,21 +72,29 @@ public class NovedadPersonal {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_articulo")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
-            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
-            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+    @JsonIgnore /*
+                 * Properties({ "hibernateLazyInitializer", "handler", "estado",
+                 * "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion",
+                 * "activo", "novedadesPersonales",
+                 * "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+                 */
     private Articulo articulo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_inciso")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
-            "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo", "novedadesPersonales",
-            "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+    @JsonIgnore /*
+                 * Properties({ "hibernateLazyInitializer", "handler", "estado",
+                 * "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion",
+                 * "activo", "novedadesPersonales",
+                 * "tipoLey", "articulo", "inciso", "incisos", "subIncisos", "subArticulos" })
+                 */
     private Inciso inciso;
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer",
-    // "handler","fechaInicio","fechaFinal","puedeRealizarGuardia","cobraSueldo","necesitaReemplazo","actual","descripcion","persona","suplente","ley","articulo","inciso",
-    // "activo" })
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_tipo_licencia")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaInicio", "fechaFin",
+            "tipoLey", "novedadesPersonales" })
+    private TipoLicencia tipoLicencia;
 
     @Override
     public boolean equals(Object obj) {
