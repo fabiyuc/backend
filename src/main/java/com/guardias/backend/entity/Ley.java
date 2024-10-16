@@ -58,7 +58,7 @@ public abstract class Ley {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_ley")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "leyes", "activo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "leyes", "activo" })
     private TipoLey tipoLey;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",

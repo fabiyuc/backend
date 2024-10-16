@@ -16,4 +16,5 @@ public class TipoLeyDto {
     private String descripcion;
     private boolean activo;
     List<Long> idLeyes;
+    /* List<Long> idTipoLey; */
 }
