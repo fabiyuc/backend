@@ -33,7 +33,7 @@ public class Hospital extends Efector {
     private List<Caps> caps = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "hospitales", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "hospitales" })
     private List<ValorGuardiaBase> valoresGuardiaBase = new ArrayList<>();
 
 }

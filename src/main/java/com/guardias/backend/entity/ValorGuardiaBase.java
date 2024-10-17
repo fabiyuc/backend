@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.persistence.CascadeType;
@@ -53,8 +52,8 @@ public abstract class ValorGuardiaBase {
     private int nivelComplejidad;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "valorGuardiaBase_hospital", joinColumns = @JoinColumn(name = "id_valorGuardiaBase"), inverseJoinColumns = @JoinColumn(name = "id_hospital"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JoinTable(name = "valorguardiabase_hospital", joinColumns = @JoinColumn(name = "id_valorGuardiaBase"), inverseJoinColumns = @JoinColumn(name = "id_hospital"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardiaBase"  })
     private List<Hospital> hospitales = new ArrayList<>();
 
     private LocalDate fechaInicio;
