@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
@@ -173,15 +175,17 @@ public class RegistroActividadService {
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
         System.out.println(tipoGuardia);
 
-        String nombreEfector = registroActividad.getEfector().getNombre();
-        System.out.println(nombreEfector);
+        Hospital hospitalRegActiv = (Hospital)registroActividad.getEfector();
+        Long
+        //System.out.println(idEfector);
        
 
         if (tipoGuardia.equals("CARGO") || tipoGuardia.equals("AGRUPACION")) {
             System.out.println("es tipo guardia cargo o agrup");
             
             try {
-                ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService.findByHospitalesNombre(nombreEfector).get();
+
+                /* ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService.buscarPorIdEfector(idEfector).get(); */
 
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
 
@@ -205,7 +209,7 @@ public class RegistroActividadService {
         } else {
             System.out.println("es tipo guardia extra o cf");
             try {
-                ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService.findByEfectorNombre(nombreEfector).get();
+                ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService.buscarPorIdEfector(idEfector).get();
 
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
 

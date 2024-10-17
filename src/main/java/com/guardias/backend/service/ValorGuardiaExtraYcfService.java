@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
 
@@ -30,8 +31,8 @@ public class ValorGuardiaExtraYcfService {
         return valorGuardiaExtraYcfRepository.findById(id);
     }
     
-    public Optional<ValorGuardiaExtrayCF> findByEfectorNombre(String nombreEfector) {
-        return valorGuardiaExtraYcfRepository.findByEfectorNombre(nombreEfector);
+    public Optional<ValorGuardiaExtrayCF> buscarPorIdEfector(Long idEfector) {
+        return valorGuardiaExtraYcfRepository.buscarPorIdEfector(idEfector);
     }
 
     public boolean existsById(Long id) {

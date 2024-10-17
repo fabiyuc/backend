@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 
 @Repository
@@ -17,8 +18,8 @@ public interface ValorGuardiaExtraYcfRepository extends JpaRepository<ValorGuard
 
     Optional<ValorGuardiaExtrayCF> findById(Long id);
     
-    @Query("SELECT v FROM ValorGuardiaExtrayCF v JOIN v.efectores e WHERE e.nombre = :nombreEfector")
-    Optional<ValorGuardiaExtrayCF> findByEfectorNombre(@Param("nombreEfector") String nombreEfector);
+    @Query("SELECT v FROM ValorGuardiaExtrayCF v JOIN v.hospitales h WHERE h.id = :idEfector")
+    Optional<ValorGuardiaExtrayCF> buscarPorIdEfector(@Param("idEfector") Long idEfector);
 
     boolean existsById(Long id);
 

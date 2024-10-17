@@ -46,8 +46,8 @@ public class ValorGuardiaCargoYagrupService {
         return valorGuardiaCargoYagrupRepository.findById(id);
     }
 
-    public Optional<ValorGuardiaCargoYagrup> findByHospitalesNombre(String nombreEfector) {
-        return valorGuardiaCargoYagrupRepository.findByHospitalesNombre (nombreEfector);
+    public Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector(Long idEfector) {
+        return valorGuardiaCargoYagrupRepository.buscarPorIdEfector(idEfector);
     }
 
     public boolean existsById(Long id) {
