@@ -46,9 +46,9 @@ public class ValorGuardiaCargoYagrupService {
         return valorGuardiaCargoYagrupRepository.findById(id);
     }
 
-    public Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector(Long idEfector) {
+    /* public Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector(Long idEfector) {
         return valorGuardiaCargoYagrupRepository.buscarPorIdEfector(idEfector);
-    }
+    } */
 
     public boolean existsById(Long id) {
         return valorGuardiaCargoYagrupRepository.existsById(id);

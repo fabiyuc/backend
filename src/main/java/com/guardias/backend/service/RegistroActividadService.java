@@ -176,7 +176,7 @@ public class RegistroActividadService {
         System.out.println(tipoGuardia);
 
         Hospital hospitalRegActiv = (Hospital)registroActividad.getEfector();
-        Long
+        //Long idValorGuardia = hospitalRegActiv.getValoresGuardiaBase();
         //System.out.println(idEfector);
        
 
@@ -185,6 +185,7 @@ public class RegistroActividadService {
             
             try {
 
+                ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup)efectorService.obtenerValorGuardiaActivo(hospitalRegActiv.getId()).get();
                 /* ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService.buscarPorIdEfector(idEfector).get(); */
 
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
@@ -209,7 +210,8 @@ public class RegistroActividadService {
         } else {
             System.out.println("es tipo guardia extra o cf");
             try {
-                ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService.buscarPorIdEfector(idEfector).get();
+                ValorGuardiaExtrayCF valorGuardiaBase = (ValorGuardiaExtrayCF)efectorService.obtenerValorGuardiaActivo(hospitalRegActiv.getId()).get();
+                /* ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService.buscarPorIdEfector(idEfector).get(); */
 
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
 

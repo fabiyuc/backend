@@ -1,5 +1,7 @@
 package com.guardias.backend.service;
 
+import java.util.Optional;
+
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,8 @@ import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Ministerio;
+import com.guardias.backend.entity.ValorGuardiaBase;
+import com.guardias.backend.repository.HospitalRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -22,6 +26,8 @@ public class EfectorService {
     MinisterioService ministerioService;
     @Autowired
     LegajoService legajoService;
+    @Autowired
+    HospitalRepository hospitalRepository;
 
     public Efector findById(Long idEfector) {
         Efector efector = capsService.findById(idEfector).orElse(null);
@@ -99,5 +105,11 @@ public class EfectorService {
         }
     }
 
+    public Optional<ValorGuardiaBase> obtenerValorGuardiaActivo(Long efectorId) {
+        return hospitalRepository.findById(efectorId)
+                .flatMap(efector -> efector.getValoresGuardiaBase().stream()
+                        .filter(ValorGuardiaBase::isActivo)
+                        .findFirst());
+    }
 
 }

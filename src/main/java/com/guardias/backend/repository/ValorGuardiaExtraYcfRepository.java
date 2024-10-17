@@ -18,8 +18,8 @@ public interface ValorGuardiaExtraYcfRepository extends JpaRepository<ValorGuard
 
     Optional<ValorGuardiaExtrayCF> findById(Long id);
     
-    @Query("SELECT v FROM ValorGuardiaExtrayCF v JOIN v.hospitales h WHERE h.id = :idEfector")
-    Optional<ValorGuardiaExtrayCF> buscarPorIdEfector(@Param("idEfector") Long idEfector);
+    /* @Query("SELECT v FROM ValorGuardiaExtrayCF v JOIN v.hospitales h WHERE h.id = :idEfector")
+    Optional<ValorGuardiaExtrayCF> buscarPorIdEfector(@Param("idEfector") Long idEfector); */
 
     boolean existsById(Long id);
 

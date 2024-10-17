@@ -17,8 +17,8 @@ public interface ValorGuardiaCargoYagrupRepository extends JpaRepository<ValorGu
 
     Optional<ValorGuardiaCargoYagrup> findById(Long id);
 
-    @Query("SELECT v FROM ValorGuardiaCargoYagrup v JOIN v.hospitales h WHERE h.id = :idEfector")
-    Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector (@Param("idEfector") Long idEfector);
+    /* @Query("SELECT v FROM ValorGuardiaCargoYagrup v JOIN v.hospitales h WHERE h.id = :idEfector")
+    Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector (@Param("idEfector") Long idEfector); */
 
     boolean existsById(Long id);
 
