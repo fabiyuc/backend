@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
+import com.guardias.backend.dto.noAsistencial.NoAsistencialSummaryDto;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
@@ -44,7 +45,7 @@ public class NoAsistencialController {
     @GetMapping("/listDtos")
     public ResponseEntity<List<NoAsistencialListDto>> listDtos() {
         List<NoAsistencialListDto> noAsistencialListDtos = noAsistencialService.getNoAsistencialList();
-       
+
         return new ResponseEntity<List<NoAsistencialListDto>>(noAsistencialListDtos, HttpStatus.OK);
     }
 
@@ -63,6 +64,17 @@ public class NoAsistencialController {
         List<Legajo> legajos = noAsistencial.getLegajos();
 
         return new ResponseEntity<>(legajos, HttpStatus.OK);
+    }
+
+    // Lista de no asistenciales por efector
+    @GetMapping("/listByEfector/{idEfector}")
+    public ResponseEntity<List<NoAsistencialSummaryDto>> getNoAsistencialesByEfector(
+            @PathVariable("idEfector") Long idEfector) {
+        List<NoAsistencialSummaryDto> noAsistenciales = noAsistencialService.getNoAsistencialesByEfector(idEfector);
+        if (noAsistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(noAsistenciales, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
