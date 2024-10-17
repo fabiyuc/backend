@@ -1,6 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +20,6 @@ import com.guardias.backend.dto.IncisoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
-import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.ArticuloService;
 import com.guardias.backend.service.IncisoService;
 import com.guardias.backend.service.NovedadPersonalService;
@@ -74,18 +72,22 @@ public class IncisoController {
             inciso.setArticulo(articuloService.findById(incisoDto.getIdArticulo()).get());
         }
 
-        if (incisoDto.getIdNovedadesPersonales() != null) {
-            if (inciso.getNovedadesPersonales() == null) {
-                inciso.setNovedadesPersonales(new ArrayList<>()); // Initialize novedadesPersonales list if null
-            }
-            for (Long id : incisoDto.getIdNovedadesPersonales()) {
-                NovedadPersonal novedad = novedadPersonalService.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Novedad personal no encontrada con ID: " + id));
-                novedad.setInciso(inciso);
-                inciso.getNovedadesPersonales().add(novedad);
-                novedadPersonalService.save(novedad);
-            }
-        }
+        /*
+         * if (incisoDto.getIdNovedadesPersonales() != null) {
+         * if (inciso.getNovedadesPersonales() == null) {
+         * inciso.setNovedadesPersonales(new ArrayList<>()); // Initialize
+         * novedadesPersonales list if null
+         * }
+         * for (Long id : incisoDto.getIdNovedadesPersonales()) {
+         * NovedadPersonal novedad = novedadPersonalService.findById(id)
+         * .orElseThrow(() -> new
+         * RuntimeException("Novedad personal no encontrada con ID: " + id));
+         * novedad.setInciso(inciso);
+         * inciso.getNovedadesPersonales().add(novedad);
+         * novedadPersonalService.save(novedad);
+         * }
+         * }
+         */
 
         return inciso;
     }

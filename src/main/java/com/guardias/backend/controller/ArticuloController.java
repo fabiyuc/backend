@@ -22,7 +22,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Articulo;
 import com.guardias.backend.entity.Inciso;
 import com.guardias.backend.entity.Ley;
-import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.ArticuloService;
 import com.guardias.backend.service.IncisoService;
 import com.guardias.backend.service.NovedadPersonalService;
@@ -121,32 +120,37 @@ public class ArticuloController {
             ex.printStackTrace();
         }
 
-        try {
-            if (articuloDto.getIdNovedadesPersonales() != null) {
-                List<Long> idList = new ArrayList<Long>();
-                if (articulo.getNovedadesPersonales() != null) {
-                    for (NovedadPersonal novedad : articulo.getNovedadesPersonales()) {
-                        for (Long id : articuloDto.getIdNovedadesPersonales()) {
-                            if (!novedad.getId().equals(id)) {
-                                idList.add(id);
-                            }
-                        }
-                    }
-                } else {
-                    articulo.setNovedadesPersonales(new ArrayList<>());
-                }
-                List<Long> idsToAdd = idList.isEmpty() ? articuloDto.getIdNovedadesPersonales() : idList;
-                for (Long id : idsToAdd) {
-                    articulo.getNovedadesPersonales().add(novedadPersonalService.findById(id).get());
-                    novedadPersonalService.findById(id).get().setArticulo(articulo);
-                }
-            }
-        } catch (Exception ex) {
-            String mensajePersonalizado = "Error en getIdNovedadesPersonales: " + articuloDto.getIdNovedadesPersonales()
-                    + " - Exception:" + ex.getMessage();
-            System.out.println(mensajePersonalizado);
-            ex.printStackTrace();
-        }
+        /*
+         * try {
+         * if (articuloDto.getIdNovedadesPersonales() != null) {
+         * List<Long> idList = new ArrayList<Long>();
+         * if (articulo.getNovedadesPersonales() != null) {
+         * for (NovedadPersonal novedad : articulo.getNovedadesPersonales()) {
+         * for (Long id : articuloDto.getIdNovedadesPersonales()) {
+         * if (!novedad.getId().equals(id)) {
+         * idList.add(id);
+         * }
+         * }
+         * }
+         * } else {
+         * articulo.setNovedadesPersonales(new ArrayList<>());
+         * }
+         * List<Long> idsToAdd = idList.isEmpty() ?
+         * articuloDto.getIdNovedadesPersonales() : idList;
+         * for (Long id : idsToAdd) {
+         * articulo.getNovedadesPersonales().add(novedadPersonalService.findById(id).get
+         * ());
+         * novedadPersonalService.findById(id).get().setArticulo(articulo);
+         * }
+         * }
+         * } catch (Exception ex) {
+         * String mensajePersonalizado = "Error en getIdNovedadesPersonales: " +
+         * articuloDto.getIdNovedadesPersonales()
+         * + " - Exception:" + ex.getMessage();
+         * System.out.println(mensajePersonalizado);
+         * ex.printStackTrace();
+         * }
+         */
         articulo.setActivo(true);
         return articulo;
     }

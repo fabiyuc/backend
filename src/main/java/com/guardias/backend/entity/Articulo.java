@@ -47,10 +47,6 @@ public class Articulo extends Ley {
                         "incisoPadre", "tipoLicencia" })
         private List<Inciso> incisos = new ArrayList<>();
 
-        @OneToMany(fetch = FetchType.LAZY, mappedBy = "articulo", cascade = CascadeType.ALL)
-        @JsonIgnore
-        private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
-
         @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_tipo_licencia")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "tipoLicencias",
