@@ -68,10 +68,16 @@ public class ValorGuardiaCargoYagrupService {
     }
 
     public void crearValoresGuardiaCargoYagrup() {
+
+        System.out.println("·························· entrooo a ");
         // Buscar el valorGMI activo
         ValorGmi valorGmi = valorGmiService.findByActivoTrue().get().get(0);
+
+        System.out.println("·························· valro de GMI  " + valorGmi);
         // Buscar el BonoUti activo
         Long idBonoUti = bonoUtiService.findByActivoTrue().get().get(0).getId();
+
+        System.out.println("·························· id bopno uti  " + idBonoUti);
 
         // Crear valores de guardia por nivel
         crearPorNivel(1, valorGmi, idBonoUti);
@@ -82,10 +88,13 @@ public class ValorGuardiaCargoYagrupService {
 
     private void crearPorNivel(int nivel, ValorGmi valorGmi, Long idBonoUti) {
 
+        System.out.println("·························· antes de instanciar  " );
         ValorGuardiaCargoYagrup valorGuardia;
+        System.out.println("·························· despues de instanciar" );
 
         switch (nivel) {
             case 1:
+            System.out.println("·························· entra a caso 1" );
                 // Crear ValorGuardiaCargoYagrup con el hospital "Susques"
                 Hospital hospital1 = hospitalService.findByNombre("Susques").get();
                 
@@ -97,6 +106,7 @@ public class ValorGuardiaCargoYagrupService {
 
                 // Crear ValorGuardiaCargoYagrup con otros hospitales de nivel 1 excepto "Susques"
                 List<Hospital> hospital1SinSusques = hospitalService.findHospitalesPorNivelExcluyendo(1, "Susques");
+                System.out.println("hospitales nivel 1" + hospital1SinSusques.get(0));
 
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital1SinSusques, valorGmi, idBonoUti);
                 valorGuardiaCargoYagrupRepository.save(valorGuardia);
@@ -145,6 +155,7 @@ public class ValorGuardiaCargoYagrupService {
 
     private ValorGuardiaCargoYagrup crearValorGuardiaCargoYagrup(int nivel, List<Hospital> hospitales,
             ValorGmi valorGmi, Long idBonoUti) {
+                System.out.println("llegooooo ");
         ValorGuardiaCargoYagrup valorGuardia = new ValorGuardiaCargoYagrup();
         valorGuardia.setActivo(true);
         valorGuardia.setTipoGuardia(valorGmi.getTipoGuardia());
