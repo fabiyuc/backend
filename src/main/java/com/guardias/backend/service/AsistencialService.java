@@ -185,43 +185,50 @@ public class AsistencialService {
                 asistencial.getApellido(),
                 nombresTiposGuardias
             );
-
             dtoList.add(dto);
         }
     }
-
     return dtoList; 
     }
 
-    public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
-
-        List<Asistencial> asistenciales = asistencialRepository.findByUdoAndActivoTrue(udoId);
-    
+    // filtra ASISTENCIALES por tipos de guardia CARGO o AGRUPACION y mapea a AsistencialSummaryDto
+    private List<AsistencialSummaryDto> filterAndMapByCargoOrAgrupacion(List<Asistencial> asistenciales) {
         List<AsistencialSummaryDto> dtoList = new ArrayList<>();
-    
+
         for (Asistencial asistencial : asistenciales) {
-            
+            // Filtra por tipos de guardia CARGO o AGRUPACION
             boolean hasCargoOrAgrupacion = asistencial.getTiposGuardias().stream()
                 .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CARGO") || tipoGuardia.getNombre().name().equals("AGRUPACION"));
-    
+
             if (hasCargoOrAgrupacion) {
-                // Mapeam los nombres de los tipos de guardia a una lista de strings
+                // Mapea los nombres de los tipos de guardia
                 List<String> nombresTiposGuardias = asistencial.getTiposGuardias().stream()
                     .map(tipoGuardia -> tipoGuardia.getNombre().name())
                     .collect(Collectors.toList());
-    
+
+                // Crea el DTO
                 AsistencialSummaryDto dto = new AsistencialSummaryDto(
                     asistencial.getId(),
                     asistencial.getNombre(),
                     asistencial.getApellido(),
                     nombresTiposGuardias
                 );
-    
                 dtoList.add(dto);
             }
         }
-    
         return dtoList;
+    }
+
+    // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
+    public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByUdoAndActivoTrue(udoId);
+        return filterAndMapByCargoOrAgrupacion(asistenciales);
+    }
+
+    // Asistenciales por Efector y tipoGuardia CARGO y AGRUPACION
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTipoGuardia(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return filterAndMapByCargoOrAgrupacion(asistenciales);
     }
     
 

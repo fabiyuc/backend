@@ -62,6 +62,13 @@ public class Inciso extends Ley {
         @JoinColumn(name = "id_tipo_licencia")
         private TipoLicencia tipoLicencia;
 
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "tipoLicencias",
+                        "articulo", "incisos", "fechaInicio", "fechaFin", "tipoLey", "novedadesPersonales",
+                        "articulos" })
+        @JoinColumn(name = "id_tipo_licencia")
+        private TipoLicencia tipoLicencia;
+
         @Override
         public boolean equals(Object obj) {
                 if (this == obj) {
