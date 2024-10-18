@@ -47,7 +47,7 @@ public class Inciso extends Ley {
                         "tipoLey", "articuloPadre", "incisoPadre", "incisos", "subIncisos", "subArticulos" })
         private List<Inciso> subIncisos = new ArrayList<>();
 
-        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_articulo")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
                         "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",

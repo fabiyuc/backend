@@ -34,6 +34,10 @@ public class IncisoService {
         return incisoRepository.findAll();
     }
 
+    public List<Inciso> findAllWithArticulo() {
+        return incisoRepository.findAllWithArticulo();
+    }
+
     public Optional<Inciso> findById(Long id) {
         return incisoRepository.findById(id);
     }
@@ -70,4 +74,5 @@ public class IncisoService {
     public void deleteById(Long id) {
         incisoRepository.deleteById(id);
     }
+
 }

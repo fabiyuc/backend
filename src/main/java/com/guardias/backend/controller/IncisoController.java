@@ -43,13 +43,13 @@ public class IncisoController {
     @GetMapping("/list")
     public ResponseEntity<List<Inciso>> list() {
         List<Inciso> list = incisoService.findByActivoTrue().get();
-        return new ResponseEntity<List<Inciso>>(list, HttpStatus.OK);
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Inciso>> listAll() {
-        List<Inciso> list = incisoService.findAll();
-        return new ResponseEntity<List<Inciso>>(list, HttpStatus.OK);
+        List<Inciso> list = incisoService.findAllWithArticulo();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
