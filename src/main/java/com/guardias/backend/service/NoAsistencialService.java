@@ -87,6 +87,16 @@ public class NoAsistencialService {
                     noAsistencial.getTelefono(),
                     noAsistencial.getEmail(),
                     noAsistencial.getDomicilio());
+                    noAsistencial.getId(),
+                    noAsistencial.getNombre(),
+                    noAsistencial.getApellido(),
+                    noAsistencial.getDni(),
+                    noAsistencial.getCuil(),
+                    noAsistencial.getFechaNacimiento(),
+                    noAsistencial.getSexo(),
+                    noAsistencial.getTelefono(),
+                    noAsistencial.getEmail(),
+                    noAsistencial.getDomicilio());
 
             DtoList.add(dto);
         }
