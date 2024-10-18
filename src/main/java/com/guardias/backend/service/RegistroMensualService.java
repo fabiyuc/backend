@@ -212,9 +212,7 @@ public class RegistroMensualService {
         RegistroMensual registroMensual = new RegistroMensual();
 
         try {
-            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
-                    mesEnum, anio)
-                    .get();
+            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
         } catch (Exception exception) {
             System.out.println("id no encontrado registroMensualService Ln243 - " + exception.getMessage());
             registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
@@ -222,6 +220,8 @@ public class RegistroMensualService {
         id = registroMensual.getId();
 
         // sumo las horas y los montos
+        System.out.println("... CREANDO UN NUEVO SUMAHORAS.... : ");
+        System.out.println("... MANDO SUMA HORAS DEL REG ACTIV : " + registroActividad.getHorasRealizadas());
         SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
                 registroActividad.getHorasRealizadas());
         sumaHorasService.save(horas);

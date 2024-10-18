@@ -113,6 +113,7 @@ public class SumaHorasService {
             // Si el día es un día laboral
             totalHoras.setHorasLav(roundedHours);
         }
+
         return totalHoras;
     }
 

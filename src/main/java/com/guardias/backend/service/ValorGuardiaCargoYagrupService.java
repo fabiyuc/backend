@@ -88,16 +88,16 @@ public class ValorGuardiaCargoYagrupService {
 
     private void crearPorNivel(int nivel, ValorGmi valorGmi, Long idBonoUti) {
 
-        System.out.println("·························· antes de instanciar  " );
         ValorGuardiaCargoYagrup valorGuardia;
-        System.out.println("·························· despues de instanciar" );
 
         switch (nivel) {
             case 1:
-            System.out.println("·························· entra a caso 1" );
+                System.out.println("·························· entra a caso 1" );
+
                 // Crear ValorGuardiaCargoYagrup con el hospital "Susques"
-                Hospital hospital1 = hospitalService.findByNombre("Susques").get();
-                
+                Hospital hospital1 = hospitalService.findByNombre("SUSQUES").get();
+                System.out.println("·························· nombre hospital1 " + hospital1.getNombre() );
+
                 List<Hospital> hospital1ConSusques = new ArrayList<>();
                 hospital1ConSusques.add(hospital1);
 
@@ -105,7 +105,7 @@ public class ValorGuardiaCargoYagrupService {
                 valorGuardiaCargoYagrupRepository.save(valorGuardia);
 
                 // Crear ValorGuardiaCargoYagrup con otros hospitales de nivel 1 excepto "Susques"
-                List<Hospital> hospital1SinSusques = hospitalService.findHospitalesPorNivelExcluyendo(1, "Susques");
+                List<Hospital> hospital1SinSusques = hospitalService.findHospitalesPorNivelExcluyendo(1, "SUSQUES");
                 System.out.println("hospitales nivel 1" + hospital1SinSusques.get(0));
 
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital1SinSusques, valorGmi, idBonoUti);
@@ -113,8 +113,10 @@ public class ValorGuardiaCargoYagrupService {
                 break;
 
             case 2:
+                System.out.println("·························· entra a caso 2" );
                 // Crear ValorGuardiaCargoYagrup con el hospital "Uro"
-                Hospital hospital2 = hospitalService.findByNombre("Uro").get();
+                Hospital hospital2 = hospitalService.findByNombre("JORGE URO").get();
+                System.out.println("·························· nombre hospital2 " + hospital2.getNombre() );
 
                 List<Hospital> hospital2ConUro = new ArrayList<>();
                 hospital2ConUro.add(hospital2);
@@ -123,7 +125,7 @@ public class ValorGuardiaCargoYagrupService {
                 valorGuardiaCargoYagrupRepository.save(valorGuardia);
 
                 // Crear ValorGuardiaCargoYagrup con otros hospitales de nivel 2 excepto "Uro"
-                List<Hospital> hospital2SinUro = hospitalService.findHospitalesPorNivelExcluyendo(2, "Uro");
+                List<Hospital> hospital2SinUro = hospitalService.findHospitalesPorNivelExcluyendo(2, "JORGE URO");
 
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital2SinUro, valorGmi, idBonoUti);
                 valorGuardiaCargoYagrupRepository.save(valorGuardia);
@@ -155,7 +157,7 @@ public class ValorGuardiaCargoYagrupService {
 
     private ValorGuardiaCargoYagrup crearValorGuardiaCargoYagrup(int nivel, List<Hospital> hospitales,
             ValorGmi valorGmi, Long idBonoUti) {
-                System.out.println("llegooooo ");
+                System.out.println("entro a crear valor guardia cargo y agrup ");
         ValorGuardiaCargoYagrup valorGuardia = new ValorGuardiaCargoYagrup();
         valorGuardia.setActivo(true);
         valorGuardia.setTipoGuardia(valorGmi.getTipoGuardia());
