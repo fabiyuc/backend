@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -11,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.guardias.backend.controller.RegistroMensualController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
-import com.guardias.backend.entity.ValorGmi;
+import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
+import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
@@ -47,8 +49,16 @@ public class RegistroActividadService {
     ValorGmiService valorGmiService;
     @Autowired
     RegistrosPendientesService registrosPendientesService;
-   /*  @Autowired
-    RegistroMensualController registroMensualController; */
+    @Autowired
+    ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
+    @Autowired
+    ValorGuardiaExtraYcfService valorGuardiaExtraYcfService;
+    @Autowired
+    HospitalService hospitalService;
+    /*
+     * @Autowired
+     * RegistroMensualController registroMensualController;
+     */
 
     public Optional<List<RegistroActividad>> findByActivoTrue() {
         return registroActividadRepository.findByActivoTrue();
@@ -159,51 +169,85 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        // para calcular ZONA porcentajePorZona
-        Float porcentajePorZona = registroActividad.getEfector().getPorcentajePorZona();
-        float zona = porcentajePorZona != null ? porcentajePorZona : 1.0f;
+        System.out.println("....... total horas Lav:  " + horas.getHorasLav());
+        System.out.println("....... total horas Sdf: " + horas.getHorasSdf());
 
-        // Valor de la GMI segun la fecha de inicio de la guardia
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
-        System.out.println(tipoGuardia);
-        ValorGmi valorGmi = new ValorGmi();
-        try {
-            valorGmi = valorGmiService.getByFechaAndTipoGuardia(registroActividad.getFechaIngreso(), tipoGuardia)
-                    .get();
-            System.out.println(valorGmi);
+        System.out.println("....... tipo guardia: " + tipoGuardia);
 
-        } catch (Exception e) {
-            System.out.println(" registroActividadService Ln177 - valor GMI no encontrado: " + e.getMessage());
-        }
+        Efector efector = registroActividad.getEfector();
+        System.out.println("....... efector del regActiv: " + efector.getNombre());
 
-        // Valor de la hora segun la GMI correspondiente a la fechaInicio y a la zona
-        BigDecimal valorHora = new BigDecimal(0);
-        try {
-            valorHora = BigDecimal.valueOf(zona)
-                    .multiply(valorGmi.getMonto().divide(BigDecimal.valueOf(24)));
+        Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
+        System.out.println("....... nombre del hospital  " + hospital.getNombre());
 
-        } catch (Exception e) {
-            System.out.println("error registroActividadService Ln187 - " + e.getMessage());
-        }
+        // Long idValorGuardia = hospitalRegActiv.getValoresGuardiaBase();
 
-        // calcula BONO
-        if (registroActividad.getServicio().isCritico()) {
-            horas.setBonoLav(horas.getHorasLav());
-            horas.setBonoSdf(horas.getHorasSdf());
+        if (tipoGuardia.equals("CARGO") || tipoGuardia.equals("AGRUPACION")) {
+            System.out.println("es tipo guardia cargo o agrup");
+
+            try {
+                // Valor de la guardia segun tipoGuardia y efector
+                ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
+                        .obtenerValorGuardiaActivo(hospital.getId()).get();
+
+                System.out.println("... valor de guardia base total Lav : " + valorGuardiaBase.getTotalLav());
+            
+
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
+
+                horas.setMontoLav(totalMontoLav);
+                System.out.println("... monto Lav : " + horas.getMontoLav());
+
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+
+                horas.setMontoSdf(totalMontoSdf);
+                System.out.println("... monto Sdf : " + horas.getMontoSdf());
+
+                BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
+                horas.setMontoTotal(total);
+                System.out.println("... monto total : " + horas.getMontoTotal());
+
+            } catch (Exception e) {
+                System.out.println("Error al buscar ValorGuardiaCargoYagrup: " + e.getMessage());
+            }
         } else {
-            horas.setBonoLav(0);
-            horas.setBonoSdf(0);
+            System.out.println("es tipo guardia extra o cf");
+            try {
+                ValorGuardiaExtrayCF valorGuardiaBase = (ValorGuardiaExtrayCF) efectorService
+                        .obtenerValorGuardiaActivo(hospital.getId()).get();
+                /*
+                 * ValorGuardiaExtrayCF valorGuardiaBase =
+                 * valorGuardiaExtraYcfService.buscarPorIdEfector(idEfector).get();
+                 */
+
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
+
+                horas.setMontoLav(totalMontoLav);
+
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
+
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+
+                horas.setMontoSdf(totalMontoSdf);
+
+                BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
+                horas.setMontoTotal(total);
+
+            } catch (Exception e) {
+                System.out.println("Error al buscar ValorGuardiaExtraYcf: " + e.getMessage());
+            }
         }
-        // FALTA calcular el tipo de guardia para multiplicar con el montoHoras....
-
-        horas.setMontoHorasLav(valorHora.multiply(BigDecimal.valueOf(horas.getHorasLav())));
-        horas.setMontoHorasSdf(valorHora.multiply(BigDecimal.valueOf(horas.getHorasSdf())));
-        horas.setMontoBonoLav(valorHora.multiply(BigDecimal.valueOf(horas.getBonoLav())));
-        horas.setMontoBonoSdf(valorHora.multiply(BigDecimal.valueOf(horas.getBonoSdf())));
-
-        BigDecimal total = horas.getMontoHorasLav()
-                .add(horas.getMontoHorasSdf().add(horas.getMontoBonoLav().add(horas.getMontoBonoSdf())));
-        horas.setMontoTotal(total);
 
         return horas;
     }
@@ -215,8 +259,6 @@ public class RegistroActividadService {
 
         RegistroActividad registroActividad = findById(id).get();
 
-        System.out.println("id: " + registroActividad.getRegistrosPendientes().getId());
-
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
             registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
@@ -226,8 +268,14 @@ public class RegistroActividadService {
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
 
         SumaHoras horas = calcularHoras(registroActividad);
+        System.out.println("... valor de horas : " + horas);
+
+        
         sumaHorasService.save(horas);
+        System.out.println("... GUARDE POR 1RA VEZ SUMAHORAS : ");
+
         registroActividad.setHorasRealizadas(horas);
+        System.out.println("... SETEO horas realizadas en reg activ : " + registroActividad.getHorasRealizadas());
 
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.repository.MinisterioRepository;
 
