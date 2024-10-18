@@ -77,16 +77,7 @@ public class NoAsistencialService {
         for (NoAsistencial noAsistencial : noAsistenciales) {
 
             NoAsistencialListDto dto = new NoAsistencialListDto(
-                    noAsistencial.getId(),
-                    noAsistencial.getNombre(),
-                    noAsistencial.getApellido(),
-                    noAsistencial.getDni(),
-                    noAsistencial.getCuil(),
-                    noAsistencial.getFechaNacimiento(),
-                    noAsistencial.getSexo(),
-                    noAsistencial.getTelefono(),
-                    noAsistencial.getEmail(),
-                    noAsistencial.getDomicilio());
+
                     noAsistencial.getId(),
                     noAsistencial.getNombre(),
                     noAsistencial.getApellido(),
