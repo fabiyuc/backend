@@ -76,7 +76,7 @@ public class NoAsistencialController {
         }
         return new ResponseEntity<>(noAsistenciales, HttpStatus.OK);
     }
-
+    
     @GetMapping("/detail/{id}")
     public ResponseEntity<NoAsistencial> getById(@PathVariable("id") Long id) {
         if (!noAsistencialService.activo(id))

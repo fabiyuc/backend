@@ -77,6 +77,7 @@ public class NoAsistencialService {
         for (NoAsistencial noAsistencial : noAsistenciales) {
 
             NoAsistencialListDto dto = new NoAsistencialListDto(
+
                     noAsistencial.getId(),
                     noAsistencial.getNombre(),
                     noAsistencial.getApellido(),
@@ -98,8 +99,7 @@ public class NoAsistencialService {
      * return noAsistencialRepository.findByEfectorAndActivoTrue(idEfector);
      * }
      */
-    public List<NoAsistencialSummaryDto> getNoAsistencialesByEfector(Long idEfector) {
-        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+    public List<NoAsistencialSummaryDto> filterNoAsistencialesByEfector(List<NoAsistencial> noAsistenciales) {
         List<NoAsistencialSummaryDto> EfectorList = new ArrayList<>();
         for (NoAsistencial noAsistencial : noAsistenciales) {
             NoAsistencialSummaryDto dto = new NoAsistencialSummaryDto(
@@ -109,6 +109,11 @@ public class NoAsistencialService {
             EfectorList.add(dto);
         }
         return EfectorList;
+    }
+
+    public List<NoAsistencialSummaryDto> getNoAsistencialesByEfector(Long efectorId) {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return filterNoAsistencialesByEfector(noAsistenciales);
     }
 
 }

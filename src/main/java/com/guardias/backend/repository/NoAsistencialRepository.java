@@ -29,6 +29,9 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
 
     List<NoAsistencial> findByActivo(boolean activo);
 
+    @Query("SELECT n FROM noAsistenciales n JOIN n.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND n.activo = true")
+    List<NoAsistencial> findByUdoAndActivoTrue(@Param("idUdo") Long idUdo);
+
     @Query("SELECT n FROM noAsistenciales n JOIN n.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND n.activo = true")
     List<NoAsistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
 }
