@@ -105,7 +105,14 @@ public class NoAsistencialService {
             NoAsistencialSummaryDto dto = new NoAsistencialSummaryDto(
                     noAsistencial.getId(),
                     noAsistencial.getNombre(),
-                    noAsistencial.getApellido());
+                    noAsistencial.getApellido(),
+                    noAsistencial.getDni(),
+                    noAsistencial.getCuil(),
+                    noAsistencial.getFechaNacimiento(),
+                    noAsistencial.getSexo(),
+                    noAsistencial.getTelefono(),
+                    noAsistencial.getEmail(),
+                    noAsistencial.getDomicilio());
             EfectorList.add(dto);
         }
         return EfectorList;
