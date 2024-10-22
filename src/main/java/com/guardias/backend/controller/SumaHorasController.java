@@ -81,12 +81,6 @@ public class SumaHorasController {
         if (sumaHorasDto.getHorasSdf() != sumaHoras.getHorasSdf() && (sumaHorasDto.getHorasSdf() > 0))
             sumaHoras.setHorasSdf(sumaHorasDto.getHorasSdf());
 
-        if (sumaHorasDto.getBonoLav() != sumaHoras.getBonoLav() && (sumaHorasDto.getBonoLav() > 0))
-            sumaHoras.setBonoLav(sumaHorasDto.getBonoLav());
-
-        if (sumaHorasDto.getBonoSdf() != sumaHoras.getBonoSdf() && (sumaHorasDto.getBonoSdf() > 0))
-            sumaHoras.setBonoSdf(sumaHorasDto.getBonoSdf());
-
         if (sumaHorasDto.getIdRegistroMensual() != null && (sumaHoras.getRegistroMensual() == null
                 || !Objects.equals(sumaHoras.getRegistroMensual().getId(), sumaHorasDto.getIdRegistroMensual()))) {
             sumaHoras.setRegistroMensual(registroMensualService.findById(sumaHorasDto.getIdRegistroMensual()).get());

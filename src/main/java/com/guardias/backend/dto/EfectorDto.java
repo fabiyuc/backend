@@ -32,9 +32,6 @@ public class EfectorDto {
     @NotBlank
     private Long idLocalidad;
 
-    @NotBlank
-    private Float porcentajePorZona;
-
     private List<Long> idDistribucionesHorarias;
     private List<Long> idLegajosUdo;
     private List<Long> idLegajos;

@@ -2,10 +2,11 @@ package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoGuardiaGmi;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,7 +20,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,11 +47,14 @@ public abstract class ValorGuardiaBase {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(20)")
-    private TipoGuardiaGmi tipoGuardia;
+    private TipoGuardiaEnum tipoGuardia;
 
     private int nivelComplejidad;
-    
-    private List<String> efectores;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "valorguardiabase_hospital", joinColumns = @JoinColumn(name = "id_valorGuardiaBase"), inverseJoinColumns = @JoinColumn(name = "id_hospital"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardiaBase"  })
+    private List<Hospital> hospitales = new ArrayList<>();
 
     private LocalDate fechaInicio;
 
@@ -55,19 +62,25 @@ public abstract class ValorGuardiaBase {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valor_gmi")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id","activo", "fechaInicio","fechaFin","ddjjs"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo", "fechaInicio",
+            "fechaFin", "ddjjs" })
     private ValorGmi valorGmi;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_bono_uti")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo","fechaInicio","fechaFin" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo", "fechaInicio",
+            "fechaFin" })
     private BonoUti bonoUti;
 
     @Column(precision = 20, scale = 2)
     private BigDecimal totalLav;
-    
+
     @Column(precision = 20, scale = 2)
     private BigDecimal totalSdf;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGuardia", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private List<SumaHoras> sumaHoras = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

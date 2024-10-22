@@ -58,8 +58,6 @@ public class EfectorController {
                     return new ResponseEntity(new Mensaje("es obligatorio indicar la region"), HttpStatus.BAD_REQUEST);
         if (efectorDto.getIdLocalidad() == null)
                     return new ResponseEntity(new Mensaje("es obligatorio indicar la localidad"), HttpStatus.BAD_REQUEST);
-        if (efectorDto.getPorcentajePorZona() == null)
-                    return new ResponseEntity(new Mensaje("es obligatorio indicar el porcentaje por zona"), HttpStatus.BAD_REQUEST);
        
         
 
@@ -108,9 +106,9 @@ public class EfectorController {
             efector.setLocalidad(localidadService.findById(efectorDto.getIdLocalidad()).get());
         }
         
-        if (efectorDto.getPorcentajePorZona() != efector.getPorcentajePorZona()
+        /* if (efectorDto.getPorcentajePorZona() != efector.getPorcentajePorZona()
                 && (efectorDto.getPorcentajePorZona() > 0))
-            efector.setPorcentajePorZona(efectorDto.getPorcentajePorZona());
+            efector.setPorcentajePorZona(efectorDto.getPorcentajePorZona()); */
 
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();

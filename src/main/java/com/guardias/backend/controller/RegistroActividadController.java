@@ -199,6 +199,7 @@ public class RegistroActividadController {
             return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> registrarSalida = registroActividadService.registrarSalida(id, registroActividadDto);
+        
 
         return registrarSalida;
     }

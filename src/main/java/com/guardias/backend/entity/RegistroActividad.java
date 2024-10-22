@@ -125,6 +125,11 @@ public class RegistroActividad {
         @OneToOne(mappedBy = "registroActividad")
         private SumaHoras horasRealizadas;
 
+        /* @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_valor_guardia")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler"})
+        private ValorGuardiaBase valorGuardia; */
+
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
         // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
