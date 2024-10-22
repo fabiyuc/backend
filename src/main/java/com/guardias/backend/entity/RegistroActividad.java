@@ -44,7 +44,7 @@ public class RegistroActividad {
         @Temporal(TemporalType.TIME)
         private LocalTime horaEgreso;
 
-        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @ManyToOne(fetch = FetchType.LAZY, optional = true)
         @JoinColumn(name = "id_tipo_guardia")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales",
                          "activo", "registrosActividades", "descripcion" })

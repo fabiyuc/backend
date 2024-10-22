@@ -209,7 +209,7 @@ public class AsistencialController {
             }
             asistencial.setTiposGuardias(tiposGuardiasActualizados);
 
-            // agrega nuevos efectores si no estan presentes
+            // agrega nuevos tipos de guardias si no estan presentes
             for (Long id : asistencialDto.getIdTiposGuardias()) {
                 boolean found = false;
                 for (TipoGuardia tipoGuardia : asistencial.getTiposGuardias()) {

@@ -115,7 +115,7 @@ public class AuthController {
 
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    /* @PreAuthorize("hasRole('ADMIN')") */
     @GetMapping("/list")
     public ResponseEntity<List<Usuario>> list() {
         List<Usuario> list = usuarioService.findAll();

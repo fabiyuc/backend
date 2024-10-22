@@ -9,12 +9,12 @@ import com.guardias.backend.enums.TipoGuardiaEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -29,15 +29,18 @@ public class TipoGuardia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(30)")
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TipoGuardiaEnum nombre;
+
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
+    
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "tipoguardia_asistencial", joinColumns = @JoinColumn(name = "id_tipoGuardia"), inverseJoinColumns = @JoinColumn(name = "id_asistencial"))
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tiposGuardias")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
             "apellido", "dni", "cuil", "legajos",
             "novedadesPersonales", "suplentes",
@@ -47,7 +50,7 @@ public class TipoGuardia {
             "descripcion", "esAsistencial", "tiposGuardias" })
     private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
             "servicio", "efector", "registrosPendientes" })
