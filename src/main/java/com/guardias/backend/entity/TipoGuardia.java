@@ -36,8 +36,18 @@ public class TipoGuardia {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    /* @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "tipoguardia_asistencial", joinColumns = @JoinColumn(name = "id_tipoGuardia"), inverseJoinColumns = @JoinColumn(name = "id_asistencial"))
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+            "apellido", "dni", "cuil", "legajos",
+            "novedadesPersonales", "suplentes",
+            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+            "domicilio",
+            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+            "descripcion", "esAsistencial", "tiposGuardias" })
+    private List<Asistencial> asistenciales = new ArrayList<Asistencial>(); */
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tiposGuardias")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
             "apellido", "dni", "cuil", "legajos",
             "novedadesPersonales", "suplentes",
