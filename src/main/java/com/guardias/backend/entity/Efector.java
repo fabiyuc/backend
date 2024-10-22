@@ -47,7 +47,7 @@ public abstract class Efector {
 
     private String observacion;
 
-    private float porcentajePorZona;
+    /* private float porcentajePorZona; */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
