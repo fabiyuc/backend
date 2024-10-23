@@ -183,7 +183,8 @@ public class RegistroActividadService {
 
         // Long idValorGuardia = hospitalRegActiv.getValoresGuardiaBase();
 
-        if (tipoGuardia.equals("CARGO") || tipoGuardia.equals("AGRUPACION")) {
+        /* if (tipoGuardia.equals("CARGO") || tipoGuardia.equals("AGRUPACION")) { */
+        if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia == TipoGuardiaEnum.AGRUPACION) {
             System.out.println("es tipo guardia cargo o agrup");
 
             try {
