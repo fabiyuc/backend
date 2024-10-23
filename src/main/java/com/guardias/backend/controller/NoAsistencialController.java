@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +39,7 @@ public class NoAsistencialController {
 
     @GetMapping("/list")
     public ResponseEntity<List<NoAsistencial>> list() {
-        List<NoAsistencial> list = noAsistencialService.findByActivoTrue().get();
+        List<NoAsistencial> list = noAsistencialService.findByActivoTrue().orElse(new ArrayList<>());
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
 

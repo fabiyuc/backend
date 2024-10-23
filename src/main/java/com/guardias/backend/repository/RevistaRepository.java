@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Revista;
 import com.guardias.backend.enums.AgrupacionEnum;
 
-
 @Repository
 public interface RevistaRepository extends JpaRepository<Revista, Long> {
 
@@ -29,10 +28,9 @@ public interface RevistaRepository extends JpaRepository<Revista, Long> {
 
     @Query("SELECT r FROM revistas r WHERE r.tipoRevista.id = :idTipoRevista AND r.categoria.id = :idCategoria AND r.adicional.id = :idAdicional AND r.cargaHoraria.id = :idCargaHoraria AND r.agrupacion = :agrupacion")
     Revista findByAttributes(
-        @Param("idTipoRevista") Long idTipoRevista,
-        @Param("idCategoria") Long idCategoria,
-        @Param("idAdicional") Long idAdicional,
-        @Param("idCargaHoraria") Long idCargaHoraria,
-        @Param("agrupacion") AgrupacionEnum agrupacion
-    );
+            @Param("idTipoRevista") Long idTipoRevista,
+            @Param("idCategoria") Long idCategoria,
+            @Param("idAdicional") Long idAdicional,
+            @Param("idCargaHoraria") Long idCargaHoraria,
+            @Param("agrupacion") AgrupacionEnum agrupacion);
 }

@@ -39,7 +39,7 @@ public class Usuario {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usuario_role", joinColumns = @JoinColumn(name = "usuario_ide", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id"))
     private Set<Rol> roles = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuarioIngreso", cascade = CascadeType.ALL)

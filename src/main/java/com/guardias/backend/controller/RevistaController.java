@@ -93,6 +93,20 @@ public class RevistaController {
         if (revistaDto.getAgrupacion() == null)
             return new ResponseEntity<>(new Mensaje("La agrupación es obligatoria"), HttpStatus.BAD_REQUEST);
 
+        // verificar que la revista que se va a crear no exista
+        if (id == 0) {
+            AgrupacionEnum agrupacionEnum = AgrupacionEnum.fromDisplayName(revistaDto.getAgrupacion());
+            Revista existingRevista = revistaService.findByAttributes(
+                    revistaDto.getIdTipoRevista(),
+                    revistaDto.getIdCategoria(),
+                    revistaDto.getIdAdicional(),
+                    revistaDto.getIdCargaHoraria(),
+                    agrupacionEnum);
+            if (existingRevista != null) {
+                return new ResponseEntity<>(new Mensaje("La revista ya existe"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
         /*
          * if (revistaDto.getIdTipoRevista() == null)
          * return new ResponseEntity<>(new Mensaje("El tipo de revista es obligatorio"),
@@ -135,6 +149,7 @@ public class RevistaController {
     }
 
     public Revista createUpdate(Revista revista, RevistaDto revistaDto) {
+
         // Convertir el displayName de agrupación a su correspondiente enum
         if (revistaDto.getAgrupacion() != null) {
             AgrupacionEnum agrupacionEnum = AgrupacionEnum.fromDisplayName(revistaDto.getAgrupacion());

@@ -63,7 +63,7 @@ public class RegionController {
         return new ResponseEntity(region, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(RegionDto regionDto) {
+    private ResponseEntity<?> validations(RegionDto regionDto, Long id) {
         if (StringUtils.isBlank(regionDto.getNombre()))
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
@@ -104,27 +104,30 @@ public class RegionController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegionDto regionDto) {
 
-        Region region = new Region();
-        region.setNombre(regionDto.getNombre());
+        ResponseEntity<?> respuestaValidaciones = validations(regionDto, 0L);
 
-        regionService.save(region);
-        return new ResponseEntity(new Mensaje("Region creada"), HttpStatus.OK);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Region region = createUpdate(new Region(), regionDto);
+            regionService.save(region);
+            return new ResponseEntity<>(new Mensaje("Region creado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody RegionDto regionDto) {
-
         if (!regionService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe el region"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("no existe la region"), HttpStatus.NOT_FOUND);
 
-        if (StringUtils.isBlank(regionDto.getNombre()))
-            return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        Region region = regionService.findById(id).get();
-        region.setNombre(regionDto.getNombre());
-        regionService.save(region);
-        return new ResponseEntity(new Mensaje("Region modificada"), HttpStatus.OK);
+        ResponseEntity<?> respuestaValidaciones = validations(regionDto, id);
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Region region = createUpdate(regionService.findById(id).get(), regionDto);
+            regionService.save(region);
+            return new ResponseEntity(new Mensaje("region actualizado correctamente"), HttpStatus.OK);
+        } else {
+            return respuestaValidaciones;
+        }
     }
 
     @PutMapping("/delete/{id}")

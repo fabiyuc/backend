@@ -31,13 +31,6 @@ public class NovedadPersonalDto {
 
     private Long idSuplente;
 
-    /*
-     * @NotNull
-     * private Long idArticulo; // no va
-     * 
-     * @NotNull
-     * private Long idInciso; // no va
-     */
     @NotNull
     private Long idTipoLicencia;
 }
