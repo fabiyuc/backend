@@ -18,7 +18,7 @@ public class AutoridadDto {
 
     @NotNull
     private LocalDate fechaInicio;
-    @NotNull
+    
     private LocalDate fechaFinal;
 
     private boolean esActual;
