@@ -213,6 +213,8 @@ public class RegistroMensualService {
 
         try {
             registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
+            System.out.println("---- registro mensual encontrado - " + registroMensual);
+
         } catch (Exception exception) {
             System.out.println("id no encontrado registroMensualService Ln243 - " + exception.getMessage());
             registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
@@ -223,16 +225,16 @@ public class RegistroMensualService {
         System.out.println("... CREANDO UN NUEVO SUMAHORAS.... : ");
         System.out.println("... MANDO SUMA HORAS DEL REG MENSUAL : " + registroMensual.getTotalHoras());
         System.out.println("... MANDO SUMA HORAS DEL REG ACTIV : " + registroActividad.getHorasRealizadas());
-        SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
+        SumaHoras horasRegMensual = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
                 registroActividad.getHorasRealizadas());
-        /* SumaHoras horas = new SumaHoras(); */
+    
+        sumaHorasService.save(horasRegMensual);
+        System.out.println("... GUARDE POR 2DA VEZ SUMAHORAS : " + horasRegMensual);
+        registroMensual.setTotalHoras(horasRegMensual);
+       
 
-        /* System.out.println("... GUARDE POR 2DA VEZ SUMAHORAS : " + horas); */
-        sumaHorasService.save(horas);
-        registroMensual.setTotalHoras(horas);
-        /* System.out.println("... seteo totalHoras en registro mensual : " + registroMensual); */
-
-        registroMensualRepository.save(registroMensual); // CHAT GTPPPPPPPPPPPPPPPPP
+        registroMensualRepository.save(registroMensual); // por CHAT GTPPPP
+         System.out.println("...  registro mensual GUARDADO : " + registroMensual);
 
 
         // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),

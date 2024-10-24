@@ -122,7 +122,10 @@ public class RegistroActividad {
         @Temporal(TemporalType.TIME)
         private LocalTime horaRegistroEgreso;
 
-        @OneToOne(mappedBy = "registroActividad")
+        /* @OneToOne(mappedBy = "registroActividad") */
+        @OneToOne
+        @JoinColumn(name = "suma_horas_id")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","registroActividad" })
         private SumaHoras horasRealizadas;
 
         /* @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
