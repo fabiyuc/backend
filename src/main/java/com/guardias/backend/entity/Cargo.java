@@ -53,6 +53,7 @@ public class Cargo {
      * 
      * @Column(columnDefinition = "DATE")
      */
+    
     @Temporal(TemporalType.DATE)
     private LocalDate fechaResolucion;
 
