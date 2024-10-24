@@ -219,18 +219,28 @@ public class RegistroMensualService {
         }
         id = registroMensual.getId();
 
-        // sumo las horas y los montos
+        // sumo las horas y montos del RegistroMensual con las del RegistroActividad
         System.out.println("... CREANDO UN NUEVO SUMAHORAS.... : ");
+        System.out.println("... MANDO SUMA HORAS DEL REG MENSUAL : " + registroMensual.getTotalHoras());
         System.out.println("... MANDO SUMA HORAS DEL REG ACTIV : " + registroActividad.getHorasRealizadas());
         SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
                 registroActividad.getHorasRealizadas());
+        /* SumaHoras horas = new SumaHoras(); */
+
+        /* System.out.println("... GUARDE POR 2DA VEZ SUMAHORAS : " + horas); */
         sumaHorasService.save(horas);
         registroMensual.setTotalHoras(horas);
+        /* System.out.println("... seteo totalHoras en registro mensual : " + registroMensual); */
+
+        registroMensualRepository.save(registroMensual); // CHAT GTPPPPPPPPPPPPPPPPP
+
+
         // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
         // registroActividad);
         //luego vemos el json //JsonFile jsonFile = new JsonFile();
         try {
             registroActividad.setRegistroMensual(findById(id).get());
+            /* System.out.println("... seteo en registro activ su reg mensual : " + registroActividad); */
             /*luego vemos el json // if (registroMensual.getJsonFile() != null) {
                 jsonFile = registroMensual.getJsonFile();
             } */
@@ -240,6 +250,7 @@ public class RegistroMensualService {
         // jsonFileService.save(jsonFile);
         //luego vemos el json //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
 
+        /* System.out.println("... asi vuelve reg activ " + registroActividad); */
         return registroActividad;
     }
 

@@ -192,24 +192,31 @@ public class RegistroActividadService {
                 ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
 
-                System.out.println("... valor de guardia base total Lav : " + valorGuardiaBase.getTotalLav());
+                System.out.println("... valor de guardia total Lav : " + valorGuardiaBase.getTotalLav());
             
+                /* LAV */
 
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
 
+                System.out.println("... valor de horaLav  : deberia ser 3811,62 " + valorHoraLav);
+
+                
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
 
                 horas.setMontoLav(totalMontoLav);
-                System.out.println("... monto Lav : " + horas.getMontoLav());
-
+                System.out.println("... montoLav : " + horas.getMontoLav());
+                
+                /* SDF */
                 BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
+                    
+                System.out.println("... valor de horaSdf  : deberia ser 4.192,78 " + valorHoraSdf);
 
-                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
 
                 horas.setMontoSdf(totalMontoSdf);
-                System.out.println("... monto Sdf : " + horas.getMontoSdf());
+                System.out.println("... montoSdf : " + horas.getMontoSdf());
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
                 horas.setMontoTotal(total);
@@ -271,16 +278,18 @@ public class RegistroActividadService {
         SumaHoras horas = calcularHoras(registroActividad);
         System.out.println("... valor de horas : " + horas);
 
-        
         sumaHorasService.save(horas);
-        System.out.println("... GUARDE POR 1RA VEZ SUMAHORAS : ");
+        System.out.println("... GUARDE POR 1RA VEZ SUMAHORAS : " + horas) ;
 
         registroActividad.setHorasRealizadas(horas);
         System.out.println("... SETEO horas realizadas en reg activ : " + registroActividad.getHorasRealizadas());
 
+
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+
+        registroActividadRepository.save(registroActividad); /// segun CHAT GTPPPPPPPP SIGUE SIN GUARDAR
 
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
@@ -289,6 +298,7 @@ public class RegistroActividadService {
             registroActividad.setRegistrosPendientes(null);
             registroActividad = registroMensualService.setRegistroMensual(registroActividad);
         }
+        
         save(registroActividad);
         return respuestaDeletePendiente;
     }
