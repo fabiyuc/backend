@@ -188,12 +188,6 @@ public class RegistroMensualService {
 
         try {
             save(registroMensual);
-
-            // registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial,
-            // idEfector,
-            // mesEnum, anio)
-            // .get();
-
             return registroMensual;
         } catch (Exception e) {
             System.out.println("error al crear registro mensual  registroMensualService Ln196 -- " + e.getMessage());
@@ -237,8 +231,6 @@ public class RegistroMensualService {
         sumaHorasService.sumarHorasMensuales(horas, registroActividad.getHorasRealizadas());
         
         sumaHorasService.save(horas);
-
-        //registroMensual.setTotalHoras(horas);
 
         // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
         // registroActividad);

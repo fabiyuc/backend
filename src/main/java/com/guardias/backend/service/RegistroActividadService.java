@@ -181,7 +181,7 @@ public class RegistroActividadService {
 
             try {
                 // Valor de la guardia segun tipoGuardia y efector
-                /* !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA */
+                /* !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un registro de aactividad de tipo extra*/
                 ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
             
@@ -204,7 +204,7 @@ public class RegistroActividadService {
         } else {
             System.out.println("es tipo guardia extra o cf");
             try {
-                /* !!!!!!!!!!!!!!REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA */
+                /* !!!!!!!!!!!!!!REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un registro de aactividad de tipo extra*/
 
                 ValorGuardiaExtrayCF valorGuardiaBase = (ValorGuardiaExtrayCF) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
@@ -253,7 +253,6 @@ public class RegistroActividadService {
         sumaHorasService.save(horas);
 
         registroActividad.setHorasRealizadas(horas);
-        
         
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);

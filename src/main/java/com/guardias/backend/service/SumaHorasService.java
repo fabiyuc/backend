@@ -138,35 +138,7 @@ public class SumaHorasService {
             horas.setMontoTotal(horasASumar.getMontoTotal());
         }
     
-        horas.setActivo(true);  // Aseguramos que el registro está activo
+        horas.setActivo(true);  
     }
 
-    /* public SumaHoras sumarHorasMensuales(SumaHoras horas, SumaHoras horasASumar) {
-        SumaHoras totalHoras = new SumaHoras();
-
-        totalHoras.setHorasLav(horas.getHorasLav() + horasASumar.getHorasLav());
-        totalHoras.setHorasSdf(horas.getHorasSdf() + horasASumar.getHorasSdf());
-       
-
-        if (horas.getMontoLav() != null) {
-            totalHoras.setMontoLav(horas.getMontoLav().add(horasASumar.getMontoLav()));
-        } else {
-            totalHoras.setMontoLav(horasASumar.getMontoLav());
-        }
-        if (horas.getMontoSdf() != null) {
-            totalHoras.setMontoSdf(horas.getMontoSdf().add(horasASumar.getMontoSdf()));
-        } else {
-            totalHoras.setMontoSdf(horasASumar.getMontoSdf());
-        }
-
-        if (horas.getMontoTotal() != null) {
-            totalHoras.setMontoTotal(horas.getMontoTotal().add(horasASumar.getMontoTotal()));
-        } else {
-            totalHoras.setMontoTotal(horasASumar.getMontoTotal());
-        }
-
-        totalHoras.setActivo(true);
-
-        return totalHoras;
-    } */
 }
