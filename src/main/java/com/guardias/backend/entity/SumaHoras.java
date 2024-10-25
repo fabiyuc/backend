@@ -45,11 +45,10 @@ public class SumaHoras {
             "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
     private RegistroMensual registroMensual;
 
-    @OneToOne
-    @JoinColumn(name = "registro_actividad_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaIngreso", "fechaEgreso",
-            "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector", "registroMensual",
-            "registrosPendientes", "usuario", "horaRegistro", "fechaRegistro" })
+   /*  @OneToOne
+    @JoinColumn(name = "registro_actividad_id") */
+    @OneToOne(mappedBy = "horasRealizadas")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "horasRealizadas"  })
     private RegistroActividad registroActividad;
 
     @Column(columnDefinition = "BIT DEFAULT 1")

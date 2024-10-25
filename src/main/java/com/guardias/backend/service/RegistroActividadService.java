@@ -169,50 +169,44 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        System.out.println("....... total horas Lav:  " + horas.getHorasLav());
-        System.out.println("....... total horas Sdf: " + horas.getHorasSdf());
+        System.out.println("registro de actividad" + registroActividad.getFechaRegistroEgreso());
+        Long idRegActiv = registroActividad.getId();
+
+        //personService.findById(nuevoUsuario.getIdPerson())
+        //horas.setRegistroActividad(registroActividadRepository.findById(idRegActiv).get());
 
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
-        System.out.println("....... tipo guardia: " + tipoGuardia);
 
         Efector efector = registroActividad.getEfector();
-        System.out.println("....... efector del regActiv: " + efector.getNombre());
 
         Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
-        System.out.println("....... nombre del hospital  " + hospital.getNombre());
 
         // Long idValorGuardia = hospitalRegActiv.getValoresGuardiaBase();
 
-        if (tipoGuardia.equals("CARGO") || tipoGuardia.equals("AGRUPACION")) {
+        if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia == TipoGuardiaEnum.AGRUPACION) {
             System.out.println("es tipo guardia cargo o agrup");
 
             try {
                 // Valor de la guardia segun tipoGuardia y efector
                 ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
-
-                System.out.println("... valor de guardia base total Lav : " + valorGuardiaBase.getTotalLav());
             
-
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
 
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
 
                 horas.setMontoLav(totalMontoLav);
-                System.out.println("... monto Lav : " + horas.getMontoLav());
 
                 BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
 
-                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
 
                 horas.setMontoSdf(totalMontoSdf);
-                System.out.println("... monto Sdf : " + horas.getMontoSdf());
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
                 horas.setMontoTotal(total);
-                System.out.println("... monto total : " + horas.getMontoTotal());
 
             } catch (Exception e) {
                 System.out.println("Error al buscar ValorGuardiaCargoYagrup: " + e.getMessage());
@@ -267,28 +261,34 @@ public class RegistroActividadService {
                 registroActividadDto.getHoraEgreso() != null)
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
 
-        SumaHoras horas = calcularHoras(registroActividad);
-        System.out.println("... valor de horas : " + horas);
-
-        
-        sumaHorasService.save(horas);
-        System.out.println("... GUARDE POR 1RA VEZ SUMAHORAS : ");
-
-        registroActividad.setHorasRealizadas(horas);
-        System.out.println("... SETEO horas realizadas en reg activ : " + registroActividad.getHorasRealizadas());
-
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+
+
+        /* System.out.println("...  reg activ : " + registroActividad); */
 
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
 
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             registroActividad.setRegistrosPendientes(null);
-            registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+            
+            SumaHoras horas = calcularHoras(registroActividad);
+
+            sumaHorasService.save(horas);
+
+            registroActividad.setHorasRealizadas(horas);
+            save(registroActividad);
+            
+
+               // registroActividadService.save(registroActividad);
+            
+            
+            System.out.println("... GUARDE POR 1RA VEZ SUMAHORAS : " + horas);
+            /* registroActividad = registroMensualService.setRegistroMensual(registroActividad); */
         }
-        save(registroActividad);
+        
         return respuestaDeletePendiente;
     }
 

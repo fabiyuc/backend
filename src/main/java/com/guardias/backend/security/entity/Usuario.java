@@ -55,8 +55,7 @@ public class Usuario {
     private List<RegistroActividad> registrosEgresos = new ArrayList<>();
 
     @OneToOne(mappedBy = "usuario")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "usuario" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "usuario" })
     private Person person;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
