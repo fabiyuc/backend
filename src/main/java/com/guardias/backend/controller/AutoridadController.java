@@ -110,8 +110,8 @@ public class AutoridadController {
 
     public Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
 
-        if (autoridadDto.getNombre() != null && 
-        !autoridadDto.getNombre().isEmpty()
+        if (autoridadDto.getNombre() != null &&
+                !autoridadDto.getNombre().isEmpty()
                 && !autoridadDto.getNombre().equals(autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
 
@@ -144,6 +144,10 @@ public class AutoridadController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
 
+        // Verificar si la persona tiene una autoridad activa
+        if (autoridadService.tieneAutoridadActiva(autoridadDto.getIdPersona())) {
+            return new ResponseEntity<>(new Mensaje("La persona tiene una autoridad activa"), HttpStatus.BAD_REQUEST);
+        }
         ResponseEntity<?> respuestaValidaciones = validations(autoridadDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {

@@ -93,6 +93,11 @@ public class AutoridadService {
         return autoridadRepository.existsByPersonaId(personaId) && personaService.activoById(personaId);
     }
 
+    public boolean tieneAutoridadActiva(Long idPersona) {
+        // Busca si la persona ya tiene una autoridad activa
+        return autoridadRepository.existsByPersonaIdAndActivoTrue(idPersona);
+    }
+
     public void save(Autoridad autoridad) {
         autoridadRepository.save(autoridad);
     }
