@@ -265,9 +265,6 @@ public class RegistroActividadService {
         registroActividad.setFechaRegistroEgreso(LocalDate.now());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
 
-
-        /* System.out.println("...  reg activ : " + registroActividad); */
-
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
 
