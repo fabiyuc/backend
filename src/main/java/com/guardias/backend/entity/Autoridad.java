@@ -37,7 +37,7 @@ public class Autoridad {
 
         @Temporal(TemporalType.DATE)
         private LocalDate fechaFinal;
-        private boolean esActual;
+
         private boolean esRegional;
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
@@ -95,8 +95,7 @@ public class Autoridad {
                                 return false;
                 } else if (!fechaFinal.equals(other.fechaFinal))
                         return false;
-                if (esActual != other.esActual)
-                        return false;
+               
                 if (esRegional != other.esRegional)
                         return false;
                 if (efector == null) {

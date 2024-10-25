@@ -81,12 +81,12 @@ public class LegajoController {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getActual() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
-                    HttpStatus.BAD_REQUEST);
+        // if (legajoDto.getActual() == null)
+        // return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
+        // HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getLegal() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es legal o no"),
+        if (legajoDto.getEsAutoridad() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es autoridad o no"),
                     HttpStatus.BAD_REQUEST);
 
         if (legajoDto.getIdPersona() == null)
@@ -253,8 +253,8 @@ public class LegajoController {
             }
         }
 
-        legajo.setActual(legajoDto.getActual());
-        legajo.setLegal(legajoDto.getLegal());
+        // legajo.setActual(legajoDto.getActual());
+        legajo.setEsAutoridad(legajoDto.getEsAutoridad());
         legajo.setActivo(true);
 
         return legajo;

@@ -32,8 +32,8 @@ public class Legajo {
   private Long id;
   private LocalDate fechaInicio;
   private LocalDate fechaFinal;
-  private Boolean actual;
-  private Boolean legal;
+  // private Boolean actual;
+  private Boolean esAutoridad;
   @Column(columnDefinition = "BIT DEFAULT 1")
   private boolean activo;
 
@@ -57,7 +57,7 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_udo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "autoridades", "domicilio", "telefono",
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
       "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
       "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
       "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
@@ -68,7 +68,8 @@ public class Legajo {
   @JoinColumn(name = "id_persona")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "fechaNacimiento", "sexo", "telefono",
       "email", "domicilio", "esAsistencial", "activo", "legajos", "novedadesPersonales", "suplentes",
-      "distribucionesHorarias", "autoridades", "tiposGuardias", "registrosActividades", "descripcion" ,"registrosMensuales"})
+      "distribucionesHorarias", "autoridades", "tiposGuardias", "registrosActividades", "descripcion",
+      "registrosMensuales" })
   private Person persona;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -94,10 +95,9 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_profesion")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial", 
-      "legajos", "especialidades"})
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial",
+      "legajos", "especialidades" })
   private Profesion profesion;
-
 
   // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
   // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",

@@ -14,6 +14,7 @@ import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.NoAsistencialRepository;
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -109,12 +110,12 @@ public class PersonService {
 
         // Obtener el Legajo actual
         Legajo legajoActual = persona.getLegajos().stream()
-                .filter(Legajo::getActual)
+                .filter(Legajo::getEsAutoridad)
                 .findFirst()
                 .orElse(null);
 
         if (legajoActual != null) {
-            
+
             // Asignar el EfectorSummaryDto para la UDO
             if (legajoActual.getUdo() != null) {
                 EfectorSummaryDto udoDto = new EfectorSummaryDto(legajoActual.getUdo().getId(),

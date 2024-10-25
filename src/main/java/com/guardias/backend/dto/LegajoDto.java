@@ -17,10 +17,10 @@ public class LegajoDto {
     @NotBlank
     private LocalDate fechaInicio;
     private LocalDate fechaFinal;
+    // @NotBlank
+    // private Boolean actual;
     @NotBlank
-    private Boolean actual;
-    @NotBlank
-    private Boolean legal;
+    private Boolean esAutoridad;
     private boolean activo;
     private String matriculaNacional;
     @NotBlank
@@ -42,3 +42,21 @@ public class LegajoDto {
     private Long idProfesion;
 
 }
+
+// genera el json
+// {
+// "fechaInicio": "2021-09-01",
+// "fechaFinal": "2021-09-01",
+// "esAutoridad": true,
+// "activo": true,
+// "matriculaNacional": "123456",
+// "matriculaProvincial": "123456",
+// "idSuspencion": 1,
+// "idRevista": 1,
+// "idUdo": 1,
+// "idPersona": 1,
+// "idCargo": 1,
+// "idEfectores": [1, 2],
+// "idEspecialidades": [1, 2],
+// "idProfesion": 1
+// }

@@ -152,7 +152,7 @@ public class AutoridadController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
-            autoridad.setEsActual(true);
+
             autoridadService.save(autoridad);
             return new ResponseEntity<>(new Mensaje("Autoridad creada correctamente"), HttpStatus.OK);
         } else {
@@ -170,7 +170,7 @@ public class AutoridadController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);
-            autoridad.setEsActual(autoridadDto.isEsActual());
+
             autoridadService.save(autoridad);
             return new ResponseEntity<>(new Mensaje("Autoridad modificada correctamente"), HttpStatus.OK);
         } else {
