@@ -101,9 +101,11 @@ public class LegajoController {
         if (!esContraFactura && legajoDto.getIdUdo() == null) {
             return new ResponseEntity<>(new Mensaje("indicar la UdO"), HttpStatus.BAD_REQUEST);
         }
-
-        if (!esContraFactura && legajoDto.getIdCargo() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"), HttpStatus.BAD_REQUEST);
+        /*
+         * if (!esContraFactura && legajoDto.getIdCargo() == null)
+         * return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (!esContraFactura && legajoDto.getIdRevista() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
@@ -165,12 +167,14 @@ public class LegajoController {
             }
         }
 
-        if (legajoDto.getIdCargo() != null) {
-            if (legajo.getCargo() == null
-                    || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
-                legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-            }
-        }
+        /*
+         * if (legajoDto.getIdCargo() != null) {
+         * if (legajo.getCargo() == null
+         * || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
+         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
+         * }
+         * }
+         */
 
         if (legajoDto.getIdEspecialidades() != null) {
             if (legajo.getEspecialidades() == null) {

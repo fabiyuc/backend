@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.Cargo;
-import com.guardias.backend.enums.AgrupacionEnum;
 import com.guardias.backend.repository.CargoRepository;
 
 @Service
@@ -31,16 +30,18 @@ public class CargoService {
     }
 
     public Optional<Cargo> findById(Long id) {
-        return cargoRepository.findById((Long) id);
+        return cargoRepository.findById(id);
     }
 
     public Optional<Cargo> findByNombre(String nombre) {
         return cargoRepository.findByNombre(nombre);
     }
 
-    public Optional<Cargo> findByAgrupacion(AgrupacionEnum agrupacion) {
-        return cargoRepository.findByAgrupacion(agrupacion);
-    }
+    /*
+     * public Optional<Cargo> findByAgrupacion(AgrupacionEnum agrupacion) {
+     * return cargoRepository.findByAgrupacion(agrupacion);
+     * }
+     */
 
     public List<Cargo> findByFechaInicio(LocalDate fechaInicio) {
         return cargoRepository.findByFechaInicio(fechaInicio);
@@ -63,10 +64,12 @@ public class CargoService {
 
     }
 
-    public boolean existsByAgrupacion(AgrupacionEnum agrupacion) {
-        return (cargoRepository.existsByAgrupacion(agrupacion)
-                && cargoRepository.findByAgrupacion(agrupacion).get().isActivo());
-    }
+    /*
+     * public boolean existsByAgrupacion(AgrupacionEnum agrupacion) {
+     * return (cargoRepository.existsByAgrupacion(agrupacion)
+     * && cargoRepository.findByAgrupacion(agrupacion).get().isActivo());
+     * }
+     */
 
     public void save(Cargo cargo) {
         cargoRepository.save(cargo);

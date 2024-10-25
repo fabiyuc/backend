@@ -60,6 +60,14 @@ public class Autoridad {
                         "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion" })
         private Person persona;
 
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_cargo")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "nroresolucion",
+                        "nrodecreto", "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos",
+                        "autoridades",
+                        "agrupacion" })
+        private Cargo cargo;
+
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
         // "fechaInicio","fechaFinal","esActual","esRegional","activo","efector","persona"
         // })
@@ -95,7 +103,7 @@ public class Autoridad {
                                 return false;
                 } else if (!fechaFinal.equals(other.fechaFinal))
                         return false;
-               
+
                 if (esRegional != other.esRegional)
                         return false;
                 if (efector == null) {

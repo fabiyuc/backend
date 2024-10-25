@@ -32,8 +32,10 @@ public class LegajoDto {
     private Long idUdo;
     @NotBlank
     private Long idPersona;
-    @NotBlank
-    private Long idCargo;
+    /*
+     * @NotBlank
+     * private Long idCargo;
+     */
     @NotNull
     private List<Long> idEfectores;
     private List<Long> idEspecialidades;

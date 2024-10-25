@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Cargo;
-import com.guardias.backend.enums.AgrupacionEnum;
 
 @Repository
 public interface CargoRepository extends JpaRepository<Cargo, Long> {
@@ -20,7 +19,7 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
 
     Optional<Cargo> findById(Long id);
 
-    Optional<Cargo> findByAgrupacion(AgrupacionEnum agrupacion);
+    /* Optional<Cargo> findByAgrupacion(AgrupacionEnum agrupacion); */
 
     @Query("SELECT c FROM cargos c WHERE c.fechaInicio = :fechaInicio")
     List<Cargo> findByFechaInicio(LocalDate fechaInicio);
@@ -28,8 +27,9 @@ public interface CargoRepository extends JpaRepository<Cargo, Long> {
     boolean existsByNombre(String nombre);
 
     boolean existsById(Long id);
-
-    boolean existsByAgrupacion(AgrupacionEnum agrupacion);
+    /*
+     * boolean existsByAgrupacion(AgrupacionEnum agrupacion);
+     */
 
     List<Cargo> findByActivo(boolean activo);
 }

@@ -72,11 +72,18 @@ public class Legajo {
       "registrosMensuales" })
   private Person persona;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "id_cargo")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "nroresolucion", "nrodecreto",
-      "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos", "agrupacion" })
-  private Cargo cargo;
+  /*
+   * @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade =
+   * CascadeType.REMOVE)
+   * 
+   * @JoinColumn(name = "id_cargo")
+   * 
+   * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
+   * "nroresolucion", "nrodecreto",
+   * "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos",
+   * "agrupacion" })
+   * private Cargo cargo;
+   */
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))

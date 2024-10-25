@@ -21,6 +21,7 @@ import com.guardias.backend.dto.AutoridadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.service.AutoridadService;
+import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.PersonService;
 
@@ -35,6 +36,8 @@ public class AutoridadController {
     EfectorService efectorService;
     @Autowired
     PersonService personService;
+    @Autowired
+    CargoService cargoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Autoridad>> list() {
@@ -136,6 +139,14 @@ public class AutoridadController {
                                 autoridadDto.getIdPersona()))) {
             autoridad.setPersona(personService.findById(autoridadDto.getIdPersona()));
         }
+
+        if (autoridadDto.getIdCargo() != null) {
+            if (autoridad.getCargo() == null
+                    || !Objects.equals(autoridad.getCargo().getId(), autoridadDto.getIdCargo())) {
+                autoridad.setCargo(cargoService.findById(autoridadDto.getIdCargo()).get());
+            }
+        }
+
         autoridad.setActivo(true);
 
         return autoridad;

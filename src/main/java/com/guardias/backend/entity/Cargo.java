@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.AgrupacionEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -61,15 +58,30 @@ public class Cargo {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFinal;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
-            "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
-            "persona", "cargo", "efectores" })
-    private List<Legajo> legajos = new ArrayList<>();
+    /*
+     * @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade =
+     * CascadeType.ALL)
+     * 
+     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
+     * "fechaFinal", "actual", "legal",
+     * "activo", "matriculaNacional", "matriculaProvincial", "especialidades",
+     * "suspencion", "revista", "udo",
+     * "persona", "cargo", "efectores" })
+     * private List<Legajo> legajos = new ArrayList<>();
+     */
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(40)")
-    private AgrupacionEnum agrupacion;
+    /*
+     * @Enumerated(EnumType.STRING)
+     * 
+     * @Column(columnDefinition = "VARCHAR(40)")
+     * private AgrupacionEnum agrupacion;
+     */
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "nroresolucion",
+            "nrodecreto", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos", "agrupacion",
+            "esRegional", "efector", "persona", "cargo" })
+    private List<Autoridad> autoridades = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
     // "nombre","descripcion","nroresolucion","nrodecreto","activo","fechaResolucion","fechaInicio","fechaFinal","legajos","agrupacion"})
