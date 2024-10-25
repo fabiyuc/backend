@@ -39,25 +39,25 @@ public class SumaHoras {
     @Column(precision = 20, scale = 2)
     private BigDecimal montoTotal;
 
-    @OneToOne
-    @JoinColumn(name = "registro_mensual_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
+    /* @OneToOne
+    @JoinColumn(name = "registro_mensual_id") */
+    @OneToOne(mappedBy = "totalHoras")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "totalHoras","asistencial", "registroActividad", "efector", "activo" })
     private RegistroMensual registroMensual;
 
    /*  @OneToOne
     @JoinColumn(name = "registro_actividad_id") */
     @OneToOne(mappedBy = "horasRealizadas")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "horasRealizadas"  })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "horasRealizadas", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "activo", "asistencial", "servicio", "efector", "registroMensual", "registrosPendientes", "usuarioIngreso", "usuarioEgreso", "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso", "horaRegistroEgreso", "", "", "", ""  })
     private RegistroActividad registroActividad;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valor_guardia")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private ValorGuardiaBase valorGuardia;
+    private ValorGuardiaBase valorGuardia; */
 
     @Override
     public boolean equals(Object obj) {

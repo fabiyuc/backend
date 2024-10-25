@@ -69,7 +69,10 @@ public class RegistroMensual {
             "total", "estadoDdjj", "valorGmi" })
     private Ddjj ddjj;
 
-    @OneToOne(mappedBy = "registroMensual")
+    /* @OneToOne(mappedBy = "registroMensual") */
+    @OneToOne
+    @JoinColumn(name = "total_horas_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registroMensual" })
     private SumaHoras totalHoras;
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",

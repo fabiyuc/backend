@@ -78,9 +78,9 @@ public abstract class ValorGuardiaBase {
     @Column(precision = 20, scale = 2)
     private BigDecimal totalSdf;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGuardia", cascade = CascadeType.ALL)
+    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGuardia", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private List<SumaHoras> sumaHoras = new ArrayList<>();
+    private List<SumaHoras> sumaHoras = new ArrayList<>(); */
 
     @Override
     public boolean equals(Object obj) {

@@ -213,19 +213,33 @@ public class RegistroMensualService {
 
         try {
             registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
+            System.out.println("##### id del registro mensual encontrado: " + registroMensual.getId());
         } catch (Exception exception) {
-            System.out.println("id no encontrado registroMensualService Ln243 - " + exception.getMessage());
+            System.out.println("id no encontrado registroMensualService Ln215 - " + exception.getMessage());
             registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
         id = registroMensual.getId();
+        System.out.println("##### id del registro mensual fuera del try: " + registroMensual.getId());
 
         // sumo las horas y los montos
         System.out.println("... CREANDO UN NUEVO SUMAHORAS.... : ");
-        System.out.println("... MANDO SUMA HORAS DEL REG ACTIV : " + registroActividad.getHorasRealizadas());
-        SumaHoras horas = sumaHorasService.sumarHorasMensuales(registroMensual.getTotalHoras(),
-                registroActividad.getHorasRealizadas());
+
+
+        System.out.println("... id sumahoras del reg mensual.... : "+ registroMensual.getTotalHoras().getId());
+
+        SumaHoras horas = registroMensual.getTotalHoras();
+
+        if (horas == null) {   
+            horas = new SumaHoras();
+            registroMensual.setTotalHoras(horas);
+        }
+            
+        sumaHorasService.sumarHorasMensuales(horas, registroActividad.getHorasRealizadas());
+        
         sumaHorasService.save(horas);
-        registroMensual.setTotalHoras(horas);
+
+        //registroMensual.setTotalHoras(horas);
+
         // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
         // registroActividad);
         //luego vemos el json //JsonFile jsonFile = new JsonFile();
@@ -235,7 +249,7 @@ public class RegistroMensualService {
                 jsonFile = registroMensual.getJsonFile();
             } */
         } catch (Exception e) {
-            System.out.println("error: idRegistroMensual nulo  registroMensualService Ln259 -- " + e.getMessage());
+            System.out.println("error: idRegistroMensual nulo  registroMensualService Ln247 -- " + e.getMessage());
         }
         // jsonFileService.save(jsonFile);
         //luego vemos el json //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));

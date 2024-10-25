@@ -169,40 +169,30 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        System.out.println("registro de actividad" + registroActividad.getFechaRegistroEgreso());
-        Long idRegActiv = registroActividad.getId();
-
-        //personService.findById(nuevoUsuario.getIdPerson())
-        //horas.setRegistroActividad(registroActividadRepository.findById(idRegActiv).get());
-
+        horas.setActivo(true);
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
 
         Efector efector = registroActividad.getEfector();
 
         Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
 
-        // Long idValorGuardia = hospitalRegActiv.getValoresGuardiaBase();
-
         if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia == TipoGuardiaEnum.AGRUPACION) {
             System.out.println("es tipo guardia cargo o agrup");
 
             try {
                 // Valor de la guardia segun tipoGuardia y efector
+                /* !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA */
                 ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
             
-                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
-                        RoundingMode.HALF_UP);
-
+                /* LAV */
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
-
                 horas.setMontoLav(totalMontoLav);
 
-                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
-                        RoundingMode.HALF_UP);
-
+                /* SDF */
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
                 BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
-
                 horas.setMontoSdf(totalMontoSdf);
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
@@ -214,25 +204,19 @@ public class RegistroActividadService {
         } else {
             System.out.println("es tipo guardia extra o cf");
             try {
+                /* !!!!!!!!!!!!!!REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA */
+
                 ValorGuardiaExtrayCF valorGuardiaBase = (ValorGuardiaExtrayCF) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
-                /*
-                 * ValorGuardiaExtrayCF valorGuardiaBase =
-                 * valorGuardiaExtraYcfService.buscarPorIdEfector(idEfector).get();
-                 */
-
-                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
-                        RoundingMode.HALF_UP);
-
+                
+                /* LAV */
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
-
                 horas.setMontoLav(totalMontoLav);
 
-                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
-                        RoundingMode.HALF_UP);
-
+                /* SDF */
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
                 BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
-
                 horas.setMontoSdf(totalMontoSdf);
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
@@ -265,26 +249,21 @@ public class RegistroActividadService {
         registroActividad.setFechaRegistroEgreso(LocalDate.now());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
 
+        SumaHoras horas = calcularHoras(registroActividad);
+        sumaHorasService.save(horas);
+
+        registroActividad.setHorasRealizadas(horas);
+        
+        
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
 
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             registroActividad.setRegistrosPendientes(null);
-            
-            SumaHoras horas = calcularHoras(registroActividad);
-
-            sumaHorasService.save(horas);
-
-            registroActividad.setHorasRealizadas(horas);
-            save(registroActividad);
-            
-
-               // registroActividadService.save(registroActividad);
-            
-            
-            System.out.println("... GUARDE POR 1RA VEZ SUMAHORAS : " + horas);
-            /* registroActividad = registroMensualService.setRegistroMensual(registroActividad); */
+            registroActividad = registroMensualService.setRegistroMensual(registroActividad);
         }
+
+        save(registroActividad);
         
         return respuestaDeletePendiente;
     }
