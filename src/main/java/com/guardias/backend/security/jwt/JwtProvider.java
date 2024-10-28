@@ -34,6 +34,7 @@ public class JwtProvider {
         // List<String> roles =
         // usuarioPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthorities);
         return Jwts.builder().setSubject(usuarioPrincipal.getUsername())
+                .claim("id", usuarioPrincipal.getId())  // Agrega el ID al payload
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + expiration * 1000))
                 .signWith(getSecret(secret))

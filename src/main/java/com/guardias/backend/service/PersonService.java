@@ -104,6 +104,7 @@ public class PersonService {
 
     public PersonBasicPanelDto convertirAPersonaBasicaPanelDTO(Person persona) {
         PersonBasicPanelDto dto = new PersonBasicPanelDto();
+        dto.setId(persona.getId());
         dto.setNombre(persona.getNombre());
         dto.setApellido(persona.getApellido());
 

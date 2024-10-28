@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PersonBasicPanelDto {
     
+    private Long id;
     private String nombre;
     private String apellido;
     private EfectorSummaryDto udo;
