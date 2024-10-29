@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
-import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.TipoGuardiaService;
 
@@ -36,6 +36,8 @@ public class TipoGuardiaController {
     AsistencialService asistencialService;
     @Autowired
     RegistroActividadService registroActividadService;
+    @Autowired
+    LegajoService legajoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<TipoGuardia>> list() {
@@ -87,7 +89,7 @@ public class TipoGuardiaController {
     }
 
     private ResponseEntity<?> validations(TipoGuardiaDto tipoGuardiaDto) {
-        if (tipoGuardiaDto.getNombre()==null)
+        if (tipoGuardiaDto.getNombre() == null)
             return new ResponseEntity(new Mensaje("el nombre es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
@@ -97,33 +99,57 @@ public class TipoGuardiaController {
     private TipoGuardia createUpdate(TipoGuardia tipoGuardia, TipoGuardiaDto tipoGuardiaDto) {
 
         if (tipoGuardiaDto.getNombre() != null && !tipoGuardiaDto.getNombre().equals(tipoGuardia.getNombre())
-                /* && !tipoGuardiaDto.getNombre().isEmpty() */)
+        /* && !tipoGuardiaDto.getNombre().isEmpty() */)
             tipoGuardia.setNombre(tipoGuardiaDto.getNombre());
 
         if (tipoGuardiaDto.getDescripcion() != null && !tipoGuardiaDto.getDescripcion().isEmpty()
                 && !tipoGuardiaDto.getDescripcion().equals(tipoGuardia.getDescripcion()))
             tipoGuardia.setDescripcion(tipoGuardiaDto.getDescripcion());
+        /*
+         * if (tipoGuardiaDto.getIdAsistenciales() != null) {
+         * List<Long> idList = new ArrayList<Long>();
+         * if (tipoGuardia.getAsistenciales() != null) {
+         * for (Asistencial asistencial : tipoGuardia.getAsistenciales()) {
+         * for (Long id : tipoGuardiaDto.getIdAsistenciales()) {
+         * if (!asistencial.getId().equals(id)) {
+         * idList.add(id);
+         * }
+         * }
+         * }
+         * } else {
+         * tipoGuardia.setAsistenciales(new ArrayList<Asistencial>());
+         * }
+         * 
+         * List<Long> idsToAdd = idList.isEmpty() ? tipoGuardiaDto.getIdAsistenciales()
+         * : idList;
+         * 
+         * for (Long id : idsToAdd) {
+         * tipoGuardia.getAsistenciales().add(asistencialService.findById(id).get());
+         * asistencialService.findById(id).get().getTiposGuardias().add(tipoGuardia);
+         * 
+         * }
+         * }
+         */
 
-        if (tipoGuardiaDto.getIdAsistenciales() != null) {
+        if (tipoGuardiaDto.getIdLegajos() != null) {
             List<Long> idList = new ArrayList<Long>();
-            if (tipoGuardia.getAsistenciales() != null) {
-                for (Asistencial asistencial : tipoGuardia.getAsistenciales()) {
-                    for (Long id : tipoGuardiaDto.getIdAsistenciales()) {
-                        if (!asistencial.getId().equals(id)) {
+            if (tipoGuardia.getLegajos() != null) {
+                for (Legajo legajo : tipoGuardia.getLegajos()) {
+                    for (Long id : tipoGuardiaDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
                             idList.add(id);
                         }
                     }
                 }
             } else {
-                tipoGuardia.setAsistenciales(new ArrayList<Asistencial>());
+                tipoGuardia.setLegajos(new ArrayList<Legajo>());
             }
 
-            List<Long> idsToAdd = idList.isEmpty() ? tipoGuardiaDto.getIdAsistenciales() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? tipoGuardiaDto.getIdLegajos() : idList;
 
             for (Long id : idsToAdd) {
-                tipoGuardia.getAsistenciales().add(asistencialService.findById(id).get());
-                asistencialService.findById(id).get().getTiposGuardias().add(tipoGuardia);
-
+                tipoGuardia.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().getTipoGuardias().add(tipoGuardia);
             }
         }
 

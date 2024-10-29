@@ -19,6 +19,8 @@ public class TipoGuardiaDto {
     @NotBlank
     private String descripcion;
     private Boolean activo;
-    private List<Long> idAsistenciales;
+    /* private List<Long> idAsistenciales; */
     private List<Long> idRegistrosActividades;
+
+    private List<Long> idLegajos;
 }

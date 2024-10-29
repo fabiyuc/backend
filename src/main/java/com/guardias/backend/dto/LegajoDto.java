@@ -43,6 +43,8 @@ public class LegajoDto {
     @NotBlank
     private Long idProfesion;
 
+    private List<Long> idTipoGuardias;
+
 }
 
 // genera el json

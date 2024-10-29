@@ -68,7 +68,7 @@ public class Legajo {
   @JoinColumn(name = "id_persona")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "fechaNacimiento", "sexo", "telefono",
       "email", "domicilio", "esAsistencial", "activo", "legajos", "novedadesPersonales", "suplentes",
-      "distribucionesHorarias", "autoridades", "tiposGuardias", "registrosActividades", "descripcion",
+      "distribucionesHorarias", "autoridades", "tipoGuardias", "registrosActividades", "descripcion",
       "registrosMensuales" })
   private Person persona;
 
@@ -105,6 +105,12 @@ public class Legajo {
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial",
       "legajos", "especialidades" })
   private Profesion profesion;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "legajo_tipoguardia", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_tipoGuardia"))
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
+      "registrosActividades" })
+  private List<TipoGuardia> tipoGuardias = new ArrayList<TipoGuardia>();
 
   // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
   // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",
