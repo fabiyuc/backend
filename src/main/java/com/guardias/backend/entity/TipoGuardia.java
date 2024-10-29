@@ -60,7 +60,7 @@ public class TipoGuardia {
             "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
             "domicilio",
             "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-            "descripcion", "esAsistencial" })
+            "descripcion", "esAsistencial", "tiposGuardias" })
     private List<Legajo> legajos = new ArrayList<Legajo>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.PERSIST)

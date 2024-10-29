@@ -109,7 +109,7 @@ public class Legajo {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_tipoguardia", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_tipoGuardia"))
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
-      "registrosActividades" })
+      "registrosActividades", "legajos" })
   private List<TipoGuardia> tipoGuardias = new ArrayList<TipoGuardia>();
 
   // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
