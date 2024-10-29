@@ -22,6 +22,8 @@ import jakarta.transaction.Transactional;
 public class RegistrosPendientesService {
     @Autowired
     RegistrosPendientesRepository registrosPendientesRepository;
+    @Autowired
+    EfectorService efectorService;
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();
@@ -41,6 +43,19 @@ public class RegistrosPendientesService {
 
     public Optional<RegistrosPendientes> findByEfectorAndFecha(Efector efector, LocalDate fecha) {
         return registrosPendientesRepository.findByEfectorAndFecha(efector, fecha);
+    }
+
+    public List<RegistrosPendientes> findByEfectorAndMonthYear(Long idEfector, int mes, int anio) {
+        try {
+            return registrosPendientesRepository.findByEfectorAndMonthYear(idEfector, mes, anio);
+        } catch (Exception e) {
+            System.err.println("Error en la búsqueda de registros: " + e.getMessage());
+            return null; // o ver de lanzar una excepción personalizada 
+        }
+    }
+
+    public RegistrosPendientes findByEfectorMonthYearAndAsistencial(Long idEfector, int mes, int anio, Long idAsistencial) {
+        return registrosPendientesRepository.findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
     }
 
     public void save(RegistrosPendientes registrosPendientes) {

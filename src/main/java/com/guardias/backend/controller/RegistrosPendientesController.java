@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,17 +65,33 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/detailByEfectorAndFecha/{idEfector}/{fecha}")
-    public ResponseEntity<RegistrosPendientes> getByEfectorAndFecha(Long idEfector, LocalDate fecha) {
-        RegistrosPendientes registrosPendientes = registrosPendientesService
-                .findByEfectorAndFecha(efectorService.findById(idEfector), fecha)
-                .get();
+    @GetMapping("/detailByEfectorAndFecha/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<RegistrosPendientes>> getByEfectorAndFecha(@PathVariable("idEfector") Long idEfector, @PathVariable("mes") int mes, @PathVariable("anio") int anio) {
 
-        if (registrosPendientes != null)
-            return new ResponseEntity<RegistrosPendientes>(registrosPendientes,
-                    HttpStatus.OK);
+                List<RegistrosPendientes> registrosPendientes = registrosPendientesService
+                .findByEfectorAndMonthYear(idEfector, mes, anio);
+
+        if (!registrosPendientes.isEmpty())
+            return new ResponseEntity<>(registrosPendientes, HttpStatus.OK);
         else
             return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/detailByEfectorAndFechaAndAsistencial/{idEfector}/{mes}/{anio}/{idAsistencial}")
+    public ResponseEntity<RegistrosPendientes> getByEfectorAndFechaAndAsistencial(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio,
+            @PathVariable("idAsistencial") Long idAsistencial) {
+
+        RegistrosPendientes registrosPendientes = registrosPendientesService
+                .findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
+
+        if (registrosPendientes != null) {
+            return new ResponseEntity<>(registrosPendientes, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+        }
     }
 
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
