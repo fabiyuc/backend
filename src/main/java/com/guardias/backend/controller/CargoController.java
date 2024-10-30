@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CargoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.Cargo;
-import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.LegajoService;
 
@@ -33,6 +34,9 @@ public class CargoController {
 
     @Autowired
     LegajoService legajoService;
+
+    @Autowired
+    AutoridadService autoridadService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Cargo>> list() {
@@ -81,8 +85,11 @@ public class CargoController {
         if (cargoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("Fecha de inicio obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (cargoDto.getAgrupacion() == null)
-            return new ResponseEntity(new Mensaje("Agrupación obligatoria"), HttpStatus.BAD_REQUEST);
+        /*
+         * if (cargoDto.getAgrupacion() == null)
+         * return new ResponseEntity(new Mensaje("Agrupación obligatoria"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (cargoService.activoByNombre(cargoDto.getNombre())
                 && (cargoService.findByNombre(cargoDto.getNombre()).get().getId() != id))
@@ -118,24 +125,47 @@ public class CargoController {
                 && cargo.getFechaFinal() != cargoDto.getFechaFinal())
             cargo.setFechaFinal(cargoDto.getFechaFinal());
 
-        if (cargoDto.getAgrupacion() != null && cargo.getAgrupacion() != cargoDto.getAgrupacion())
-            cargo.setAgrupacion(cargoDto.getAgrupacion());
+        /*
+         * if (cargoDto.getAgrupacion() != null && cargo.getAgrupacion() !=
+         * cargoDto.getAgrupacion())
+         * cargo.setAgrupacion(cargoDto.getAgrupacion());
+         */
 
-        if (cargoDto.getIdLegajos() != null) {
+        /*
+         * if (cargoDto.getIdLegajos() != null) {
+         * List<Long> idList = new ArrayList<Long>();
+         * if (cargo.getLegajos() != null) {
+         * for (Legajo legajo : cargo.getLegajos()) {
+         * for (Long id : cargoDto.getIdLegajos()) {
+         * if (!legajo.getId().equals(id)) {
+         * idList.add(id);
+         * }
+         * }
+         * }
+         * }
+         * List<Long> idsToAdd = idList.isEmpty() ? cargoDto.getIdLegajos() : idList;
+         * for (Long id : idsToAdd) {
+         * cargo.getLegajos().add(legajoService.findById(id).get());
+         * legajoService.findById(id).get().setCargo(cargo);
+         * }
+         * }
+         */
+
+        if (cargoDto.getIdAutoridades() != null) {
             List<Long> idList = new ArrayList<Long>();
-            if (cargo.getLegajos() != null) {
-                for (Legajo legajo : cargo.getLegajos()) {
-                    for (Long id : cargoDto.getIdLegajos()) {
-                        if (!legajo.getId().equals(id)) {
+            if (cargo.getAutoridades() != null) {
+                for (Autoridad autoridad : cargo.getAutoridades()) {
+                    for (Long id : cargoDto.getIdAutoridades()) {
+                        if (!autoridad.getId().equals(id)) {
                             idList.add(id);
                         }
                     }
                 }
             }
-            List<Long> idsToAdd = idList.isEmpty() ? cargoDto.getIdLegajos() : idList;
+            List<Long> idsToAdd = idList.isEmpty() ? cargoDto.getIdAutoridades() : idList;
             for (Long id : idsToAdd) {
-                cargo.getLegajos().add(legajoService.findById(id).get());
-                legajoService.findById(id).get().setCargo(cargo);
+                cargo.getAutoridades().add(autoridadService.findById(id).get());
+                autoridadService.findById(id).get().setCargo(cargo);
             }
         }
 

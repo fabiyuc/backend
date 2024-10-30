@@ -21,6 +21,7 @@ import com.guardias.backend.dto.AutoridadDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.service.AutoridadService;
+import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.PersonService;
 
@@ -35,6 +36,8 @@ public class AutoridadController {
     EfectorService efectorService;
     @Autowired
     PersonService personService;
+    @Autowired
+    CargoService cargoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Autoridad>> list() {
@@ -110,8 +113,8 @@ public class AutoridadController {
 
     public Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
 
-        if (autoridadDto.getNombre() != null && 
-        !autoridadDto.getNombre().isEmpty()
+        if (autoridadDto.getNombre() != null &&
+                !autoridadDto.getNombre().isEmpty()
                 && !autoridadDto.getNombre().equals(autoridad.getNombre()))
             autoridad.setNombre(autoridadDto.getNombre());
 
@@ -136,6 +139,14 @@ public class AutoridadController {
                                 autoridadDto.getIdPersona()))) {
             autoridad.setPersona(personService.findById(autoridadDto.getIdPersona()));
         }
+
+        if (autoridadDto.getIdCargo() != null) {
+            if (autoridad.getCargo() == null
+                    || !Objects.equals(autoridad.getCargo().getId(), autoridadDto.getIdCargo())) {
+                autoridad.setCargo(cargoService.findById(autoridadDto.getIdCargo()).get());
+            }
+        }
+
         autoridad.setActivo(true);
 
         return autoridad;
@@ -144,11 +155,15 @@ public class AutoridadController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
 
+        // Verificar si la persona tiene una autoridad activa
+        if (autoridadService.tieneAutoridadActiva(autoridadDto.getIdPersona())) {
+            return new ResponseEntity<>(new Mensaje("La persona tiene una autoridad activa"), HttpStatus.BAD_REQUEST);
+        }
         ResponseEntity<?> respuestaValidaciones = validations(autoridadDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
-            autoridad.setEsActual(true);
+
             autoridadService.save(autoridad);
             return new ResponseEntity<>(new Mensaje("Autoridad creada correctamente"), HttpStatus.OK);
         } else {
@@ -166,7 +181,7 @@ public class AutoridadController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);
-            autoridad.setEsActual(autoridadDto.isEsActual());
+
             autoridadService.save(autoridad);
             return new ResponseEntity<>(new Mensaje("Autoridad modificada correctamente"), HttpStatus.OK);
         } else {

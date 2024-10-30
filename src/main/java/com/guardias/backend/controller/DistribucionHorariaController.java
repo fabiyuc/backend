@@ -71,10 +71,11 @@ public class DistribucionHorariaController {
             distribucionHoraria.setPersona(personService.findById(distribucionHorariaDto.getIdPersona()));
         }
 
-        // Verifica si la persona tiene legajos y si el UDO del legajo coincide con el Efector del DTO
+        // Verifica si la persona tiene legajos y si el UDO del legajo coincide con el
+        // Efector del DTO
         if (distribucionHoraria.getPersona() != null && distribucionHoraria.getPersona().getLegajos() != null) {
             Legajo legajoActual = distribucionHoraria.getPersona().getLegajos().stream()
-                    .filter(Legajo::getActual) // Filtrar el legajo actual
+                    .filter(Legajo -> !Legajo.getEsAutoridad()) // Filtrar legajos que tengan esAutoridad = false
                     .findFirst()
                     .orElse(null);
 
@@ -92,12 +93,15 @@ public class DistribucionHorariaController {
             }
         }
 
-        /* if (distribucionHoraria.getEfector() == null ||
-                (distribucionHorariaDto.getIdEfector() != null &&
-                        !Objects.equals(distribucionHoraria.getEfector().getId(),
-                                distribucionHorariaDto.getIdEfector()))) {
-            distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto.getIdEfector()));
-        } */
+        /*
+         * if (distribucionHoraria.getEfector() == null ||
+         * (distribucionHorariaDto.getIdEfector() != null &&
+         * !Objects.equals(distribucionHoraria.getEfector().getId(),
+         * distribucionHorariaDto.getIdEfector()))) {
+         * distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto
+         * .getIdEfector()));
+         * }
+         */
 
         if (distribucionHorariaDto.getFechaInicio() != distribucionHoraria.getFechaInicio()
                 && distribucionHorariaDto.getFechaInicio() != null)

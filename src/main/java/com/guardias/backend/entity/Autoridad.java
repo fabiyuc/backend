@@ -37,7 +37,7 @@ public class Autoridad {
 
         @Temporal(TemporalType.DATE)
         private LocalDate fechaFinal;
-        private boolean esActual;
+
         private boolean esRegional;
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
@@ -59,6 +59,14 @@ public class Autoridad {
                         "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio",
                         "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion" })
         private Person persona;
+
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_cargo")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "nroresolucion",
+                        "nrodecreto", "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos",
+                        "autoridades",
+                        "agrupacion" })
+        private Cargo cargo;
 
         // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
         // "fechaInicio","fechaFinal","esActual","esRegional","activo","efector","persona"
@@ -95,8 +103,7 @@ public class Autoridad {
                                 return false;
                 } else if (!fechaFinal.equals(other.fechaFinal))
                         return false;
-                if (esActual != other.esActual)
-                        return false;
+
                 if (esRegional != other.esRegional)
                         return false;
                 if (efector == null) {

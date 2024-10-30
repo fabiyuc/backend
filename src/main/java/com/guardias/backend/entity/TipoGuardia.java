@@ -36,11 +36,24 @@ public class TipoGuardia {
 
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
-    
+
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tiposGuardias")
+    /*
+     * @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tiposGuardias")
+     * 
+     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
+     * "apellido", "dni", "cuil", "legajos",
+     * "novedadesPersonales", "suplentes",
+     * "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+     * "domicilio",
+     * "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+     * "descripcion", "esAsistencial", "tiposGuardias" })
+     * private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
+     */
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardias")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
             "apellido", "dni", "cuil", "legajos",
             "novedadesPersonales", "suplentes",
@@ -48,7 +61,7 @@ public class TipoGuardia {
             "domicilio",
             "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
             "descripcion", "esAsistencial", "tiposGuardias" })
-    private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
+    private List<Legajo> legajos = new ArrayList<Legajo>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",

@@ -18,10 +18,8 @@ public class AutoridadDto {
 
     @NotNull
     private LocalDate fechaInicio;
-    
-    private LocalDate fechaFinal;
 
-    private boolean esActual;
+    private LocalDate fechaFinal;
 
     private boolean esRegional;
 
@@ -35,4 +33,18 @@ public class AutoridadDto {
     private Long idPersona;
     // private Person persona;
 
+    private Long idCargo;
 }
+
+// genera el json
+
+// {
+// "nombre": "nombre",
+// "fechaInicio": "2021-09-01",
+// "fechaFinal": "2021-09-01",
+// "esRegional": true,
+// "activo": true,
+// "idEfector": 1,
+// "idPersona": 1,
+// "idCargo": 1
+// }

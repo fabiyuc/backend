@@ -3,8 +3,6 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.guardias.backend.enums.AgrupacionEnum;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -36,9 +34,29 @@ public class CargoDto {
     private boolean activo;
 
     // private Legajo legajo;
+    /*
+     * List<Long> idLegajos;
+     */
 
-    List<Long> idLegajos;
+    List<Long> idAutoridades;
 
-    @NotNull
-    private AgrupacionEnum agrupacion;
+    /*
+     * @NotNull
+     * private AgrupacionEnum agrupacion;
+     */
 }
+
+// genera todo el json
+// {
+// "nombre": "nombre",
+// "descripcion": "descripcion",
+// "nroresolucion": "nroresolucion",
+// "nrodecreto": "nrodecreto",
+// "fechaResolucion": "2021-09-01",
+// "fechaInicio": "2021-09-01",
+// "fechaFinal": "2021-09-01",
+// "activo": true,
+// "idLegajos": [1, 2, 3],
+// "idAutoridades": [1, 2, 3]
+
+// }

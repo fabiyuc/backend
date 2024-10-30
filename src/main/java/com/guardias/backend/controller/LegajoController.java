@@ -22,6 +22,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
@@ -31,6 +32,7 @@ import com.guardias.backend.service.PersonService;
 import com.guardias.backend.service.ProfesionService;
 import com.guardias.backend.service.RevistaService;
 import com.guardias.backend.service.SuspencionService;
+import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
 @RequestMapping("/legajo")
@@ -55,6 +57,8 @@ public class LegajoController {
     EspecialidadService especialidadService;
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
@@ -81,12 +85,12 @@ public class LegajoController {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getActual() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
-                    HttpStatus.BAD_REQUEST);
+        // if (legajoDto.getActual() == null)
+        // return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
+        // HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getLegal() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es legal o no"),
+        if (legajoDto.getEsAutoridad() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es autoridad o no"),
                     HttpStatus.BAD_REQUEST);
 
         if (legajoDto.getIdPersona() == null)
@@ -99,11 +103,15 @@ public class LegajoController {
 
         boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
         if (!esContraFactura && legajoDto.getIdUdo() == null) {
-            return new ResponseEntity<>(new Mensaje("indicar la UdO"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("indicar la UdO"),
+                    HttpStatus.BAD_REQUEST);
         }
 
-        if (!esContraFactura && legajoDto.getIdCargo() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"), HttpStatus.BAD_REQUEST);
+        /*
+         * if (!esContraFactura && legajoDto.getIdCargo() == null)
+         * return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (!esContraFactura && legajoDto.getIdRevista() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
@@ -165,12 +173,14 @@ public class LegajoController {
             }
         }
 
-        if (legajoDto.getIdCargo() != null) {
-            if (legajo.getCargo() == null
-                    || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
-                legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-            }
-        }
+        /*
+         * if (legajoDto.getIdCargo() != null) {
+         * if (legajo.getCargo() == null
+         * || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
+         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
+         * }
+         * }
+         */
 
         if (legajoDto.getIdEspecialidades() != null) {
             if (legajo.getEspecialidades() == null) {
@@ -253,8 +263,46 @@ public class LegajoController {
             }
         }
 
-        legajo.setActual(legajoDto.getActual());
-        legajo.setLegal(legajoDto.getLegal());
+        if (legajoDto.getIdTipoGuardias() != null) {
+            if (legajo.getTipoGuardias() == null) {
+                legajo.setTipoGuardias(new ArrayList<>());
+            }
+
+            // crea una nueva lista para almacenar los tipos de guardias actualizados
+            List<TipoGuardia> tipoGuardiasActualizados = new ArrayList<>();
+            for (TipoGuardia tipoGuardia : legajo.getTipoGuardias()) {
+                if (legajoDto.getIdTipoGuardias().contains(tipoGuardia.getId())) {
+                    tipoGuardiasActualizados.add(tipoGuardia);
+                } else {
+                    // Remover el legajo de los tipos de guardias que se eliminarán
+                    tipoGuardia.getLegajos().remove(legajo);
+                }
+            }
+            legajo.setTipoGuardias(tipoGuardiasActualizados);
+
+            // agregar nuevos tipos de guardia si no estan presentes
+            for (Long id : legajoDto.getIdTipoGuardias()) {
+                boolean found = false;
+                for (TipoGuardia tipoGuardia : legajo.getTipoGuardias()) {
+                    if (tipoGuardia.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    TipoGuardia tipoGuardiaToAdd = tipoGuardiaService.findById(id).get();
+                    if (tipoGuardiaToAdd != null) {
+                        legajo.getTipoGuardias().add(tipoGuardiaToAdd);
+                        tipoGuardiaToAdd.getLegajos().add(legajo);
+                    } else {
+                        throw new RuntimeException("No se encontró el tipo de guardia con ID: " + id);
+                    }
+                }
+            }
+        }
+
+        // legajo.setActual(legajoDto.getActual());
+        legajo.setEsAutoridad(legajoDto.getEsAutoridad());
         legajo.setActivo(true);
 
         return legajo;
