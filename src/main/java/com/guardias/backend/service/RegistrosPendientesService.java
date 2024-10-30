@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
@@ -15,6 +16,7 @@ import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.repository.RegistrosPendientesRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -24,6 +26,8 @@ public class RegistrosPendientesService {
     RegistrosPendientesRepository registrosPendientesRepository;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    AsistencialService asistencialService;
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();
@@ -46,16 +50,35 @@ public class RegistrosPendientesService {
     }
 
     public List<RegistrosPendientes> findByEfectorAndMonthYear(Long idEfector, int mes, int anio) {
+
+        boolean efectorExists = efectorService.existsById(idEfector);
+        if (!efectorExists) {
+            throw new EntityNotFoundException("El efector con id " + idEfector + " no existe.");
+        }
         try {
             return registrosPendientesRepository.findByEfectorAndMonthYear(idEfector, mes, anio);
         } catch (Exception e) {
             System.err.println("Error en la búsqueda de registros: " + e.getMessage());
-            return null; // o ver de lanzar una excepción personalizada 
+            return null; // o ver de lanzar una excepción personalizada
         }
     }
 
-    public RegistrosPendientes findByEfectorMonthYearAndAsistencial(Long idEfector, int mes, int anio, Long idAsistencial) {
-        return registrosPendientesRepository.findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
+    public RegistrosPendientes findByEfectorMonthYearAndAsistencial(Long idEfector, int mes, int anio,
+            Long idAsistencial) {
+
+        if (!efectorService.existsById(idEfector)) {
+            throw new EntityNotFoundException("El efector con id " + idEfector + " no existe.");
+        }
+        if (!asistencialService.existsById(idAsistencial)) {
+            throw new EntityNotFoundException("El asistencial con id " + idAsistencial + " no existe.");
+        }
+
+        try {
+            return registrosPendientesRepository.findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
+        } catch (Exception e) {
+            System.err.println("Error en la búsqueda de registros: " + e.getMessage());
+            return null;
+        }
     }
 
     public void save(RegistrosPendientes registrosPendientes) {
@@ -75,7 +98,7 @@ public class RegistrosPendientesService {
                 && registrosPendientesRepository.findById(id).get().isActivo());
     }
 
-     public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
+    public RegistroActividad addRegistroActividad(RegistroActividad registroActividad) {
 
         RegistrosPendientes registrosPendientes = new RegistrosPendientes();
         try {
@@ -117,6 +140,5 @@ public class RegistrosPendientesService {
             return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
-
 
 }

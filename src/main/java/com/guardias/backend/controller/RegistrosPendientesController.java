@@ -69,10 +69,10 @@ public class RegistrosPendientesController {
                 List<RegistrosPendientes> registrosPendientes = registrosPendientesService
                 .findByEfectorAndMonthYear(idEfector, mes, anio);
 
-        if (!registrosPendientes.isEmpty())
+       // if (!registrosPendientes.isEmpty())
             return new ResponseEntity<>(registrosPendientes, HttpStatus.OK);
-        else
-            return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+        //else
+          //  return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/detailByEfectorAndFechaAndAsistencial/{idEfector}/{mes}/{anio}/{idAsistencial}")
@@ -85,11 +85,11 @@ public class RegistrosPendientesController {
         RegistrosPendientes registrosPendientes = registrosPendientesService
                 .findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
 
-        if (registrosPendientes != null) {
-            return new ResponseEntity<>(registrosPendientes, HttpStatus.OK);
-        } else {
-            return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
-        }
+        //if (registrosPendientes != null) {
+            return new ResponseEntity(registrosPendientes, HttpStatus.OK);
+        //} else {
+           // return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+       // }
     }
 
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
