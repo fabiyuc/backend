@@ -95,9 +95,12 @@ public class RevistaController {
             return new ResponseEntity<Mensaje>(new Mensaje("La categoria es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        if (revistaDto.getIdAdicional() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El adicional es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
+        /*
+         * if (revistaDto.getIdAdicional() == null)
+         * return new ResponseEntity<Mensaje>(new
+         * Mensaje("El adicional es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         if (revistaDto.getIdCargaHoraria() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La carga horaria es obligatoria"), HttpStatus.BAD_REQUEST);

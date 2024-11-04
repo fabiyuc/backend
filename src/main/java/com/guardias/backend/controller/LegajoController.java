@@ -141,9 +141,14 @@ public class LegajoController {
         if (legajoDto.getMatriculaNacional() != null
                 && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional())
             legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
+
         if (legajoDto.getMatriculaProvincial() != null
                 && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
             legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
+
+        if (legajoDto.getMotivoBaja() != null
+                && legajo.getMotivoBaja() != legajoDto.getMotivoBaja())
+            legajo.setMotivoBaja(legajoDto.getMotivoBaja());
 
         if (legajoDto.getIdPersona() != null) {
             if (legajo.getPersona() == null
