@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Caps;
@@ -22,4 +23,9 @@ public interface CapsRepository extends JpaRepository<Caps, Long> {
     boolean existsById(Long id);
 
     List<Caps> findByActivo(boolean activo);
+
+    @Query("SELECT c.id FROM Caps c WHERE c.id IN :ids")
+    List<Long> findValidIds(List<Long> ids);
+
+    
 }

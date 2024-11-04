@@ -34,4 +34,8 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     List<Hospital> findHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir);
 
     Optional<Hospital> findByIdAndActivoTrue(Long id);
+
+    @Query("SELECT h.id FROM Hospital h WHERE h.id IN :ids")
+    List<Long> findValidIds(List<Long> ids);
+
 }

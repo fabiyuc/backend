@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Ministerio;
@@ -22,4 +23,7 @@ public interface MinisterioRepository extends JpaRepository<Ministerio, Long> {
     boolean existsById(Long id);
 
     List<Ministerio> findByActivo(boolean activo);
+
+    @Query("SELECT m.id FROM Ministerio m WHERE m.id IN :ids")
+    List<Long> findValidIds(List<Long> ids);
 }
