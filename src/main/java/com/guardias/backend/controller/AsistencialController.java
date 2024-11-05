@@ -324,4 +324,9 @@ public class AsistencialController {
         }
     }
 
+    @GetMapping("/esPlanta/{idAsistencial}/{idEfector}")
+    public boolean esPlanta(@PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return asistencialService.esPlanta(idAsistencial,idEfector);
+    }
+
 }

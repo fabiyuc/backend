@@ -32,6 +32,8 @@ public class AsistencialService {
     TipoGuardiaRepository tipoGuardiaRepository;
     @Autowired
     LegajoRepository legajoRepository;
+    @Autowired
+    EfectorService efectorService;
 
     public Optional<List<Asistencial>> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
@@ -80,20 +82,6 @@ public class AsistencialService {
     public boolean activoDni(int dni) {
         return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
     }
-
-    /*
-     * public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
-     * 
-     * Asistencial asistencial =
-     * asistencialRepository.findById(idAsistencial).get();
-     * TipoGuardia tipoGuardia =
-     * tipoGuardiaRepository.findById(idTipoGuardia).get();
-     * 
-     * tipoGuardia.getAsistenciales().add(asistencial);
-     * asistencial.getTiposGuardias().add(tipoGuardia);
-     * 
-     * }
-     */
 
     public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
         // Buscar el Asistencial por su ID
@@ -293,6 +281,28 @@ public class AsistencialService {
     public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTipoGuardia(Long efectorId) {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return filterAndMapByCargoOrAgrupacion(asistenciales);
+    }
+
+    public boolean esPlanta(Long idAsistencial, Long idEfector) {
+
+        if (idAsistencial == null || idEfector == null) {
+            throw new IllegalArgumentException("Los IDs de Asistencial y Efector no pueden ser nulos.");
+        }
+
+        if (!asistencialRepository.existsById(idAsistencial)) {
+            throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
+        }
+       
+        if (!efectorService.existsById(idEfector)) {
+            throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
+        }
+
+        // Filtramos el legajo activo y verificamos los efectores asociados
+        Asistencial asistencial = asistencialRepository.findById(idAsistencial).get();
+        return asistencial.getLegajos().stream()
+                .filter(Legajo::isActivo) // Solo consideramos el legajo activo
+                .flatMap(legajo -> legajo.getEfectores().stream())
+                .anyMatch(efector -> efector.getId().equals(idEfector));
     }
 
 }

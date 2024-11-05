@@ -278,9 +278,5 @@ public class RegistroActividadService {
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
     }
 
-    public boolean esPlanta(Long id) {
-        return (registroActividadRepository.existsById(id)
-                && registroActividadRepository.findById(id).get().isActivo());
-    }
 
 }

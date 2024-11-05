@@ -144,45 +144,6 @@ public class RegistroActividadController {
         return registrarSalida;
     }
 
-    /*
-     * @PutMapping("/registrarSalida/{id}")
-     * public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
-     * 
-     * @RequestBody RegistroActividadDto registroActividadDto) {
-     * 
-     * if (!registroActividadService.activo(id))
-     * return new ResponseEntity(new Mensaje("Registro de actividad no existe"),
-     * HttpStatus.NOT_FOUND);
-     * 
-     * RegistroActividad registroActividad =
-     * registroActividadService.findById(id).get();
-     * 
-     * System.out.println("id: " +
-     * registroActividad.getRegistrosPendientes().getId());
-     * 
-     * if (registroActividad.getFechaEgreso() !=
-     * registroActividadDto.getFechaEgreso() &&
-     * registroActividadDto.getFechaEgreso() != null)
-     * registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
-     * 
-     * if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso()
-     * &&
-     * registroActividadDto.getHoraEgreso() != null)
-     * registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
-     * 
-     * ResponseEntity<?> respuestaDeletePendiente = registrosPendientesController
-     * .deleteRegistroActividad(registroActividad);
-     * 
-     * if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
-     * registroActividadService.save(registroActividad);
-     * }
-     * // enviar el registro de actividad al registro mensual
-     * registroMensualController.setRegistroMensual(registroActividad);
-     * 
-     * return respuestaDeletePendiente;
-     * }
-     */
-
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!registroActividadService.activo(id))
@@ -203,9 +164,5 @@ public class RegistroActividadController {
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada FISICAMENTEE"), HttpStatus.OK);
     }
 
-    @GetMapping("/esPlanta/{id}")
-    public boolean esPlanta(@PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return registroActividadService.esPlanta(idAsistencial,idEfector);
-    }
 
 }

@@ -21,17 +21,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Asistencial extends Person {
 
-        /*
-         * @ManyToMany(fetch = FetchType.LAZY)
-         * 
-         * @JoinTable(name = "asistencial_tipoguardia", joinColumns = @JoinColumn(name =
-         * "id_asistencial"), inverseJoinColumns = @JoinColumn(name = "id_tipoGuardia"))
-         * 
-         * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion",
-         * "activo", "asistenciales", "registrosActividades" })
-         * private List<TipoGuardia> tiposGuardias = new ArrayList<TipoGuardia>();
-         */
-
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
                         "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
@@ -39,25 +28,5 @@ public class Asistencial extends Person {
                         "servicio", "efector", "registrosPendientes" })
         private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
-        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-        // "apellido", "dni", "cuil", "legajos",
-        // "novedadesPersonales", "suplentes",
-        // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-        // "domicilio",
-        // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-        // "descripcion","esAsistencial","tiposGuardias" })
-
-        ///// metodo para contrafactura /////
-
-        /*
-         * // Getter para tiposGuardias
-         * public List<TipoGuardia> getTiposGuardias() {
-         * return tiposGuardias;
-         * }
-         * 
-         * // Setter para tiposGuardias
-         * public void setTiposGuardias(List<TipoGuardia> tiposGuardias) {
-         * this.tiposGuardias = tiposGuardias;
-         * }
-         */
+       
 }

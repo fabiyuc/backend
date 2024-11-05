@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.DistribucionGuardia;
+import com.guardias.backend.entity.DistribucionHoraria;
+import com.guardias.backend.enums.DiasEnum;
 
 @Repository
 public interface DistribucionGuardiaRepository extends JpaRepository<DistribucionGuardia, Long> {
@@ -33,4 +35,6 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
     boolean existsByPersonaId(Long personaId);
 
     List<DistribucionGuardia> findByActivo(boolean activo);
+
+   
 }
