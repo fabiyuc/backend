@@ -88,67 +88,6 @@ public class RegistroActividadController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    /* private RegistroActividad createUpdate(RegistroActividad registroActividad,
-            RegistroActividadDto registroActividadDto) {
-
-        if (registroActividad.getServicio() == null ||
-                (registroActividadDto.getIdServicio() != null &&
-                        !Objects.equals(registroActividad.getServicio().getId(),
-                                registroActividadDto.getIdServicio()))) {
-            registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
-        }
-
-        if (registroActividad.getTipoGuardia() == null ||
-                (registroActividadDto.getIdTipoGuardia() != null &&
-                        !Objects.equals(registroActividad.getTipoGuardia().getId(),
-                                registroActividadDto.getIdTipoGuardia()))) {
-            registroActividad
-                    .setTipoGuardia(tipoGuardiaService.findById(registroActividadDto.getIdTipoGuardia()).get());
-        }
-
-        if (registroActividad.getFechaIngreso() != registroActividadDto.getFechaIngreso() &&
-                registroActividadDto.getFechaIngreso() != null)
-            registroActividad.setFechaIngreso(registroActividadDto.getFechaIngreso());
-
-        if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
-                registroActividadDto.getFechaEgreso() != null)
-            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
-
-        if (registroActividad.getHoraIngreso() != registroActividadDto.getHoraIngreso() &&
-                registroActividadDto.getHoraIngreso() != null)
-            registroActividad.setHoraIngreso(registroActividadDto.getHoraIngreso());
-
-        if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
-                registroActividadDto.getHoraEgreso() != null)
-            registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
-
-        if (registroActividad.getAsistencial() == null ||
-                (registroActividadDto.getIdAsistencial() != null &&
-                        !Objects.equals(registroActividad.getAsistencial().getId(),
-                                registroActividadDto.getIdAsistencial()))) {
-            registroActividad
-                    .setAsistencial(asistencialService.findById(registroActividadDto.getIdAsistencial()).get());
-        }
-
-        if (registroActividad.getEfector() == null ||
-                (registroActividadDto.getIdEfector() != null &&
-                        !Objects.equals(registroActividad.getEfector().getId(),
-                                registroActividadDto.getIdEfector()))) {
-            registroActividad.setEfector(efectorService.findById(registroActividadDto.getIdEfector()));
-        }
-
-        if (registroActividadDto.getIdRegistroMensual() != null && (registroActividad.getRegistroMensual() == null
-                || !Objects.equals(registroActividad.getRegistroMensual().getId(),
-                        registroActividadDto.getIdRegistroMensual()))) {
-            registroActividad.setRegistroMensual(
-                    registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
-        }
-
-        registroActividad.setUsuario(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
-        registroActividad.setActivo(true);
-        return registroActividad;
-    }
- */
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
 
@@ -156,7 +95,8 @@ public class RegistroActividadController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            RegistroActividad registroActividad = registroActividadService.createUpdate(new RegistroActividad(), registroActividadDto);
+            RegistroActividad registroActividad = registroActividadService.createUpdate(new RegistroActividad(),
+                    registroActividadDto);
 
             registroActividad = registrosPendientesService.addRegistroActividad(registroActividad);
             registroActividadService.save(registroActividad);
@@ -181,7 +121,8 @@ public class RegistroActividadController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            RegistroActividad registroActividad = registroActividadService.createUpdate(registroActividadService.findById(id).get(),
+            RegistroActividad registroActividad = registroActividadService.createUpdate(
+                    registroActividadService.findById(id).get(),
                     registroActividadDto);
             registroActividadService.save(registroActividad);
             return new ResponseEntity(new Mensaje("Registro de Actividad modificada"), HttpStatus.OK);
@@ -199,41 +140,48 @@ public class RegistroActividadController {
             return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> registrarSalida = registroActividadService.registrarSalida(id, registroActividadDto);
-        
 
         return registrarSalida;
     }
-    
-    /* @PutMapping("/registrarSalida/{id}")
-    public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
-            @RequestBody RegistroActividadDto registroActividadDto) {
 
-        if (!registroActividadService.activo(id))
-            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
-
-        RegistroActividad registroActividad = registroActividadService.findById(id).get();
-
-        System.out.println("id: " + registroActividad.getRegistrosPendientes().getId());
-
-        if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
-                registroActividadDto.getFechaEgreso() != null)
-            registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
-
-        if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
-                registroActividadDto.getHoraEgreso() != null)
-            registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
-
-        ResponseEntity<?> respuestaDeletePendiente = registrosPendientesController
-                .deleteRegistroActividad(registroActividad);
-
-        if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
-            registroActividadService.save(registroActividad);
-        }
-        // enviar el registro de actividad al registro mensual
-        registroMensualController.setRegistroMensual(registroActividad);
-
-        return respuestaDeletePendiente;
-    } */
+    /*
+     * @PutMapping("/registrarSalida/{id}")
+     * public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
+     * 
+     * @RequestBody RegistroActividadDto registroActividadDto) {
+     * 
+     * if (!registroActividadService.activo(id))
+     * return new ResponseEntity(new Mensaje("Registro de actividad no existe"),
+     * HttpStatus.NOT_FOUND);
+     * 
+     * RegistroActividad registroActividad =
+     * registroActividadService.findById(id).get();
+     * 
+     * System.out.println("id: " +
+     * registroActividad.getRegistrosPendientes().getId());
+     * 
+     * if (registroActividad.getFechaEgreso() !=
+     * registroActividadDto.getFechaEgreso() &&
+     * registroActividadDto.getFechaEgreso() != null)
+     * registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
+     * 
+     * if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso()
+     * &&
+     * registroActividadDto.getHoraEgreso() != null)
+     * registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+     * 
+     * ResponseEntity<?> respuestaDeletePendiente = registrosPendientesController
+     * .deleteRegistroActividad(registroActividad);
+     * 
+     * if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
+     * registroActividadService.save(registroActividad);
+     * }
+     * // enviar el registro de actividad al registro mensual
+     * registroMensualController.setRegistroMensual(registroActividad);
+     * 
+     * return respuestaDeletePendiente;
+     * }
+     */
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
@@ -253,6 +201,11 @@ public class RegistroActividadController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         registroActividadService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada FISICAMENTEE"), HttpStatus.OK);
+    }
+
+    @GetMapping("/esPlanta/{id}")
+    public boolean esPlanta(@PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return registroActividadService.esPlanta(idAsistencial,idEfector);
     }
 
 }

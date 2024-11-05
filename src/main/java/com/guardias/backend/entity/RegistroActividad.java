@@ -53,9 +53,6 @@ public class RegistroActividad {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
 
-        // @ManyToOne // Relación muchos a uno con Person
-        // private Asistencial asistencial;
-
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_asistencial")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", 
@@ -93,12 +90,6 @@ public class RegistroActividad {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial" })
         Usuario usuarioEgreso;
 
-        /* @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
-        @JoinColumn(name = "usuario")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-                        "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosActividades" })
-        Usuario usuario; */
-
         @Temporal(TemporalType.DATE)
         private LocalDate fechaRegistroIngreso;
 
@@ -111,7 +102,6 @@ public class RegistroActividad {
         @Temporal(TemporalType.TIME)
         private LocalTime horaRegistroEgreso;
 
-        /* @OneToOne(mappedBy = "registroActividad") */
         @OneToOne
         @JoinColumn(name = "horas_realizas_id")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registroActividad" })
