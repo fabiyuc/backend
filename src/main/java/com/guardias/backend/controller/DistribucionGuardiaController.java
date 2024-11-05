@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -163,9 +164,14 @@ public class DistribucionGuardiaController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/existDistribucion/{dia}/{fecha}/{idAsistencial}/{idEfector}")
-    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial,idEfector);
+    @GetMapping("/existDistribucion/{dia}/{fecha}/{horaIngreso}/{idAsistencial}/{idEfector}")
+    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("horaIngreso") LocalTime horaIngreso, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.existDistribucion(dia, fecha, horaIngreso, idAsistencial,idEfector);
+    }
+
+    @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")
+    public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial,idEfector);
     }
 
     

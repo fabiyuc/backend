@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,8 @@ public class DistribucionGuardiaService {
 
     @Autowired
     DistribucionGuardiaRepository distribucionGuardiaRepository;
+    @Autowired
+    DistribucionConsultorioRepository distribucionConsultorioRepository;
     @Autowired
     EfectorService efectorService;
     @Autowired
@@ -82,12 +85,12 @@ public class DistribucionGuardiaService {
         distribucionGuardiaRepository.deleteById(id);
     }
 
-    public boolean existDistribucion(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
+    public boolean existDistribucion(DiasEnum dia, LocalDate fecha, LocalTime horaIngreso,  Long idAsistencial, Long idEfector) {
 
-        if (dia == null || fecha == null || idAsistencial == null || idEfector == null) {
-            throw new IllegalArgumentException(
-                    "Los parámetros de día, fecha, idAsistencial y idEfector no pueden ser nulos.");
+        if (dia == null || fecha == null || horaIngreso == null || idAsistencial == null || idEfector == null) {
+            throw new IllegalArgumentException("Los parámetros de día, fecha, horaIngreso, idAsistencial y idEfector no pueden ser nulos.");
         }
+    
 
         if (!asistencialRepository.existsById(idAsistencial)) {
             throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
@@ -106,12 +109,33 @@ public class DistribucionGuardiaService {
             return true;
 
         // Buscar coincidencias en DistribucionConsultorio
-       /*  boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
-                dia, fecha, idAsistencial, idEfector); */
+        boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
+                dia, fecha, idAsistencial, idEfector);
 
         // Retornar true si existe alguna coincidencia en cualquiera de las
         // distribuciones
-        return guardiaExists;
+        return consultorioExists;
+
+    }
+
+
+    public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
+
+        
+        // Buscar coincidencias en DistribucionGuardia
+        boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(
+                dia, fecha, idAsistencial, idEfector);
+
+        // Si existe DistribucionGuardia que coincida, retornar true
+        if (guardiaExists)
+            return true;
+
+        // Buscar coincidencias en DistribucionConsultorio
+        boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
+                dia, fecha, idAsistencial, idEfector);
+
+        // Si existe DistribucionConsultorio que coincida, retornar false
+        return !consultorioExists;
 
     }
 
