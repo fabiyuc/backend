@@ -27,15 +27,11 @@ public class DistribucionGuardiaService {
     @Autowired
     DistribucionGuardiaRepository distribucionGuardiaRepository;
     @Autowired
-    DistribucionConsultorioRepository distribucionConsultorioRepository;
-    @Autowired
     EfectorService efectorService;
     @Autowired
     PersonService personService;
     @Autowired
-    AsistencialRepository asistencialRepository;
-    @Autowired
-    DistribucionHorariaRepository distribucionHorariaRepository;
+    AsistencialRepository asistencialRepository;;
 
     public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
@@ -102,7 +98,7 @@ public class DistribucionGuardiaService {
         }
 
         // Buscar coincidencias en DistribucionGuardia
-        boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndPersonaAndEfector(
+        boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(
                 dia, fecha, idAsistencial, idEfector);
 
         // Si existe DistribucionGuardia que coincida, retornar true
@@ -110,12 +106,12 @@ public class DistribucionGuardiaService {
             return true;
 
         // Buscar coincidencias en DistribucionConsultorio
-        boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
-                dia, fecha, idAsistencial, idEfector);
+       /*  boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
+                dia, fecha, idAsistencial, idEfector); */
 
         // Retornar true si existe alguna coincidencia en cualquiera de las
         // distribuciones
-        return consultorioExists;
+        return guardiaExists;
 
     }
 
