@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.DistribucionGuardiaDto;
@@ -164,9 +162,9 @@ public class DistribucionGuardiaController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/existDistribucion/{dia}/{fecha}/{horaIngreso}/{idAsistencial}/{idEfector}")
-    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("horaIngreso") LocalTime horaIngreso, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return distribucionGuardiaService.existDistribucion(dia, fecha, horaIngreso, idAsistencial,idEfector);
+    @GetMapping("/existDistribucion/{dia}/{fecha}/{idAsistencial}/{idEfector}")
+    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial,idEfector);
     }
 
     @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")

@@ -15,6 +15,7 @@ public class PermisosDto {
     private Boolean activo;
     @NotBlank
     private Long idAsistencial;
+    @NotBlank
     private List<Long> idEfectores;
 
 }

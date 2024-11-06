@@ -1,22 +1,17 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.DistribucionGuardia;
-import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
-import com.guardias.backend.repository.DistribucionHorariaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -85,9 +80,9 @@ public class DistribucionGuardiaService {
         distribucionGuardiaRepository.deleteById(id);
     }
 
-    public boolean existDistribucion(DiasEnum dia, LocalDate fecha, LocalTime horaIngreso,  Long idAsistencial, Long idEfector) {
+    public boolean existDistribucion(DiasEnum dia, LocalDate fecha,  Long idAsistencial, Long idEfector) {
 
-        if (dia == null || fecha == null || horaIngreso == null || idAsistencial == null || idEfector == null) {
+        if (dia == null || fecha == null || idAsistencial == null || idEfector == null) {
             throw new IllegalArgumentException("Los parámetros de día, fecha, horaIngreso, idAsistencial y idEfector no pueden ser nulos.");
         }
     

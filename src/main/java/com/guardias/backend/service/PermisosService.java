@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PermisosDto;
 import com.guardias.backend.entity.Permisos;
-import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HospitalRepository;
@@ -87,17 +85,20 @@ public class PermisosService {
         }
 
         if (permisosDto.getIdEfectores() != null) {
-            Set<Long> currentEfectorIds = new HashSet<>(permisos.getIdEfectores());
+           
+            Set<Long> currentEfectorIds = new HashSet<>(
+                    permisos.getIdEfectores() != null ? permisos.getIdEfectores() : new ArrayList<>());
+
             List<Long> newIds = permisosDto.getIdEfectores().stream()
                     .filter(id -> !currentEfectorIds.contains(id))
                     .collect(Collectors.toList());
-    
+
             // Valida solo los nuevos IDs
             List<Long> validNewIds = findValidIdsAcrossSubclasses(newIds);
             if (validNewIds.size() != newIds.size()) {
                 throw new IllegalArgumentException("Algunos IDs de efectores no son válidos.");
             }
-    
+
             permisos.setIdEfectores(new ArrayList<>(permisosDto.getIdEfectores()));
         }
 
@@ -135,8 +136,16 @@ public class PermisosService {
             throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
         }
 
-        return permisosRepository.existsByIdPersonaAndIdEfector(idAsistencial, idEfector);
+        Optional<Permisos> optionalPermiso = permisosRepository.findByIdAsistencialAndActivoTrue(idAsistencial);
 
+        if (optionalPermiso.isPresent()) {
+            Permisos permiso = optionalPermiso.get();
+            // Verificar si la lista de efectores contiene el idEfector
+            return permiso.getIdEfectores() != null && permiso.getIdEfectores().contains(idEfector);
+        }
+        
+        return false; // Retorna false si no hay un permiso activo o no se encuentra el idEfector
+    
     }
 
 }
