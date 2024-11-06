@@ -121,7 +121,6 @@ public class DistribucionGuardiaService {
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 
-        
         // Buscar coincidencias en DistribucionGuardia
         boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(
                 dia, fecha, idAsistencial, idEfector);

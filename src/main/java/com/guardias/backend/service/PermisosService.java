@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,11 +16,14 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PermisosDto;
 import com.guardias.backend.entity.Permisos;
+import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.MinisterioRepository;
 import com.guardias.backend.repository.PermisosRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -34,6 +38,10 @@ public class PermisosService {
     MinisterioRepository ministerioRepository;
     @Autowired
     CapsRepository capsRepository;
+    @Autowired
+    AsistencialRepository asistencialRepository;
+    @Autowired
+    EfectorService efectorService;
 
     public Optional<List<Permisos>> findByActivoTrue() {
         return permisosRepository.findByActivoTrue();
@@ -115,6 +123,20 @@ public class PermisosService {
         validIds.addAll(capsRepository.findValidIds(ids));
         validIds.addAll(ministerioRepository.findValidIds(ids));
         return validIds;
+    }
+
+    public boolean tienePermisos(Long idAsistencial, Long idEfector) {
+
+        if (!asistencialRepository.existsById(idAsistencial)) {
+            throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
+        }
+
+        if (!efectorService.existsById(idEfector)) {
+            throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
+        }
+
+        return permisosRepository.existsByIdPersonaAndIdEfector(idAsistencial, idEfector);
+
     }
 
 }

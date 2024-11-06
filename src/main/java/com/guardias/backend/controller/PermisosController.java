@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PermisosDto;
 import com.guardias.backend.entity.Permisos;
+import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.service.PermisosService;
 
 @RestController
@@ -28,8 +30,8 @@ public class PermisosController {
 
     @Autowired
     PermisosService permisosService;
-    
-    //la lista de efectores debería actualizarse si hay bajas de efectores?
+
+    // la lista de efectores debería actualizarse si hay bajas de efectores?
     @GetMapping("/list")
     public ResponseEntity<List<Permisos>> list() {
         List<Permisos> permisosList = permisosService.findByActivoTrue().orElse(new ArrayList<>());
@@ -47,7 +49,7 @@ public class PermisosController {
     public ResponseEntity<Permisos> getById(@PathVariable("id") Long id) {
         if (!permisosService.activo(id))
             return new ResponseEntity(new Mensaje("No existe el permiso"), HttpStatus.NOT_FOUND);
-            Permisos permisos = permisosService.findById(id).get();
+        Permisos permisos = permisosService.findById(id).get();
         return new ResponseEntity<Permisos>(permisos, HttpStatus.OK);
     }
 
@@ -55,7 +57,7 @@ public class PermisosController {
     public ResponseEntity<Permisos> getByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
         if (!permisosService.activoByAsistencial(idAsistencial))
             return new ResponseEntity(new Mensaje("no existe el permiso de este asistencial"), HttpStatus.NOT_FOUND);
-            Permisos permisos = permisosService.findByIdAsistencial(idAsistencial).get();
+        Permisos permisos = permisosService.findByIdAsistencial(idAsistencial).get();
         return new ResponseEntity<Permisos>(permisos, HttpStatus.OK);
     }
 
@@ -108,5 +110,8 @@ public class PermisosController {
         return new ResponseEntity<>(new Mensaje("Permiso eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
-
+    @GetMapping("/tienePermisos/{idAsistencial}/{idEfector}")
+    public boolean tienePermisos( @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return permisosService.tienePermisos(idAsistencial, idEfector);
+    }
 }
