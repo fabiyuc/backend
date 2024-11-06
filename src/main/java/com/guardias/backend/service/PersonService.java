@@ -111,7 +111,7 @@ public class PersonService {
 
         // Obtener el Legajo actual
         Legajo legajoActual = persona.getLegajos().stream()
-                .filter(Legajo::getEsAutoridad)
+                .filter(legajo -> legajo.isActivo() && !legajo.getEsAutoridad())
                 .findFirst()
                 .orElse(null);
 
