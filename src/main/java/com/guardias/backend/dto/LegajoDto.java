@@ -26,6 +26,7 @@ public class LegajoDto {
     @NotBlank
     private String matriculaProvincial;
     private Long idSuspencion;
+    private String motivoBaja;
     @NotBlank
     private Long idRevista;
     @NotBlank
