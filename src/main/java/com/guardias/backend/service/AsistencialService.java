@@ -130,8 +130,14 @@ public class AsistencialService {
         Optional<Asistencial> asistencialOpt = asistencialRepository.findById(idPersona);
         // Si la persona existe
         if (asistencialOpt.isPresent()) {
+
             // Obtiene la persona
             Asistencial persona = asistencialOpt.get();
+
+            // Si la persona no tiene legajos, retorna false para permitir la creación
+            if (persona.getLegajos() == null || persona.getLegajos().isEmpty()) {
+                return true;
+            }
             // Recorre los legajos activos del asistencial y verifica si alguno tiene un
             // TipoGuardia de CONTRAFACTURA
             return persona.getLegajos().stream()
