@@ -49,7 +49,8 @@ public class RevistaService {
         revistaRepository.deleteById(id);
     }
 
-    public Revista findByAttributes(Long idTipoRevista, Long idCategoria, Long idAdicional, Long idCargaHoraria, AgrupacionEnum agrupacion) {
+    public Revista findByAttributes(Long idTipoRevista, Long idCategoria, Long idAdicional, Long idCargaHoraria,
+            AgrupacionEnum agrupacion) {
         return revistaRepository.findByAttributes(idTipoRevista, idCategoria, idAdicional, idCargaHoraria, agrupacion);
     }
 
