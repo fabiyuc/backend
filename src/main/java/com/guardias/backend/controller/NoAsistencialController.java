@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,9 +63,16 @@ public class NoAsistencialController {
             return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
 
         NoAsistencial noAsistencial = noAsistencialService.findById(id).get();
-        List<Legajo> legajos = noAsistencial.getLegajos();
 
-        return new ResponseEntity<>(legajos, HttpStatus.OK);
+        if (noAsistencial == null) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        // Filtramos los legajos que estén activos
+        List<Legajo> legajosActivos = noAsistencial.getLegajos().stream()
+                .filter(Legajo::isActivo) // Filtra por el campo activo
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(legajosActivos, HttpStatus.OK);
     }
 
     // Lista de no asistenciales por efector
