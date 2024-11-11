@@ -31,4 +31,6 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
     boolean existsById(Long id);
 
     List<NovedadPersonal> findByActivo(boolean activo);
+
+    Boolean existsByPersonaIdAndTipoLicenciaNombreIn(Long personaId, List<String> nombresLicencias);
 }

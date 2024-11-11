@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.repository.NovedadPersonalRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -70,6 +72,27 @@ public class NovedadPersonalService {
 
     public void deleteById(Long id) {
         novedadPersonalRepository.deleteById((Long) id);
+    }
+
+    public boolean puedeHacerGuardia(Long idPersona) {
+
+        if (idPersona == null) {
+            throw new IllegalArgumentException("el id de la persona no pueden ser nulo.");
+        }
+
+        if (!personaService.activoById(idPersona)) {
+            throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
+        }
+
+        // Lista de nombres de licencias que se deben verificar
+        List<String> nombresLicencias = Arrays.asList("MATERNIDAD");
+        /* List<String> nombresLicencias = Arrays.asList("Compensatorio", "MATERNIDAD", "Licencia anual ordinaria"); */
+
+        // Buscar coincidencias en Novedades personales
+        Boolean esElegibleParaGuardia = novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+
+        return  Boolean.TRUE.equals(esElegibleParaGuardia);
+
     }
 
 }
