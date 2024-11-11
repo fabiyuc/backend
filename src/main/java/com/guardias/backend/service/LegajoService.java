@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.repository.AutoridadRepository;
 import com.guardias.backend.repository.LegajoRepository;
 
 import jakarta.transaction.Transactional;
@@ -17,6 +18,9 @@ public class LegajoService {
 
     @Autowired
     LegajoRepository legajoRepository;
+
+    @Autowired
+    AutoridadRepository autoridadRepository;
 
     public List<Legajo> findByActivoTrue() {
         return legajoRepository.findByActivoTrue();
@@ -44,6 +48,12 @@ public class LegajoService {
 
     public void deleteById(Long id) {
         legajoRepository.deleteById(id);
+    }
+
+    public boolean esAutoridad(Long asistencialId) {
+        // Implementa la lógica para verificar si el Asistencial está en la tabla de
+        // autoridades
+        return autoridadRepository.existsByPersonaIdAndActivoTrue(asistencialId);
     }
 
     /*

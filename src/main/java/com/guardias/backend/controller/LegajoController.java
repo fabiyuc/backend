@@ -81,6 +81,22 @@ public class LegajoController {
         return new ResponseEntity(legajo, HttpStatus.OK);
     }
 
+    // consultar si un asistencial es autoridad
+    @GetMapping("/esAutoridad/{id}")
+    public ResponseEntity<?> verificarAutoridad(@PathVariable("id") Long id) {
+        // Verificar si el asistencial está activo
+        if (!asistencialService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("La persona no es un asistencial"), HttpStatus.NOT_FOUND);
+        }
+
+        // Consultar si el asistencial es autoridad
+        if (legajoService.esAutoridad(id)) {
+            return new ResponseEntity<>(new Mensaje("Este asistencial es una autoridad"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Mensaje("Este asistencial no es autoridad"), HttpStatus.OK);
+        }
+    }
+
     private ResponseEntity<?> validations(LegajoDto legajoDto) {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
