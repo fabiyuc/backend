@@ -105,4 +105,10 @@ public class AutoridadService {
     public void deleteById(Long id) {
         autoridadRepository.deleteById((Long) id);
     }
+
+    public boolean esAutoridad(Long asistencialId) {
+        // Implementa la lógica para verificar si el Asistencial está en la tabla de
+        // autoridades
+        return autoridadRepository.existsByPersonaIdAndActivoTrue(asistencialId);
+    }
 }

@@ -27,6 +27,7 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.TipoGuardiaService;
 
@@ -43,6 +44,8 @@ public class AsistencialController {
     RegistroActividadService registroActividadService;
     @Autowired
     TipoGuardiaService tipoGuardiaService;
+    @Autowired
+    AutoridadService autoridadService;
 
     @Autowired
     @Lazy
@@ -169,6 +172,22 @@ public class AsistencialController {
         Asistencial asistencial = asistencialService.findByDni(dni).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
 
+    }
+
+    // consultar si un asistencial es autoridad
+    @GetMapping("/esAutoridad/{id}")
+    public ResponseEntity<?> verificarAutoridad(@PathVariable("id") Long id) {
+        // Verificar si el asistencial está activo
+        if (!asistencialService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("La persona no es un asistencial"), HttpStatus.NOT_FOUND);
+        }
+
+        // Consultar si el asistencial es autoridad
+        if (autoridadService.esAutoridad(id)) {
+            return new ResponseEntity<>(new Mensaje("Este asistencial es una autoridad"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Mensaje("Este asistencial no es autoridad"), HttpStatus.OK);
+        }
     }
 
     public ResponseEntity<?> validations(AsistencialDto asistencialDto, Long id) {
