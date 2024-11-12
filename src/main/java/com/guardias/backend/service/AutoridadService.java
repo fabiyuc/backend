@@ -27,6 +27,9 @@ public class AutoridadService {
     @Lazy
     PersonService personaService;
 
+    @Autowired
+    CargoService cargoService;
+
     public Optional<List<Autoridad>> findByActivoTrue() {
         return autoridadRepository.findByActivoTrue();
     }
@@ -51,31 +54,46 @@ public class AutoridadService {
         return autoridadRepository.findByEfectorId(efectorId);
     }
 
-    public Optional<Autoridad> findByNombre(String nombre) {
-        return autoridadRepository.findByNombre(nombre);
+    /*
+     * public Optional<Autoridad> findByNombre(String nombre) {
+     * return autoridadRepository.findByNombre(nombre);
+     * }
+     */
+
+    public Optional<List<Autoridad>> findByCargoId(Long cargoId) {
+        return autoridadRepository.findByCargoId(cargoId);
     }
 
-    public boolean existsByNombreAndIdNot(String nombre, Long id) {
-        return autoridadRepository.existsByNombreAndIdNot(nombre, id);
+    public boolean activoByCargoId(Long cargoId) {
+        return autoridadRepository.existsByCargoId(cargoId) && cargoService.activoById(cargoId);
     }
+
+    /*
+     * public boolean existsByNombreAndIdNot(String nombre, Long id) {
+     * return autoridadRepository.existsByNombreAndIdNot(nombre, id);
+     * }
+     */
 
     public boolean existsById(Long id) {
         return autoridadRepository.existsById((Long) id);
     }
 
-    public boolean existsByNombre(String nombre) {
-        return autoridadRepository.existsByNombre(nombre);
-    }
+    /*
+     * public boolean existsByNombre(String nombre) {
+     * return autoridadRepository.existsByNombre(nombre);
+     * }
+     */
 
     public boolean activo(Long id) {
         return (autoridadRepository.existsById(id)
                 && autoridadRepository.findById(id).get().isActivo());
     }
-
-    public boolean activoByNombre(String nombre) {
-        return (autoridadRepository.existsByNombre(nombre)
-                && autoridadRepository.findByNombre(nombre).get().isActivo());
-    }
+    /*
+     * public boolean activoByNombre(String nombre) {
+     * return (autoridadRepository.existsByNombre(nombre)
+     * && autoridadRepository.findByNombre(nombre).get().isActivo());
+     * }
+     */
 
     public boolean existsByEfectorId(Long efectorId) {
         return autoridadRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
@@ -106,4 +124,9 @@ public class AutoridadService {
         autoridadRepository.deleteById((Long) id);
     }
 
+    public boolean activoByAutoridadAndEfector(Long CargoId, Long efectorId) {
+        Optional<List<Autoridad>> autoridad = autoridadRepository.findByCargoIdAndEfectorId(CargoId, efectorId);
+        return autoridadRepository.existsByCargoIdAndEfectorId(CargoId, efectorId)
+                && efectorService.activoById(efectorId) && cargoService.activoById(CargoId);
+    }
 }

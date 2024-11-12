@@ -59,12 +59,13 @@ public class AutoridadController {
         return new ResponseEntity<Autoridad>(autoridad, HttpStatus.OK);
     }
 
-    @GetMapping("/detailnombre/{nombre}")
-    public ResponseEntity<Autoridad> getByNombre(@PathVariable("nombre") String nombre) {
-        if (!autoridadService.activoByNombre(nombre))
+    @GetMapping("/detailcargo/{idCargo}")
+    public ResponseEntity<List<Autoridad>> getByCargo(@PathVariable("idCargo") Long idCargo) {
+        if (!autoridadService.activoByCargoId(idCargo))
             return new ResponseEntity(new Mensaje("No existe la autoridad"), HttpStatus.NOT_FOUND);
-        Autoridad autoridad = autoridadService.findByNombre(nombre).get();
-        return new ResponseEntity(autoridad, HttpStatus.OK);
+
+        List<Autoridad> autoridad = autoridadService.findByCargoId(idCargo).get();
+        return new ResponseEntity<>(autoridad, HttpStatus.OK);
     }
 
     @GetMapping("/list/{fechaInicio}")
@@ -91,8 +92,10 @@ public class AutoridadController {
     }
 
     public ResponseEntity<?> validations(AutoridadDto autoridadDto, Long id) {
-        if (autoridadDto.getNombre() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El Nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (autoridadDto.getIdCargo() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("El cargo es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
 
         if (autoridadDto.getFechaInicio() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("La fecha de inicio es obligatoria"),
@@ -104,19 +107,33 @@ public class AutoridadController {
         if (autoridadDto.getIdPersona() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("la persona es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (autoridadService.activoByNombre(autoridadDto.getNombre())
-                && (autoridadService.findByNombre(autoridadDto.getNombre()).get().getId() != id))
-            return new ResponseEntity<Mensaje>(new Mensaje("El Nombre ya existe"), HttpStatus.BAD_REQUEST);
+        if (autoridadService.activoByAutoridadAndEfector(
+                autoridadDto.getIdCargo(),
+                autoridadDto.getIdEfector()
+
+        )) {
+            return new ResponseEntity<Mensaje>(new Mensaje("Ya existe una autoridad con ese cargo"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        /*
+         * if (autoridadService.activoByNombre(autoridadDto.getNombre())
+         * && (autoridadService.findByNombre(autoridadDto.getNombre()).get().getId() !=
+         * id))
+         * return new ResponseEntity<Mensaje>(new Mensaje("El Nombre ya existe"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
-
-        if (autoridadDto.getNombre() != null &&
-                !autoridadDto.getNombre().isEmpty()
-                && !autoridadDto.getNombre().equals(autoridad.getNombre()))
-            autoridad.setNombre(autoridadDto.getNombre());
+        /*
+         * if (autoridadDto.getNombre() != null &&
+         * !autoridadDto.getNombre().isEmpty()
+         * && !autoridadDto.getNombre().equals(autoridad.getNombre()))
+         * autoridad.setNombre(autoridadDto.getNombre());
+         */
 
         if (autoridadDto.getFechaInicio() != null && !autoridadDto.getFechaInicio().equals(autoridad.getFechaInicio()))
             autoridad.setFechaInicio(autoridadDto.getFechaInicio());

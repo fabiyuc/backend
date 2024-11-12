@@ -64,6 +64,10 @@ public class CargoService {
 
     }
 
+    public boolean activoById(Long id) {
+        return cargoRepository.existsById(id) && cargoRepository.findById(id).get().isActivo();
+    }
+
     /*
      * public boolean existsByAgrupacion(AgrupacionEnum agrupacion) {
      * return (cargoRepository.existsByAgrupacion(agrupacion)

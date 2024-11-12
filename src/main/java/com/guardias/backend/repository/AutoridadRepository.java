@@ -28,7 +28,9 @@ public interface AutoridadRepository extends JpaRepository<Autoridad, Long> {
 
     Optional<Autoridad> findById(Long id);
 
-    Optional<Autoridad> findByNombre(String nombre);
+    /* Optional<Autoridad> findByNombre(String nombre); */
+
+    Optional<List<Autoridad>> findByCargoId(Long cargoId);
 
     @Query("SELECT a FROM autoridades a WHERE a.fechaInicio = :fechaInicio AND a.activo = true")
     Optional<List<Autoridad>> findByFechaInicio(LocalDate fechaInicio);
@@ -43,14 +45,22 @@ public interface AutoridadRepository extends JpaRepository<Autoridad, Long> {
 
     boolean existsByEfectorId(Long efectorId);
 
+    boolean existsByCargoId(Long cargoId);
+
     boolean existsByPersonaId(Long personaId);
 
-    boolean existsByNombre(String nombre);
-
-    boolean existsByNombreAndIdNot(String nombre, Long id);
+    /*
+     * boolean existsByNombre(String nombre);
+     * 
+     * boolean existsByNombreAndIdNot(String nombre, Long id);
+     */
 
     List<Autoridad> findByActivo(boolean activo);
 
     boolean existsByPersonaIdAndActivoTrue(Long personaId);
+
+    Optional<List<Autoridad>> findByCargoIdAndEfectorId(Long cargoId, Long efectorId);
+
+    boolean existsByCargoIdAndEfectorId(Long cargoId, Long efectorId);
 
 }
