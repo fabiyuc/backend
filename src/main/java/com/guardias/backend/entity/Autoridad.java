@@ -30,11 +30,7 @@ public class Autoridad {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @Temporal(TemporalType.DATE)
-        private LocalDate fechaInicio;
-
-        @Temporal(TemporalType.DATE)
-        private LocalDate fechaFinal;
+      
 
         private boolean esRegional;
         @Column(columnDefinition = "BIT DEFAULT 1")
