@@ -227,4 +227,9 @@ public class NovedadPersonalController {
         return new ResponseEntity<>(new Mensaje("novedad eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
+    @GetMapping("/puedeHacerGuardia/{idPersona}")
+    public boolean puedeHacerGuardia(@PathVariable Long idPersona) {
+        return novedadPersonalService.puedeHacerGuardia(idPersona);
+    }
+
 }

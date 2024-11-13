@@ -278,4 +278,5 @@ public class RegistroActividadService {
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
     }
 
+
 }
