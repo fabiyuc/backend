@@ -8,8 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.DistribucionGuardia;
+import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -18,12 +22,14 @@ public class DistribucionGuardiaService {
 
     @Autowired
     DistribucionGuardiaRepository distribucionGuardiaRepository;
-
+    @Autowired
+    DistribucionConsultorioRepository distribucionConsultorioRepository;
     @Autowired
     EfectorService efectorService;
-
     @Autowired
     PersonService personService;
+    @Autowired
+    AsistencialRepository asistencialRepository;;
 
     public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
@@ -72,6 +78,59 @@ public class DistribucionGuardiaService {
 
     public void deleteById(Long id) {
         distribucionGuardiaRepository.deleteById(id);
+    }
+
+    public boolean existDistribucion(DiasEnum dia, LocalDate fecha,  Long idAsistencial, Long idEfector) {
+
+        if (dia == null || fecha == null || idAsistencial == null || idEfector == null) {
+            throw new IllegalArgumentException("Los parámetros de día, fecha, horaIngreso, idAsistencial y idEfector no pueden ser nulos.");
+        }
+    
+
+        if (!asistencialRepository.existsById(idAsistencial)) {
+            throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
+        }
+
+        if (!efectorService.existsById(idEfector)) {
+            throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
+        }
+
+        // Buscar coincidencias en DistribucionGuardia
+        boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(
+                dia, fecha, idAsistencial, idEfector);
+
+        // Si existe DistribucionGuardia que coincida, retornar true
+        if (guardiaExists)
+            return true;
+
+        // Buscar coincidencias en DistribucionConsultorio
+        boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
+                dia, fecha, idAsistencial, idEfector);
+
+        // Retornar true si existe alguna coincidencia en cualquiera de las
+        // distribuciones
+        return consultorioExists;
+
+    }
+
+
+    public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
+
+        // Buscar coincidencias en DistribucionGuardia
+        boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(
+                dia, fecha, idAsistencial, idEfector);
+
+        // Si existe DistribucionGuardia que coincida, retornar true
+        if (guardiaExists)
+            return true;
+
+        // Buscar coincidencias en DistribucionConsultorio
+        boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
+                dia, fecha, idAsistencial, idEfector);
+
+        // Si existe DistribucionConsultorio que coincida, retornar false
+        return !consultorioExists;
+
     }
 
 }

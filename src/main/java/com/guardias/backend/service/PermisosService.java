@@ -15,11 +15,13 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PermisosDto;
 import com.guardias.backend.entity.Permisos;
+import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.MinisterioRepository;
 import com.guardias.backend.repository.PermisosRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -34,6 +36,10 @@ public class PermisosService {
     MinisterioRepository ministerioRepository;
     @Autowired
     CapsRepository capsRepository;
+    @Autowired
+    AsistencialRepository asistencialRepository;
+    @Autowired
+    EfectorService efectorService;
 
     public Optional<List<Permisos>> findByActivoTrue() {
         return permisosRepository.findByActivoTrue();
@@ -79,17 +85,20 @@ public class PermisosService {
         }
 
         if (permisosDto.getIdEfectores() != null) {
-            Set<Long> currentEfectorIds = new HashSet<>(permisos.getIdEfectores());
+           
+            Set<Long> currentEfectorIds = new HashSet<>(
+                    permisos.getIdEfectores() != null ? permisos.getIdEfectores() : new ArrayList<>());
+
             List<Long> newIds = permisosDto.getIdEfectores().stream()
                     .filter(id -> !currentEfectorIds.contains(id))
                     .collect(Collectors.toList());
-    
+
             // Valida solo los nuevos IDs
             List<Long> validNewIds = findValidIdsAcrossSubclasses(newIds);
             if (validNewIds.size() != newIds.size()) {
                 throw new IllegalArgumentException("Algunos IDs de efectores no son válidos.");
             }
-    
+
             permisos.setIdEfectores(new ArrayList<>(permisosDto.getIdEfectores()));
         }
 
@@ -115,6 +124,28 @@ public class PermisosService {
         validIds.addAll(capsRepository.findValidIds(ids));
         validIds.addAll(ministerioRepository.findValidIds(ids));
         return validIds;
+    }
+
+    public boolean tienePermisos(Long idAsistencial, Long idEfector) {
+
+        if (!asistencialRepository.existsById(idAsistencial)) {
+            throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
+        }
+
+        if (!efectorService.existsById(idEfector)) {
+            throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
+        }
+
+        Optional<Permisos> optionalPermiso = permisosRepository.findByIdAsistencialAndActivoTrue(idAsistencial);
+
+        if (optionalPermiso.isPresent()) {
+            Permisos permiso = optionalPermiso.get();
+            // Verificar si la lista de efectores contiene el idEfector
+            return permiso.getIdEfectores() != null && permiso.getIdEfectores().contains(idEfector);
+        }
+        
+        return false; // Retorna false si no hay un permiso activo o no se encuentra el idEfector
+    
     }
 
 }

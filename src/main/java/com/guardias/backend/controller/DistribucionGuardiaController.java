@@ -21,6 +21,7 @@ import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
+import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.service.DistribucionGuardiaService;
 import com.guardias.backend.service.ServicioService;
 
@@ -160,4 +161,16 @@ public class DistribucionGuardiaController {
         distribucionGuardiaService.deleteById(id);
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
+
+    @GetMapping("/existDistribucion/{dia}/{fecha}/{idAsistencial}/{idEfector}")
+    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial,idEfector);
+    }
+
+    @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")
+    public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial,idEfector);
+    }
+
+    
 }

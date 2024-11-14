@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.DistribucionConsultorio;
+import com.guardias.backend.enums.DiasEnum;
 
 @Repository
 public interface DistribucionConsultorioRepository extends JpaRepository<DistribucionConsultorio, Long> {
@@ -31,4 +32,20 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
     boolean existsByPersonaId(Long personaId);
 
     List<DistribucionConsultorio> findByActivo(boolean activo);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+        FROM distribucionesConsultorios d
+        WHERE d.dia = :dia
+        AND :fecha BETWEEN d.fechaInicio AND d.fechaFinalizacion
+        AND d.persona.id = :idAsistencial
+        AND d.efector.id = :idEfector
+        AND d.activo = true
+        """)
+    boolean existsByDiaAndFechaAndPersonaAndEfector(
+        @Param("dia") DiasEnum dia,
+        @Param("fecha") LocalDate fecha,
+        @Param("idAsistencial") Long idAsistencial,
+        @Param("idEfector") Long idEfector
+    );
 }
