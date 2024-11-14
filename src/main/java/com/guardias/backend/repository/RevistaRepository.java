@@ -26,7 +26,7 @@ public interface RevistaRepository extends JpaRepository<Revista, Long> {
 
     List<Revista> findByActivo(boolean activo);
 
-    @Query("SELECT r FROM revistas r WHERE r.tipoRevista.id = :idTipoRevista AND r.categoria.id = :idCategoria AND r.adicional.id = :idAdicional AND r.cargaHoraria.id = :idCargaHoraria AND r.agrupacion = :agrupacion")
+    @Query("SELECT r FROM revistas r WHERE r.tipoRevista.id = :idTipoRevista AND r.categoria.id = :idCategoria AND (:idAdicional IS NULL OR r.adicional.id = :idAdicional)  AND r.cargaHoraria.id = :idCargaHoraria AND r.agrupacion = :agrupacion")
     Revista findByAttributes(
             @Param("idTipoRevista") Long idTipoRevista,
             @Param("idCategoria") Long idCategoria,
