@@ -37,12 +37,6 @@ public class CargoService {
         return cargoRepository.findByNombre(nombre);
     }
 
-    /*
-     * public Optional<Cargo> findByAgrupacion(AgrupacionEnum agrupacion) {
-     * return cargoRepository.findByAgrupacion(agrupacion);
-     * }
-     */
-
     public List<Cargo> findByFechaInicio(LocalDate fechaInicio) {
         return cargoRepository.findByFechaInicio(fechaInicio);
     }
@@ -67,13 +61,6 @@ public class CargoService {
     public boolean activoById(Long id) {
         return cargoRepository.existsById(id) && cargoRepository.findById(id).get().isActivo();
     }
-
-    /*
-     * public boolean existsByAgrupacion(AgrupacionEnum agrupacion) {
-     * return (cargoRepository.existsByAgrupacion(agrupacion)
-     * && cargoRepository.findByAgrupacion(agrupacion).get().isActivo());
-     * }
-     */
 
     public void save(Cargo cargo) {
         cargoRepository.save(cargo);

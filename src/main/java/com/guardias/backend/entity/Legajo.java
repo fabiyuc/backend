@@ -32,7 +32,6 @@ public class Legajo {
   private Long id;
   private LocalDate fechaInicio;
   private LocalDate fechaFinal;
-  // private Boolean actual;
   private Boolean esAutoridad;
   @Column(columnDefinition = "BIT DEFAULT 1")
   private boolean activo;

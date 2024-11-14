@@ -17,8 +17,6 @@ public class LegajoDto {
     @NotBlank
     private LocalDate fechaInicio;
     private LocalDate fechaFinal;
-    // @NotBlank
-    // private Boolean actual;
     @NotBlank
     private Boolean esAutoridad;
     private boolean activo;

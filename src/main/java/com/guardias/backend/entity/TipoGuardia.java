@@ -53,7 +53,7 @@ public class TipoGuardia {
      * private List<Asistencial> asistenciales = new ArrayList<Asistencial>();
      */
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardias")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardias", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
             "apellido", "dni", "cuil", "legajos",
             "novedadesPersonales", "suplentes",
