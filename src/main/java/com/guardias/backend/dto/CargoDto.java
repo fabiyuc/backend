@@ -1,6 +1,7 @@
 package com.guardias.backend.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,14 +29,10 @@ public class CargoDto {
     @NotNull
     private LocalDate fechaFinal;
 
-    // private Boolean activo = true;
-
     private boolean activo;
 
-    // private Legajo legajo;
-    /*
-     * List<Long> idLegajos;
-     */
+    List<Long> idLegajos;
+    
     
 }
 

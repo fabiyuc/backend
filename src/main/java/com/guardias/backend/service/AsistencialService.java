@@ -112,33 +112,7 @@ public class AsistencialService {
         legajoRepository.save(legajo);
     }
 
-    // Método para verificar si una persona es contrafactura
-    public boolean esContraFactura(Long idPersona) {
-        // Busca la persona por ID
-        Optional<Asistencial> asistencialOpt = asistencialRepository.findById(idPersona);
-        // Si la persona existe
-        if (asistencialOpt.isPresent()) {
-
-            // Obtiene la persona
-            Asistencial persona = asistencialOpt.get();
-
-            // Si la persona no tiene legajos, retorna false para permitir la creación
-            if (persona.getLegajos() == null || persona.getLegajos().isEmpty()) {
-                return true;
-            }
-            // Recorre los legajos activos del asistencial y verifica si alguno tiene un
-            // TipoGuardia de CONTRAFACTURA
-            return persona.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null) // Legajo activo
-                    .flatMap((Legajo legajo) -> legajo.getTipoGuardias().stream()) // Obtener los tipos de guardias de
-                                                                                   // cada legajo activo
-                    .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CONTRAFACTURA")); // Comparar el
-                                                                                                      // nombre del tipo
-                                                                                                      // de guardia
-        }
-        // Si no existe la persona, retorna false
-        return false;
-    }
+    
 
     // Método para obtener la lista de Asistenciales y convertirlos a
     // AsistencialSummaryDto

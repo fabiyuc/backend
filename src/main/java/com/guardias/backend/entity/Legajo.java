@@ -33,6 +33,7 @@ public class Legajo {
   private LocalDate fechaInicio;
   private LocalDate fechaFinal;
   private Boolean esAutoridad;
+  private Boolean esRegional;
   @Column(columnDefinition = "BIT DEFAULT 1")
   private boolean activo;
 
@@ -100,6 +101,14 @@ public class Legajo {
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
       "registrosActividades", "legajos" })
   private List<TipoGuardia> tipoGuardias = new ArrayList<TipoGuardia>();
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "id_cargo")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "nroresolucion", "nrodecreto",
+      "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos", "agrupacion" })
+  private Cargo cargo;
+
+
 
   // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
   // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",

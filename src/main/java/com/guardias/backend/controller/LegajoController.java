@@ -22,7 +22,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.CargoService;
 import com.guardias.backend.service.EfectorService;
@@ -101,40 +100,16 @@ public class LegajoController {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        // if (legajoDto.getActual() == null)
-        // return new ResponseEntity<Mensaje>(new Mensaje("indicar si es actual o no"),
-        // HttpStatus.BAD_REQUEST);
-
         if (legajoDto.getEsAutoridad() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar si es autoridad o no"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (legajoDto.getIdPersona() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
 
         if (legajoDto.getMatriculaProvincial() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        boolean esContraFactura = asistencialService.esContraFactura(legajoDto.getIdPersona());
-        if (!esContraFactura && legajoDto.getIdUdo() == null) {
-            return new ResponseEntity<>(new Mensaje("indicar la UdO"),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        /*
-         * if (!esContraFactura && legajoDto.getIdCargo() == null)
-         * return new ResponseEntity<Mensaje>(new Mensaje("indicar el cargo"),
-         * HttpStatus.BAD_REQUEST);
-         */
-
-        if (!esContraFactura && legajoDto.getIdRevista() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar la situacion de revista"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (legajoDto.getIdProfesion() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
+        if (legajoDto.getIdPersona() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
 
         // Valida que IdEfectores no sea null y tenga al menos un elemento
@@ -143,12 +118,52 @@ public class LegajoController {
                     HttpStatus.BAD_REQUEST);
         }
 
+        boolean esAsistencial = personService.activoById(legajoDto.getIdPersona())
+                && asistencialService.existsById(legajoDto.getIdPersona());
+
+        boolean esContraFactura = legajoDto.getIdTipoGuardias() != null && legajoDto.getIdTipoGuardias().contains(4L);
+
+        if (!esContraFactura && legajoDto.getEsAutoridad() != null & legajoDto.getEsAutoridad() == false) {
+
+            if (legajoDto.getIdRevista() == null) {
+                return new ResponseEntity<>(new Mensaje("Indicar la situación de revista para Asistenciales"),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (legajoDto.getIdUdo() == null) {
+                return new ResponseEntity<>(new Mensaje("indicar la UdO"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (esAsistencial) {
+            if (legajoDto.getIdProfesion() == null)
+                return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
+                        HttpStatus.BAD_REQUEST);
+
+            if (legajoDto.getIdTipoGuardias() == null) {
+                return new ResponseEntity<>(new Mensaje("Indicar los tipos de guardia para Asistenciales"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+        // Validación para esAutoridad
+        if (legajoDto.getEsAutoridad() == true) {
+            if (legajoDto.getEsRegional() == null) {
+                return new ResponseEntity<>(new Mensaje("Indicar si es regional para autoridades"),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (legajoDto.getIdCargo() == null) {
+                return new ResponseEntity<>(new Mensaje("Indicar el cargo para autoridades"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     private Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
 
-        if (legajoDto.getFechaInicio() != null && legajo.getFechaInicio() != legajoDto.getFechaInicio())
+        if (legajo.getFechaInicio() != legajoDto.getFechaInicio())
             legajo.setFechaInicio(legajoDto.getFechaInicio());
 
         if (legajoDto.getFechaFinal() != null && legajo.getFechaFinal() != legajoDto.getFechaFinal())
@@ -157,25 +172,49 @@ public class LegajoController {
         if (legajoDto.getMatriculaNacional() != null
                 && legajo.getMatriculaNacional() != legajoDto.getMatriculaNacional())
             legajo.setMatriculaNacional(legajoDto.getMatriculaNacional());
-        if (legajoDto.getMatriculaProvincial() != null
-                && legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
+
+        if (legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
             legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
 
-        if (legajoDto.getMotivoBaja() != null
-                && legajo.getMotivoBaja() != legajoDto.getMotivoBaja())
+        if (legajoDto.getMotivoBaja() != null && legajo.getMotivoBaja() != legajoDto.getMotivoBaja())
             legajo.setMotivoBaja(legajoDto.getMotivoBaja());
 
-        if (legajoDto.getIdPersona() != null) {
-            if (legajo.getPersona() == null
-                    || !Objects.equals(legajo.getPersona().getId(), legajoDto.getIdPersona())) {
-                legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+        if (legajo.getPersona() == null || !Objects.equals(legajo.getPersona().getId(), legajoDto.getIdPersona()))
+            legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+
+        boolean esAsistencial = personService.activoById(legajoDto.getIdPersona())
+                && asistencialService.existsById(legajoDto.getIdPersona());
+
+        boolean esContraFactura = legajoDto.getIdTipoGuardias() != null && legajoDto.getIdTipoGuardias().contains(4L);
+
+        if (!esContraFactura && !legajoDto.getEsAutoridad()) {
+
+            if (legajo.getUdo() == null || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
+                legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
+            }
+
+            if (legajo.getRevista() == null || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {
+                legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
             }
         }
 
-        if (legajoDto.getIdUdo() != null) {
-            if (legajo.getUdo() == null
-                    || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
-                legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
+        if (esAsistencial) {
+
+            if (legajo.getProfesion() == null ||!Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
+                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
+            }
+
+            legajoService.updateTipoGuardias(legajo, legajoDto);
+        }
+
+        if (legajoDto.getEsAutoridad() == true) {
+
+            if (legajoDto.getEsRegional() != null) {
+                legajo.setEsRegional(legajoDto.getEsRegional());
+            }
+
+            if (legajo.getCargo() == null || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
+                legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
             }
         }
 
@@ -185,22 +224,6 @@ public class LegajoController {
                 legajo.setSuspencion(suspencionService.findById(legajoDto.getIdSuspencion()).get());
             }
         }
-
-        if (legajoDto.getIdRevista() != null) {
-            if (legajo.getRevista() == null
-                    || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {
-                legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
-            }
-        }
-
-        /*
-         * if (legajoDto.getIdCargo() != null) {
-         * if (legajo.getCargo() == null
-         * || !Objects.equals(legajo.getCargo().getId(), legajoDto.getIdCargo())) {
-         * legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
-         * }
-         * }
-         */
 
         if (legajoDto.getIdEspecialidades() != null) {
             if (legajo.getEspecialidades() == null) {
@@ -276,52 +299,6 @@ public class LegajoController {
             }
         }
 
-        if (legajoDto.getIdProfesion() != null) {
-            if (legajo.getProfesion() == null
-                    || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
-                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
-            }
-        }
-
-        if (legajoDto.getIdTipoGuardias() != null) {
-            if (legajo.getTipoGuardias() == null) {
-                legajo.setTipoGuardias(new ArrayList<>());
-            }
-
-            // crea una nueva lista para almacenar los tipos de guardias actualizados
-            List<TipoGuardia> tipoGuardiasActualizados = new ArrayList<>();
-            for (TipoGuardia tipoGuardia : legajo.getTipoGuardias()) {
-                if (legajoDto.getIdTipoGuardias().contains(tipoGuardia.getId())) {
-                    tipoGuardiasActualizados.add(tipoGuardia);
-                } else {
-                    // Remover el legajo de los tipos de guardias que se eliminarán
-                    tipoGuardia.getLegajos().remove(legajo);
-                }
-            }
-            legajo.setTipoGuardias(tipoGuardiasActualizados);
-
-            // agregar nuevos tipos de guardia si no estan presentes
-            for (Long id : legajoDto.getIdTipoGuardias()) {
-                boolean found = false;
-                for (TipoGuardia tipoGuardia : legajo.getTipoGuardias()) {
-                    if (tipoGuardia.getId().equals(id)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    TipoGuardia tipoGuardiaToAdd = tipoGuardiaService.findById(id).get();
-                    if (tipoGuardiaToAdd != null) {
-                        legajo.getTipoGuardias().add(tipoGuardiaToAdd);
-                        tipoGuardiaToAdd.getLegajos().add(legajo);
-                    } else {
-                        throw new RuntimeException("No se encontró el tipo de guardia con ID: " + id);
-                    }
-                }
-            }
-        }
-
-        // legajo.setActual(legajoDto.getActual());
         legajo.setEsAutoridad(legajoDto.getEsAutoridad());
         legajo.setActivo(true);
 
@@ -337,10 +314,6 @@ public class LegajoController {
 
             return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
         } else {
-            /*
-             * return new ResponseEntity(new Mensaje("error al guardar los cambios"),
-             * HttpStatus.BAD_REQUEST);
-             */
             return respuestaValidaciones;
         }
     }
