@@ -67,20 +67,22 @@ public class RevistaController {
     }
 
     @PostMapping("/check")
-    public ResponseEntity<Revista> checkRevista(@RequestBody RevistaDto revistaDto) {
+    public ResponseEntity<?> checkRevista(@RequestBody RevistaDto revistaDto) {
         Revista existingRevista = revistaService.findByAttributes(
                 revistaDto.getIdTipoRevista(),
                 revistaDto.getIdCategoria(),
                 revistaDto.getIdAdicional(),
                 revistaDto.getIdCargaHoraria(),
                 revistaDto.getAgrupacion());
-        if (existingRevista != null) {
-            return ResponseEntity.ok(existingRevista);
+    
+        if (existingRevista == null) {
+            // Retorna un mensaje como String con 200 OK
+            return ResponseEntity.ok("No se encontró ninguna revista que coincida con los parámetros");
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(existingRevista); // Si se encuentra la revista, la devuelve con 200 OK
         }
     }
-
+    
     public ResponseEntity<?> validations(RevistaDto revistaDto, Long id) {
 
         if (revistaDto.getAgrupacion() == null)
