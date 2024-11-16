@@ -89,20 +89,6 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("la persona es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        /*
-         * if (novedadPersonalDto.getIdArticulo() == null)
-         * return new ResponseEntity(new Mensaje("el articulo es obligatorio"),
-         * HttpStatus.BAD_REQUEST); // borrar despues
-         * 
-         * if (novedadPersonalDto.getIdInciso() == null)
-         * return new ResponseEntity(new Mensaje("el inciso es obligatorio"),
-         * HttpStatus.BAD_REQUEST); // borrar despues
-         * 
-         * if (novedadPersonalDto.getIdSuplente() == null)
-         * return new ResponseEntity(new Mensaje("el suplente es obligatorio"),
-         * HttpStatus.BAD_REQUEST); // comentar
-         */
-
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -145,23 +131,6 @@ public class NovedadPersonalController {
             novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.getIdSuplente()));
         }
 
-        /*
-         * if (novedadPersonal.getArticulo() == null ||
-         * (novedadPersonalDto.getIdArticulo() != null &&
-         * !Objects.equals(novedadPersonal.getArticulo().getId(),
-         * novedadPersonalDto.getIdArticulo()))) {
-         * novedadPersonal.setArticulo(articuloService.findById(novedadPersonalDto.
-         * getIdArticulo()).get());
-         * }
-         * 
-         * if (novedadPersonal.getInciso() == null ||
-         * (novedadPersonalDto.getIdInciso() != null &&
-         * !Objects.equals(novedadPersonal.getInciso().getId(),
-         * novedadPersonalDto.getIdInciso()))) {
-         * novedadPersonal.setInciso(incisoService.findById(novedadPersonalDto.
-         * getIdInciso()).get());
-         * }
-         */
         if (novedadPersonal.getTipoLicencia() == null ||
                 (novedadPersonalDto.getIdTipoLicencia() != null &&
                         !Objects.equals(novedadPersonal.getTipoLicencia().getId(),

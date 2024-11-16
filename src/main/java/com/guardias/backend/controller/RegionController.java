@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegionDto;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.RegionService;
 
 import io.micrometer.common.util.StringUtils;
@@ -34,6 +36,8 @@ public class RegionController {
     RegionService regionService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    LegajoService legajoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Region>> list() {
@@ -45,6 +49,12 @@ public class RegionController {
     public ResponseEntity<List<Region>> listAll() {
         List<Region> list = regionService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listWithoutLegajosActivos")
+    public ResponseEntity<List<Region>> listWithoutLegajosActivos() {
+        List<Region> regiones = regionService.getRegionsWithoutLegajosActivos();
+        return ResponseEntity.ok(regiones);
     }
 
     @GetMapping("/detail/{id}")
@@ -94,6 +104,26 @@ public class RegionController {
             for (Long id : idsToAdd) {
                 region.getEfectores().add(efectorService.findById(id));
                 efectorService.findById(id).setRegion(region);
+            }
+        }
+
+        if (regionDto.getIdLegajos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (region.getLegajos() != null) {
+                for (Legajo legajo : region.getLegajos()) {
+                    for (Long id : regionDto.getIdLegajos()) {
+                        if (!legajo.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                region.setLegajos(new ArrayList<>());
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? regionDto.getIdLegajos() : idList;
+            for (Long id : idsToAdd) {
+                region.getLegajos().add(legajoService.findById(id).get());
+                legajoService.findById(id).get().setRegion(region);
             }
         }
 

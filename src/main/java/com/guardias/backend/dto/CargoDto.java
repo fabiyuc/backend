@@ -29,21 +29,11 @@ public class CargoDto {
     @NotNull
     private LocalDate fechaFinal;
 
-    // private Boolean activo = true;
-
     private boolean activo;
 
-    // private Legajo legajo;
-    /*
-     * List<Long> idLegajos;
-     */
-
-    List<Long> idAutoridades;
-
-    /*
-     * @NotNull
-     * private AgrupacionEnum agrupacion;
-     */
+    List<Long> idLegajos;
+    
+    
 }
 
 // genera todo el json

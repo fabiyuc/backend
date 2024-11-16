@@ -1,7 +1,5 @@
 package com.guardias.backend.dto;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,24 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AutoridadDto {
 
-    @NotNull
-    private LocalDate fechaInicio;
-
-    private LocalDate fechaFinal;
-
-    private boolean esRegional;
-
     private boolean activo;
 
     @NotNull
-    private Long idEfector;
-    // private Efector efector;
-
-    @NotNull
     private Long idPersona;
-    // private Person persona;
-
-    private Long idCargo;
 }
 
 // genera el json

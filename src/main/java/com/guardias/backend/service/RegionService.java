@@ -25,6 +25,10 @@ public class RegionService {
         return regionRepository.findAll();
     }
 
+    public List<Region> getRegionsWithoutLegajosActivos() {
+        return regionRepository.findRegionsWithoutLegajosActivos();
+    }
+
     public Optional<Region> findById(Long id) {
         return regionRepository.findById(id);
     }

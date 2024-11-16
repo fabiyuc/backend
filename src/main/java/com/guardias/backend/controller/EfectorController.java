@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
@@ -85,9 +84,7 @@ public class EfectorController {
             efector.setTelefono(efectorDto.getTelefono());
 
         efector.setActivo(true);
-        
-        /* efector.setEstado(efectorDto.isEstado());
- */
+
         if (efector.getObservacion() == null || (efectorDto.getObservacion() != null
                 && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
@@ -105,10 +102,6 @@ public class EfectorController {
                                 efectorDto.getIdLocalidad()))) {
             efector.setLocalidad(localidadService.findById(efectorDto.getIdLocalidad()).get());
         }
-        
-        /* if (efectorDto.getPorcentajePorZona() != efector.getPorcentajePorZona()
-                && (efectorDto.getPorcentajePorZona() > 0))
-            efector.setPorcentajePorZona(efectorDto.getPorcentajePorZona()); */
 
         if (efectorDto.getIdDistribucionesHorarias() != null) {
             List<Long> idList = new ArrayList<Long>();
@@ -240,24 +233,6 @@ public class EfectorController {
             for (Long id : idsToAdd) {
                 efector.getNotificaciones().add(notificacionService.findById(id).get());
                 notificacionService.findById(id).get().getEfectores().add(efector);
-            }
-        }
-
-        if (efectorDto.getIdAutoridades() != null) {
-            List<Long> idList = new ArrayList();
-            if (efector.getAutoridades() != null) {
-                for (Autoridad autoridad : efector.getAutoridades()) {
-                    for (Long id : efectorDto.getIdAutoridades()) {
-                        if (!autoridad.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdAutoridades() : idList;
-            for (Long id : idsToAdd) {
-                efector.getAutoridades().add(autoridadService.findById(id).get());
-                autoridadService.findById(id).get().setEfector(efector);
             }
         }
 

@@ -1,8 +1,6 @@
 package com.guardias.backend.controller;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,30 +57,6 @@ public class AutoridadController {
         return new ResponseEntity<Autoridad>(autoridad, HttpStatus.OK);
     }
 
-    @GetMapping("/detailcargo/{idCargo}")
-    public ResponseEntity<List<Autoridad>> getByCargo(@PathVariable("idCargo") Long idCargo) {
-        if (!autoridadService.activoByCargoId(idCargo))
-            return new ResponseEntity(new Mensaje("No existe la autoridad"), HttpStatus.NOT_FOUND);
-
-        List<Autoridad> autoridad = autoridadService.findByCargoId(idCargo).get();
-        return new ResponseEntity<>(autoridad, HttpStatus.OK);
-    }
-
-    @GetMapping("/list/{fechaInicio}")
-    public ResponseEntity<List<Autoridad>> getByFechainicio(
-            @PathVariable("fechaInicio") LocalDate fechaInicio) {
-        List<Autoridad> list = autoridadService.findByFechaInicio(fechaInicio).get();
-        return new ResponseEntity<List<Autoridad>>(list, HttpStatus.OK);
-    }
-
-    @GetMapping("/detailefector/{idEfector}")
-    public ResponseEntity<List<Autoridad>> getByEfector(@PathVariable("idEfector") Long idEfector) {
-        if (!autoridadService.activoByEfectorId(idEfector))
-            return new ResponseEntity(new Mensaje("no existe la autoridad"), HttpStatus.NOT_FOUND);
-        List<Autoridad> autoridad = autoridadService.findByEfectorId(idEfector).get();
-        return new ResponseEntity<>(autoridad, HttpStatus.OK);
-    }
-
     @GetMapping("/detailpersona/{idPersona}")
     public ResponseEntity<List<Autoridad>> getByPersona(@PathVariable("idPersona") Long idPersona) {
         if (!autoridadService.activoByPersonaId(idPersona))
@@ -91,120 +65,18 @@ public class AutoridadController {
         return new ResponseEntity<>(autoridad, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> validations(AutoridadDto autoridadDto, Long id) {
-
-        if (autoridadDto.getIdCargo() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El cargo es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (autoridadDto.getFechaInicio() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("La fecha de inicio es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (autoridadDto.getIdEfector() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("El efector es obligatorio"), HttpStatus.BAD_REQUEST);
-
-        if (autoridadDto.getIdPersona() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("la persona es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (autoridadService.activoByAutoridadAndEfector(
-                autoridadDto.getIdCargo(),
-                autoridadDto.getIdEfector()
-
-        )) {
-            return new ResponseEntity<Mensaje>(new Mensaje("Ya existe una autoridad con ese cargo"),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        /*
-         * if (autoridadService.activoByNombre(autoridadDto.getNombre())
-         * && (autoridadService.findByNombre(autoridadDto.getNombre()).get().getId() !=
-         * id))
-         * return new ResponseEntity<Mensaje>(new Mensaje("El Nombre ya existe"),
-         * HttpStatus.BAD_REQUEST);
-         */
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    public Autoridad createUpdate(Autoridad autoridad, AutoridadDto autoridadDto) {
-        /*
-         * if (autoridadDto.getNombre() != null &&
-         * !autoridadDto.getNombre().isEmpty()
-         * && !autoridadDto.getNombre().equals(autoridad.getNombre()))
-         * autoridad.setNombre(autoridadDto.getNombre());
-         */
-
-        if (autoridadDto.getFechaInicio() != null && !autoridadDto.getFechaInicio().equals(autoridad.getFechaInicio()))
-            autoridad.setFechaInicio(autoridadDto.getFechaInicio());
-
-        if (autoridad.getFechaFinal() != autoridadDto.getFechaFinal() && autoridadDto.getFechaFinal() != null)
-            autoridad.setFechaFinal(autoridadDto.getFechaFinal());
-
-        autoridad.setEsRegional(autoridadDto.isEsRegional());
-
-        if (autoridad.getEfector() == null ||
-                (autoridadDto.getIdEfector() != null &&
-                        !Objects.equals(autoridad.getEfector().getId(),
-                                autoridadDto.getIdEfector()))) {
-            autoridad.setEfector(efectorService.findById(autoridadDto.getIdEfector()));
-        }
-
-        if (autoridad.getPersona() == null ||
-                (autoridadDto.getIdPersona() != null &&
-                        !Objects.equals(autoridad.getPersona().getId(),
-                                autoridadDto.getIdPersona()))) {
-            autoridad.setPersona(personService.findById(autoridadDto.getIdPersona()));
-        }
-
-        if (autoridadDto.getIdCargo() != null) {
-            if (autoridad.getCargo() == null
-                    || !Objects.equals(autoridad.getCargo().getId(), autoridadDto.getIdCargo())) {
-                autoridad.setCargo(cargoService.findById(autoridadDto.getIdCargo()).get());
-            }
-        }
-
-        autoridad.setActivo(true);
-
-        return autoridad;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AutoridadDto autoridadDto) {
 
-        // Verificar si la persona tiene una autoridad activa
-        if (autoridadService.tieneAutoridadActiva(autoridadDto.getIdPersona())) {
-            return new ResponseEntity<>(new Mensaje("La persona tiene una autoridad activa"), HttpStatus.BAD_REQUEST);
-        }
-        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto, 0L);
+        ResponseEntity<?> respuestaValidaciones = autoridadService.validations(autoridadDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Autoridad autoridad = createUpdate(new Autoridad(), autoridadDto);
-
+            Autoridad autoridad = autoridadService.create(autoridadDto);
             autoridadService.save(autoridad);
             return new ResponseEntity<>(new Mensaje("Autoridad creada correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody AutoridadDto autoridadDto) {
-        // Verificar si la autoridad existe y está activa
-        if (!autoridadService.activo(id))
-            return new ResponseEntity(new Mensaje("No existe la autoridad"), HttpStatus.NOT_FOUND);
-
-        ResponseEntity<?> respuestaValidaciones = validations(autoridadDto, id);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Autoridad autoridad = createUpdate(autoridadService.findById(id).get(), autoridadDto);
-
-            autoridadService.save(autoridad);
-            return new ResponseEntity<>(new Mensaje("Autoridad modificada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
-
     }
 
     @PutMapping("/delete/{id}")
@@ -225,4 +97,11 @@ public class AutoridadController {
         autoridadService.deleteById(id);
         return new ResponseEntity(new Mensaje("autoridad eliminada FISICAMENTE"), HttpStatus.OK);
     }
+
+    @GetMapping("/isAutoridad/{idPersona}")
+    public ResponseEntity<Boolean> isAutoridad(@PathVariable Long idPersona) {
+        boolean isAutoridad = autoridadService.isAutoridad(idPersona);
+        return new ResponseEntity<>(isAutoridad, HttpStatus.OK);
+    }
+
 }

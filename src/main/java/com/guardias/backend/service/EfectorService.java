@@ -25,8 +25,6 @@ public class EfectorService {
     @Autowired
     MinisterioService ministerioService;
     @Autowired
-    LegajoService legajoService;
-    @Autowired
     HospitalRepository hospitalRepository;
 
     public Efector findById(Long idEfector) {

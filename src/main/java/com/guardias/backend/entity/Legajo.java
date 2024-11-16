@@ -32,8 +32,8 @@ public class Legajo {
   private Long id;
   private LocalDate fechaInicio;
   private LocalDate fechaFinal;
-  // private Boolean actual;
   private Boolean esAutoridad;
+  private Boolean esRegional;
   @Column(columnDefinition = "BIT DEFAULT 1")
   private boolean activo;
 
@@ -102,11 +102,16 @@ public class Legajo {
       "registrosActividades", "legajos" })
   private List<TipoGuardia> tipoGuardias = new ArrayList<TipoGuardia>();
 
-  // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
-  // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",
-  // "matriculaProvincial", "especialidades", "suspencion", "revista",
-  // "udo","persona",
-  // "cargo", "efectores" })
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "id_cargo")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "nroresolucion", "nrodecreto",
+      "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos", "agrupacion" })
+  private Cargo cargo;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "id_region")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
+  private Region region;
 
   @Override
   public boolean equals(Object obj) {

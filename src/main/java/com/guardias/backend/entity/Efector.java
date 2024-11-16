@@ -47,8 +47,6 @@ public abstract class Efector {
 
     private String observacion;
 
-    /* private float porcentajePorZona; */
-
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_region")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "efectores" })
@@ -84,11 +82,6 @@ public abstract class Efector {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Notificacion> notificaciones = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "fechaInicio", "fechaFinal", "esActual",
-            "esRegional", "activo", "efector", "persona" })
-    private List<Autoridad> autoridades = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",

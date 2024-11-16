@@ -17,6 +17,8 @@ public interface LegajoRepository extends JpaRepository<Legajo, Long> {
 
     boolean existsById(Long id);
 
+    Optional<Legajo> findByPersonaIdAndActivoTrue(Long personaId);
+
     List<Legajo> findByActivo(boolean activo);
 
     boolean existsByPersonaIdAndActivoTrue(Long personaId);
