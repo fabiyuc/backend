@@ -18,9 +18,6 @@ public class RevistaService {
     @Autowired
     RevistaRepository revistaRepository;
 
-    @Autowired
-    LegajoService legajoService;
-
     public Optional<List<Revista>> findByActivoTrue() {
         return revistaRepository.findByActivoTrue();
     }

@@ -16,4 +16,5 @@ public class RegionDto {
     private String nombre;
     private List<Long> idEfectores;
     private boolean activo;
+    private List<Long> idLegajos;
 }

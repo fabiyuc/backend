@@ -43,6 +43,8 @@ public class LegajoDto {
     
     private Long idCargo;
     
+    private Long idRegion;
+    
 
 }
 

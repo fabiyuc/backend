@@ -108,13 +108,10 @@ public class Legajo {
       "activo", "fechaResolucion", "fechaInicio", "fechaFinal", "legajos", "agrupacion" })
   private Cargo cargo;
 
-
-
-  // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio",
-  // "fechaFinal", "actual", "legal", "activo", "matriculaNacional",
-  // "matriculaProvincial", "especialidades", "suspencion", "revista",
-  // "udo","persona",
-  // "cargo", "efectores" })
+  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+  @JoinColumn(name = "id_region")
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
+  private Region region;
 
   @Override
   public boolean equals(Object obj) {

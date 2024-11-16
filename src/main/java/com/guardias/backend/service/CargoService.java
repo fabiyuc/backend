@@ -18,9 +18,6 @@ public class CargoService {
     @Autowired
     CargoRepository cargoRepository;
 
-    @Autowired
-    LegajoService legajoService;
-
     public Optional<List<Cargo>> findByActivoTrue() {
         return cargoRepository.findByActivoTrue();
     }
