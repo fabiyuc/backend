@@ -35,7 +35,7 @@ public class Permisos {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona", nullable = false)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "permisos"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "permisos", "legajos"})
     private Person persona;
 
     @ManyToMany(fetch = FetchType.LAZY)
