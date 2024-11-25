@@ -104,14 +104,9 @@ public abstract class Efector {
             "activo", "fecha", "efector", "registrosActividades" })
     private List<RegistrosPendientes> registrosPendientes = new ArrayList<>();
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-    // "autoridades", "domicilio", "telefono",
-    // "estado", "activo", "observacion", "region", "localidad",
-    // "distribucionesHorarias", "legajosUdo", "legajos",
-    // "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-    // "areaProgramatica", "tipoCaps",
-    // "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-    // "registroMensual", "ddjjs","registrosPendientes" })
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
+    private List<Permisos> permisos = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

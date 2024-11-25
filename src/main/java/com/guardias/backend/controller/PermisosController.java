@@ -1,6 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PermisosDto;
 import com.guardias.backend.entity.Permisos;
-import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.service.PermisosService;
 
 @RestController
@@ -53,11 +51,11 @@ public class PermisosController {
         return new ResponseEntity<Permisos>(permisos, HttpStatus.OK);
     }
 
-    @GetMapping("/detailAsistencial/{idAsistencial}")
-    public ResponseEntity<Permisos> getByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
-        if (!permisosService.activoByAsistencial(idAsistencial))
+    @GetMapping("/detailAsistencial/{idPersona}")
+    public ResponseEntity<Permisos> getByAsistencial(@PathVariable("idPersona") Long idPersona) {
+        if (!permisosService.activoByPersona(idPersona))
             return new ResponseEntity(new Mensaje("no existe el permiso de este asistencial"), HttpStatus.NOT_FOUND);
-        Permisos permisos = permisosService.findByIdAsistencial(idAsistencial).get();
+        Permisos permisos = permisosService.findByPersona(idPersona).get();
         return new ResponseEntity<Permisos>(permisos, HttpStatus.OK);
     }
 
@@ -110,8 +108,8 @@ public class PermisosController {
         return new ResponseEntity<>(new Mensaje("Permiso eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/tienePermisos/{idAsistencial}/{idEfector}")
-    public boolean tienePermisos( @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return permisosService.tienePermisos(idAsistencial, idEfector);
+    @GetMapping("/tienePermisos/{idPersona}/{idEfector}")
+    public boolean tienePermisos( @PathVariable("idPersona") long idPersona, @PathVariable("idEfector") long idEfector) {
+        return permisosService.tienePermisos(idPersona, idEfector);
     }
 }

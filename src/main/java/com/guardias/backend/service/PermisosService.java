@@ -1,11 +1,9 @@
 package com.guardias.backend.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.PermisosDto;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Permisos;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
@@ -40,6 +39,8 @@ public class PermisosService {
     AsistencialRepository asistencialRepository;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    PersonService personService;
 
     public Optional<List<Permisos>> findByActivoTrue() {
         return permisosRepository.findByActivoTrue();
@@ -57,18 +58,18 @@ public class PermisosService {
         return permisosRepository.findById(id);
     }
 
-    public boolean activoByAsistencial(Long idAsistencial) {
-        return (permisosRepository.existsByIdAsistencial(idAsistencial)
-                && permisosRepository.findByIdAsistencial(idAsistencial).get().isActivo());
+    public boolean activoByPersona(Long idPersona) {
+        return (permisosRepository.existsByPersonaId(idPersona)
+                && permisosRepository.findByPersonaId(idPersona).get().isActivo());
     }
 
-    public Optional<Permisos> findByIdAsistencial(Long idAsistencial) {
-        return permisosRepository.findByIdAsistencial(idAsistencial);
+    public Optional<Permisos> findByPersona(Long idPersona) {
+        return permisosRepository.findByPersonaId(idPersona);
     }
 
     public ResponseEntity<?> validations(PermisosDto permisosDto) {
-        if (permisosDto.getIdAsistencial() == null)
-            return new ResponseEntity(new Mensaje("el id del asistencial es obligatorio"),
+        if (permisosDto.getIdPersona() == null)
+            return new ResponseEntity(new Mensaje("el id de la persona es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -76,30 +77,46 @@ public class PermisosService {
 
     public Permisos createUpdate(Permisos permisos, PermisosDto permisosDto) {
 
-        if (!permisosDto.getIdAsistencial().equals(permisos.getIdAsistencial()))
-            permisos.setIdAsistencial(permisosDto.getIdAsistencial());
-
-        // Actualiza idAsistencial si es diferente
-        if (!permisosDto.getIdAsistencial().equals(permisos.getIdAsistencial())) {
-            permisos.setIdAsistencial(permisosDto.getIdAsistencial());
-        }
+        if (permisos.getPersona() == null || !Objects.equals(permisos.getPersona().getId(), permisosDto.getIdPersona()))
+            permisos.setPersona(personService.findById(permisosDto.getIdPersona()));
 
         if (permisosDto.getIdEfectores() != null) {
            
-            Set<Long> currentEfectorIds = new HashSet<>(
-                    permisos.getIdEfectores() != null ? permisos.getIdEfectores() : new ArrayList<>());
-
-            List<Long> newIds = permisosDto.getIdEfectores().stream()
-                    .filter(id -> !currentEfectorIds.contains(id))
-                    .collect(Collectors.toList());
-
-            // Valida solo los nuevos IDs
-            List<Long> validNewIds = findValidIdsAcrossSubclasses(newIds);
-            if (validNewIds.size() != newIds.size()) {
-                throw new IllegalArgumentException("Algunos IDs de efectores no son válidos.");
+            if (permisos.getEfectores() == null) {
+                permisos.setEfectores(new ArrayList<>());
             }
 
-            permisos.setIdEfectores(new ArrayList<>(permisosDto.getIdEfectores()));
+            // Crea una nueva lista para almacenar los efectores actualizados
+            List<Efector> efectoresActualizados = new ArrayList<>();
+            for (Efector efector : permisos.getEfectores()) {
+                if (permisosDto.getIdEfectores().contains(efector.getId())) {
+                    efectoresActualizados.add(efector);
+                } else {
+                    // Remover el legajo de los efectores que se eliminarán
+                    efector.getPermisos().remove(permisos);
+                }
+            }
+            permisos.setEfectores(efectoresActualizados);
+
+            // agrega nuevos efectores si no estan presentes
+            for (Long id : permisosDto.getIdEfectores()) {
+                boolean found = false;
+                for (Efector efector : permisos.getEfectores()) {
+                    if (efector.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Efector efectorToAdd = efectorService.findById(id);
+                    if (efectorToAdd != null) {
+                        permisos.getEfectores().add(efectorToAdd);
+                        efectorToAdd.getPermisos().add(permisos);
+                    } else {
+                        throw new RuntimeException("No se encontró el efector con ID: " + id);
+                    }
+                }
+            }
         }
 
         permisos.setActivo(true);
@@ -118,30 +135,30 @@ public class PermisosService {
         permisosRepository.deleteById(id);
     }
 
-    public List<Long> findValidIdsAcrossSubclasses(List<Long> ids) {
+    /* public List<Long> findValidIdsAcrossSubclasses(List<Long> ids) {
         List<Long> validIds = new ArrayList<>();
         validIds.addAll(hospitalRepository.findValidIds(ids));
         validIds.addAll(capsRepository.findValidIds(ids));
         validIds.addAll(ministerioRepository.findValidIds(ids));
         return validIds;
-    }
+    } */
 
-    public boolean tienePermisos(Long idAsistencial, Long idEfector) {
+    public boolean tienePermisos(Long idPersona, Long idEfector) {
 
-        if (!asistencialRepository.existsById(idAsistencial)) {
-            throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
+        if (!personService.activoById(idPersona)) {
+            throw new EntityNotFoundException("El asistencial con ID " + idPersona + " no existe.");
         }
 
         if (!efectorService.existsById(idEfector)) {
             throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
         }
 
-        Optional<Permisos> optionalPermiso = permisosRepository.findByIdAsistencialAndActivoTrue(idAsistencial);
+        Optional<Permisos> optionalPermiso = permisosRepository.findByPersonaIdAndActivoTrue(idPersona);
 
         if (optionalPermiso.isPresent()) {
             Permisos permiso = optionalPermiso.get();
             // Verificar si la lista de efectores contiene el idEfector
-            return permiso.getIdEfectores() != null && permiso.getIdEfectores().contains(idEfector);
+            return permiso.getEfectores() != null && permiso.getEfectores().contains(idEfector);
         }
         
         return false; // Retorna false si no hay un permiso activo o no se encuentra el idEfector
