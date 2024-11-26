@@ -51,7 +51,8 @@ public class HabilitacionesGuardiasService {
     }
 
     public boolean activo(Long id) {
-        return (habilitacionesGuardiasRepository.existsById(id) && habilitacionesGuardiasRepository.findById(id).get().isActivo());
+        return (habilitacionesGuardiasRepository.existsById(id)
+                && habilitacionesGuardiasRepository.findById(id).get().isActivo());
     }
 
     public Optional<HabilitacionesGuardia> findById(Long id) {
@@ -75,13 +76,15 @@ public class HabilitacionesGuardiasService {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public HabilitacionesGuardia createUpdate(HabilitacionesGuardia habilitacionesGuardias, HabilitacionesGuardiasDto permisosDto) {
+    public HabilitacionesGuardia createUpdate(HabilitacionesGuardia habilitacionesGuardias,
+            HabilitacionesGuardiasDto permisosDto) {
 
-        if (habilitacionesGuardias.getPersona() == null || !Objects.equals(habilitacionesGuardias.getPersona().getId(), permisosDto.getIdPersona()))
-        habilitacionesGuardias.setPersona(personService.findById(permisosDto.getIdPersona()));
+        if (habilitacionesGuardias.getPersona() == null
+                || !Objects.equals(habilitacionesGuardias.getPersona().getId(), permisosDto.getIdPersona()))
+            habilitacionesGuardias.setPersona(personService.findById(permisosDto.getIdPersona()));
 
         if (permisosDto.getIdEfectores() != null) {
-           
+
             if (habilitacionesGuardias.getEfectores() == null) {
                 habilitacionesGuardias.setEfectores(new ArrayList<>());
             }
@@ -145,16 +148,19 @@ public class HabilitacionesGuardiasService {
             throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
         }
 
-        Optional<HabilitacionesGuardia> optionalHabilitacion = habilitacionesGuardiasRepository.findByPersonaIdAndActivoTrue(idPersona);
+        Optional<HabilitacionesGuardia> optionalHabilitacion = habilitacionesGuardiasRepository
+                .findByPersonaIdAndActivoTrue(idPersona);
 
         if (optionalHabilitacion.isPresent()) {
+            
             HabilitacionesGuardia habilitacion = optionalHabilitacion.get();
             // Verificar si la lista de efectores contiene el idEfector
-            return habilitacion.getEfectores() != null && habilitacion.getEfectores().contains(idEfector);
+            return habilitacion.getEfectores() != null &&
+                    habilitacion.getEfectores().stream()
+                            .anyMatch(efector -> efector.getId().equals(idEfector));
         }
-        
         return false; // Retorna false si no hay una habilitacion de guardia activa o no se encuentra el idEfector
-    
+
     }
 
     public List<HabilitacionesGuardia> getHabilitacionesGuardiasByEfectorAndAsistencial(Long idEfector) {

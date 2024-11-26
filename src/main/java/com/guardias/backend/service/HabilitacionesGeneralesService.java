@@ -150,7 +150,9 @@ public class HabilitacionesGeneralesService {
         if (optionalHabilitacion.isPresent()) {
             HabilitacionesGenerales habilitacion = optionalHabilitacion.get();
             // Verificar si la lista de efectores contiene el idEfector
-            return habilitacion.getEfectores() != null && habilitacion.getEfectores().contains(idEfector);
+            return habilitacion.getEfectores() != null &&
+                    habilitacion.getEfectores().stream()
+                            .anyMatch(efector -> efector.getId().equals(idEfector));
         }
         
         return false; // Retorna false si no hay una habilitacion general activa o no se encuentra el idEfector
