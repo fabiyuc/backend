@@ -59,7 +59,7 @@ public class AuthController {
     RolService rolService;
 
     @Autowired
-    PersonService personService; 
+    PersonService personService;
 
     @Autowired
     JwtProvider jwtProvider;
@@ -75,32 +75,45 @@ public class AuthController {
             return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST);
         Usuario usuario = new Usuario();
 
-        //usuario.setNombre(nuevoUsuario.getNombre());
+        // usuario.setNombre(nuevoUsuario.getNombre());
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
         usuario.setEmail(nuevoUsuario.getEmail());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
 
         Set<Rol> roles = new HashSet<>();
-        //por defecto todos van a ser USER
+        // por defecto todos van a ser USER
         roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
-        if (nuevoUsuario.getRoles().contains("ROLE_ADMIN"))
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
+
+        // Validar y agregar roles enviados
+        for (String rolNombre : nuevoUsuario.getRoles()) {
+            try {
+                RolNombre rolEnum = RolNombre.valueOf(rolNombre); // Validar si el rol existe en el enum
+                roles.add(rolService.getByRolNombre(rolEnum).get());
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity(new Mensaje("Rol no válido: " + rolNombre), HttpStatus.BAD_REQUEST);
+            }
+        }
         usuario.setRoles(roles);
+        /*
+         * if (nuevoUsuario.getRoles().contains("ROLE_ADMIN"))
+         * roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
+         * usuario.setRoles(roles);
+         */
 
         // Asociar la entidad Person
         if (nuevoUsuario.getIdPerson() != null) {
-            if (personService.activoById(nuevoUsuario.getIdPerson())){
-                    
+            if (personService.activoById(nuevoUsuario.getIdPerson())) {
+
                 Person person = personService.findById(nuevoUsuario.getIdPerson());
                 usuario.setPerson(person);
             }
         }
-        
+
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
     }
 
-    //devuelve un token
+    // devuelve un token
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
@@ -132,17 +145,22 @@ public class AuthController {
         }
     }
 
-    /* La clase "Principal" es parte del paquete java.security, que proporciona una interfaz que representa la identidad de un usuario en un contexto de seguridad, el objeto Principal generalmente contiene el nombre de usuario del usuario autenticado. */
+    /*
+     * La clase "Principal" es parte del paquete java.security, que proporciona una
+     * interfaz que representa la identidad de un usuario en un contexto de
+     * seguridad, el objeto Principal generalmente contiene el nombre de usuario del
+     * usuario autenticado.
+     */
     @GetMapping("/detailPersonBasicPanel")
     public ResponseEntity<PersonBasicPanelDto> obtenerPerfil(Principal principal) {
         // Obtiene el nombre de usuario del usuario autenticado
         String username = principal.getName();
 
         Usuario usuario = usuarioService.findByNombreUsuario(username).get();
-        
+
         // Convierte la entidad Persona asociada al usuario en un DTO
         PersonBasicPanelDto dto = personService.convertirAPersonaBasicaPanelDTO(usuario.getPerson());
- 
+
         return new ResponseEntity(dto, HttpStatus.OK);
     }
 

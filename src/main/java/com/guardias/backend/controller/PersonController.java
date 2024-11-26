@@ -65,13 +65,19 @@ public class PersonController {
             return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
         }
 
-        if (personService.existsByDni(personDto.getDni())
-                && (personService.findByDni(personDto.getDni()).getId() != id))
-            return new ResponseEntity<>(new Mensaje("El DNI ya existe"), HttpStatus.BAD_REQUEST);
+        if (personService.existsByDni(personDto.getDni())) {
+            Person existingPerson = personService.findByDni(personDto.getDni());
+            if (!existingPerson.getId().equals(id)) {
+                return new ResponseEntity<>(new Mensaje("El DNI ya existe"), HttpStatus.BAD_REQUEST);
+            }
+        }
 
-        if (personService.existsByCuil(personDto.getCuil())
-                && (personService.findByCuil(personDto.getCuil()).getId() != id))
-            return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
+            if (personService.existsByCuil(personDto.getCuil())) {
+                Person existingPerson = personService.findByCuil(personDto.getCuil());
+                if (!existingPerson.getId().equals(id)) {
+                    return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
+                }
+            }
 
         if (personDto.getIdUsuario() == null)
             return new ResponseEntity<>(new Mensaje("ingresar usuario"), HttpStatus.BAD_REQUEST);
@@ -241,4 +247,5 @@ public class PersonController {
         }
         return person;
     }
+
 }

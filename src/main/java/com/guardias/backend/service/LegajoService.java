@@ -108,14 +108,14 @@ public class LegajoService {
         
         boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null && (legajoDto.getIdTipoGuardias().contains(1L)|| legajoDto.getIdTipoGuardias().contains(2L));
 
-        if (esAsistencial && !esContraFactura) {
+        if ((esAsistencial && !esContraFactura) && legajoDto.getEsAutoridad() == false) {
             if (legajoDto.getIdRevista() == null) {
                 return new ResponseEntity<>(new Mensaje("Indicar la situación de revista para Asistenciales"),
                         HttpStatus.BAD_REQUEST);
             }
         }
 
-        if (esAsistencial&& !esContraFactura || !esAsistencial && legajoDto.getEsAutoridad() != null & legajoDto.getEsAutoridad() == false) {
+        if (( !esContraFactura && (legajoDto.getEsAutoridad() != null  && legajoDto.getEsAutoridad() == false))) {
 
             if (legajoDto.getIdUdo() == null) {
                 return new ResponseEntity<>(new Mensaje("indicar la UdO"),
@@ -131,7 +131,7 @@ public class LegajoService {
             }
         }
 
-        if (esAsistencial) {
+        if (esAsistencial && legajoDto.getEsAutoridad() == false) {
             if (legajoDto.getIdProfesion() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                         HttpStatus.BAD_REQUEST);
@@ -192,14 +192,14 @@ public class LegajoService {
 
         boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null && (legajoDto.getIdTipoGuardias().contains(1L)|| legajoDto.getIdTipoGuardias().contains(2L));
 
-        if (esAsistencial && !esContraFactura) {
+        if ((esAsistencial && !esContraFactura) && legajoDto.getEsAutoridad() == false) {
 
             if (legajo.getRevista() == null || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {
                 legajo.setRevista(revistaService.findById(legajoDto.getIdRevista()).get());
             }
         }
 
-        if (esAsistencial&& !esContraFactura || !esAsistencial && legajoDto.getEsAutoridad() != null & legajoDto.getEsAutoridad() == false) {
+        if (( !esContraFactura && (legajoDto.getEsAutoridad() != null  && legajoDto.getEsAutoridad() == false))) {
             if (legajo.getUdo() == null || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
                 legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
             }
@@ -243,7 +243,7 @@ public class LegajoService {
             }
         }
 
-        if (esAsistencial) {
+        if (esAsistencial && legajoDto.getEsAutoridad() == false) {
 
             if (legajo.getProfesion() == null
                     || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {

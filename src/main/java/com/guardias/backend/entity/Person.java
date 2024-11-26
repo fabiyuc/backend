@@ -99,14 +99,10 @@ public abstract class Person {
     @JoinColumn(name = "usuario_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","email","registrosActividades","person","nombre" })
     private Usuario usuario;
-    
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-    // "apellido", "dni", "cuil", "legajos",
-    // "novedadesPersonales", "suplentes",
-    // "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-    // "domicilio",
-    // "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-    // "descripcion","esAsistencial","registroMensual" })
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
+    private List<Permisos> permisos = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {
