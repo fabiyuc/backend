@@ -102,7 +102,7 @@ public abstract class Person {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
-    private List<HabilitacionesGuardias> habilitacionesGuardias = new ArrayList<>();
+    private List<HabilitacionesGuardia> habilitacionesGuardias = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })

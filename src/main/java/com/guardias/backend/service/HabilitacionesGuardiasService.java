@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.entity.Efector;
-import com.guardias.backend.entity.HabilitacionesGuardias;
+import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HospitalRepository;
@@ -28,8 +28,6 @@ import jakarta.transaction.Transactional;
 public class HabilitacionesGuardiasService {
 
     @Autowired
-    HabilitacionesGuardiasRepository permisosRepository;
-    @Autowired
     HospitalRepository hospitalRepository;
     @Autowired
     MinisterioRepository ministerioRepository;
@@ -41,30 +39,32 @@ public class HabilitacionesGuardiasService {
     EfectorService efectorService;
     @Autowired
     PersonService personService;
+    @Autowired
+    HabilitacionesGuardiasRepository habilitacionesGuardiasRepository;
 
-    public Optional<List<HabilitacionesGuardias>> findByActivoTrue() {
-        return permisosRepository.findByActivoTrue();
+    public Optional<List<HabilitacionesGuardia>> findByActivoTrue() {
+        return habilitacionesGuardiasRepository.findByActivoTrue();
     }
 
-    public List<HabilitacionesGuardias> findAll() {
-        return permisosRepository.findAll();
+    public List<HabilitacionesGuardia> findAll() {
+        return habilitacionesGuardiasRepository.findAll();
     }
 
     public boolean activo(Long id) {
-        return (permisosRepository.existsById(id) && permisosRepository.findById(id).get().isActivo());
+        return (habilitacionesGuardiasRepository.existsById(id) && habilitacionesGuardiasRepository.findById(id).get().isActivo());
     }
 
-    public Optional<HabilitacionesGuardias> findById(Long id) {
-        return permisosRepository.findById(id);
+    public Optional<HabilitacionesGuardia> findById(Long id) {
+        return habilitacionesGuardiasRepository.findById(id);
     }
 
     public boolean activoByPersona(Long idPersona) {
-        return (permisosRepository.existsByPersonaId(idPersona)
-                && permisosRepository.findByPersonaId(idPersona).get().isActivo());
+        return (habilitacionesGuardiasRepository.existsByPersonaId(idPersona)
+                && habilitacionesGuardiasRepository.findByPersonaId(idPersona).get().isActivo());
     }
 
-    public Optional<HabilitacionesGuardias> findByPersona(Long idPersona) {
-        return permisosRepository.findByPersonaId(idPersona);
+    public Optional<HabilitacionesGuardia> findByPersona(Long idPersona) {
+        return habilitacionesGuardiasRepository.findByPersonaId(idPersona);
     }
 
     public ResponseEntity<?> validations(HabilitacionesGuardiasDto permisosDto) {
@@ -75,7 +75,7 @@ public class HabilitacionesGuardiasService {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public HabilitacionesGuardias createUpdate(HabilitacionesGuardias habilitacionesGuardias, HabilitacionesGuardiasDto permisosDto) {
+    public HabilitacionesGuardia createUpdate(HabilitacionesGuardia habilitacionesGuardias, HabilitacionesGuardiasDto permisosDto) {
 
         if (habilitacionesGuardias.getPersona() == null || !Objects.equals(habilitacionesGuardias.getPersona().getId(), permisosDto.getIdPersona()))
         habilitacionesGuardias.setPersona(personService.findById(permisosDto.getIdPersona()));
@@ -123,16 +123,16 @@ public class HabilitacionesGuardiasService {
         return habilitacionesGuardias;
     }
 
-    public void save(HabilitacionesGuardias permisos) {
-        permisosRepository.save(permisos);
+    public void save(HabilitacionesGuardia permisos) {
+        habilitacionesGuardiasRepository.save(permisos);
     }
 
     public boolean existsById(Long id) {
-        return permisosRepository.existsById(id);
+        return habilitacionesGuardiasRepository.existsById(id);
     }
 
     public void deleteById(Long id) {
-        permisosRepository.deleteById(id);
+        habilitacionesGuardiasRepository.deleteById(id);
     }
 
     public boolean tieneHabilitacionesGuardias(Long idPersona, Long idEfector) {
@@ -145,19 +145,19 @@ public class HabilitacionesGuardiasService {
             throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
         }
 
-        Optional<HabilitacionesGuardias> optionalPermiso = permisosRepository.findByPersonaIdAndActivoTrue(idPersona);
+        Optional<HabilitacionesGuardia> optionalHabilitacion = habilitacionesGuardiasRepository.findByPersonaIdAndActivoTrue(idPersona);
 
-        if (optionalPermiso.isPresent()) {
-            HabilitacionesGuardias permiso = optionalPermiso.get();
+        if (optionalHabilitacion.isPresent()) {
+            HabilitacionesGuardia habilitacion = optionalHabilitacion.get();
             // Verificar si la lista de efectores contiene el idEfector
-            return permiso.getEfectores() != null && permiso.getEfectores().contains(idEfector);
+            return habilitacion.getEfectores() != null && habilitacion.getEfectores().contains(idEfector);
         }
         
-        return false; // Retorna false si no hay un permiso activo o no se encuentra el idEfector
+        return false; // Retorna false si no hay una habilitacion de guardia activa o no se encuentra el idEfector
     
     }
 
-    public List<HabilitacionesGuardias> getHabilitacionesGuardiasByEfectorAndAsistencial(Long idEfector) {
-        return permisosRepository.findHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
+    public List<HabilitacionesGuardia> getHabilitacionesGuardiasByEfectorAndAsistencial(Long idEfector) {
+        return habilitacionesGuardiasRepository.findHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
     }
 }

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
-import com.guardias.backend.entity.HabilitacionesGuardias;
+import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.service.HabilitacionesGuardiasService;
 
 @RestController
@@ -31,38 +31,43 @@ public class HabilitacionesGuardiasController {
 
     // la lista de efectores debería actualizarse si hay bajas de efectores?
     @GetMapping("/list")
-    public ResponseEntity<List<HabilitacionesGuardias>> list() {
-        List<HabilitacionesGuardias> habilitacionesGuardiasList = habilitacionesGuardiasService.findByActivoTrue().orElse(new ArrayList<>());
+    public ResponseEntity<List<HabilitacionesGuardia>> list() {
+        List<HabilitacionesGuardia> habilitacionesGuardiasList = habilitacionesGuardiasService.findByActivoTrue()
+                .orElse(new ArrayList<>());
 
-        return new ResponseEntity<List<HabilitacionesGuardias>>(habilitacionesGuardiasList, HttpStatus.OK);
+        return new ResponseEntity<List<HabilitacionesGuardia>>(habilitacionesGuardiasList, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
-    public ResponseEntity<List<HabilitacionesGuardias>> listAll() {
-        List<HabilitacionesGuardias> list = habilitacionesGuardiasService.findAll();
-        return new ResponseEntity<List<HabilitacionesGuardias>>(list, HttpStatus.OK);
+    public ResponseEntity<List<HabilitacionesGuardia>> listAll() {
+        List<HabilitacionesGuardia> list = habilitacionesGuardiasService.findAll();
+        return new ResponseEntity<List<HabilitacionesGuardia>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAsistencialesByEfector/{idEfector}")
-    public ResponseEntity<List<HabilitacionesGuardias>> listHabilitacionesGuardiasByEfectorAndAsistencial(@PathVariable Long idEfector) {
-        List<HabilitacionesGuardias> habilitacionesGuardias = habilitacionesGuardiasService.getHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
+    public ResponseEntity<List<HabilitacionesGuardia>> listHabilitacionesGuardiasByEfectorAndAsistencial(
+            @PathVariable Long idEfector) {
+        List<HabilitacionesGuardia> habilitacionesGuardias = habilitacionesGuardiasService
+                .getHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
         return new ResponseEntity<>(habilitacionesGuardias, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<HabilitacionesGuardias> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<HabilitacionesGuardia> getById(@PathVariable("id") Long id) {
         if (!habilitacionesGuardiasService.activo(id))
-            return new ResponseEntity(new Mensaje("No existe la habilitacion de guardia con ese id"), HttpStatus.NOT_FOUND);
-        HabilitacionesGuardias habilitacionesGuardias = habilitacionesGuardiasService.findById(id).get();
-        return new ResponseEntity<HabilitacionesGuardias>(habilitacionesGuardias, HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("No existe la habilitacion de guardia con ese id"),
+                    HttpStatus.NOT_FOUND);
+        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findById(id).get();
+        return new ResponseEntity<HabilitacionesGuardia>(habilitacionesGuardias, HttpStatus.OK);
     }
 
     @GetMapping("/detailAsistencial/{idPersona}")
-    public ResponseEntity<HabilitacionesGuardias> getByAsistencial(@PathVariable("idPersona") Long idPersona) {
+    public ResponseEntity<HabilitacionesGuardia> getByAsistencial(@PathVariable("idPersona") Long idPersona) {
         if (!habilitacionesGuardiasService.activoByPersona(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la habilitacion de guardia de este asistencial"), HttpStatus.NOT_FOUND);
-        HabilitacionesGuardias habilitacionesGuardias = habilitacionesGuardiasService.findByPersona(idPersona).get();
-        return new ResponseEntity<HabilitacionesGuardias>(habilitacionesGuardias, HttpStatus.OK);
+            return new ResponseEntity(new Mensaje("no existe la habilitacion de guardia de este asistencial"),
+                    HttpStatus.NOT_FOUND);
+        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findByPersona(idPersona).get();
+        return new ResponseEntity<HabilitacionesGuardia>(habilitacionesGuardias, HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -72,7 +77,8 @@ public class HabilitacionesGuardiasController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            HabilitacionesGuardias habilitacionesGuardias = habilitacionesGuardiasService.createUpdate(new HabilitacionesGuardias(), habilitacionesGuardiasDto);
+            HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService
+                    .createUpdate(new HabilitacionesGuardia(), habilitacionesGuardiasDto);
             habilitacionesGuardiasService.save(habilitacionesGuardias);
             return new ResponseEntity(new Mensaje("habilitaciones de Guardias creado"), HttpStatus.OK);
         }
@@ -80,7 +86,8 @@ public class HabilitacionesGuardiasController {
     }
 
     @PutMapping(("/update/{id}"))
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody HabilitacionesGuardiasDto habilitacionesGuardiasDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id,
+            @RequestBody HabilitacionesGuardiasDto habilitacionesGuardiasDto) {
         if (!habilitacionesGuardiasService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la habilitaciones de Guardias"), HttpStatus.NOT_FOUND);
 
@@ -88,7 +95,8 @@ public class HabilitacionesGuardiasController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            HabilitacionesGuardias habilitacionesGuardias = habilitacionesGuardiasService.createUpdate(habilitacionesGuardiasService.findById(id).get(), habilitacionesGuardiasDto);
+            HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService
+                    .createUpdate(habilitacionesGuardiasService.findById(id).get(), habilitacionesGuardiasDto);
             habilitacionesGuardiasService.save(habilitacionesGuardias);
             return new ResponseEntity(new Mensaje("habilitaciones de Guardias modificado"), HttpStatus.OK);
         }
@@ -100,7 +108,7 @@ public class HabilitacionesGuardiasController {
         if (!habilitacionesGuardiasService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-        HabilitacionesGuardias habilitacionesGuardias = habilitacionesGuardiasService.findById(id).get();
+        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findById(id).get();
         habilitacionesGuardias.setActivo(false);
         habilitacionesGuardiasService.save(habilitacionesGuardias);
         return new ResponseEntity<>(new Mensaje("habilitaciones de Guardias eliminado correctamente"), HttpStatus.OK);
@@ -115,7 +123,8 @@ public class HabilitacionesGuardiasController {
     }
 
     @GetMapping("/tieneHabilitacionesGuardias/{idPersona}/{idEfector}")
-    public boolean tieneHabilitacionesGuardias( @PathVariable("idPersona") long idPersona, @PathVariable("idEfector") long idEfector) {
+    public boolean tieneHabilitacionesGuardias(@PathVariable("idPersona") long idPersona,
+            @PathVariable("idEfector") long idEfector) {
         return habilitacionesGuardiasService.tieneHabilitacionesGuardias(idPersona, idEfector);
     }
 

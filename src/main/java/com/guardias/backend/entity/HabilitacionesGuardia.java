@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HabilitacionesGuardias {
+public class HabilitacionesGuardia {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
