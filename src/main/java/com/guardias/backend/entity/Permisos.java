@@ -35,13 +35,14 @@ public class Permisos {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona", nullable = false)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "permisos", "legajos"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
+    "registrosMensuales", "usuario","permisos", "legajos"})
     private Person persona;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "permisos_efectores", joinColumns = @JoinColumn(name = "permiso_id"),
         inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "permisos" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","permisos" })
     private List<Efector> efectores = new ArrayList<>();
 
 }

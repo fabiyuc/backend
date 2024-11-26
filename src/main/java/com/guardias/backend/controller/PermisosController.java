@@ -43,6 +43,12 @@ public class PermisosController {
         return new ResponseEntity<List<Permisos>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listAsistencialesByEfector/{idEfector}")
+    public ResponseEntity<List<Permisos>> listPermisosByEfectorAndAsistencial(@PathVariable Long idEfector) {
+        List<Permisos> permisos = permisosService.getPermisosByEfectorAndAsistencial(idEfector);
+        return new ResponseEntity<>(permisos, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<Permisos> getById(@PathVariable("id") Long id) {
         if (!permisosService.activo(id))
@@ -112,4 +118,5 @@ public class PermisosController {
     public boolean tienePermisos( @PathVariable("idPersona") long idPersona, @PathVariable("idEfector") long idEfector) {
         return permisosService.tienePermisos(idPersona, idEfector);
     }
+
 }

@@ -135,14 +135,6 @@ public class PermisosService {
         permisosRepository.deleteById(id);
     }
 
-    /* public List<Long> findValidIdsAcrossSubclasses(List<Long> ids) {
-        List<Long> validIds = new ArrayList<>();
-        validIds.addAll(hospitalRepository.findValidIds(ids));
-        validIds.addAll(capsRepository.findValidIds(ids));
-        validIds.addAll(ministerioRepository.findValidIds(ids));
-        return validIds;
-    } */
-
     public boolean tienePermisos(Long idPersona, Long idEfector) {
 
         if (!personService.activoById(idPersona)) {
@@ -165,4 +157,7 @@ public class PermisosService {
     
     }
 
+    public List<Permisos> getPermisosByEfectorAndAsistencial(Long idEfector) {
+        return permisosRepository.findPermisosByEfectorAndAsistencial(idEfector);
+    }
 }
