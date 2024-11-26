@@ -93,10 +93,6 @@ public class LegajoService {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar si es autoridad o no"),
                     HttpStatus.BAD_REQUEST);
 
-        if (legajoDto.getMatriculaProvincial() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
         if (legajoDto.getIdPersona() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
@@ -132,6 +128,11 @@ public class LegajoService {
         }
 
         if (esAsistencial && legajoDto.getEsAutoridad() == false) {
+
+            if (legajoDto.getMatriculaProvincial() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
+                    HttpStatus.BAD_REQUEST);
+                    
             if (legajoDto.getIdProfesion() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                         HttpStatus.BAD_REQUEST);
