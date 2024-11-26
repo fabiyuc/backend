@@ -31,7 +31,7 @@ public class TipoLicencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "VARCHAR(30)")
+    @Column(columnDefinition = "VARCHAR(40)")
     private String nombre;
     /*
      * @Column(columnDefinition = "VARCHAR(10)")
