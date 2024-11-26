@@ -10,12 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermisosDto {
+public class HabilitacionesGeneralesDto {
     
     private Boolean activo;
     @NotBlank
     private Long idPersona;
     @NotBlank
     private List<Long> idEfectores;
-
 }

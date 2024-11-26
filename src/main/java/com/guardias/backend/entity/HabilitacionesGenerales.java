@@ -20,12 +20,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "permisos")
+@Entity(name = "habilitacionesGenerales")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Permisos {
-
+public class HabilitacionesGenerales {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,13 +36,12 @@ public class Permisos {
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona", nullable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
-    "registrosMensuales", "usuario","permisos", "legajos"})
+    "registrosMensuales", "usuario","habilitacionesGenerales", "legajos"})
     private Person persona;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "permisos_efectores", joinColumns = @JoinColumn(name = "permiso_id"),
+    @JoinTable(name = "habilitacionesgenerales_efectores", joinColumns = @JoinColumn(name = "permiso_id"),
         inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","permisos" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGenerales" })
     private List<Efector> efectores = new ArrayList<>();
-
 }
