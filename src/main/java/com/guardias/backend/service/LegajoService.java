@@ -428,12 +428,10 @@ public class LegajoService {
             throw new ValidationException("La fecha final es obligatoria");
         }
 
-        System.out.println("Fecha inicio: " + legajo.getFechaInicio());
-        System.out.println("Fecha Final: " + legajoBajaDto.getFechaFinal());
         // fechaFinal debe ser posterior a fechaInicio
         if (legajo.getFechaInicio() != null
                 && legajoBajaDto.getFechaFinal().isBefore(legajo.getFechaInicio().plusDays(1))) {
-            System.out.println("entra ");
+            
             throw new ValidationException("La fecha de finalización debe ser posterior a la fecha de inicio");
         }
 
@@ -441,10 +439,6 @@ public class LegajoService {
         legajo.setActivo(false);
         legajo.setMotivoBaja(legajoBajaDto.getMotivoBaja());
         legajo.setFechaFinal(legajoBajaDto.getFechaFinal());
-
-        System.out.println("Fecha Final: " + legajo.getFechaFinal());
-        System.out.println("Motivo Baja: " + legajo.getMotivoBaja());
-        System.out.println("Activo: " + legajo.isActivo());
 
         legajoRepository.save(legajo);
     }
