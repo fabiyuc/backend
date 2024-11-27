@@ -166,13 +166,13 @@ public class LegajoService {
                 }
             }
 
-            if (StringUtils.isBlank(legajoDto.getNroresolucion())) 
+            if (StringUtils.isBlank(legajoDto.getNroResolucion())) 
                 return new ResponseEntity<>(new Mensaje("El numero de resolucion es obligatorio"), HttpStatus.BAD_REQUEST);
 
             if (legajoDto.getFechaResolucion() == null)
                 return new ResponseEntity(new Mensaje("La fecha de resolucion es obligatoria"), HttpStatus.BAD_REQUEST);
             
-            if (StringUtils.isBlank(legajoDto.getNrodecreto())) 
+            if (StringUtils.isBlank(legajoDto.getNroDecreto())) 
                 return new ResponseEntity<>(new Mensaje("El numero de decreto es obligatorio"), HttpStatus.BAD_REQUEST);
 
         }
@@ -288,16 +288,16 @@ public class LegajoService {
                 }
             }
 
-            if (legajoDto.getNroresolucion() != null && !legajoDto.getNroresolucion().equals(legajo.getNroresolucion())
-                && !legajoDto.getNroresolucion().isEmpty())
-            legajo.setNroresolucion(legajoDto.getNroresolucion());
+            if (legajoDto.getNroResolucion() != null && !legajoDto.getNroResolucion().equals(legajo.getNroresolucion())
+                && !legajoDto.getNroResolucion().isEmpty())
+            legajo.setNroresolucion(legajoDto.getNroResolucion());
 
             if (legajo.getFechaResolucion() != legajoDto.getFechaResolucion())
             legajo.setFechaResolucion(legajoDto.getFechaResolucion());
 
-            if (legajoDto.getNrodecreto() != null && !legajoDto.getNrodecreto().equals(legajo.getNrodecreto())
-                && !legajoDto.getNrodecreto().isEmpty())
-            legajo.setNrodecreto(legajoDto.getNrodecreto());
+            if (legajoDto.getNroDecreto() != null && !legajoDto.getNroDecreto().equals(legajo.getNrodecreto())
+                && !legajoDto.getNroDecreto().isEmpty())
+            legajo.setNrodecreto(legajoDto.getNroDecreto());
         }
 
         if (legajoDto.getIdSuspencion() != null) {

@@ -48,9 +48,9 @@ public class LegajoDto {
     
     private Long idRegion;
 
-    private String nroresolucion; 
+    private String nroResolucion; 
 
-    private String nrodecreto; 
+    private String nroDecreto; 
 
     private LocalDate fechaResolucion; 
     
