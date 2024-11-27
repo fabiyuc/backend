@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +24,7 @@ import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.AutoridadRepository;
 import com.guardias.backend.repository.LegajoRepository;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
@@ -163,6 +165,16 @@ public class LegajoService {
                             HttpStatus.BAD_REQUEST);
                 }
             }
+
+            if (StringUtils.isBlank(legajoDto.getNroresolucion())) 
+                return new ResponseEntity<>(new Mensaje("El numero de resolucion es obligatorio"), HttpStatus.BAD_REQUEST);
+
+            if (legajoDto.getFechaResolucion() == null)
+                return new ResponseEntity(new Mensaje("La fecha de resolucion es obligatoria"), HttpStatus.BAD_REQUEST);
+            
+            if (StringUtils.isBlank(legajoDto.getNrodecreto())) 
+                return new ResponseEntity<>(new Mensaje("El numero de decreto es obligatorio"), HttpStatus.BAD_REQUEST);
+
         }
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
@@ -275,6 +287,17 @@ public class LegajoService {
                     legajo.setRegion(regionService.findById(legajoDto.getIdRegion()).get());
                 }
             }
+
+            if (legajoDto.getNroresolucion() != null && !legajoDto.getNroresolucion().equals(legajo.getNroresolucion())
+                && !legajoDto.getNroresolucion().isEmpty())
+            legajo.setNroresolucion(legajoDto.getNroresolucion());
+
+            if (legajo.getFechaResolucion() != legajoDto.getFechaResolucion())
+            legajo.setFechaResolucion(legajoDto.getFechaResolucion());
+
+            if (legajoDto.getNrodecreto() != null && !legajoDto.getNrodecreto().equals(legajo.getNrodecreto())
+                && !legajoDto.getNrodecreto().isEmpty())
+            legajo.setNrodecreto(legajoDto.getNrodecreto());
         }
 
         if (legajoDto.getIdSuspencion() != null) {
@@ -416,7 +439,7 @@ public class LegajoService {
     }
 
     public void logicDelete(Long id, LegajoBajaDto legajoBajaDto) {
-        // Verifica si el legajo existe
+        
         Legajo legajo = legajoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el legajo con el ID: " + id));
 
@@ -439,6 +462,7 @@ public class LegajoService {
         legajo.setActivo(false);
         legajo.setMotivoBaja(legajoBajaDto.getMotivoBaja());
         legajo.setFechaFinal(legajoBajaDto.getFechaFinal());
+        legajo.setFechaBajaSistema(LocalDate.now());
 
         legajoRepository.save(legajo);
     }

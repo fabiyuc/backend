@@ -1,6 +1,5 @@
 package com.guardias.backend.entity;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,21 +29,9 @@ public class Cargo {
     private String nombre;
     @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String nroresolucion;
-    @Column(columnDefinition = "VARCHAR(10)")
-    private String nrodecreto;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
-    
-    @Temporal(TemporalType.DATE)
-    private LocalDate fechaResolucion;
-
-    @Temporal(TemporalType.DATE)
-    private LocalDate fechaInicio;
-    @Temporal(TemporalType.DATE)
-    private LocalDate fechaFinal;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cargo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
@@ -73,16 +58,6 @@ public class Cargo {
                 return false;
         } else if (!nombre.equals(other.nombre))
             return false;
-        if (nroresolucion == null) {
-            if (other.nroresolucion != null)
-                return false;
-        } else if (!nroresolucion.equals(other.nroresolucion))
-            return false;
-        if (nrodecreto == null) {
-            if (other.nrodecreto != null)
-                return false;
-        } else if (!nrodecreto.equals(other.nrodecreto))
-            return false;
         return true;
     }
 
@@ -92,8 +67,6 @@ public class Cargo {
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((nombre == null) ? 0 : nombre.hashCode());
-        result = prime * result + ((nroresolucion == null) ? 0 : nroresolucion.hashCode());
-        result = prime * result + ((nrodecreto == null) ? 0 : nrodecreto.hashCode());
         return result;
     }
 

@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.dto.CargoDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Cargo;
 import com.guardias.backend.repository.CargoRepository;
 
@@ -65,5 +69,34 @@ public class CargoService {
 
     public void deleteById(Long id) {
         cargoRepository.deleteById(id);
+    }
+
+    public ResponseEntity<?> validations(CargoDto cargoDto, Long id) {
+        if (cargoDto.getNombre() == null)
+            return new ResponseEntity<>(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+
+        if (cargoDto.getDescripcion() == null)
+            return new ResponseEntity(new Mensaje("La descripción es obligatoria"), HttpStatus.BAD_REQUEST);
+
+        if (activoByNombre(cargoDto.getNombre())
+                && (findByNombre(cargoDto.getNombre()).get().getId() != id))
+            return new ResponseEntity<>(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+
+    }
+
+    public Cargo createUpdate(Cargo cargo, CargoDto cargoDto) {
+
+        if (cargoDto.getNombre() != null && !cargoDto.getNombre().isEmpty()
+                && !cargoDto.getNombre().equals(cargo.getNombre()))
+            cargo.setNombre(cargoDto.getNombre());
+
+        if (cargoDto.getDescripcion() != null && !cargoDto.getDescripcion().isEmpty()
+                && !cargoDto.getDescripcion().equals(cargo.getDescripcion()))
+            cargo.setDescripcion(cargoDto.getDescripcion());
+
+        cargo.setActivo(true);
+        return cargo;
     }
 }
