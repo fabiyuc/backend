@@ -17,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.legajo.LegajoBajaDto;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.LegajoService;
+
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 
 @RestController
 @RequestMapping("/legajo")
@@ -27,7 +31,7 @@ public class LegajoController {
 
     @Autowired
     LegajoService legajoService;
-    
+
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {
         List<Legajo> list = legajoService.findByActivoTrue();
@@ -79,15 +83,24 @@ public class LegajoController {
     }
 
     @PutMapping("/delete/{id}")
-    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id, @RequestBody @Valid LegajoBajaDto legajoBajaDto) {
 
-        if (!legajoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
+        try {
+            // Verifica que los valores requeridos estén presentes
+            if (legajoBajaDto.getMotivoBaja() == null || legajoBajaDto.getMotivoBaja().isBlank()) {
+                return new ResponseEntity<>(new Mensaje("El motivo de la baja es obligatorio"), HttpStatus.BAD_REQUEST);
+            }
+            if (legajoBajaDto.getFechaFinal() == null) {
+                return new ResponseEntity<>(new Mensaje("La fecha final es obligatoria"), HttpStatus.BAD_REQUEST);
+            }
 
-        Legajo legajo = legajoService.findById(id).get();
-        legajo.setActivo(false);
-        legajoService.save(legajo);
-        return new ResponseEntity(new Mensaje("legajo eliminado"), HttpStatus.OK);
+            legajoService.logicDelete(id, legajoBajaDto);
+            return new ResponseEntity<>(new Mensaje("Legajo dado de baja lógicamente"), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/fisicdelete/{id}")

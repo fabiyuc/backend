@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.legajo.LegajoBajaDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
@@ -24,6 +25,7 @@ import com.guardias.backend.repository.LegajoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 
 @Service
 @Transactional
@@ -101,8 +103,9 @@ public class LegajoService {
                 && asistencialService.existsById(legajoDto.getIdPersona());
 
         boolean esContraFactura = legajoDto.getIdTipoGuardias() != null && legajoDto.getIdTipoGuardias().contains(4L);
-        
-        boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null && (legajoDto.getIdTipoGuardias().contains(1L)|| legajoDto.getIdTipoGuardias().contains(2L));
+
+        boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null
+                && (legajoDto.getIdTipoGuardias().contains(1L) || legajoDto.getIdTipoGuardias().contains(2L));
 
         if ((esAsistencial && !esContraFactura) && legajoDto.getEsAutoridad() == false) {
             if (legajoDto.getIdRevista() == null) {
@@ -111,15 +114,16 @@ public class LegajoService {
             }
         }
 
-        if (( !esContraFactura && (legajoDto.getEsAutoridad() != null  && legajoDto.getEsAutoridad() == false))) {
+        if ((!esContraFactura && (legajoDto.getEsAutoridad() != null && legajoDto.getEsAutoridad() == false))) {
 
             if (legajoDto.getIdUdo() == null) {
                 return new ResponseEntity<>(new Mensaje("indicar la UdO"),
                         HttpStatus.BAD_REQUEST);
             }
         }
-        
-        if ((esAsistencial&& esCargoOAgrupacion) || ((!esAsistencial && legajoDto.getEsAutoridad() == false) || (legajoDto.getEsAutoridad() == true && legajoDto.getEsRegional()==false))) {
+
+        if ((esAsistencial && esCargoOAgrupacion) || ((!esAsistencial && legajoDto.getEsAutoridad() == false)
+                || (legajoDto.getEsAutoridad() == true && legajoDto.getEsRegional() == false))) {
 
             if (legajoDto.getIdEfectores() == null) {
                 return new ResponseEntity<>(new Mensaje("indicar efector"),
@@ -130,9 +134,9 @@ public class LegajoService {
         if (esAsistencial && legajoDto.getEsAutoridad() == false) {
 
             if (legajoDto.getMatriculaProvincial() == null)
-            return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-                    
+                return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
+                        HttpStatus.BAD_REQUEST);
+ 
             if (legajoDto.getIdProfesion() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                         HttpStatus.BAD_REQUEST);
@@ -155,7 +159,8 @@ public class LegajoService {
 
             if (legajoDto.getEsRegional() == true) {
                 if (legajoDto.getIdRegion() == null) {
-                    return new ResponseEntity<>(new Mensaje("Indicar la region para autoridad regional"), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new Mensaje("Indicar la region para autoridad regional"),
+                            HttpStatus.BAD_REQUEST);
                 }
             }
         }
@@ -184,14 +189,13 @@ public class LegajoService {
         if (legajoDto.getMotivoBaja() != null && legajo.getMotivoBaja() != legajoDto.getMotivoBaja())
             legajo.setMotivoBaja(legajoDto.getMotivoBaja());
 
-        
-
         boolean esAsistencial = personService.activoById(legajoDto.getIdPersona())
                 && asistencialService.existsById(legajoDto.getIdPersona());
 
         boolean esContraFactura = legajoDto.getIdTipoGuardias() != null && legajoDto.getIdTipoGuardias().contains(4L);
 
-        boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null && (legajoDto.getIdTipoGuardias().contains(1L)|| legajoDto.getIdTipoGuardias().contains(2L));
+        boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null
+                && (legajoDto.getIdTipoGuardias().contains(1L) || legajoDto.getIdTipoGuardias().contains(2L));
 
         if ((esAsistencial && !esContraFactura) && legajoDto.getEsAutoridad() == false) {
 
@@ -200,13 +204,14 @@ public class LegajoService {
             }
         }
 
-        if (( !esContraFactura && (legajoDto.getEsAutoridad() != null  && legajoDto.getEsAutoridad() == false))) {
+        if ((!esContraFactura && (legajoDto.getEsAutoridad() != null && legajoDto.getEsAutoridad() == false))) {
             if (legajo.getUdo() == null || !Objects.equals(legajo.getUdo().getId(), legajoDto.getIdUdo())) {
                 legajo.setUdo(efectorService.findById(legajoDto.getIdUdo()));
             }
         }
 
-        if ((esAsistencial&& esCargoOAgrupacion) || ((!esAsistencial && legajoDto.getEsAutoridad() == false) || (legajoDto.getEsAutoridad() == true && legajoDto.getEsRegional()==false))) {
+        if ((esAsistencial && esCargoOAgrupacion) || ((!esAsistencial && legajoDto.getEsAutoridad() == false)
+                || (legajoDto.getEsAutoridad() == true && legajoDto.getEsRegional() == false))) {
             if (legajo.getEfectores() == null) {
                 legajo.setEfectores(new ArrayList<>());
             }
@@ -264,10 +269,10 @@ public class LegajoService {
                 legajo.setCargo(cargoService.findById(legajoDto.getIdCargo()).get());
             }
 
-            if ( legajoDto.getEsRegional() == true) {
+            if (legajoDto.getEsRegional() == true) {
                 if (legajo.getRegion() == null || !Objects.equals(legajo.getRegion().getId(),
-                                    legajoDto.getIdRegion())) {
-                legajo.setRegion(regionService.findById(legajoDto.getIdRegion()).get());
+                        legajoDto.getIdRegion())) {
+                    legajo.setRegion(regionService.findById(legajoDto.getIdRegion()).get());
                 }
             }
         }
@@ -409,4 +414,33 @@ public class LegajoService {
                         nombre == TipoGuardiaEnum.EXTRA ||
                         nombre == TipoGuardiaEnum.PASIVA);
     }
+
+    public void logicDelete(Long id, LegajoBajaDto legajoBajaDto) {
+        // Verifica si el legajo existe
+        Legajo legajo = legajoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el legajo con el ID: " + id));
+
+        // Validar que los campos requeridos no sean nulos
+        if (legajoBajaDto.getMotivoBaja() == null || legajoBajaDto.getMotivoBaja().isBlank()) {
+            throw new ValidationException("El motivo de la baja es obligatorio");
+        }
+        if (legajoBajaDto.getFechaFinal() == null) {
+            throw new ValidationException("La fecha final es obligatoria");
+        }
+
+        // fechaFinal debe ser posterior a fechaInicio
+        if (legajo.getFechaInicio() != null
+                && legajoBajaDto.getFechaFinal().isBefore(legajo.getFechaInicio().plusDays(1))) {
+            
+            throw new ValidationException("La fecha de finalización debe ser posterior a la fecha de inicio");
+        }
+
+        // Actualiza el legajo
+        legajo.setActivo(false);
+        legajo.setMotivoBaja(legajoBajaDto.getMotivoBaja());
+        legajo.setFechaFinal(legajoBajaDto.getFechaFinal());
+
+        legajoRepository.save(legajo);
+    }
+
 }

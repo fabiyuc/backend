@@ -1,6 +1,6 @@
-package com.guardias.backend.dto;
+package com.guardias.backend.dto.legajo;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,12 +10,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PermisosDto {
-    
-    private Boolean activo;
+public class LegajoBajaDto  {
+     
+    private LocalDate fechaFinal;
     @NotBlank
-    private Long idPersona;
-    @NotBlank
-    private List<Long> idEfectores;
-
+    private String motivoBaja;
+   
 }
