@@ -136,7 +136,7 @@ public class LegajoService {
             if (legajoDto.getMatriculaProvincial() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
                         HttpStatus.BAD_REQUEST);
-
+ 
             if (legajoDto.getIdProfesion() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                         HttpStatus.BAD_REQUEST);
