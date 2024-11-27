@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
 import com.guardias.backend.entity.NovedadPersonal;
-import com.guardias.backend.service.ArticuloService;
-import com.guardias.backend.service.IncisoService;
 import com.guardias.backend.service.NovedadPersonalService;
-import com.guardias.backend.service.PersonService;
-import com.guardias.backend.service.TipoLicenciaService;
 
 @Controller
 @RequestMapping("/novedadPersonal")
@@ -33,14 +28,6 @@ public class NovedadPersonalController {
 
     @Autowired
     NovedadPersonalService novedadPersonalService;
-    @Autowired
-    PersonService personaService;
-    @Autowired
-    ArticuloService articuloService;
-    @Autowired
-    IncisoService incisoService;
-    @Autowired
-    TipoLicenciaService tipoLicenciaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<NovedadPersonal>> list() {
@@ -80,76 +67,14 @@ public class NovedadPersonalController {
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(NovedadPersonalDto novedadPersonalDto) {
-        if (novedadPersonalDto.getFechaInicio() == null)
-            return new ResponseEntity(new Mensaje("la fecha de inicio es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        if (novedadPersonalDto.getIdPersona() == null)
-            return new ResponseEntity(new Mensaje("la persona es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private NovedadPersonal createUpdate(NovedadPersonal novedadPersonal, NovedadPersonalDto novedadPersonalDto) {
-
-        if (novedadPersonalDto.getFechaInicio() != null
-                && !novedadPersonalDto.getFechaInicio().equals(novedadPersonal.getFechaInicio()))
-            novedadPersonal.setFechaInicio(novedadPersonalDto.getFechaInicio());
-
-        if (novedadPersonalDto.getFechaFinal() != null
-                && !novedadPersonalDto.getFechaFinal().equals(novedadPersonal.getFechaFinal()))
-            novedadPersonal.setFechaFinal(novedadPersonalDto.getFechaFinal());
-
-        novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
-        novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
-        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
-        /* novedadPersonal.setActual(novedadPersonalDto.isActual()); */ // comentar
-
-        /*
-         * if (novedadPersonalDto.getDescripcion() != null
-         * &&
-         * !novedadPersonalDto.getDescripcion().equals(novedadPersonal.getDescripcion())
-         * )
-         * novedadPersonal.setDescripcion(novedadPersonalDto.getDescripcion());
-         */
-
-        // Si el suplente es nulo, se puede asignar null
-        if (novedadPersonal.getPersona() == null ||
-                (novedadPersonalDto.getIdPersona() != null &&
-                        !Objects.equals(novedadPersonal.getPersona().getId(), novedadPersonalDto.getIdPersona()))) {
-            novedadPersonal.setPersona(personaService.findById(novedadPersonalDto.getIdPersona()));
-        }
-
-        // Si el suplente es nulo, se puede asignar null
-        if (novedadPersonalDto.getIdSuplente() == null) {
-            novedadPersonal.setSuplente(null);
-        } else if (novedadPersonal.getSuplente() == null ||
-                (novedadPersonalDto.getIdSuplente() != null &&
-                        !Objects.equals(novedadPersonal.getSuplente().getId(), novedadPersonalDto.getIdSuplente()))) {
-            novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.getIdSuplente()));
-        }
-
-        if (novedadPersonal.getTipoLicencia() == null ||
-                (novedadPersonalDto.getIdTipoLicencia() != null &&
-                        !Objects.equals(novedadPersonal.getTipoLicencia().getId(),
-                                novedadPersonalDto.getIdTipoLicencia()))) {
-            novedadPersonal.setTipoLicencia(tipoLicenciaService.findById(novedadPersonalDto.getIdTipoLicencia()).get());
-        }
-
-        novedadPersonal.setActivo(true);
-        return novedadPersonal;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NovedadPersonalDto novedadPersonalDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(novedadPersonalDto);
+        ResponseEntity<?> respuestaValidaciones = novedadPersonalService.validations(novedadPersonalDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            NovedadPersonal novedadPersonal = createUpdate(new NovedadPersonal(), novedadPersonalDto);
+            NovedadPersonal novedadPersonal = novedadPersonalService.createUpdate(new NovedadPersonal(), novedadPersonalDto);
             novedadPersonalService.save(novedadPersonal);
             return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
 
@@ -164,10 +89,10 @@ public class NovedadPersonalController {
             return new ResponseEntity(new Mensaje("Novedad no encontrada"),
                     HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = validations(novedadPersonalDto);
+        ResponseEntity<?> respuestaValidaciones = novedadPersonalService.validations(novedadPersonalDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            NovedadPersonal novedadPersonal = createUpdate(novedadPersonalService.findById(id).get(),
+            NovedadPersonal novedadPersonal = novedadPersonalService.createUpdate(novedadPersonalService.findById(id).get(),
                     novedadPersonalDto);
             novedadPersonalService.save(novedadPersonal);
             return new ResponseEntity(new Mensaje("Novedad modificada correctamente"), HttpStatus.OK);
