@@ -38,10 +38,6 @@ public class CargoService {
         return cargoRepository.findByNombre(nombre);
     }
 
-    public List<Cargo> findByFechaInicio(LocalDate fechaInicio) {
-        return cargoRepository.findByFechaInicio(fechaInicio);
-    }
-
     public boolean existsById(Long id) {
         return cargoRepository.existsById(id);
     }

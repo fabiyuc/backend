@@ -4,7 +4,8 @@ public enum RolNombre {
     ROLE_ADMIN,
     ROLE_USER,
     ROLE_DPH,
-    ROLE_SUPERUSER
+    ROLE_SUPERUSER,
+    ROLE_AUTORIDAD
 }
 
 /* otros roles:
