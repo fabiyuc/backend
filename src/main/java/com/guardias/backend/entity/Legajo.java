@@ -17,6 +17,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -112,6 +114,19 @@ public class Legajo {
   @JoinColumn(name = "id_region")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
   private Region region;
+
+  @Column(columnDefinition = "VARCHAR(10)")
+  private String nroresolucion; 
+
+  @Temporal(TemporalType.DATE)
+  private LocalDate fechaResolucion;
+
+  @Column(columnDefinition = "VARCHAR(10)")
+  private String nrodecreto; 
+
+  private LocalDate fechaBajaSistema;
+
+     
 
   @Override
   public boolean equals(Object obj) {
