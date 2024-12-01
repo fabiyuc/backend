@@ -102,7 +102,7 @@ public class NoAsistencialController {
         return new ResponseEntity<NoAsistencial>(noAsistencial, HttpStatus.OK);
     }
 
-    private NoAsistencial createUpdate(NoAsistencial noAsistencial, NoAsistencialDto noAsistencialDto) {
+    public NoAsistencial createUpdate(NoAsistencial noAsistencial, NoAsistencialDto noAsistencialDto) {
 
         Person person = personController.createUpdate(noAsistencial, noAsistencialDto);
         noAsistencial = (NoAsistencial) person;

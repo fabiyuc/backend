@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.person.PersonBasicPanelDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.security.dto.JwtDto;
 import com.guardias.backend.security.dto.LoginUsuario;
@@ -73,6 +74,7 @@ public class AuthController {
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
         if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
             return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST);
+        
         Usuario usuario = new Usuario();
 
         // usuario.setNombre(nuevoUsuario.getNombre());
@@ -105,8 +107,13 @@ public class AuthController {
             if (personService.activoById(nuevoUsuario.getIdPerson())) {
 
                 Person person = personService.findById(nuevoUsuario.getIdPerson());
+                if (person == null) {
+                    return new ResponseEntity<>(new Mensaje("Persona no encontrada"), HttpStatus.BAD_REQUEST);
+                }
                 usuario.setPerson(person);
             }
+        }else {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio asociar un usuario a una persona"), HttpStatus.BAD_REQUEST);
         }
 
         usuarioService.save(usuario);

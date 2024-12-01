@@ -7,16 +7,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.controller.PersonController;
+import com.guardias.backend.dto.AsistencialDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.LegajoRepository;
+import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.repository.TipoGuardiaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -29,11 +38,17 @@ public class AsistencialService {
     @Autowired
     AsistencialRepository asistencialRepository;
     @Autowired
-    TipoGuardiaRepository tipoGuardiaRepository;
-    @Autowired
     LegajoRepository legajoRepository;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    @Lazy
+    PersonController personController;
+    /* @Autowired
+    RegistroActividadService registroActividadService; */
+    @Autowired
+    RegistroActividadRepository registroActividadRepository;
+
 
     public Optional<List<Asistencial>> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
@@ -67,6 +82,40 @@ public class AsistencialService {
         return asistencialRepository.findByDni(dni);
     }
 
+    public ResponseEntity<?> validations(AsistencialDto asistencialDto, Long id) {
+        ResponseEntity<?> respuestaValidaciones = personController.validations(asistencialDto, id);
+
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            return respuestaValidaciones;
+        }
+        return new ResponseEntity<>(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    public Asistencial createUpdate(Asistencial asistencial, AsistencialDto asistencialDto) {
+        Person person = personController.createUpdate(asistencial, asistencialDto);
+        asistencial = (Asistencial) person;
+
+        if (asistencialDto.getIdRegistrosActividades() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (asistencial.getRegistrosActividades() != null) {
+                for (RegistroActividad registro : asistencial.getRegistrosActividades()) {
+                    for (Long id : asistencialDto.getIdRegistrosActividades()) {
+                        if (!registro.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? asistencialDto.getIdRegistrosActividades() : idList;
+            for (Long id : idsToAdd) {
+                asistencial.getRegistrosActividades().add(registroActividadRepository.findById(id).get());
+                registroActividadRepository.findById(id).get().setAsistencial(asistencial);
+            }
+        }
+        asistencial.setActivo(true);
+        return asistencial;
+    }
+
     public void save(Asistencial asistencial) {
         asistencialRepository.save(asistencial);
     }
@@ -83,7 +132,7 @@ public class AsistencialService {
         return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
     }
 
-    public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
+    /* public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
         // Buscar el Asistencial por su ID
         Asistencial asistencial = asistencialRepository.findById(idAsistencial)
                 .orElseThrow(() -> new EntityNotFoundException("Asistencial no encontrado"));
@@ -112,7 +161,7 @@ public class AsistencialService {
         legajoRepository.save(legajo);
     }
 
-    
+     */
 
     // Método para obtener la lista de Asistenciales y convertirlos a
     // AsistencialSummaryDto

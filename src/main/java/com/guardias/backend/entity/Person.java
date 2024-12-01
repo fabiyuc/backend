@@ -16,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -95,9 +94,13 @@ public abstract class Person {
             "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
-    @OneToOne
+    /* @OneToOne
     @JoinColumn(name = "usuario_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","email","registrosActividades","person","nombre" })
+    private Usuario usuario; */
+
+    @OneToOne(mappedBy = "person")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person" })
     private Usuario usuario;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)

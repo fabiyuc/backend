@@ -79,9 +79,9 @@ public class PersonController {
                 }
             }
 
-        if (personDto.getIdUsuario() == null)
+        /* if (personDto.getIdUsuario() == null)
             return new ResponseEntity<>(new Mensaje("ingresar usuario"), HttpStatus.BAD_REQUEST);
-
+ */
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
