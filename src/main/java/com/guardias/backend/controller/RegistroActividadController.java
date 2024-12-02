@@ -76,7 +76,7 @@ public class RegistroActividadController {
         return new ResponseEntity(registroActividad, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> validations(RegistroActividadDto registroActividadDto) {
+    /* public ResponseEntity<?> validations(RegistroActividadDto registroActividadDto) {
 
         if (registroActividadDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
@@ -86,7 +86,7 @@ public class RegistroActividadController {
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
+    } */
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {

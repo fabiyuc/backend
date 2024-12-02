@@ -35,7 +35,7 @@ public class Usuario {
     private Long id;
     //private String nombre;
     private String nombreUsuario;
-    private String email;
+    /* private String email; */
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -54,13 +54,10 @@ public class Usuario {
             "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosEgresos = new ArrayList<>();
 
-    @OneToOne(mappedBy = "usuario")
+    @OneToOne
+    @JoinColumn(name = "person_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "usuario" })
     private Person person;
-
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "activo", "nombre", "nombreUsuario", "email", "password", "roles",
-    // "registrosActividades" })
 
     @Override
     public boolean equals(Object obj) {

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -71,13 +70,13 @@ public class AuthController {
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-        if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST);
+        /* if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
+            return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST); */
+        
         Usuario usuario = new Usuario();
 
-        // usuario.setNombre(nuevoUsuario.getNombre());
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
-        usuario.setEmail(nuevoUsuario.getEmail());
+        //usuario.setEmail(nuevoUsuario.getEmail());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
 
         Set<Rol> roles = new HashSet<>();
@@ -94,19 +93,19 @@ public class AuthController {
             }
         }
         usuario.setRoles(roles);
-        /*
-         * if (nuevoUsuario.getRoles().contains("ROLE_ADMIN"))
-         * roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
-         * usuario.setRoles(roles);
-         */
 
         // Asociar la entidad Person
         if (nuevoUsuario.getIdPerson() != null) {
             if (personService.activoById(nuevoUsuario.getIdPerson())) {
 
                 Person person = personService.findById(nuevoUsuario.getIdPerson());
+                if (person == null) {
+                    return new ResponseEntity<>(new Mensaje("Persona no encontrada"), HttpStatus.BAD_REQUEST);
+                }
                 usuario.setPerson(person);
             }
+        }else {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio asociar un usuario a una persona"), HttpStatus.BAD_REQUEST);
         }
 
         usuarioService.save(usuario);
