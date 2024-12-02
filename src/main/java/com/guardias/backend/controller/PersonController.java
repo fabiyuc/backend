@@ -61,9 +61,14 @@ public class PersonController {
         if (personDto.getFechaNacimiento() == null) {
             return new ResponseEntity(new Mensaje("La fecha de nacimiento es obligatoria"), HttpStatus.BAD_REQUEST);
         }
-        if (StringUtils.isBlank(personDto.getSexo())) {
+        if (StringUtils.isBlank(personDto.getEmail())) 
+            return new ResponseEntity<>(new Mensaje("El email es obligatorio"), HttpStatus.BAD_REQUEST);
+ 
+        if (personService.existsByEmail(personDto.getEmail()))
+            return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST);
+
+        if (StringUtils.isBlank(personDto.getSexo())) 
             return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
-        }
 
         if (personService.existsByDni(personDto.getDni())) {
             Person existingPerson = personService.findByDni(personDto.getDni());
@@ -72,12 +77,12 @@ public class PersonController {
             }
         }
 
-            if (personService.existsByCuil(personDto.getCuil())) {
-                Person existingPerson = personService.findByCuil(personDto.getCuil());
-                if (!existingPerson.getId().equals(id)) {
-                    return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
-                }
+        if (personService.existsByCuil(personDto.getCuil())) {
+            Person existingPerson = personService.findByCuil(personDto.getCuil());
+            if (!existingPerson.getId().equals(id)) {
+                return new ResponseEntity<>(new Mensaje("El CUIL ya existe"), HttpStatus.BAD_REQUEST);
             }
+        }
 
         /* if (personDto.getIdUsuario() == null)
             return new ResponseEntity<>(new Mensaje("ingresar usuario"), HttpStatus.BAD_REQUEST);
