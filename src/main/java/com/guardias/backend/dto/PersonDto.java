@@ -26,6 +26,7 @@ public class PersonDto {
     private LocalDate fechaNacimiento;
     private String sexo;
     private String telefono;
+    @NotBlank
     private String email;
     private String domicilio;
     @NotBlank

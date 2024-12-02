@@ -112,6 +112,13 @@ public abstract class Efector {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
     private List<HabilitacionesGenerales> habilitacionesGenerales = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
+            "servicio", "efector", "registrosPendientes" })
+    private List<CronogramaTentativo> cronogramasTentativos = new ArrayList<>();
+
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

@@ -35,7 +35,7 @@ public class Usuario {
     private Long id;
     //private String nombre;
     private String nombreUsuario;
-    private String email;
+    /* private String email; */
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

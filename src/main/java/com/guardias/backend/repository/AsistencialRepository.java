@@ -27,6 +27,10 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     boolean existsByCuil(String cuil);
 
+    boolean existsByEmail(String email);
+
+    Optional<Asistencial> findByEmail(String email);
+
     List<Asistencial> findByActivo(boolean activo);
 
     @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND a.activo = true")

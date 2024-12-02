@@ -93,6 +93,15 @@ public class PersonService {
         return exists;
     }
 
+    public boolean existsByEmail(String email) {
+        boolean exists = (asistencialRepository.existsByEmail(email)
+                && asistencialRepository.findByEmail(email).get().isActivo());
+        if (!exists)
+            exists = (noAsistencialRepository.existsByEmail(email)
+                    && noAsistencialRepository.findByEmail(email).get().isActivo());
+        return exists;
+    }
+
     public void savePersona(Person persona) {
         if (persona instanceof Asistencial) {
             Asistencial asistencial = (Asistencial) persona;

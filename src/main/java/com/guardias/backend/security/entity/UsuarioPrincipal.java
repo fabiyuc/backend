@@ -13,18 +13,18 @@ public class UsuarioPrincipal implements UserDetails{
     //private String nombre;
     private Long id;
     private String nombreUsuario;
-    private String email;
+    /* private String email; */
     private String password;
     //GrantedAuthority obtiene la autorizacion del usuario  (lo que puede o no hacer)
     private Collection<? extends GrantedAuthority> authorities;
     
 
-    public UsuarioPrincipal(/* String nombre,  */Long id, String nombreUsuario, String email, String password,
+    public UsuarioPrincipal(/* String nombre,  */Long id, String nombreUsuario, /* String email, */ String password,
             Collection<? extends GrantedAuthority> authorities) {
         //this.nombre = nombre;
         this.id = id;
         this.nombreUsuario = nombreUsuario;
-        this.email = email;
+        /* this.email = email; */
         this.password = password;
         this.authorities = authorities;
     }
@@ -37,7 +37,7 @@ public class UsuarioPrincipal implements UserDetails{
             usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol
             .getRolNombre().name())).collect(Collectors.toList());
 
-        return new UsuarioPrincipal(/* usuario.getNombre(),  */usuario.getId(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getPassword(), authorities);
+        return new UsuarioPrincipal(/* usuario.getNombre(),  */usuario.getId(), usuario.getNombreUsuario(), /* usuario.getEmail(), */ usuario.getPassword(), authorities);
     }
 
     public Long getId() {
@@ -75,8 +75,8 @@ public class UsuarioPrincipal implements UserDetails{
     /* public String getNombre() {
         return nombre;
     } */
-    public String getEmail() {
+    /* public String getEmail() {
         return email;
-    }
+    } */
     
 }
