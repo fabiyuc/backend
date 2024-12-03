@@ -14,12 +14,14 @@ import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Feriado;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Notificacion;
 import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.FeriadoService;
 import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.LocalidadService;
 import com.guardias.backend.service.NotificacionService;
@@ -45,6 +47,8 @@ public class EfectorController {
     ServicioService servicioService;
     @Autowired
     NotificacionService notificacionService;
+    @Autowired
+    FeriadoService feriadoService;
 
     public ResponseEntity<?> validations(EfectorDto efectorDto, Long id) {
         if (StringUtils.isBlank(efectorDto.getNombre()))
@@ -236,6 +240,23 @@ public class EfectorController {
             }
         }
 
+        if (efectorDto.getIdFeriados() != null) {
+            List<Long> idList = new ArrayList();
+            if (efector.getFeriados() != null) {
+                for (Feriado feriado : efector.getFeriados()) {
+                    for (Long id : efectorDto.getIdFeriados()) {
+                        if (!feriado.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? efectorDto.getIdFeriados() : idList;
+            for (Long id : idsToAdd) {
+                efector.getFeriados().add(feriadoService.findById(id).get());
+                feriadoService.findById(id).get().setEfector(efector);
+            }
+        }
         return efector;
     }
 

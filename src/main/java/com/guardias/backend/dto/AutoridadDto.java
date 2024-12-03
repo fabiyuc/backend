@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class AutoridadDto {
 
     private boolean activo;
-
+    private Boolean confirmado;
     @NotNull
     private Long idPersona;
 }

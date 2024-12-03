@@ -21,7 +21,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Feriado;
 import com.guardias.backend.service.FeriadoService;
 
-import io.micrometer.common.util.StringUtils;
 
 @RestController
 @RequestMapping("/feriado")
@@ -67,43 +66,13 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    private ResponseEntity<?> validations(FeriadoDto feriadoDto, Long id) {
-        if (StringUtils.isBlank(feriadoDto.getMotivo()))
-            return new ResponseEntity(new Mensaje("El motivo es obligatorio"), HttpStatus.BAD_REQUEST);
-        if (feriadoDto.getTipoFeriado() == null)
-            return new ResponseEntity(new Mensaje("El tipo de feriado es obligatorio"), HttpStatus.BAD_REQUEST);
-        if (feriadoDto.getFecha() == null)
-            return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (feriadoService.existsByMotivo(feriadoDto.getMotivo())
-                && (feriadoService.findByMotivo(feriadoDto.getMotivo()).get().getId() != id))
-            return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
-
-    private Feriado createUpdate(Feriado feriado, FeriadoDto feriadoDto) {
-        if (!feriadoDto.getFecha().equals(feriado.getFecha()))
-            feriado.setFecha(feriadoDto.getFecha());
-        if (!feriadoDto.getMotivo().equals(feriado.getMotivo()))
-            feriado.setMotivo(feriadoDto.getMotivo());
-        if (!feriadoDto.getTipoFeriado().equals(feriado.getTipoFeriado()))
-            feriado.setTipoFeriado(feriadoDto.getTipoFeriado());
-        if (!feriadoDto.getDescripcion().equals(feriado.getDescripcion()))
-            feriado.setDescripcion(feriadoDto.getDescripcion());
-
-        feriado.setActivo(true);
-
-        return feriado;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FeriadoDto feriadoDto) {
 
-        ResponseEntity<?> respuestaValidaciones = validations(feriadoDto, 0L);
+        ResponseEntity<?> respuestaValidaciones = feriadoService.validations(feriadoDto, 0L);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Feriado feriado = createUpdate(new Feriado(), feriadoDto);
+            Feriado feriado = feriadoService.createUpdate(new Feriado(), feriadoDto);
             feriadoService.save(feriado);
         }
         return respuestaValidaciones;
@@ -114,10 +83,10 @@ public class FeriadoController {
         if (!feriadoService.existsById(id))
             return new ResponseEntity(new Mensaje("El feriado no existe"), HttpStatus.BAD_REQUEST);
 
-        ResponseEntity<?> respuestaValidaciones = validations(feriadoDto, id);
+        ResponseEntity<?> respuestaValidaciones = feriadoService.validations(feriadoDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Feriado feriado = createUpdate(feriadoService.findById(id).get(), feriadoDto);
+            Feriado feriado = feriadoService.createUpdate(feriadoService.findById(id).get(), feriadoDto);
             feriadoService.save(feriado);
         }
         return respuestaValidaciones;

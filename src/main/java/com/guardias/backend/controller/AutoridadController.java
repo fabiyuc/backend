@@ -79,6 +79,25 @@ public class AutoridadController {
         }
     }
 
+    @PutMapping("/confirmar/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody AutoridadDto autoridadDto) {
+        
+        if (!autoridadService.existsById(id))
+            return new ResponseEntity(new Mensaje("la autoridad no existe"), HttpStatus.NOT_FOUND);
+
+        if (autoridadDto.getConfirmado() != null) {
+            Autoridad autoridad = autoridadService.findById(id).get();
+            autoridad.setConfirmado(autoridadDto.getConfirmado());
+            autoridadService.save(autoridad);
+            
+            return new ResponseEntity(new Mensaje("asistencial modificado correctamente"), HttpStatus.OK);
+     
+        } else {
+            return new ResponseEntity<Mensaje>(new Mensaje("debe indicar el valor de confirmado"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!autoridadService.activo(id))
