@@ -41,20 +41,20 @@ public class NoAsistencialService {
         return noAsistencialRepository.existsById(id);
     }
 
-    public boolean existsByDni(int dni) {
-        return noAsistencialRepository.existsByDni(dni);
+    public boolean existsByDniAndActivoTrue(int dni) {
+        return noAsistencialRepository.existsByDniAndActivoTrue(dni);
     }
 
     public boolean existsByCuil(String cuil) {
         return noAsistencialRepository.existsByCuil(cuil);
     }
 
-    public Optional<NoAsistencial> findByDni(int dni) {
-        return noAsistencialRepository.findByDni(dni);
+    public Optional<NoAsistencial> findByDniAndActivoTrue(int dni) {
+        return noAsistencialRepository.findByDniAndActivoTrue(dni);
     }
 
-    public Optional<NoAsistencial> findByEmail(String email) {
-        return noAsistencialRepository.findByEmail(email);
+    public Optional<NoAsistencial> findByEmailAndActivoTrue(String email) {
+        return noAsistencialRepository.findByEmailAndActivoTrue(email);
     }
 
     public void save(NoAsistencial noAsistencial) {
@@ -70,9 +70,9 @@ public class NoAsistencialService {
                 && noAsistencialRepository.findById(id).get().isActivo());
     }
 
-    public boolean activoDni(int dni) {
+    /* public boolean activoDni(int dni) {
         return (noAsistencialRepository.existsByDni(dni) && noAsistencialRepository.findByDni(dni).get().isActivo());
-    }
+    } */
 
     public List<NoAsistencialListDto> getNoAsistencialList() {
         List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
