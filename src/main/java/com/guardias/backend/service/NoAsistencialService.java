@@ -53,6 +53,10 @@ public class NoAsistencialService {
         return noAsistencialRepository.findByDni(dni);
     }
 
+    public Optional<NoAsistencial> findByEmail(String email) {
+        return noAsistencialRepository.findByEmail(email);
+    }
+
     public void save(NoAsistencial noAsistencial) {
         noAsistencialRepository.save(noAsistencial);
     }

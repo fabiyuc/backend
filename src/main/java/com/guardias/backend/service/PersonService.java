@@ -102,6 +102,19 @@ public class PersonService {
         return exists;
     }
 
+    public Person findByEmail(String email) {
+        Person persona = asistencialService.findByEmail(email).orElse(null);
+
+        if (persona == null) {
+            persona = noAsistencialService.findByEmail(email).orElse(null);
+        }
+
+        if (persona.isActivo())
+            return persona;
+        else
+            return null;
+    }
+
     public void savePersona(Person persona) {
         if (persona instanceof Asistencial) {
             Asistencial asistencial = (Asistencial) persona;

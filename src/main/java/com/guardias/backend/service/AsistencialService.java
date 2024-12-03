@@ -22,11 +22,9 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.LegajoRepository;
 import com.guardias.backend.repository.RegistroActividadRepository;
-import com.guardias.backend.repository.TipoGuardiaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -80,6 +78,10 @@ public class AsistencialService {
 
     public Optional<Asistencial> findByDni(int dni) {
         return asistencialRepository.findByDni(dni);
+    }
+
+    public Optional<Asistencial> findByEmail(String email) {
+        return asistencialRepository.findByEmail(email);
     }
 
     public ResponseEntity<?> validations(AsistencialDto asistencialDto, Long id) {
