@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -108,6 +109,7 @@ public class AuthController {
             return new ResponseEntity<>(new Mensaje("Es obligatorio asociar un usuario a una persona"), HttpStatus.BAD_REQUEST);
         }
 
+        usuario.setActivo(true);
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
     }
@@ -162,5 +164,17 @@ public class AuthController {
 
         return new ResponseEntity(dto, HttpStatus.OK);
     }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!usuarioService.activo(id))
+            return new ResponseEntity(new Mensaje("el usuario no existe"), HttpStatus.NOT_FOUND);
+        Usuario usuario = usuarioService.findById(id).get();
+        usuario.setActivo(false);
+        usuarioService.save(usuario);
+        return new ResponseEntity<>(new Mensaje("Usuario dado de baja correctamente"), HttpStatus.OK);
+    }
+
+
 
 }

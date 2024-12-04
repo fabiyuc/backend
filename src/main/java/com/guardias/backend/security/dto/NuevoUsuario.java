@@ -24,6 +24,8 @@ public class NuevoUsuario {
     private String password;
     private Set<String> roles = new HashSet<>();
     private Long idPerson;
+
+    private Boolean activo;
     
     
 }
