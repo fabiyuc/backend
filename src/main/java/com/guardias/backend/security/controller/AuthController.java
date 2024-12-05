@@ -48,19 +48,14 @@ public class AuthController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
     @Autowired
     AuthenticationManager authenticationManager;
-
     @Autowired
     UsuarioService usuarioService;
-
     @Autowired
     RolService rolService;
-
     @Autowired
     PersonService personService;
-
     @Autowired
     JwtProvider jwtProvider;
 
@@ -71,18 +66,13 @@ public class AuthController {
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-        /* if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST); */
         
         Usuario usuario = new Usuario();
 
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
-        //usuario.setEmail(nuevoUsuario.getEmail());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
-
         Set<Rol> roles = new HashSet<>();
-        // por defecto todos van a ser USER
-        roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
+        roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());// por defecto todos van a ser USER
 
         // Validar y agregar roles enviados
         for (String rolNombre : nuevoUsuario.getRoles()) {
