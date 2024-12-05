@@ -72,7 +72,7 @@ public class AutoridadService {
 
     public boolean isAutoridad(Long idPersona) {
         // Busca si la persona ya tiene una autoridad activa
-        return autoridadRepository.existsByPersonaIdAndActivoTrue(idPersona);
+        return autoridadRepository.existsByPersonaIdAndActivoTrueAndConfirmadoTrue(idPersona);
     }
 
     public ResponseEntity<?> validations(AutoridadDto autoridadDto) {
