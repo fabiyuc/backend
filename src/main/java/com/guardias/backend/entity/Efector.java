@@ -118,6 +118,12 @@ public abstract class Efector {
             "servicio", "efector", "registrosPendientes" })
     private List<CronogramaTentativo> cronogramasTentativos = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
+            "servicio", "efector", "registrosPendientes" })
+    private List<Feriado> feriados = new ArrayList<>();
+
 
     @Override
     public boolean equals(Object obj) {

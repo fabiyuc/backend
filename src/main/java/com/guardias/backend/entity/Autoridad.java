@@ -27,6 +27,9 @@ public class Autoridad {
 
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
+        
+        @Column(columnDefinition = "BIT DEFAULT 1")
+        private Boolean confirmado;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_persona")

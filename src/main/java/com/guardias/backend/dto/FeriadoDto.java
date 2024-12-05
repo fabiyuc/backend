@@ -22,4 +22,7 @@ public class FeriadoDto {
     private TipoFeriadoEnum tipoFeriado;
     private String descripcion;
     private boolean activo;
+    @NotBlank
+    private Boolean esPatronal;
+    private Long idEfector;
 }
