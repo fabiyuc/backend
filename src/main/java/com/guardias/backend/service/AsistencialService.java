@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,20 +67,20 @@ public class AsistencialService {
         return asistencialRepository.existsById(id);
     }
 
-    public boolean existsByDni(int dni) {
-        return asistencialRepository.existsByDni(dni);
+    public boolean existsByDniAndActivoTrue(int dni) {
+        return asistencialRepository.existsByDniAndActivoTrue(dni);
     }
 
     public boolean existsByCuil(String cuil) {
         return asistencialRepository.existsByCuil(cuil);
     }
 
-    public Optional<Asistencial> findByDni(int dni) {
-        return asistencialRepository.findByDni(dni);
+    public Optional<Asistencial> findByDniAndActivoTrue(int dni) {
+        return asistencialRepository.findByDniAndActivoTrue(dni);
     }
 
-    public Optional<Asistencial> findByEmail(String email) {
-        return asistencialRepository.findByEmail(email);
+    public Optional<Asistencial> findByEmailAndActivoTrue(String email) {
+        return asistencialRepository.findByEmailAndActivoTrue(email);
     }
 
     public ResponseEntity<?> validations(AsistencialDto asistencialDto, Long id) {
@@ -128,10 +127,6 @@ public class AsistencialService {
 
     public boolean activo(Long id) {
         return (asistencialRepository.existsById(id) && asistencialRepository.findById(id).get().isActivo());
-    }
-
-    public boolean activoDni(int dni) {
-        return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
     }
 
     /* public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {

@@ -17,19 +17,21 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     Optional<Asistencial> findById(Long id);
 
-    Optional<Asistencial> findByDni(int dni);
+    Optional<Asistencial> findByDniAndActivoTrue(int dni);
 
     Optional<Asistencial> findByCuil(String cuil);
 
     boolean existsById(Long id);
 
+    boolean existsByDniAndActivoTrue(int dni);
+    
     boolean existsByDni(int dni);
 
     boolean existsByCuil(String cuil);
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndActivoTrue(String email);
 
-    Optional<Asistencial> findByEmail(String email);
+    Optional<Asistencial> findByEmailAndActivoTrue(String email);
 
     List<Asistencial> findByActivo(boolean activo);
 

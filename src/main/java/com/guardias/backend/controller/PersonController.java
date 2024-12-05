@@ -64,8 +64,8 @@ public class PersonController {
         if (StringUtils.isBlank(personDto.getEmail())) 
             return new ResponseEntity<>(new Mensaje("El email es obligatorio"), HttpStatus.BAD_REQUEST);
  
-        if (personService.existsByEmail(personDto.getEmail())){
-            Person existingPerson = personService.findByEmail(personDto.getEmail());
+        if (personService.existsByEmailAndActivoTrue(personDto.getEmail())){
+            Person existingPerson = personService.findByEmailAndActivoTrue(personDto.getEmail());
             if (!existingPerson.getId().equals(id)) {
                 return new ResponseEntity<>(new Mensaje("El email ya existe"), HttpStatus.BAD_REQUEST);
             }
@@ -74,8 +74,8 @@ public class PersonController {
         if (StringUtils.isBlank(personDto.getSexo())) 
             return new ResponseEntity<>(new Mensaje("Es obligatorio indicar el sexo"), HttpStatus.BAD_REQUEST);
 
-        if (personService.existsByDni(personDto.getDni())) {
-            Person existingPerson = personService.findByDni(personDto.getDni());
+        if (personService.existsByDniAndActivoTrue(personDto.getDni())) {
+            Person existingPerson = personService.findByDniAndActivoTrue(personDto.getDni());
             if (!existingPerson.getId().equals(id)) {
                 return new ResponseEntity<>(new Mensaje("El DNI ya existe"), HttpStatus.BAD_REQUEST);
             }

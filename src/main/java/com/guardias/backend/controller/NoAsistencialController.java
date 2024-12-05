@@ -96,9 +96,9 @@ public class NoAsistencialController {
 
     @GetMapping("/detailDni/{dni}")
     public ResponseEntity<NoAsistencial> getById(@PathVariable("dni") int dni) {
-        if (!noAsistencialService.activoDni(dni))
+        if (!noAsistencialService.existsByDniAndActivoTrue(dni))
             return new ResponseEntity(new Mensaje("Profesional no entontrado"), HttpStatus.NOT_FOUND);
-        NoAsistencial noAsistencial = noAsistencialService.findByDni(dni).get();
+        NoAsistencial noAsistencial = noAsistencialService.findByDniAndActivoTrue(dni).get();
         return new ResponseEntity<NoAsistencial>(noAsistencial, HttpStatus.OK);
     }
 

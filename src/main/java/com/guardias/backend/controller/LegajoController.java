@@ -55,7 +55,7 @@ public class LegajoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
-        ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto);
+        ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto,0L);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Legajo legajo = legajoService.createUpdate(new Legajo(), legajoDto);
             legajoService.save(legajo);
@@ -71,7 +71,7 @@ public class LegajoController {
         if (!legajoService.existsById(id))
             return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto);
+        ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto, id);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Legajo legajo = legajoService.createUpdate(legajoService.findById(id).get(), legajoDto);
             legajoService.save(legajo);
