@@ -58,4 +58,9 @@ public class CapsService {
     public boolean activo(Long id) {
         return (capsRepository.existsById(id) && capsRepository.findById(id).get().isActivo());
     }
+
+    public boolean isCaps(Long id) {
+        Optional<Caps> caps = capsRepository.findById(id);
+        return caps.isPresent() && caps.get().isActivo();
+    }
 }

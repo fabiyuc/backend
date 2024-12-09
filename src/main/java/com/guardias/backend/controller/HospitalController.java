@@ -98,6 +98,12 @@ public class HospitalController {
         return new ResponseEntity(hospital, HttpStatus.OK);
     }
 
+    @GetMapping("/isHospital/{id}")
+    public ResponseEntity<Boolean> isHospital(@PathVariable("id") Long id) {
+        boolean esHospital = hospitalService.isHospital(id);
+        return new ResponseEntity<>(esHospital, HttpStatus.OK);
+    }
+
     private Hospital createUpdate(Hospital hospital, HospitalDto hospitalDto) {
         Efector efector = efectorController.createUpdate(hospital, hospitalDto);
         hospital = (Hospital) efector;

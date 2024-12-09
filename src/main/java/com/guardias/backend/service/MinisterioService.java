@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.repository.MinisterioRepository;
 
@@ -59,6 +58,11 @@ public class MinisterioService {
 
     public void deleteById(Long id) {
         ministerioRepository.deleteById((Long) id);
+    }
+
+    public boolean isMinisterio(Long id) {
+        Optional<Ministerio> ministerio = ministerioRepository.findById(id);
+        return ministerio.isPresent() && ministerio.get().isActivo();
     }
 
 }

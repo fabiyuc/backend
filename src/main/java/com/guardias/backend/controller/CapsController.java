@@ -79,6 +79,12 @@ public class CapsController {
         return new ResponseEntity(caps, HttpStatus.OK);
     }
 
+    @GetMapping("/isCaps/{id}")
+    public ResponseEntity<Boolean> isCaps(@PathVariable("id") Long id) {
+        boolean esCaps = capsService.isCaps(id);
+        return new ResponseEntity<>(esCaps, HttpStatus.OK);
+    }
+
     private Caps createUpdate(Caps caps, CapsDto capsDto) {
         Efector efector = efectorController.createUpdate(caps, capsDto);
         caps = (Caps) efector;
@@ -106,7 +112,7 @@ public class CapsController {
         if (capsDto.getTipoCaps() == null)
             return new ResponseEntity(new Mensaje("es obligatorio indicar el tipo de Caps"),
                     HttpStatus.BAD_REQUEST);
-                    
+
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(new Caps(), capsDto);
             caps.setActivo(true);
