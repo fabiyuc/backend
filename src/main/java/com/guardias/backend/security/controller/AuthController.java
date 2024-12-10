@@ -66,7 +66,7 @@ public class AuthController {
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-        
+
         Usuario usuario = new Usuario();
 
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
@@ -95,13 +95,90 @@ public class AuthController {
                 }
                 usuario.setPerson(person);
             }
-        }else {
-            return new ResponseEntity<>(new Mensaje("Es obligatorio asociar un usuario a una persona"), HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(new Mensaje("Es obligatorio asociar un usuario a una persona"),
+                    HttpStatus.BAD_REQUEST);
         }
 
         usuario.setActivo(true);
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @Valid @RequestBody NuevoUsuario nuevoUsuario,
+            BindingResult bindingResult) {
+
+        // Validar errores en los campos proporcionados
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(
+                    new Mensaje("Campos mal puestos o email inválido"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Verificar si el usuario existe
+        Usuario usuarioExistente = usuarioService.findById(id).get();
+        if (usuarioExistente == null) {
+            return new ResponseEntity<>(
+                    new Mensaje("Usuario no encontrado"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // Validar si el nombre de usuario ya existe y pertenece a otro usuario
+        if (!usuarioExistente.getNombreUsuario().equals(nuevoUsuario.getNombreUsuario())
+                && usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario())) {
+            return new ResponseEntity<>(
+                    new Mensaje("El nombre de usuario ya existe"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Actualizar el nombre de usuario
+        usuarioExistente.setNombreUsuario(nuevoUsuario.getNombreUsuario());
+
+        // Actualizar la contraseña si se proporciona
+        if (nuevoUsuario.getPassword() != null && !nuevoUsuario.getPassword().isEmpty()) {
+            usuarioExistente.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
+        }
+
+        // Actualizar roles
+        Set<Rol> roles = new HashSet<>();
+        for (String rolNombre : nuevoUsuario.getRoles()) {
+            try {
+                RolNombre rolEnum = RolNombre.valueOf(rolNombre);
+                roles.add(rolService.getByRolNombre(rolEnum).get());
+            } catch (IllegalArgumentException e) {
+                return new ResponseEntity<>(
+                        new Mensaje("Rol no válido: " + rolNombre),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+        usuarioExistente.setRoles(roles);
+
+        // Actualizar asociación con Person
+        if (nuevoUsuario.getIdPerson() != null) {
+            if (personService.activoById(nuevoUsuario.getIdPerson())) {
+                Person person = personService.findById(nuevoUsuario.getIdPerson());
+                if (person == null) {
+                    return new ResponseEntity<>(
+                            new Mensaje("Persona no encontrada"),
+                            HttpStatus.BAD_REQUEST);
+                }
+                usuarioExistente.setPerson(person);
+            } else {
+                return new ResponseEntity<>(
+                        new Mensaje("La persona asociada no está activa"),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        // Guardar los cambios
+        usuarioService.save(usuarioExistente);
+
+        return new ResponseEntity<>(
+                new Mensaje("Usuario actualizado correctamente"),
+                HttpStatus.OK);
     }
 
     // devuelve un token
@@ -164,7 +241,5 @@ public class AuthController {
         usuarioService.save(usuario);
         return new ResponseEntity<>(new Mensaje("Usuario dado de baja correctamente"), HttpStatus.OK);
     }
-
-
 
 }
