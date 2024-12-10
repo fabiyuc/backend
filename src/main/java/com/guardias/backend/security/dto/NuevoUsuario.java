@@ -26,6 +26,8 @@ public class NuevoUsuario {
 
     @NotBlank
     private Long idPerson;
+
+    private Boolean activo;
     
     
 }

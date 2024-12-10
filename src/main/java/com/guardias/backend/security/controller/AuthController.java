@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,19 +48,14 @@ public class AuthController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
     @Autowired
     AuthenticationManager authenticationManager;
-
     @Autowired
     UsuarioService usuarioService;
-
     @Autowired
     RolService rolService;
-
     @Autowired
     PersonService personService;
-
     @Autowired
     JwtProvider jwtProvider;
 
@@ -70,18 +66,13 @@ public class AuthController {
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
-        /* if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity(new Mensaje("el email ya existe"), HttpStatus.BAD_REQUEST); */
         
         Usuario usuario = new Usuario();
 
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
-        //usuario.setEmail(nuevoUsuario.getEmail());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
-
         Set<Rol> roles = new HashSet<>();
-        // por defecto todos van a ser USER
-        roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
+        roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());// por defecto todos van a ser USER
 
         // Validar y agregar roles enviados
         for (String rolNombre : nuevoUsuario.getRoles()) {
@@ -108,6 +99,7 @@ public class AuthController {
             return new ResponseEntity<>(new Mensaje("Es obligatorio asociar un usuario a una persona"), HttpStatus.BAD_REQUEST);
         }
 
+        usuario.setActivo(true);
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
     }
@@ -162,5 +154,17 @@ public class AuthController {
 
         return new ResponseEntity(dto, HttpStatus.OK);
     }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
+        if (!usuarioService.activo(id))
+            return new ResponseEntity(new Mensaje("el usuario no existe"), HttpStatus.NOT_FOUND);
+        Usuario usuario = usuarioService.findById(id).get();
+        usuario.setActivo(false);
+        usuarioService.save(usuario);
+        return new ResponseEntity<>(new Mensaje("Usuario dado de baja correctamente"), HttpStatus.OK);
+    }
+
+
 
 }

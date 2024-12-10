@@ -17,6 +17,7 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.AutoridadService;
 import com.guardias.backend.service.DistribucionHorariaService;
@@ -246,11 +247,22 @@ public class PersonController {
                 registroMensualService.findById(id).get().setAsistencial(person);
             }
         }
-
-        if (personDto.getIdUsuario() != null) {
-            if (person.getUsuario() == null
-                    || !Objects.equals(person.getUsuario().getId(), personDto.getIdUsuario())) {
-                person.setUsuario(usuarioService.findById(personDto.getIdUsuario()).get());
+      
+        if (personDto.getIdUsuarios() != null) {
+            List<Long> idList = new ArrayList();
+            if (person.getUsuarios() != null) {
+                for (Usuario usuario : person.getUsuarios()) {
+                    for (Long id : personDto.getIdUsuarios()) {
+                        if (!usuario.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? personDto.getIdUsuarios() : idList;
+            for (Long id : idsToAdd) {
+                person.getUsuarios().add(usuarioService.findById(id).get());
+                usuarioService.findById(id).get().setPerson(person);
             }
         }
         return person;

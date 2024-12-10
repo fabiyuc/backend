@@ -94,14 +94,15 @@ public abstract class Person {
             "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
-    /* @OneToOne
-    @JoinColumn(name = "usuario_id")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","email","registrosActividades","person","nombre" })
+    /* @OneToOne(mappedBy = "person")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person" })
     private Usuario usuario; */
 
-    @OneToOne(mappedBy = "person")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person" })
-    private Usuario usuario;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", 
+            "person" })
+    private List<Usuario> usuarios = new ArrayList<>();
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })

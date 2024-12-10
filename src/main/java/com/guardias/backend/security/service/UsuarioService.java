@@ -26,7 +26,7 @@ public class UsuarioService {
     }
 
     public boolean existsByNombreUsuario(String nombreUsuario) {
-        return usuarioRepository.existsByNombreUsuario(nombreUsuario);
+        return usuarioRepository.existsByNombreUsuarioAndActivoTrue(nombreUsuario);
     }
 
     /* public boolean existsByEmail(String email) {
@@ -41,4 +41,7 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    public boolean activo(Long id) {
+        return (usuarioRepository.existsById(id) && usuarioRepository.findById(id).get().getActivo());
+    }
 }

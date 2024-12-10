@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,8 @@ public class Usuario {
     /* private String email; */
     private String password;
 
+    private Boolean activo;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id"))
     private Set<Rol> roles = new HashSet<>();
@@ -54,10 +57,14 @@ public class Usuario {
             "servicio", "efector", "registroMensual", "registrosPendientes" })
     private List<RegistroActividad> registrosEgresos = new ArrayList<>();
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_persona")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "usuarios" })
+    private Person person;
+    /* @OneToOne
     @JoinColumn(name = "person_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "usuario" })
-    private Person person;
+    private Person person; */
 
     @Override
     public boolean equals(Object obj) {
