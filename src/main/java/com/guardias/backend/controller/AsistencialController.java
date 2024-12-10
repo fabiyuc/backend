@@ -158,9 +158,9 @@ public class AsistencialController {
 
     @GetMapping("/detaildni/{dni}")
     public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
-        if (!asistencialService.activoDni(dni))
+        if (!asistencialService.existsByDniAndActivoTrue(dni))
             return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
-        Asistencial asistencial = asistencialService.findByDni(dni).get();
+        Asistencial asistencial = asistencialService.findByDniAndActivoTrue(dni).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
 
     }

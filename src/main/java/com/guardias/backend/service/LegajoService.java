@@ -89,7 +89,7 @@ public class LegajoService {
         legajoRepository.deleteById(id);
     }
 
-    public ResponseEntity<?> validations(LegajoDto legajoDto) {
+    public ResponseEntity<?> validations(LegajoDto legajoDto, Long id) {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
 
@@ -139,6 +139,14 @@ public class LegajoService {
                 return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
                         HttpStatus.BAD_REQUEST);
  
+
+            if (legajoRepository.existsByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial())) {
+                Legajo existingLegajo = legajoRepository.findByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial()).get();
+                    if (!existingLegajo.getId().equals(id)) {
+                        return new ResponseEntity<>(new Mensaje("La matricula provincial ya existe"), HttpStatus.BAD_REQUEST);
+                    }
+            }
+
             if (legajoDto.getIdProfesion() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                         HttpStatus.BAD_REQUEST);

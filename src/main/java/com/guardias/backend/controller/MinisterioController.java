@@ -74,6 +74,12 @@ public class MinisterioController {
         return new ResponseEntity(ministerio, HttpStatus.OK);
     }
 
+    @GetMapping("/isMinisterio/{id}")
+    public ResponseEntity<Boolean> isMinisterio(@PathVariable("id") Long id) {
+        boolean esMinisterio = ministerioService.isMinisterio(id);
+        return new ResponseEntity<>(esMinisterio, HttpStatus.OK);
+    }
+
     private Ministerio createUpdate(Ministerio ministerio, MinisterioDto ministerioDto) {
         Efector efector = efectorController.createUpdate(ministerio, ministerioDto);
         ministerio = (Ministerio) efector;

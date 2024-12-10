@@ -65,18 +65,18 @@ public class HospitalService {
     }
 
     // Encuentra todos los hospitales por nivel de complejidad
-  
+
     public List<Hospital> findHospitalesPorNivel(int nivelComplejidad) {
         return hospitalRepository.findHospitalesPorNivel(nivelComplejidad);
     }
 
     public List<Hospital> findHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir) {
-        return hospitalRepository.findHospitalesPorNivelExcluyendo(nivelComplejidad,  nombreAExcluir);
+        return hospitalRepository.findHospitalesPorNivelExcluyendo(nivelComplejidad, nombreAExcluir);
     }
 
     public List<CapsNameDto> findActiveCapsByHospitalId(Long hospitalId) {
         Optional<Hospital> hospital = hospitalRepository.findByIdAndActivoTrue(hospitalId);
-        
+
         if (hospital.isPresent()) {
             List<CapsNameDto> capsList = hospital.get().getCaps().stream()
                     .filter(caps -> caps.isActivo()) // Filtrar solo los CAPS activos
@@ -84,8 +84,13 @@ public class HospitalService {
                     .collect(Collectors.toList());
             return capsList;
         }
-        
+
         return null;
+    }
+
+    public boolean isHospital(Long id) {
+        Optional<Hospital> hospital = hospitalRepository.findById(id);
+        return hospital.isPresent() && hospital.get().isActivo();
     }
 
 }

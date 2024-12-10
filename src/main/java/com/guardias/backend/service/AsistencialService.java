@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,11 +21,9 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.LegajoRepository;
 import com.guardias.backend.repository.RegistroActividadRepository;
-import com.guardias.backend.repository.TipoGuardiaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -70,16 +67,20 @@ public class AsistencialService {
         return asistencialRepository.existsById(id);
     }
 
-    public boolean existsByDni(int dni) {
-        return asistencialRepository.existsByDni(dni);
+    public boolean existsByDniAndActivoTrue(int dni) {
+        return asistencialRepository.existsByDniAndActivoTrue(dni);
     }
 
     public boolean existsByCuil(String cuil) {
         return asistencialRepository.existsByCuil(cuil);
     }
 
-    public Optional<Asistencial> findByDni(int dni) {
-        return asistencialRepository.findByDni(dni);
+    public Optional<Asistencial> findByDniAndActivoTrue(int dni) {
+        return asistencialRepository.findByDniAndActivoTrue(dni);
+    }
+
+    public Optional<Asistencial> findByEmailAndActivoTrue(String email) {
+        return asistencialRepository.findByEmailAndActivoTrue(email);
     }
 
     public ResponseEntity<?> validations(AsistencialDto asistencialDto, Long id) {
@@ -126,10 +127,6 @@ public class AsistencialService {
 
     public boolean activo(Long id) {
         return (asistencialRepository.existsById(id) && asistencialRepository.findById(id).get().isActivo());
-    }
-
-    public boolean activoDni(int dni) {
-        return (asistencialRepository.existsByDni(dni) && asistencialRepository.findByDni(dni).get().isActivo());
     }
 
     /* public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {

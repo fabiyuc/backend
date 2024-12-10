@@ -42,11 +42,11 @@ public class PersonService {
             return null;
     }
 
-    public Person findByDni(int dni) {
-        Person persona = asistencialService.findByDni(dni).orElse(null);
+    public Person findByDniAndActivoTrue(int dni) {
+        Person persona = asistencialService.findByDniAndActivoTrue(dni).orElse(null);
 
         if (persona == null) {
-            persona = noAsistencialService.findByDni(dni).orElse(null);
+            persona = noAsistencialService.findByDniAndActivoTrue(dni).orElse(null);
         }
 
         if (persona.isActivo())
@@ -75,12 +75,10 @@ public class PersonService {
         return exists;
     }
 
-    public boolean existsByDni(int dni) {
-        boolean exists = (asistencialRepository.existsByDni(dni)
-                && asistencialRepository.findByDni(dni).get().isActivo());
+    public boolean existsByDniAndActivoTrue(int dni) {
+        boolean exists = asistencialRepository.existsByDniAndActivoTrue(dni);
         if (!exists)
-            exists = (noAsistencialRepository.existsByDni(dni)
-                    && noAsistencialRepository.findByDni(dni).get().isActivo());
+            exists = noAsistencialRepository.existsByDni(dni);
         return exists;
     }
 
@@ -93,13 +91,26 @@ public class PersonService {
         return exists;
     }
 
-    public boolean existsByEmail(String email) {
-        boolean exists = (asistencialRepository.existsByEmail(email)
-                && asistencialRepository.findByEmail(email).get().isActivo());
+    public boolean existsByEmailAndActivoTrue(String email) {
+        boolean exists = (asistencialRepository.existsByEmailAndActivoTrue(email)
+                && asistencialRepository.findByEmailAndActivoTrue(email).get().isActivo());
         if (!exists)
-            exists = (noAsistencialRepository.existsByEmail(email)
-                    && noAsistencialRepository.findByEmail(email).get().isActivo());
+            exists = (noAsistencialRepository.existsByEmailAndActivoTrue(email)
+                    && noAsistencialRepository.findByEmailAndActivoTrue(email).get().isActivo());
         return exists;
+    }
+
+    public Person findByEmailAndActivoTrue(String email) {
+        Person persona = asistencialService.findByEmailAndActivoTrue(email).orElse(null);
+
+        if (persona == null) {
+            persona = noAsistencialService.findByEmailAndActivoTrue(email).orElse(null);
+        }
+
+        if (persona.isActivo())
+            return persona;
+        else
+            return null;
     }
 
     public void savePersona(Person persona) {
