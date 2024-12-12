@@ -89,8 +89,7 @@ public class AsistencialController {
                 asistencialListForLegajosDtos, HttpStatus.OK);
     }
 
-    // lista asistenciales habilitados de un hospital para crear distribuciones
-    // horarias (CARGO Y AGRUP)
+    // lista asistenciales habilitados de un hospital para crear distribuciones horarias (CARGO Y AGRUP)
 
     @GetMapping("/listForDistHorariaDtos")
     public ResponseEntity<List<AsistencialListForLegajosDto>> listForDistHoraria() {

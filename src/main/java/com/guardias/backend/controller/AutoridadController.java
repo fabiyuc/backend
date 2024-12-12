@@ -79,9 +79,14 @@ public class AutoridadController {
         }
     }
 
+    @GetMapping("/validar/{idPersona}")
+    public boolean esValidoParaCrearAutoridad(@PathVariable Long idPersona) {
+        return autoridadService.esValidaParaCrearAutoridad(idPersona);
+    }
+
     @PutMapping("/confirmar/{id}")
     public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody AutoridadDto autoridadDto) {
-        
+
         if (!autoridadService.existsById(id))
             return new ResponseEntity(new Mensaje("la autoridad no existe"), HttpStatus.NOT_FOUND);
 
@@ -89,9 +94,9 @@ public class AutoridadController {
             Autoridad autoridad = autoridadService.findById(id).get();
             autoridad.setConfirmado(autoridadDto.getConfirmado());
             autoridadService.save(autoridad);
-            
+
             return new ResponseEntity(new Mensaje("asistencial modificado correctamente"), HttpStatus.OK);
-     
+
         } else {
             return new ResponseEntity<Mensaje>(new Mensaje("debe indicar el valor de confirmado"),
                     HttpStatus.BAD_REQUEST);

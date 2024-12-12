@@ -86,7 +86,7 @@ public class AutoridadService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        Person persona = personaService.findById(autoridadDto.getIdPersona());
+        /* Person persona = personaService.findById(autoridadDto.getIdPersona());
         if (persona != null) {
 
             // Filtrar los legajos activos
@@ -118,10 +118,44 @@ public class AutoridadService {
             } else if (tieneGuardiaExtraOContraFactura || legajosActivos.isEmpty()) {
                 return new ResponseEntity<>(new Mensaje("Válido"), HttpStatus.OK);
             }
-        }
-        return new ResponseEntity<>(new Mensaje("Persona no encontrada"), HttpStatus.NOT_FOUND);
+        } */
+        
+        /* return new ResponseEntity<>(new Mensaje("Persona no encontrada"), HttpStatus.NOT_FOUND); */
+
+        return new ResponseEntity<>(new Mensaje("valido"), HttpStatus.OK);
     }
 
+    public boolean esValidaParaCrearAutoridad(Long idPersona) {
+        Person persona = personaService.findById(idPersona);
+        if (persona == null) {
+            return false; // La persona no existe
+        }
+    
+        // Filtrar los legajos activos
+        List<Legajo> legajosActivos = persona.getLegajos().stream()
+                .filter(Legajo::isActivo)
+                .collect(Collectors.toList());
+    
+        // Si no hay legajos activos, permito la creación de la autoridad
+        if (legajosActivos.isEmpty()) {
+            return true; // Es válido porque no tiene legajos activos
+        }
+    
+        // Verifico los tipos de guardia en los legajos activos
+        boolean tieneGuardiaCargoOAgrupacion = legajosActivos.stream()
+                .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CARGO ||
+                        tipoGuardia.getNombre() == TipoGuardiaEnum.AGRUPACION);
+    
+        // Si tiene guardia de tipo "cargo" o "agrupación", no es válido
+        if (tieneGuardiaCargoOAgrupacion) {
+            return false;
+        }
+    
+        // Si no tiene guardias de "cargo" o "agrupación", es válido
+        return true;
+    }
+    
     public Autoridad create(AutoridadDto autoridadDto) {
 
         Autoridad autoridad = new Autoridad();
