@@ -368,6 +368,34 @@ public class AsistencialService {
         return dtoList;
     }
 
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTipoGuardiaExtraHabilitado(Long idEfector) {
+        // Obtiene la lista de asistenciales activos relacionados con el efector
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(idEfector);
+
+        return asistenciales.stream()
+                // Filtra asistenciales con legajos activos y tipo de guardia "EXTRA"
+                .filter(asistencial -> asistencial.getLegajos().stream()
+                        .filter(legajo -> legajo.getFechaFinal() == null) // Legajos activos
+                        .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                        .anyMatch(tipoGuardia -> "EXTRA".equals(tipoGuardia.getNombre().name()))) // Filtra por "EXTRA"
+                // Filtra asistenciales con habilitaciones válidas para el efector especificado
+                .filter(asistencial -> asistencial.getHabilitacionesGuardias().stream()
+                        .anyMatch(habilitacion -> habilitacion.getEfectores().stream()
+                                .anyMatch(efector -> efector.getId().equals(idEfector)))) // Verifica relación con
+                                                                                          // efectores
+                // Mapea los datos al DTO
+                .map(asistencial -> new AsistencialSummaryDto(
+                        asistencial.getId(),
+                        asistencial.getNombre(),
+                        asistencial.getApellido(),
+                        asistencial.getLegajos().stream()
+                                .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                                .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                                .distinct()
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
     public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long efectorId) {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return getAsistencialesByTipoGuardiaCargo(asistenciales);
