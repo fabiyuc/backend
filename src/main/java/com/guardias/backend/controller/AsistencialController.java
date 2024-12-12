@@ -34,7 +34,7 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
-    
+
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
         List<Asistencial> asistencialList = asistencialService.findByActivoTrue().orElse(new ArrayList<>());
@@ -89,7 +89,8 @@ public class AsistencialController {
                 asistencialListForLegajosDtos, HttpStatus.OK);
     }
 
-    // lista asistenciales habilitados de un hospital para crear distribuciones horarias (CARGO Y AGRUP)
+    // lista asistenciales habilitados de un hospital para crear distribuciones
+    // horarias (CARGO Y AGRUP)
 
     @GetMapping("/listForDistHorariaDtos")
     public ResponseEntity<List<AsistencialListForLegajosDto>> listForDistHoraria() {
@@ -147,6 +148,30 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
+    @GetMapping("/listByEfectorAndCargo/{idEfector}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndCargo(
+            @PathVariable Long idEfector) {
+        List<AsistencialSummaryDto> asistenciales = asistencialService
+                .getAsistencialesByEfectorAndCargo(idEfector);
+
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfectorAndAgrupacion/{idEfector}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndAgrupacion(
+            @PathVariable Long idEfector) {
+        List<AsistencialSummaryDto> asistenciales = asistencialService
+                .getAsistencialesByEfectorAndAgrupacion(idEfector);
+
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<Asistencial> getById(@PathVariable("id") Long id) {
         if (!asistencialService.activo(id))
@@ -185,7 +210,8 @@ public class AsistencialController {
         ResponseEntity<?> respuestaValidaciones = asistencialService.validations(asistencialDto, id);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Asistencial asistencial = asistencialService.createUpdate(asistencialService.findById(id).get(), asistencialDto);
+            Asistencial asistencial = asistencialService.createUpdate(asistencialService.findById(id).get(),
+                    asistencialDto);
             asistencialService.save(asistencial);
             return new ResponseEntity(new Mensaje("asistencial modificado correctamente"), HttpStatus.OK);
         } else {
@@ -211,27 +237,34 @@ public class AsistencialController {
         return new ResponseEntity<>(new Mensaje("Asistencial eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
-    /* @PostMapping("/{idAsistencial}/addTipoGuardia/{idTipoGuardia}")
-    public ResponseEntity<?> agregarTipoGuardia(@PathVariable("idAsistencial") Long idAsistencial,
-
-            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
-
-        try {
-            asistencialService.agregarTipoGuardia(idAsistencial, idTipoGuardia);
-            return new ResponseEntity<>(new Mensaje("Tipo DEGuardia agregado al asistencial correctamente"),
-                    HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(new Mensaje("No se encontró el asistencial con el ID proporcionado"),
-                    HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Mensaje("Error al agregar el tipo de Guardia al asistencial"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    } */
+    /*
+     * @PostMapping("/{idAsistencial}/addTipoGuardia/{idTipoGuardia}")
+     * public ResponseEntity<?> agregarTipoGuardia(@PathVariable("idAsistencial")
+     * Long idAsistencial,
+     * 
+     * @PathVariable("idTipoGuardia") Long idTipoGuardia) {
+     * 
+     * try {
+     * asistencialService.agregarTipoGuardia(idAsistencial, idTipoGuardia);
+     * return new ResponseEntity<>(new
+     * Mensaje("Tipo DEGuardia agregado al asistencial correctamente"),
+     * HttpStatus.OK);
+     * } catch (EntityNotFoundException e) {
+     * return new ResponseEntity<>(new
+     * Mensaje("No se encontró el asistencial con el ID proporcionado"),
+     * HttpStatus.NOT_FOUND);
+     * } catch (Exception e) {
+     * return new ResponseEntity<>(new
+     * Mensaje("Error al agregar el tipo de Guardia al asistencial"),
+     * HttpStatus.INTERNAL_SERVER_ERROR);
+     * }
+     * }
+     */
 
     @GetMapping("/esPlanta/{idAsistencial}/{idEfector}")
-    public boolean esPlanta(@PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return asistencialService.esPlanta(idAsistencial,idEfector);
+    public boolean esPlanta(@PathVariable("idAsistencial") long idAsistencial,
+            @PathVariable("idEfector") long idEfector) {
+        return asistencialService.esPlanta(idAsistencial, idEfector);
     }
 
 }

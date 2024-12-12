@@ -41,11 +41,12 @@ public class AsistencialService {
     @Autowired
     @Lazy
     PersonController personController;
-    /* @Autowired
-    RegistroActividadService registroActividadService; */
+    /*
+     * @Autowired
+     * RegistroActividadService registroActividadService;
+     */
     @Autowired
     RegistroActividadRepository registroActividadRepository;
-
 
     public Optional<List<Asistencial>> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
@@ -129,35 +130,39 @@ public class AsistencialService {
         return (asistencialRepository.existsById(id) && asistencialRepository.findById(id).get().isActivo());
     }
 
-    /* public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
-        // Buscar el Asistencial por su ID
-        Asistencial asistencial = asistencialRepository.findById(idAsistencial)
-                .orElseThrow(() -> new EntityNotFoundException("Asistencial no encontrado"));
-
-        // Buscar el TipoGuardia por su ID
-        TipoGuardia tipoGuardia = tipoGuardiaRepository.findById(idTipoGuardia)
-                .orElseThrow(() -> new EntityNotFoundException("TipoGuardia no encontrado"));
-
-        // Buscar o crear el Legajo para este Asistencial
-        Legajo legajo = asistencial.getLegajos().stream()
-                .filter(l -> l.getFechaFinal() == null) // Suponiendo que un legajo activo no tiene fecha de
-                                                        // finalización
-                .findFirst()
-                .orElseGet(() -> {
-                    Legajo nuevoLegajo = new Legajo();
-                    nuevoLegajo.setPersona(asistencial);
-                    nuevoLegajo.setFechaInicio(LocalDate.now()); // Establece la fecha de inicio actual
-                    asistencial.getLegajos().add(nuevoLegajo); // Agregar el nuevo legajo a la lista del asistencial
-                    return nuevoLegajo;
-                });
-
-        // Agregar el TipoGuardia al Legajo
-        legajo.getTipoGuardias().add(tipoGuardia);
-
-        // Guardar los cambios en la base de datos
-        legajoRepository.save(legajo);
-    }
-
+    /*
+     * public void agregarTipoGuardia(Long idAsistencial, Long idTipoGuardia) {
+     * // Buscar el Asistencial por su ID
+     * Asistencial asistencial = asistencialRepository.findById(idAsistencial)
+     * .orElseThrow(() -> new EntityNotFoundException("Asistencial no encontrado"));
+     * 
+     * // Buscar el TipoGuardia por su ID
+     * TipoGuardia tipoGuardia = tipoGuardiaRepository.findById(idTipoGuardia)
+     * .orElseThrow(() -> new EntityNotFoundException("TipoGuardia no encontrado"));
+     * 
+     * // Buscar o crear el Legajo para este Asistencial
+     * Legajo legajo = asistencial.getLegajos().stream()
+     * .filter(l -> l.getFechaFinal() == null) // Suponiendo que un legajo activo no
+     * tiene fecha de
+     * // finalización
+     * .findFirst()
+     * .orElseGet(() -> {
+     * Legajo nuevoLegajo = new Legajo();
+     * nuevoLegajo.setPersona(asistencial);
+     * nuevoLegajo.setFechaInicio(LocalDate.now()); // Establece la fecha de inicio
+     * actual
+     * asistencial.getLegajos().add(nuevoLegajo); // Agregar el nuevo legajo a la
+     * lista del asistencial
+     * return nuevoLegajo;
+     * });
+     * 
+     * // Agregar el TipoGuardia al Legajo
+     * legajo.getTipoGuardias().add(tipoGuardia);
+     * 
+     * // Guardar los cambios en la base de datos
+     * legajoRepository.save(legajo);
+     * }
+     * 
      */
 
     // Método para obtener la lista de Asistenciales y convertirlos a
@@ -297,6 +302,82 @@ public class AsistencialService {
         return dtoList;
     }
 
+    // filtrar asistenciales por tipo de guardia CARGO y mapea a
+    // AsistencialSummaryDto
+    public List<AsistencialSummaryDto> getAsistencialesByTipoGuardiaCargo(List<Asistencial> asistenciales) {
+        List<AsistencialSummaryDto> dtoList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            // Filtra por tipos de guardia CARGO
+            boolean hasCargo = asistencial.getLegajos().stream()
+                    .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                    .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Extrae tipos de guardia de cada legajo
+                                                                          // activo
+                    .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CARGO"));
+
+            if (hasCargo) {
+                // Mapea los nombres de los tipos de guardia
+                List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                        .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                        .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                        .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                        .collect(Collectors.toList());
+
+                // Crea el DTO
+                AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                        asistencial.getId(),
+                        asistencial.getNombre(),
+                        asistencial.getApellido(),
+                        nombresTiposGuardias);
+                dtoList.add(dto);
+            }
+        }
+        return dtoList;
+    }
+
+    // filtrar asislenciales por tipo de guardia AGRUPACION y mapea a
+    // AsistencialSummaryDto
+    public List<AsistencialSummaryDto> getAsistencialesByTipoGuardiaAgrupacion(List<Asistencial> asistenciales) {
+        List<AsistencialSummaryDto> dtoList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            // Filtra por tipos de guardia AGRUPACION
+            boolean hasAgrupacion = asistencial.getLegajos().stream()
+                    .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                    .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Extrae tipos de guardia de cada legajo
+                                                                          // activo
+                    .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("AGRUPACION"));
+
+            if (hasAgrupacion) {
+                // Mapea los nombres de los tipos de guardia
+                List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                        .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                        .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                        .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                        .collect(Collectors.toList());
+
+                // Crea el DTO
+                AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                        asistencial.getId(),
+                        asistencial.getNombre(),
+                        asistencial.getApellido(),
+                        nombresTiposGuardias);
+                dtoList.add(dto);
+            }
+        }
+        return dtoList;
+    }
+
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return getAsistencialesByTipoGuardiaCargo(asistenciales);
+    }
+
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndAgrupacion(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
+    }
+
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
     public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
         List<Asistencial> asistenciales = asistencialRepository.findByUdoAndActivoTrue(udoId);
@@ -318,7 +399,7 @@ public class AsistencialService {
         if (!asistencialRepository.existsById(idAsistencial)) {
             throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
         }
-       
+
         if (!efectorService.existsById(idEfector)) {
             throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
         }
