@@ -124,29 +124,29 @@ public class AuthController {
     }
 
     @GetMapping("/usuarioActivo/{idPerson}")
-    public ResponseEntity<?> verificarUsuarioActivo(@PathVariable Long idPerson) {
+    public ResponseEntity<Boolean> verificarUsuarioActivo(@PathVariable Long idPerson) {
         if (idPerson == null) {
-            return new ResponseEntity<>(new Mensaje("El ID de la persona no puede ser nulo"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
-        if (usuarioService.existeUsuarioActivoParaPersona(idPerson)) {
-            return new ResponseEntity<>(new Mensaje("La persona ya tiene un usuario activo"), HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>(new Mensaje("La persona no tiene un usuario activo asociado"), HttpStatus.OK);
+        boolean existeUsuarioActivo = usuarioService.existeUsuarioActivoParaPersona(idPerson);
+        return new ResponseEntity<>(existeUsuarioActivo, HttpStatus.OK);
     }
 
     @GetMapping("/legajoActivo/{idPerson}")
-    public ResponseEntity<?> verificarLegajoActivo(@PathVariable Long idPerson) {
+    public ResponseEntity<Boolean> verificarLegajoActivo(@PathVariable Long idPerson) {
         if (idPerson == null) {
-            return new ResponseEntity<>(new Mensaje("El ID de la persona no puede ser nulo"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
 
-        if (!usuarioService.puedeCrearUsuario(idPerson)) {
-            return new ResponseEntity<>(new Mensaje("La persona no tiene un legajo activo"), HttpStatus.BAD_REQUEST);
-        }
+        boolean tieneLegajoActivo = usuarioService.puedeCrearUsuario(idPerson);
+        return new ResponseEntity<>(tieneLegajoActivo, HttpStatus.OK);
+    }
 
-        return new ResponseEntity<>(new Mensaje("La persona tiene un legajo activo"), HttpStatus.OK);
+    @GetMapping("/checkUsername/{nombreUsuario}")
+    public ResponseEntity<Boolean> checkUsername(@PathVariable String nombreUsuario) {
+        boolean exists = usuarioService.existsByNombreUsuario(nombreUsuario);
+        return new ResponseEntity<>(exists, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
