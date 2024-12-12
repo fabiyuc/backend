@@ -67,17 +67,23 @@ public class AuthController {
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
 
-        // Verificar si ya existe un usuario activo para la persona asociada
-        if (nuevoUsuario.getIdPerson() != null
-                && usuarioService.existeUsuarioActivoParaPersona(nuevoUsuario.getIdPerson())) {
-            return new ResponseEntity<>(new Mensaje("La persona ya tiene un usuario activo"),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        // Verificar si la persona tiene un legajo activo
-        if (nuevoUsuario.getIdPerson() != null && !usuarioService.puedeCrearUsuario(nuevoUsuario.getIdPerson())) {
-            return new ResponseEntity<>(new Mensaje("La persona no tiene un legajo activo"), HttpStatus.BAD_REQUEST);
-        }
+        /*
+         * // Verificar si ya existe un usuario activo para la persona asociada
+         * if (nuevoUsuario.getIdPerson() != null
+         * && usuarioService.existeUsuarioActivoParaPersona(nuevoUsuario.getIdPerson()))
+         * {
+         * return new ResponseEntity<>(new
+         * Mensaje("La persona ya tiene un usuario activo"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * 
+         * // Verificar si la persona tiene un legajo activo
+         * if (nuevoUsuario.getIdPerson() != null &&
+         * !usuarioService.puedeCrearUsuario(nuevoUsuario.getIdPerson())) {
+         * return new ResponseEntity<>(new
+         * Mensaje("La persona no tiene un legajo activo"), HttpStatus.BAD_REQUEST);
+         * }
+         */
 
         Usuario usuario = new Usuario();
 
@@ -115,6 +121,32 @@ public class AuthController {
         usuario.setActivo(true);
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/usuarioActivo/{idPerson}")
+    public ResponseEntity<?> verificarUsuarioActivo(@PathVariable Long idPerson) {
+        if (idPerson == null) {
+            return new ResponseEntity<>(new Mensaje("El ID de la persona no puede ser nulo"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (usuarioService.existeUsuarioActivoParaPersona(idPerson)) {
+            return new ResponseEntity<>(new Mensaje("La persona ya tiene un usuario activo"), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(new Mensaje("La persona no tiene un usuario activo asociado"), HttpStatus.OK);
+    }
+
+    @GetMapping("/legajoActivo/{idPerson}")
+    public ResponseEntity<?> verificarLegajoActivo(@PathVariable Long idPerson) {
+        if (idPerson == null) {
+            return new ResponseEntity<>(new Mensaje("El ID de la persona no puede ser nulo"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (!usuarioService.puedeCrearUsuario(idPerson)) {
+            return new ResponseEntity<>(new Mensaje("La persona no tiene un legajo activo"), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(new Mensaje("La persona tiene un legajo activo"), HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
