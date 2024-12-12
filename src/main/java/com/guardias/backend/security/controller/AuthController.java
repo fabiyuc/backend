@@ -67,6 +67,18 @@ public class AuthController {
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
 
+        // Verificar si ya existe un usuario activo para la persona asociada
+        if (nuevoUsuario.getIdPerson() != null
+                && usuarioService.existeUsuarioActivoParaPersona(nuevoUsuario.getIdPerson())) {
+            return new ResponseEntity<>(new Mensaje("La persona ya tiene un usuario activo"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Verificar si la persona tiene un legajo activo
+        if (nuevoUsuario.getIdPerson() != null && !usuarioService.puedeCrearUsuario(nuevoUsuario.getIdPerson())) {
+            return new ResponseEntity<>(new Mensaje("La persona no tiene un legajo activo"), HttpStatus.BAD_REQUEST);
+        }
+
         Usuario usuario = new Usuario();
 
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());

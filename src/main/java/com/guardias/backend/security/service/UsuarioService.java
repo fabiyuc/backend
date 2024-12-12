@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.repository.UsuarioRepository;
+import com.guardias.backend.service.LegajoService;
 
 @Service
 @Transactional // para mantener la coherencia con la BD
@@ -16,6 +17,9 @@ public class UsuarioService {
 
     @Autowired
     UsuarioRepository usuarioRepository;
+
+    @Autowired
+    LegajoService legajoService;
 
     public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
@@ -29,9 +33,11 @@ public class UsuarioService {
         return usuarioRepository.existsByNombreUsuarioAndActivoTrue(nombreUsuario);
     }
 
-    /* public boolean existsByEmail(String email) {
-        return usuarioRepository.existsByEmail(email);
-    } */
+    /*
+     * public boolean existsByEmail(String email) {
+     * return usuarioRepository.existsByEmail(email);
+     * }
+     */
 
     public void save(Usuario usuario) {
         usuarioRepository.save(usuario);
@@ -43,5 +49,14 @@ public class UsuarioService {
 
     public boolean activo(Long id) {
         return (usuarioRepository.existsById(id) && usuarioRepository.findById(id).get().getActivo());
+    }
+
+    public boolean existeUsuarioActivoParaPersona(Long personId) {
+        return usuarioRepository.findByPersonIdAndActivoTrue(personId).isPresent();
+    }
+
+    public boolean puedeCrearUsuario(Long personaId) {
+        // Verifica que la persona tenga un legajo activo
+        return legajoService.tieneLegajoActivo(personaId);
     }
 }

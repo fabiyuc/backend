@@ -138,13 +138,14 @@ public class LegajoService {
             if (legajoDto.getMatriculaProvincial() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
                         HttpStatus.BAD_REQUEST);
- 
 
             if (legajoRepository.existsByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial())) {
-                Legajo existingLegajo = legajoRepository.findByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial()).get();
-                    if (!existingLegajo.getId().equals(id)) {
-                        return new ResponseEntity<>(new Mensaje("La matricula provincial ya existe"), HttpStatus.BAD_REQUEST);
-                    }
+                Legajo existingLegajo = legajoRepository
+                        .findByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial()).get();
+                if (!existingLegajo.getId().equals(id)) {
+                    return new ResponseEntity<>(new Mensaje("La matricula provincial ya existe"),
+                            HttpStatus.BAD_REQUEST);
+                }
             }
 
             if (legajoDto.getIdProfesion() == null)
@@ -174,13 +175,14 @@ public class LegajoService {
                 }
             }
 
-            if (StringUtils.isBlank(legajoDto.getNroResolucion())) 
-                return new ResponseEntity<>(new Mensaje("El numero de resolucion es obligatorio"), HttpStatus.BAD_REQUEST);
+            if (StringUtils.isBlank(legajoDto.getNroResolucion()))
+                return new ResponseEntity<>(new Mensaje("El numero de resolucion es obligatorio"),
+                        HttpStatus.BAD_REQUEST);
 
             if (legajoDto.getFechaResolucion() == null)
                 return new ResponseEntity(new Mensaje("La fecha de resolucion es obligatoria"), HttpStatus.BAD_REQUEST);
-            
-            if (StringUtils.isBlank(legajoDto.getNroDecreto())) 
+
+            if (StringUtils.isBlank(legajoDto.getNroDecreto()))
                 return new ResponseEntity<>(new Mensaje("El numero de decreto es obligatorio"), HttpStatus.BAD_REQUEST);
 
         }
@@ -297,15 +299,15 @@ public class LegajoService {
             }
 
             if (legajoDto.getNroResolucion() != null && !legajoDto.getNroResolucion().equals(legajo.getNroresolucion())
-                && !legajoDto.getNroResolucion().isEmpty())
-            legajo.setNroresolucion(legajoDto.getNroResolucion());
+                    && !legajoDto.getNroResolucion().isEmpty())
+                legajo.setNroresolucion(legajoDto.getNroResolucion());
 
             if (legajo.getFechaResolucion() != legajoDto.getFechaResolucion())
-            legajo.setFechaResolucion(legajoDto.getFechaResolucion());
+                legajo.setFechaResolucion(legajoDto.getFechaResolucion());
 
             if (legajoDto.getNroDecreto() != null && !legajoDto.getNroDecreto().equals(legajo.getNrodecreto())
-                && !legajoDto.getNroDecreto().isEmpty())
-            legajo.setNrodecreto(legajoDto.getNroDecreto());
+                    && !legajoDto.getNroDecreto().isEmpty())
+                legajo.setNrodecreto(legajoDto.getNroDecreto());
         }
 
         if (legajoDto.getIdSuspencion() != null) {
@@ -447,7 +449,7 @@ public class LegajoService {
     }
 
     public void logicDelete(Long id, LegajoBajaDto legajoBajaDto) {
-        
+
         Legajo legajo = legajoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el legajo con el ID: " + id));
 
@@ -462,7 +464,7 @@ public class LegajoService {
         // fechaFinal debe ser posterior a fechaInicio
         if (legajo.getFechaInicio() != null
                 && legajoBajaDto.getFechaFinal().isBefore(legajo.getFechaInicio().plusDays(1))) {
-            
+
             throw new ValidationException("La fecha de finalización debe ser posterior a la fecha de inicio");
         }
 
@@ -475,4 +477,7 @@ public class LegajoService {
         legajoRepository.save(legajo);
     }
 
+    public boolean tieneLegajoActivo(Long personaId) {
+        return legajoRepository.existsByPersonaIdAndActivoTrue(personaId);
+    }
 }
