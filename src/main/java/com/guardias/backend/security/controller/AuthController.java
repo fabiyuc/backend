@@ -62,7 +62,7 @@ public class AuthController {
     @PostMapping("/create")
     public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors())
-            return new ResponseEntity(new Mensaje("campos mal puestos o email invalido"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("campos mal puestos"), HttpStatus.BAD_REQUEST);
 
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);

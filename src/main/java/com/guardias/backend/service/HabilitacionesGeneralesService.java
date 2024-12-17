@@ -14,6 +14,8 @@ import com.guardias.backend.dto.HabilitacionesGeneralesDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGenerales;
+import com.guardias.backend.entity.Person;
+import com.guardias.backend.entity.Region;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HabilitacionesGeneralesRepository;
@@ -26,7 +28,7 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class HabilitacionesGeneralesService {
-    
+
     @Autowired
     HospitalRepository hospitalRepository;
     @Autowired
@@ -41,6 +43,10 @@ public class HabilitacionesGeneralesService {
     PersonService personService;
     @Autowired
     HabilitacionesGeneralesRepository habilitacionesGeneralesRepository;
+    /* @Autowired
+    RegionService regionService;
+    @Autowired
+    AutoridadService autoridadService; */
 
     public Optional<List<HabilitacionesGenerales>> findByActivoTrue() {
         return habilitacionesGeneralesRepository.findByActivoTrue();
@@ -51,7 +57,8 @@ public class HabilitacionesGeneralesService {
     }
 
     public boolean activo(Long id) {
-        return (habilitacionesGeneralesRepository.existsById(id) && habilitacionesGeneralesRepository.findById(id).get().isActivo());
+        return (habilitacionesGeneralesRepository.existsById(id)
+                && habilitacionesGeneralesRepository.findById(id).get().isActivo());
     }
 
     public Optional<HabilitacionesGenerales> findById(Long id) {
@@ -75,13 +82,15 @@ public class HabilitacionesGeneralesService {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public HabilitacionesGenerales createUpdate(HabilitacionesGenerales habilitacionesGenerales, HabilitacionesGeneralesDto habilitacionesGeneralesDto) {
+    public HabilitacionesGenerales createUpdate(HabilitacionesGenerales habilitacionesGenerales,
+            HabilitacionesGeneralesDto habilitacionesGeneralesDto) {
 
-        if (habilitacionesGenerales.getPersona() == null || !Objects.equals(habilitacionesGenerales.getPersona().getId(), habilitacionesGeneralesDto.getIdPersona()))
-        habilitacionesGenerales.setPersona(personService.findById(habilitacionesGeneralesDto.getIdPersona()));
+        if (habilitacionesGenerales.getPersona() == null || !Objects
+                .equals(habilitacionesGenerales.getPersona().getId(), habilitacionesGeneralesDto.getIdPersona()))
+            habilitacionesGenerales.setPersona(personService.findById(habilitacionesGeneralesDto.getIdPersona()));
 
         if (habilitacionesGeneralesDto.getIdEfectores() != null) {
-           
+
             if (habilitacionesGenerales.getEfectores() == null) {
                 habilitacionesGenerales.setEfectores(new ArrayList<>());
             }
@@ -145,7 +154,8 @@ public class HabilitacionesGeneralesService {
             throw new EntityNotFoundException("El efector con ID " + idEfector + " no existe.");
         }
 
-        Optional<HabilitacionesGenerales> optionalHabilitacion = habilitacionesGeneralesRepository.findByPersonaIdAndActivoTrue(idPersona);
+        Optional<HabilitacionesGenerales> optionalHabilitacion = habilitacionesGeneralesRepository
+                .findByPersonaIdAndActivoTrue(idPersona);
 
         if (optionalHabilitacion.isPresent()) {
             HabilitacionesGenerales habilitacion = optionalHabilitacion.get();
@@ -154,12 +164,78 @@ public class HabilitacionesGeneralesService {
                     habilitacion.getEfectores().stream()
                             .anyMatch(efector -> efector.getId().equals(idEfector));
         }
-        
-        return false; // Retorna false si no hay una habilitacion general activa o no se encuentra el idEfector
-    
+
+        return false; // Retorna false si no hay una habilitacion general activa o no se encuentra el
+                      // idEfector
+
     }
 
     public List<HabilitacionesGenerales> getHabilitacionesGeneralesByEfectorAndAsistencial(Long idEfector) {
         return habilitacionesGeneralesRepository.findHabilitacionesGeneralesByEfectorAndAsistencial(idEfector);
     }
+
+    /* public void updateOrCreateHabilitacionesByRegion(Long idPersona, Long idRegion) {
+        // Validar región
+        Region region = regionService.findById(idRegion)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró la región con id: " + idRegion));
+
+        List<Efector> efectoresRegion = region.getEfectores();
+        if (efectoresRegion.isEmpty()) {
+            throw new IllegalArgumentException("La región no tiene efectores asociados");
+        }
+
+        // Validar persona
+        Person persona = personService.findById(idPersona);
+        if (persona == null) {
+            throw new EntityNotFoundException("No se encontró la persona con id: " + idPersona);
+        }
+        if (!persona.isActivo()) {
+            throw new IllegalArgumentException("La persona no está activa");
+        }
+        if (!autoridadService.isAutoridad(idPersona)) {
+            throw new IllegalArgumentException("La persona no es autoridad");
+        }
+
+        // Procesar habilitaciones
+        Optional<HabilitacionesGenerales> optionalHabilitacion = habilitacionesGeneralesRepository
+                .findByPersonaId(idPersona);
+
+        if (optionalHabilitacion.isPresent()) {
+            HabilitacionesGenerales habilitacion = optionalHabilitacion.get();
+            actualizarHabilitaciones(habilitacion, efectoresRegion);
+        } else {
+            crearHabilitaciones(persona, efectoresRegion);
+        }
+    }
+
+    private void actualizarHabilitaciones(HabilitacionesGenerales habilitacion, List<Efector> efectoresRegion) {
+        // Crear una nueva lista con los efectores actuales
+        List<Efector> nuevosEfectores = new ArrayList<>(habilitacion.getEfectores());
+    
+        // Añadir efectores nuevos sin duplicados
+        for (Efector efectorRegion : efectoresRegion) {
+            if (!nuevosEfectores.contains(efectorRegion)) {
+                nuevosEfectores.add(efectorRegion);
+    
+                // Sincronizar el lado inverso de la relación, si aplica
+                efectorRegion.getHabilitacionesGenerales().add(habilitacion); // Si la relación está en Efector
+            }
+        }
+    
+        // Asignar la nueva lista
+        habilitacion.setEfectores(nuevosEfectores);
+    
+        // Guardar la entidad actualizada
+        habilitacionesGeneralesRepository.save(habilitacion);
+    }
+
+    private void crearHabilitaciones(Person persona, List<Efector> efectoresRegion) {
+        HabilitacionesGenerales nuevaHabilitacion = new HabilitacionesGenerales();
+        nuevaHabilitacion.setActivo(true);
+        nuevaHabilitacion.setPersona(persona);
+        nuevaHabilitacion.setEfectores(efectoresRegion);
+
+        habilitacionesGeneralesRepository.save(nuevaHabilitacion);
+    } */
+
 }
