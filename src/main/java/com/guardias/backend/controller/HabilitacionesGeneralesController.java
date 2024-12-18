@@ -20,6 +20,8 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGeneralesDto;
 import com.guardias.backend.entity.HabilitacionesGenerales;
 import com.guardias.backend.service.HabilitacionesGeneralesService;
+import com.guardias.backend.service.PersonService;
+import com.guardias.backend.service.RegionService;
 
 @RestController
 @RequestMapping("/habilitacionesGenerales")
@@ -28,6 +30,10 @@ public class HabilitacionesGeneralesController {
 
     @Autowired
     HabilitacionesGeneralesService habilitacionesGeneralesService;
+    @Autowired
+    RegionService regionService;
+    @Autowired
+    PersonService personService;
 
     // la lista de efectores debería actualizarse si hay bajas de efectores?
     @GetMapping("/list")
@@ -57,7 +63,7 @@ public class HabilitacionesGeneralesController {
         if (!habilitacionesGeneralesService.activo(id))
             return new ResponseEntity(new Mensaje("No existe la habilitacion general con ese id"),
                     HttpStatus.NOT_FOUND);
-                    HabilitacionesGenerales habilitacionesGeneral = habilitacionesGeneralesService.findById(id).get();
+        HabilitacionesGenerales habilitacionesGeneral = habilitacionesGeneralesService.findById(id).get();
         return new ResponseEntity<HabilitacionesGenerales>(habilitacionesGeneral, HttpStatus.OK);
     }
 
@@ -66,14 +72,15 @@ public class HabilitacionesGeneralesController {
         if (!habilitacionesGeneralesService.activoByPersona(idPersona))
             return new ResponseEntity(new Mensaje("no existe la habilitacion general de este asistencial"),
                     HttpStatus.NOT_FOUND);
-                    HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.findByPersona(idPersona).get();
+        HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.findByPersona(idPersona).get();
         return new ResponseEntity<HabilitacionesGenerales>(habilitacionesGenerales, HttpStatus.OK);
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody HabilitacionesGeneralesDto habilitacionesGeneralesDto) {
 
-        ResponseEntity<?> respuestaValidaciones = habilitacionesGeneralesService.validations(habilitacionesGeneralesDto);
+        ResponseEntity<?> respuestaValidaciones = habilitacionesGeneralesService
+                .validations(habilitacionesGeneralesDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
@@ -91,7 +98,8 @@ public class HabilitacionesGeneralesController {
         if (!habilitacionesGeneralesService.activo(id))
             return new ResponseEntity(new Mensaje("no existe la habilitaciones generales"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = habilitacionesGeneralesService.validations(habilitacionesGeneralesDto);
+        ResponseEntity<?> respuestaValidaciones = habilitacionesGeneralesService
+                .validations(habilitacionesGeneralesDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
@@ -108,7 +116,7 @@ public class HabilitacionesGeneralesController {
         if (!habilitacionesGeneralesService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-            HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.findById(id).get();
+        HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.findById(id).get();
         habilitacionesGenerales.setActivo(false);
         habilitacionesGeneralesService.save(habilitacionesGenerales);
         return new ResponseEntity<>(new Mensaje("habilitaciones generales eliminado correctamente"), HttpStatus.OK);
@@ -127,4 +135,24 @@ public class HabilitacionesGeneralesController {
             @PathVariable("idEfector") long idEfector) {
         return habilitacionesGeneralesService.tieneHabilitacionesGenerales(idPersona, idEfector);
     }
+
+    @PutMapping("/addHabilitacionesAutoridadRegional/{idPersona}/{idRegion}")
+    public ResponseEntity<?> addHabilitacionesAutoridadRegional(@PathVariable Long idPersona,
+            @PathVariable Long idRegion) {
+
+        ResponseEntity<?> respuestaValidacion = habilitacionesGeneralesService.validarHabilitacion(idPersona, idRegion);
+
+        if (respuestaValidacion.getStatusCode() == HttpStatus.OK) {
+
+            HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.addHabilitaciones(idPersona, idRegion);
+
+            habilitacionesGeneralesService.save(habilitacionesGenerales);
+
+            return new ResponseEntity(new Mensaje("Habilitacion general actualizada"), HttpStatus.OK); 
+        } else{
+            return respuestaValidacion;
+        }
+
+    }
+
 }
