@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import com.guardias.backend.dto.HabilitacionesGeneralesDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGenerales;
-import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
@@ -43,10 +43,12 @@ public class HabilitacionesGeneralesService {
     PersonService personService;
     @Autowired
     HabilitacionesGeneralesRepository habilitacionesGeneralesRepository;
-    /* @Autowired
-    RegionService regionService;
+
     @Autowired
+    RegionService regionService;
+    /* @Autowired
     AutoridadService autoridadService; */
+    
 
     public Optional<List<HabilitacionesGenerales>> findByActivoTrue() {
         return habilitacionesGeneralesRepository.findByActivoTrue();
@@ -174,68 +176,58 @@ public class HabilitacionesGeneralesService {
         return habilitacionesGeneralesRepository.findHabilitacionesGeneralesByEfectorAndAsistencial(idEfector);
     }
 
-    /* public void updateOrCreateHabilitacionesByRegion(Long idPersona, Long idRegion) {
-        // Validar región
-        Region region = regionService.findById(idRegion)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la región con id: " + idRegion));
+    public ResponseEntity<?> validarHabilitacion(Long idPersona, Long idRegion) {
 
-        List<Efector> efectoresRegion = region.getEfectores();
-        if (efectoresRegion.isEmpty()) {
-            throw new IllegalArgumentException("La región no tiene efectores asociados");
-        }
-
-        // Validar persona
-        Person persona = personService.findById(idPersona);
-        if (persona == null) {
+        if (personService.findById(idPersona) == null) {
             throw new EntityNotFoundException("No se encontró la persona con id: " + idPersona);
         }
-        if (!persona.isActivo()) {
-            throw new IllegalArgumentException("La persona no está activa");
-        }
-        if (!autoridadService.isAutoridad(idPersona)) {
-            throw new IllegalArgumentException("La persona no es autoridad");
+
+        // Obtener la región
+        Region region = regionService.findById(idRegion).get();
+        if (region == null) {
+            throw new EntityNotFoundException("Region no encontrada");
         }
 
-        // Procesar habilitaciones
-        Optional<HabilitacionesGenerales> optionalHabilitacion = habilitacionesGeneralesRepository
-                .findByPersonaId(idPersona);
-
-        if (optionalHabilitacion.isPresent()) {
-            HabilitacionesGenerales habilitacion = optionalHabilitacion.get();
-            actualizarHabilitaciones(habilitacion, efectoresRegion);
-        } else {
-            crearHabilitaciones(persona, efectoresRegion);
-        }
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    private void actualizarHabilitaciones(HabilitacionesGenerales habilitacion, List<Efector> efectoresRegion) {
-        // Crear una nueva lista con los efectores actuales
-        List<Efector> nuevosEfectores = new ArrayList<>(habilitacion.getEfectores());
+    public HabilitacionesGenerales addHabilitaciones(Long idPersona, Long idRegion) {
+
+        HabilitacionesGenerales habilitacionExistente = findByPersona(idPersona).orElse(null);
+        Region region = regionService.findById(idRegion).get();
+
+        if (habilitacionExistente == null) {
+
+            List<Long> idsEfectores = region.getEfectores().stream()
+                                .map(Efector::getId) 
+                                .collect(Collectors.toList()); 
+
+            HabilitacionesGeneralesDto habilitacionDto = new HabilitacionesGeneralesDto();
+            habilitacionDto.setIdPersona(idPersona);
+            habilitacionDto.setIdEfectores(idsEfectores);
+            
+            HabilitacionesGenerales habilitacionesGenerales = createUpdate(new HabilitacionesGenerales(), habilitacionDto);
+
+            return habilitacionesGenerales;
     
-        // Añadir efectores nuevos sin duplicados
-        for (Efector efectorRegion : efectoresRegion) {
-            if (!nuevosEfectores.contains(efectorRegion)) {
-                nuevosEfectores.add(efectorRegion);
-    
-                // Sincronizar el lado inverso de la relación, si aplica
-                efectorRegion.getHabilitacionesGenerales().add(habilitacion); // Si la relación está en Efector
+        } else {
+            for(Efector efectorDeRegion : region.getEfectores()){
+                boolean found = false;
+                for (Efector efectorExistente : habilitacionExistente.getEfectores()){
+                    if (efectorExistente.equals(efectorDeRegion)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    habilitacionExistente.getEfectores().add(efectorDeRegion);
+                    efectorDeRegion.getHabilitacionesGenerales().add(habilitacionExistente);
+                }
             }
         }
-    
-        // Asignar la nueva lista
-        habilitacion.setEfectores(nuevosEfectores);
-    
-        // Guardar la entidad actualizada
-        habilitacionesGeneralesRepository.save(habilitacion);
+
+        
+        return habilitacionExistente;
     }
-
-    private void crearHabilitaciones(Person persona, List<Efector> efectoresRegion) {
-        HabilitacionesGenerales nuevaHabilitacion = new HabilitacionesGenerales();
-        nuevaHabilitacion.setActivo(true);
-        nuevaHabilitacion.setPersona(persona);
-        nuevaHabilitacion.setEfectores(efectoresRegion);
-
-        habilitacionesGeneralesRepository.save(nuevaHabilitacion);
-    } */
 
 }

@@ -35,13 +35,13 @@ public class HabilitacionesGenerales {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona", nullable = false)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
-    "registrosMensuales", "usuario","habilitacionesGenerales", "legajos"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "domicilio","novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
+    "registrosMensuales", "usuarios","habilitacionesGenerales", "habilitacionesGuardias","legajos"})
     private Person persona;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "habilitacionesgenerales_efectores", joinColumns = @JoinColumn(name = "permiso_id"),
         inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGenerales" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGenerales","habilitacionesGuardias", "cronogramasTentativos","feriados","cabecera" ,"areaProgramatica","tipoCaps"})
     private List<Efector> efectores = new ArrayList<>();
 }

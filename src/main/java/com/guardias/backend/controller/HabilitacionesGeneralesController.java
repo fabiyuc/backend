@@ -2,7 +2,6 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,20 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGeneralesDto;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGenerales;
-import com.guardias.backend.entity.Person;
-import com.guardias.backend.entity.Region;
 import com.guardias.backend.service.HabilitacionesGeneralesService;
 import com.guardias.backend.service.PersonService;
 import com.guardias.backend.service.RegionService;
-
-import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/habilitacionesGenerales")
@@ -141,83 +134,25 @@ public class HabilitacionesGeneralesController {
     public boolean tieneHabilitacionesGenerales(@PathVariable("idPersona") long idPersona,
             @PathVariable("idEfector") long idEfector) {
         return habilitacionesGeneralesService.tieneHabilitacionesGenerales(idPersona, idEfector);
-    }/*
-      * 
-      * @PutMapping("/updateOrCreateHabilitacionesByRegion/{idPersona}/{idRegion}")
-      * public ResponseEntity<?> updateOrCreateByRegion(@PathVariable("idPersona")
-      * Long idPersona,
-      * 
-      * @PathVariable("idRegion") Long idRegion) {
-      * try {
-      * habilitacionesGeneralesService.updateOrCreateHabilitacionesByRegion(
-      * idPersona, idRegion);
-      * return new ResponseEntity<>(new
-      * Mensaje("Habilitaciones generales procesadas correctamente"),
-      * HttpStatus.OK);
-      * } catch (EntityNotFoundException e) {
-      * return new ResponseEntity<>(new Mensaje(e.getMessage()),
-      * HttpStatus.NOT_FOUND);
-      * } catch (IllegalArgumentException e) {
-      * return new ResponseEntity<>(new Mensaje(e.getMessage()),
-      * HttpStatus.BAD_REQUEST);
-      * }
-      * }
-      */
+    }
 
-      @PostMapping("/crearActualizar/{idPersona}/{idRegion}")
-      public ResponseEntity<Void> crearOActualizarHabilitacionesGenerales(@PathVariable Long idPersona,
-              @PathVariable Long idRegion) {
-        try {
-            // Obtener la persona
+    @PutMapping("/addHabilitacionesAutoridadRegional/{idPersona}/{idRegion}")
+    public ResponseEntity<?> addHabilitacionesAutoridadRegional(@PathVariable Long idPersona,
+            @PathVariable Long idRegion) {
 
-            Person persona = personService.findById(idPersona);
-            if (persona == null) {
-                throw new EntityNotFoundException("No se encontró la persona con id: " + idPersona);
-            }
+        ResponseEntity<?> respuestaValidacion = habilitacionesGeneralesService.validarHabilitacion(idPersona, idRegion);
 
-            // Obtener la región
-            Region region = regionService.findById(idRegion)
-                    .orElseThrow(() -> new EntityNotFoundException("Región no encontrada"));
+        if (respuestaValidacion.getStatusCode() == HttpStatus.OK) {
 
-            // Obtener la lista de efectores de la región
-            List<Efector> efectoresDeRegion = region.getEfectores();
+            HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.addHabilitaciones(idPersona, idRegion);
 
-            // Buscar si ya existe un registro activo de HabilitacionesGenerales para la
-            // persona
-            Optional<HabilitacionesGenerales> optionalHabilitacionExistente = habilitacionesGeneralesService.findByPersona(idPersona);
+            habilitacionesGeneralesService.save(habilitacionesGenerales);
 
-        if (optionalHabilitacionExistente.isPresent()) {
-                // Si existe, actualizamos la lista de efectores sin duplicar
-                HabilitacionesGenerales habilitacionExistente = optionalHabilitacionExistente.get();
-                List<Efector> efectoresActuales = habilitacionExistente.getEfectores();
-
-                efectoresActuales.clear();
-
-                // Añadir solo los efectores nuevos que no estén ya en la lista
-                for (Efector efectorNuevo : efectoresDeRegion) {
-                    if (!efectoresActuales.contains(efectorNuevo)) {
-                        efectoresActuales.add(efectorNuevo);
-                    }
-                }
-
-                habilitacionExistente.setEfectores(efectoresActuales);
-                habilitacionesGeneralesService.save(habilitacionExistente);
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                // Si no existe, creamos un nuevo registro de HabilitacionesGenerales
-                HabilitacionesGenerales habilitacion = new HabilitacionesGenerales();
-                habilitacion.setActivo(true); // O cualquier valor por defecto
-                habilitacion.setPersona(persona);
-                habilitacion.setEfectores(efectoresDeRegion);
-
-                habilitacionesGeneralesService.save(habilitacion);
-                return new ResponseEntity<>(HttpStatus.CREATED);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(new Mensaje("Habilitacion general actualizada"), HttpStatus.OK); 
+        } else{
+            return respuestaValidacion;
         }
+
     }
 
 }
