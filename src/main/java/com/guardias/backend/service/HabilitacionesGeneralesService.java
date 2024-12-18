@@ -167,9 +167,7 @@ public class HabilitacionesGeneralesService {
                             .anyMatch(efector -> efector.getId().equals(idEfector));
         }
 
-        return false; // Retorna false si no hay una habilitacion general activa o no se encuentra el
-                      // idEfector
-
+        return false; 
     }
 
     public List<HabilitacionesGenerales> getHabilitacionesGeneralesByEfectorAndAsistencial(Long idEfector) {
@@ -225,8 +223,6 @@ public class HabilitacionesGeneralesService {
                 }
             }
         }
-
-        
         return habilitacionExistente;
     }
 
