@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.distribucionConsultorio.DistribucionConsultorioRequestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionConsultorioService;
@@ -172,6 +173,13 @@ public class DistribucionConsultorioController {
             return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
         distribucionConsultorioService.deleteById(id);
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
+    }
+
+    // busca distribucion consultorio para comparar con cronograma tentativo
+    @PostMapping("/verificarDistribucion")
+    public ResponseEntity<Long> verificarDistribucion(@RequestBody DistribucionConsultorioRequestDto dto) {
+        Long id = distribucionConsultorioService.verificarDistribucion(dto);
+        return ResponseEntity.ok(id);
     }
 
 }
