@@ -8,9 +8,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.distribucionConsultorio.DistribucionConsultorioRequestDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionGuardiaRequestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
+import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 
 import jakarta.transaction.Transactional;
@@ -77,22 +79,21 @@ public class DistribucionConsultorioService {
         distribucionConsultorioRepository.deleteById(id);
     }
 
-    public Long verificarDistribucion(DistribucionConsultorioRequestDto dto) {
+    public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
         if (dto == null) {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
         //Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
-        String horaIngresoString = dto.getHoraIngreso().toString(); // Convierte "08:00" a String
+        String horaIngresoString = dto.getHoraIngreso().toString(); 
+        String horaEgresoString = dto.getHoraEgreso().toString();
 
-        return distribucionConsultorioRepository.findIdByDistribucionConsultorioDto(
-                dto.getIdPersona(),
-                dto.getIdEfector(),
-                dto.getFechaInicio(),
-                dto.getFechaFinalizacion(),
-                horaIngresoString,
-                BigDecimal.valueOf(dto.getCantidadHoras()) // Conversión a BigDecimal
-        );
+        // Intentar encontrar una distribución válida
+        Optional<DistribucionConsultorio> distribucionValida = distribucionConsultorioRepository.findValidDistribucion(dto.getIdAsistencial(), dto.getIdEfector(),dto.getFechaIngreso(), horaIngresoString, horaEgresoString);
+
+        // Retornar true si existe una distribución válida, false en caso contrario
+        return distribucionValida.isPresent();
+
     }
 
 }

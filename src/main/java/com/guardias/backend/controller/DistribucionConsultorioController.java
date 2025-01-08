@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.distribucionConsultorio.DistribucionConsultorioRequestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionHoraria;
@@ -176,10 +177,9 @@ public class DistribucionConsultorioController {
     }
 
     // busca distribucion consultorio para comparar con cronograma tentativo
-    @PostMapping("/verificarDistribucion")
-    public ResponseEntity<Long> verificarDistribucion(@RequestBody DistribucionConsultorioRequestDto dto) {
-        Long id = distribucionConsultorioService.verificarDistribucion(dto);
-        return ResponseEntity.ok(id);
+    @PostMapping("/verificarCronogramaEnDistribucion")
+    public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
+        return distribucionConsultorioService.validarCronogramaEnDistribucion(dto);
     }
 
 }

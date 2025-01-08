@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.DistribucionConsultorio;
+import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
 
 @Repository
@@ -50,22 +51,20 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
             @Param("idEfector") Long idEfector);
 
     @Query(nativeQuery = true, value = """
-            SELECT d.id
-            FROM distribuciones_consultorios d
-            WHERE d.id_persona = :idPersona
-            AND d.id_efector = :idEfector
-            AND d.fecha_inicio = :fechaInicio
-            AND d.fecha_finalizacion = :fechaFinalizacion
-            AND CAST(d.hora_ingreso AS TIME) = CAST(:horaIngreso AS TIME)
-            AND d.cantidad_horas = :cantidadHoras
-            AND d.activo = 1
-            """)
-    Long findIdByDistribucionConsultorioDto(
-            @Param("idPersona") Long idPersona,
-            @Param("idEfector") Long idEfector,
-            @Param("fechaInicio") LocalDate fechaInicio,
-            @Param("fechaFinalizacion") LocalDate fechaFinalizacion,
-            @Param("horaIngreso") String horaIngreso,
-            @Param("cantidadHoras") BigDecimal cantidadHoras);
+                SELECT *
+                FROM distribuciones_consultorios d
+                WHERE d.id_persona = :idAsistencial
+                AND d.id_efector = :idEfector
+                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                AND CAST(:horaIngreso AS TIME) >= CAST(d.hora_ingreso AS TIME)
+                AND CAST(:horaEgreso AS TIME) <= DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
+                AND d.activo = 1
+                """)
+        Optional<DistribucionConsultorio> findValidDistribucion(
+                @Param("idAsistencial") Long idAsistencial,
+                @Param("idEfector") Long idEfector,
+                @Param("fechaIngreso") LocalDate fechaInicio,
+                @Param("horaIngreso") String horaIngreso, 
+                @Param("horaEgreso") String horaEgreso);
 
 }

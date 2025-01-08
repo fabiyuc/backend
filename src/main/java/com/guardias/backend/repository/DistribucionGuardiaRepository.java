@@ -2,6 +2,7 @@ package com.guardias.backend.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,24 +46,22 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                 @Param("idEfector") Long idEfector);
 
         @Query(nativeQuery = true, value = """
-                SELECT d.id
+                SELECT *
                 FROM distribuciones_guardias d
-                WHERE d.id_persona = :idPersona
+                WHERE d.id_persona = :idAsistencial
                 AND d.id_efector = :idEfector
                 AND d.tipo_guardia = :tipoGuardia
-                AND d.fecha_inicio = :fechaInicio
-                AND d.fecha_finalizacion = :fechaFinalizacion
-                AND CAST(d.hora_ingreso AS TIME) = CAST(:horaIngreso AS TIME)
-                AND d.cantidad_horas = :cantidadHoras
+                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                AND CAST(:horaIngreso AS TIME) >= CAST(d.hora_ingreso AS TIME)
+                AND CAST(:horaEgreso AS TIME) <= DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
                 AND d.activo = 1
                 """)
-        Long findIdByDistribucionGuardiaDto(
-                @Param("idPersona") Long idPersona,
+        Optional<DistribucionGuardia> findValidDistribucion(
+                @Param("idAsistencial") Long idAsistencial,
                 @Param("idEfector") Long idEfector,
                 @Param("tipoGuardia") String tipoGuardia,
-                @Param("fechaInicio") LocalDate fechaInicio,
-                @Param("fechaFinalizacion") LocalDate fechaFinalizacion,
-                @Param("horaIngreso") String  horaIngreso, 
-                @Param("cantidadHoras") BigDecimal cantidadHoras);
+                @Param("fechaIngreso") LocalDate fechaInicio,
+                @Param("horaIngreso") String horaIngreso, 
+                @Param("horaEgreso") String horaEgreso);
 
 }
