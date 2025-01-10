@@ -69,7 +69,6 @@ public abstract class DistribucionHoraria {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFinalizacion;
     
-    
     private LocalTime horaIngreso;
 
     @Override
