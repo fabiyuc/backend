@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.PersonService;
@@ -71,37 +73,55 @@ public class DistribucionHorariaController {
             distribucionHoraria.setPersona(personService.findById(distribucionHorariaDto.getIdPersona()));
         }
 
-        // Verifica si la persona tiene legajos y si el UDO del legajo coincide con el
-        // Efector del DTO
-        if (distribucionHoraria.getPersona() != null && distribucionHoraria.getPersona().getLegajos() != null) {
-            Legajo legajoActual = distribucionHoraria.getPersona().getLegajos().stream()
-                    .filter(Legajo -> !Legajo.getEsAutoridad()) // Filtrar legajos que tengan esAutoridad = false
-                    .findFirst()
-                    .orElse(null);
+        // Verifica si la persona tiene legajos y si el Efector del legajo coincide con
+        // el Efector del DTO
+        if (distribucionHoraria.getPersona() != null) {
+            Person persona = distribucionHoraria.getPersona();
+            List<Legajo> legajosPersona = persona.getLegajos();
 
-            if (legajoActual != null && legajoActual.getUdo() != null) {
-                Efector udoPersona = legajoActual.getUdo();
-                Efector efectorDto = efectorService.findById(distribucionHorariaDto.getIdEfector());
-
-                // Compara el UDO de la persona con el Efector del DTO antes de asignar
-                if (Objects.equals(udoPersona.getId(), efectorDto.getId())) {
-                    distribucionHoraria.setEfector(efectorDto);
-                } else {
-                    throw new IllegalArgumentException("El Efector del DTO no coincide con el UDO de la persona.");
-                }
-
+            // Validar que la persona tenga legajos
+            if (legajosPersona == null || legajosPersona.isEmpty()) {
+                throw new IllegalArgumentException("La persona no tiene legajos registrados.");
             }
+
+            // Buscar el primer legajo válido (que no sea autoridad)
+            Legajo legajoValido = legajosPersona.stream()
+                    .filter(legajo -> Boolean.FALSE.equals(legajo.getEsAutoridad()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "La persona no tiene un legajo válido (no es autoridad)."));
+
+            // Validar que el legajo tenga un Efector asociado
+            List<Efector> efectoresPersona = legajoValido.getEfectores();
+            if (efectoresPersona == null || efectoresPersona.isEmpty()) {
+                throw new IllegalArgumentException("El legajo válido de la persona no tiene efectores asociados.");
+            }
+
+            // Validar que el Efector especificado en el DTO existe
+            Efector efectorDto = efectorService.findById(distribucionHorariaDto.getIdEfector());
+            if (efectorDto == null) {
+                throw new IllegalArgumentException("El Efector especificado en el DTO no existe.");
+            }
+
+            // Validar si el Efector del DTO está en la lista de efectores del legajo válido
+            boolean efectorCoincide = efectoresPersona.stream()
+                    .anyMatch(efector -> Objects.equals(efector.getId(), efectorDto.getId()));
+
+            if (!efectorCoincide) {
+                throw new IllegalArgumentException(
+                        "El Efector del DTO no coincide con los efectores asociados al legajo válido de la persona.");
+            }
+        } else {
+            throw new IllegalArgumentException("No se ha encontrado la persona asociada a la Distribución Horaria.");
         }
 
-        /*
-         * if (distribucionHoraria.getEfector() == null ||
-         * (distribucionHorariaDto.getIdEfector() != null &&
-         * !Objects.equals(distribucionHoraria.getEfector().getId(),
-         * distribucionHorariaDto.getIdEfector()))) {
-         * distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto
-         * .getIdEfector()));
-         * }
-         */
+        if (distribucionHoraria.getEfector() == null ||
+                (distribucionHorariaDto.getIdEfector() != null &&
+                        !Objects.equals(distribucionHoraria.getEfector().getId(),
+                                distribucionHorariaDto.getIdEfector()))) {
+            distribucionHoraria.setEfector(efectorService.findById(distribucionHorariaDto
+                    .getIdEfector()));
+        }
 
         if (distribucionHorariaDto.getFechaInicio() != distribucionHoraria.getFechaInicio()
                 && distribucionHorariaDto.getFechaInicio() != null)

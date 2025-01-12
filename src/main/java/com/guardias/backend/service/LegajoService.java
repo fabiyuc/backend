@@ -19,6 +19,7 @@ import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Especialidad;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.enums.LocationEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.AutoridadRepository;
@@ -60,6 +61,12 @@ public class LegajoService {
     EspecialidadService especialidadService;
     @Autowired
     RegionService regionService;
+    @Autowired
+    MinisterioService ministerioService;
+    @Autowired
+    CapsService capsService;
+    @Autowired
+    HospitalService hospitalService;
 
     public List<Legajo> findByActivoTrue() {
         return legajoRepository.findByActivoTrue();
@@ -100,6 +107,100 @@ public class LegajoService {
         if (legajoDto.getIdPersona() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
+
+        // Nueva validación para tipoUdo y idUdo
+        try {
+            if (legajoDto.getTipoUdo() != null) {
+                LocationEnum tipoUdo = LocationEnum.valueOf(legajoDto.getTipoUdo().toString());
+
+                if (LocationEnum.MINISTERIO == tipoUdo) {
+                    if (legajoDto.getIdUdo() == null) {
+                        return new ResponseEntity<>(new Mensaje("El idUdo es obligatorio para el tipo Ministerio"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isMinisterioValid = ministerioService.existsById(legajoDto.getIdUdo());
+                    if (!isMinisterioValid) {
+                        return new ResponseEntity<>(new Mensaje("El idUdo no corresponde a un Ministerio válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.CAPS == tipoUdo) {
+                    if (legajoDto.getIdUdo() == null) {
+                        return new ResponseEntity<>(new Mensaje("El idUdo es obligatorio para el tipo CAPS"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isCapsValid = capsService.existsById(legajoDto.getIdUdo());
+                    if (!isCapsValid) {
+                        return new ResponseEntity<>(new Mensaje("El idUdo no corresponde a un CAPS válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.HOSPITAL == tipoUdo) {
+                    if (legajoDto.getIdUdo() == null) {
+                        return new ResponseEntity<>(new Mensaje("El idUdo es obligatorio para el tipo HOSPITAL"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isHospitalValid = hospitalService.existsById(legajoDto.getIdUdo());
+                    if (!isHospitalValid) {
+                        return new ResponseEntity<>(new Mensaje("El idUdo no corresponde a un HOSPITAL válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje("El tipoUdo no es válido"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Nueva validación para tipoEfector y idEfectores
+
+        try {
+            if (legajoDto.getTipoEfector() != null) {
+                LocationEnum tipoEfector = LocationEnum.valueOf(legajoDto.getTipoEfector().toString());
+
+                if (LocationEnum.MINISTERIO == tipoEfector) {
+                    if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(
+                                new Mensaje("El idEfectores es obligatorio para el tipo Ministerio"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isMinisterioValid = ministerioService.existsById(legajoDto.getIdEfectores().get(0));
+                    if (!isMinisterioValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un Ministerio válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.CAPS == tipoEfector) {
+                    if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isCapsValid = capsService.existsById(legajoDto.getIdEfectores().get(0));
+                    if (!isCapsValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.HOSPITAL == tipoEfector) {
+                    if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isHospitalValid = hospitalService.existsById(legajoDto.getIdEfectores().get(0));
+                    if (!isHospitalValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         boolean esAsistencial = personService.activoById(legajoDto.getIdPersona())
                 && asistencialService.existsById(legajoDto.getIdPersona());
@@ -351,6 +452,14 @@ public class LegajoService {
                     }
                 }
             }
+        }
+
+        if (legajoDto.getTipoEfector() != null) {
+            legajo.setTipoEfector(legajoDto.getTipoEfector());
+        }
+
+        if (legajoDto.getTipoUdo() != null) {
+            legajo.setTipoUdo(legajoDto.getTipoUdo());
         }
 
         legajo.setEsAutoridad(legajoDto.getEsAutoridad());

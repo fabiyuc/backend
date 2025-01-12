@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.LocationEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -77,6 +78,15 @@ public class Legajo {
       "registrosMensuales" })
   private Person persona;
 
+  /* @Enumerated(EnumType.STRING) */
+  /* @Column(columnDefinition = "VARCHAR(15)") */
+  private LocationEnum tipoEfector;
+  /*
+   * @Enumerated(EnumType.STRING)
+   */
+  /* @Column(columnDefinition = "VARCHAR(15)") */
+  private LocationEnum tipoUdo;
+
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
@@ -112,21 +122,19 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_region")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Region region;
 
   @Column(columnDefinition = "VARCHAR(10)")
-  private String nroresolucion; 
+  private String nroresolucion;
 
   @Temporal(TemporalType.DATE)
   private LocalDate fechaResolucion;
 
   @Column(columnDefinition = "VARCHAR(10)")
-  private String nrodecreto; 
+  private String nrodecreto;
 
   private LocalDate fechaBajaSistema;
-
-     
 
   @Override
   public boolean equals(Object obj) {

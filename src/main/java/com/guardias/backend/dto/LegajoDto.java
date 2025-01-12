@@ -3,6 +3,8 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.guardias.backend.enums.LocationEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -27,9 +29,9 @@ public class LegajoDto {
     private String matriculaProvincial;
     private Long idSuspencion;
     private String motivoBaja;
-   
+
     private Long idRevista;
-   
+
     private Long idUdo;
     @NotBlank
     private Long idPersona;
@@ -40,18 +42,22 @@ public class LegajoDto {
     private Long idProfesion;
 
     private List<Long> idTipoGuardias;
-    
+
     private Long idCargo;
-    
+
     private Long idRegion;
 
-    private String nroResolucion; 
+    private String nroResolucion;
 
-    private String nroDecreto; 
+    private String nroDecreto;
 
-    private LocalDate fechaResolucion; 
-    
+    private LocalDate fechaResolucion;
+
     private LocalDate fechaBajaSistema;
+
+    private LocationEnum tipoEfector;
+
+    private LocationEnum tipoUdo;
 
 }
 
@@ -60,15 +66,31 @@ public class LegajoDto {
 // "fechaInicio": "2021-09-01",
 // "fechaFinal": "2021-09-01",
 // "esAutoridad": true,
+// "esRegional": true,
 // "activo": true,
-// "matriculaNacional": "123456",
-// "matriculaProvincial": "123456",
-// "idSuspencion": 1,
-// "idRevista": 1,
-// "idUdo": 1,
-// "idPersona": 1,
-// "idCargo": 1,
-// "idEfectores": [1, 2],
-// "idEspecialidades": [1, 2],
-// "idProfesion": 1
+// "matriculaNacional": "matriculaNacional",
+// "matriculaProvincial": "matriculaProvincial",
+// "idSuspencion": 0,
+// "motivoBaja": "motivoBaja",
+// "idRevista": 0,
+// "idUdo": 0,
+// "idPersona": 0,
+// "idEfectores": [
+// 0
+// ],
+// "idEspecialidades": [
+// 0
+// ],
+// "idProfesion": 0,
+// "idTipoGuardias": [
+// 0
+// ],
+// "idCargo": 0,
+// "idRegion": 0,
+// "nroResolucion": "nroResolucion",
+// "nroDecreto": "nroDecreto",
+// "fechaResolucion": "2021-09-01",
+// "fechaBajaSistema": "2021-09-01",
+// "tipoEfector": "CAPS",
+// "tipoUdo": "CAPS"
 // }
