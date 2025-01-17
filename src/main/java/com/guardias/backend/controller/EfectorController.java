@@ -36,6 +36,8 @@ import com.guardias.backend.service.NotificacionService;
 import com.guardias.backend.service.RegionService;
 import com.guardias.backend.service.ServicioService;
 
+@RequestMapping("/efector")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class EfectorController {
 
@@ -59,10 +61,7 @@ public class EfectorController {
     @Autowired
     FeriadoService feriadoService;
 
-    @RequestMapping("/efector")
-    @CrossOrigin(origins = "http://localhost:4200")
-
-    @GetMapping("/efector/tipo/{id}")
+    @GetMapping("/tipo/{id}")
     public ResponseEntity<?> getEfectorTipoEndpoint(@PathVariable Long id) {
         return getEfectorTipo(id);
     }
@@ -121,11 +120,15 @@ public class EfectorController {
         efectorDto.setIdRegion(efector.getRegion().getId());
         efectorDto.setIdLocalidad(efector.getLocalidad().getId());
 
-        // Retorna el mensaje y el objeto
-        return new ResponseEntity<>(new Object() {
-            public final String mensaje = "El efector es de tipo: " + tipoEfector;
-            public final EfectorDto efector = efectorDto;
-        }, HttpStatus.OK);
+        /*
+         * // Retorna el mensaje y el objeto
+         * return new ResponseEntity<>(new Object() {
+         * public final String mensaje = "El efector es de tipo: " + tipoEfector;
+         * public final EfectorDto efector = efectorDto;
+         * }, HttpStatus.OK);
+         */
+
+        return new ResponseEntity<>(efectorDto, HttpStatus.OK);
     }
 
     public Efector createUpdate(Efector efector, EfectorDto efectorDto) {
