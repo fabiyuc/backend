@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
-import com.guardias.backend.dto.distribucionGuardia.DistribucionGuardiaRequestDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;

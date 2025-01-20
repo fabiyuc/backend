@@ -127,7 +127,8 @@ public class AsistencialService {
         return (asistencialRepository.existsById(id) && asistencialRepository.findById(id).get().isActivo());
     }
 
-    // Método para obtener la lista de Asistenciales y convertirlos a AsistencialSummaryDto
+    // Método para obtener la lista de Asistenciales y convertirlos a
+    // AsistencialSummaryDto
     public List<AsistencialSummaryDto> getAsistencialSummaryList() {
         // Obtiene la lista de Asistenciales activos
         List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
@@ -155,7 +156,8 @@ public class AsistencialService {
         return summaryDtoList;
     }
 
-    // Método para obtener la lista de Asistenciales y convertirlos a AsistencialListDto
+    // Método para obtener la lista de Asistenciales y convertirlos a
+    // AsistencialListDto
     public List<AsistencialListDto> getAsistencialList() {
         // Obtiene la lista de Asistenciales activos
         List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
@@ -191,7 +193,8 @@ public class AsistencialService {
         return dtoList;
     }
 
-    // Verifica si alguno de los tipos de guardias del Asistencial es  'CONTRAFACTURA' para excluirlo de la lista
+    // Verifica si alguno de los tipos de guardias del Asistencial es
+    // 'CONTRAFACTURA' para excluirlo de la lista
     public List<AsistencialListForLegajosDto> getAsistencialListForLegajos() {
 
         List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
@@ -227,7 +230,8 @@ public class AsistencialService {
         return dtoList;
     }
 
-    // filtra ASISTENCIALES por tipos de guardia CARGO o AGRUPACION y mapea a AsistencialSummaryDto
+    // filtra ASISTENCIALES por tipos de guardia CARGO o AGRUPACION y mapea a
+    // AsistencialSummaryDto
     private List<AsistencialSummaryDto> filterAndMapByCargoOrAgrupacion(List<Asistencial> asistenciales) {
         List<AsistencialSummaryDto> dtoList = new ArrayList<>();
 
@@ -261,15 +265,17 @@ public class AsistencialService {
     }
 
     public List<Asistencial> getAsistencialesByEfectorAndTG(Long efectorId, String tipoGuardia) {
-    TipoGuardiaEnum tipoGuardiaEnum;
-    try {
-        tipoGuardiaEnum = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
-    } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
+        
+        TipoGuardiaEnum tipoGuardiaEnum;
+        
+        try {
+            tipoGuardiaEnum = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
+        }
+        return asistencialRepository.findByEfectorAndActivoTrueAndTG(efectorId, tipoGuardiaEnum);
     }
-    return asistencialRepository.findByEfectorAndActivoTrueAndTG(efectorId, tipoGuardiaEnum);
-}
-    
+
     public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTipoGuardiaExtraHabilitado(Long idEfector) {
         // Obtiene la lista de asistenciales activos relacionados con el efector
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(idEfector);

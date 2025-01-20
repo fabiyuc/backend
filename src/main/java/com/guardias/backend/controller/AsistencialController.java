@@ -130,13 +130,12 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
-    // Lista asistenciales segun efector y tipoGuardia
-    @GetMapping("/listByEfectorAndTG/{idEfector}/{tipoGuardia}")
-    public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
-            @PathVariable Long idEfector,
-            @PathVariable String tipoGuardia) {
-        List<Asistencial> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector,
-                tipoGuardia);
+    // Lista asistenciales segun efector que tengan tipoGuardia CARGO Y/O AGRUPACION
+    @GetMapping("/listByEfectorAndTipoGuardia/{idEfector}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndTipoGuardia(
+            @PathVariable Long idEfector) {
+        List<AsistencialSummaryDto> asistenciales = asistencialService
+                .getAsistencialesByEfectorAndTipoGuardia(idEfector);
 
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -144,12 +143,13 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
-    // Lista asistenciales segun efector con tipoGuardia CARGO Y/O AGRUPACION
-    @GetMapping("/listByEfectorAndTipoGuardia/{idEfector}")
-    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndTipoGuardia(
-            @PathVariable Long idEfector) {
-        List<AsistencialSummaryDto> asistenciales = asistencialService
-                .getAsistencialesByEfectorAndTipoGuardia(idEfector);
+    // Lista asistenciales segun efector y tipoGuardia
+    @GetMapping("/listByEfectorAndTG/{idEfector}/{tipoGuardia}")
+    public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
+            @PathVariable Long idEfector,
+            @PathVariable String tipoGuardia) {
+        
+        List<Asistencial> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
 
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

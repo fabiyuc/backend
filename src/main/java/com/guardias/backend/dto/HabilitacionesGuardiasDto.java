@@ -14,7 +14,7 @@ public class HabilitacionesGuardiasDto {
     
     private Boolean activo;
     @NotBlank
-    private Long idPersona;
+    private Long idAsistencial;
     @NotBlank
     private List<Long> idEfectores;
 

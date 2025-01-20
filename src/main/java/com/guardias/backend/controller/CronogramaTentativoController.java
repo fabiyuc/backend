@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.service.CronogramaTentativoService;
 
@@ -92,11 +91,11 @@ public class CronogramaTentativoController {
         }
     }
 
-    // busca cronograma tentativo para comparar con registro de actividad
+    /* // busca cronograma tentativo para comparar con registro de actividad
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
         
         return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
-    }
+    } */
 
 }
