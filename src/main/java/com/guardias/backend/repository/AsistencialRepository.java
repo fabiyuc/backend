@@ -24,7 +24,7 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
     boolean existsById(Long id);
 
     boolean existsByDniAndActivoTrue(int dni);
-    
+
     boolean existsByDni(int dni);
 
     boolean existsByCuil(String cuil);
@@ -40,5 +40,4 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND a.activo = true")
     List<Asistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
-
 }

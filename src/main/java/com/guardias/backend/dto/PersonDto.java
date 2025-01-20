@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonDto {
+    private Long id;
 
     @NotBlank
     private String nombre;

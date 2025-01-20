@@ -26,6 +26,7 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.EfectorService;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -34,6 +35,8 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    EfectorService efectorService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
@@ -178,6 +181,16 @@ public class AsistencialController {
         List<AsistencialSummaryDto> asistenciales = asistencialService
                 .getAsistencialesByEfectorAndTipoGuardiaExtraHabilitado(idEfector);
 
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfector/{idEfector}")
+    public ResponseEntity<List<AsistencialDto>> getAsistencialesByEfector(
+            @PathVariable("idEfector") Long idEfector) {
+        List<AsistencialDto> asistenciales = asistencialService.getAsistencialesByEfector(idEfector);
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
