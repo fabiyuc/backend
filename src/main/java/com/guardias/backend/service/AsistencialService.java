@@ -304,15 +304,21 @@ public class AsistencialService {
                 .collect(Collectors.toList());
     }
 
-    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long efectorId) {
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
-        return getAsistencialesByTipoGuardiaCargo(asistenciales);
-    }
-
-    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndAgrupacion(Long efectorId) {
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
-        return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
-    }
+    /*
+     * public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long
+     * efectorId) {
+     * List<Asistencial> asistenciales =
+     * asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+     * return getAsistencialesByTipoGuardiaCargo(asistenciales);
+     * }
+     * 
+     * public List<AsistencialSummaryDto>
+     * getAsistencialesByEfectorAndAgrupacion(Long efectorId) {
+     * List<Asistencial> asistenciales =
+     * asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+     * return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
+     * }
+     */
 
     public List<AsistencialDto> getAsistencialesByEfector(Long efectorId) {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
