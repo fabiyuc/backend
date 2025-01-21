@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGuardia;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HospitalRepository;
@@ -40,6 +42,8 @@ public class HabilitacionesGuardiasService {
     @Autowired
     PersonService personService;
     @Autowired
+    AsistencialService asistencialService;
+    @Autowired
     HabilitacionesGuardiasRepository habilitacionesGuardiasRepository;
 
     public Optional<List<HabilitacionesGuardia>> findByActivoTrue() {
@@ -59,31 +63,33 @@ public class HabilitacionesGuardiasService {
         return habilitacionesGuardiasRepository.findById(id);
     }
 
-    public boolean activoByPersona(Long idPersona) {
-        return (habilitacionesGuardiasRepository.existsByPersonaId(idPersona)
-                && habilitacionesGuardiasRepository.findByPersonaId(idPersona).get().isActivo());
+    public boolean activoByAsistencial(Long idAsistencial) {
+        return (habilitacionesGuardiasRepository.existsByAsistencialId(idAsistencial)
+                && habilitacionesGuardiasRepository.findByAsistencialId(idAsistencial).get().isActivo());
     }
 
-    public Optional<HabilitacionesGuardia> findByPersona(Long idPersona) {
-        return habilitacionesGuardiasRepository.findByPersonaId(idPersona);
+    public Optional<HabilitacionesGuardia> findByAsistencial(Long idAsistencial) {
+        return habilitacionesGuardiasRepository.findByAsistencialId(idAsistencial);
     }
 
     public ResponseEntity<?> validations(HabilitacionesGuardiasDto permisosDto) {
-        if (permisosDto.getIdPersona() == null)
-            return new ResponseEntity(new Mensaje("el id de la persona es obligatorio"),
+        if (permisosDto.getIdAsistencial() == null)
+            return new ResponseEntity(new Mensaje("el id del asistencial es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public HabilitacionesGuardia createUpdate(HabilitacionesGuardia habilitacionesGuardias,
-            HabilitacionesGuardiasDto permisosDto) {
+            HabilitacionesGuardiasDto habilitacionesGuardiasDto) {
 
-        if (habilitacionesGuardias.getPersona() == null
-                || !Objects.equals(habilitacionesGuardias.getPersona().getId(), permisosDto.getIdPersona()))
-            habilitacionesGuardias.setPersona(personService.findById(permisosDto.getIdPersona()));
+        if (habilitacionesGuardias.getAsistencial() == null
+                || !Objects.equals(habilitacionesGuardias.getAsistencial().getId(),
+                        habilitacionesGuardiasDto.getIdAsistencial()))
+            habilitacionesGuardias
+                    .setAsistencial(asistencialService.findById(habilitacionesGuardiasDto.getIdAsistencial()).get());
 
-        if (permisosDto.getIdEfectores() != null) {
+        if (habilitacionesGuardiasDto.getIdEfectores() != null) {
 
             if (habilitacionesGuardias.getEfectores() == null) {
                 habilitacionesGuardias.setEfectores(new ArrayList<>());
@@ -92,7 +98,7 @@ public class HabilitacionesGuardiasService {
             // Crea una nueva lista para almacenar los efectores actualizados
             List<Efector> efectoresActualizados = new ArrayList<>();
             for (Efector efector : habilitacionesGuardias.getEfectores()) {
-                if (permisosDto.getIdEfectores().contains(efector.getId())) {
+                if (habilitacionesGuardiasDto.getIdEfectores().contains(efector.getId())) {
                     efectoresActualizados.add(efector);
                 } else {
                     // Remover el legajo de los efectores que se eliminarán
@@ -102,7 +108,7 @@ public class HabilitacionesGuardiasService {
             habilitacionesGuardias.setEfectores(efectoresActualizados);
 
             // agrega nuevos efectores si no estan presentes
-            for (Long id : permisosDto.getIdEfectores()) {
+            for (Long id : habilitacionesGuardiasDto.getIdEfectores()) {
                 boolean found = false;
                 for (Efector efector : habilitacionesGuardias.getEfectores()) {
                     if (efector.getId().equals(id)) {
@@ -138,10 +144,10 @@ public class HabilitacionesGuardiasService {
         habilitacionesGuardiasRepository.deleteById(id);
     }
 
-    public boolean tieneHabilitacionesGuardias(Long idPersona, Long idEfector) {
+    public boolean tieneHabilitacionesGuardias(Long idAsistencial, Long idEfector) {
 
-        if (!personService.activoById(idPersona)) {
-            throw new EntityNotFoundException("El asistencial con ID " + idPersona + " no existe.");
+        if (!personService.activoById(idAsistencial)) {
+            throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
         }
 
         if (!efectorService.existsById(idEfector)) {
@@ -149,21 +155,40 @@ public class HabilitacionesGuardiasService {
         }
 
         Optional<HabilitacionesGuardia> optionalHabilitacion = habilitacionesGuardiasRepository
-                .findByPersonaIdAndActivoTrue(idPersona);
+                .findByAsistencialIdAndActivoTrue(idAsistencial);
 
         if (optionalHabilitacion.isPresent()) {
-            
+
             HabilitacionesGuardia habilitacion = optionalHabilitacion.get();
             // Verificar si la lista de efectores contiene el idEfector
             return habilitacion.getEfectores() != null &&
                     habilitacion.getEfectores().stream()
                             .anyMatch(efector -> efector.getId().equals(idEfector));
         }
-        return false; // Retorna false si no hay una habilitacion de guardia activa o no se encuentra el idEfector
+        return false; // Retorna false si no hay una habilitacion de guardia activa o no se encuentra
+                      // el idEfector
 
     }
 
     public List<HabilitacionesGuardia> getHabilitacionesGuardiasByEfectorAndAsistencial(Long idEfector) {
+        if (idEfector == null || idEfector <= 0) {
+            throw new IllegalArgumentException("El idEfector no es válido.");
+        }
         return habilitacionesGuardiasRepository.findHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
+    }
+
+    public List<Asistencial> getAsistencialesByEfectorAndTG(Long idEfector, String tipoGuardia) {
+        
+        TipoGuardiaEnum tipoGuardiaEnum;
+
+        if (idEfector == null || idEfector <= 0) {
+            throw new IllegalArgumentException("El idEfector no es válido.");
+        }
+        try {
+            tipoGuardiaEnum = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
+        }
+        return habilitacionesGuardiasRepository.findByEfectorAndActivoTrueAndTG(idEfector, tipoGuardiaEnum);
     }
 }

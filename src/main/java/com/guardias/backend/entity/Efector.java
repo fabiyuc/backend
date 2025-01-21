@@ -66,13 +66,13 @@ public abstract class Efector {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "udo", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
             "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
-            "persona", "cargo", "efectores" })
+            "persona", "cargo", "efectores", "profesion", "tipoGuardias", "region" })
     private List<Legajo> legajosUdo = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "actual", "legal",
-            "activo", "matriculaNacional", "matriculaProvincial", "profesion", "suspencion", "revista", "udo",
-            "persona", "cargo", "efectores" })
+            "activo", "matriculaNacional", "matriculaProvincial", "especialidades", "suspencion", "revista", "udo",
+            "persona", "cargo", "efectores", "profesion", "tipoGuardias", "region" })
     private List<Legajo> legajos = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
@@ -109,7 +109,7 @@ public abstract class Efector {
     private List<HabilitacionesGuardia> habilitacionesGuardias = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efectores", "asistencial" })
     private List<HabilitacionesGenerales> habilitacionesGenerales = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)

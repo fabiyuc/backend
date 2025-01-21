@@ -1,5 +1,6 @@
 package com.guardias.backend.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.DistribucionConsultorio;
+import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
 
 @Repository
@@ -34,18 +36,35 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
     List<DistribucionConsultorio> findByActivo(boolean activo);
 
     @Query("""
-        SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
-        FROM distribucionesConsultorios d
-        WHERE d.dia = :dia
-        AND :fecha BETWEEN d.fechaInicio AND d.fechaFinalizacion
-        AND d.persona.id = :idAsistencial
-        AND d.efector.id = :idEfector
-        AND d.activo = true
-        """)
+            SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+            FROM distribucionesConsultorios d
+            WHERE d.dia = :dia
+            AND :fecha BETWEEN d.fechaInicio AND d.fechaFinalizacion
+            AND d.persona.id = :idAsistencial
+            AND d.efector.id = :idEfector
+            AND d.activo = true
+            """)
     boolean existsByDiaAndFechaAndPersonaAndEfector(
-        @Param("dia") DiasEnum dia,
-        @Param("fecha") LocalDate fecha,
-        @Param("idAsistencial") Long idAsistencial,
-        @Param("idEfector") Long idEfector
-    );
+            @Param("dia") DiasEnum dia,
+            @Param("fecha") LocalDate fecha,
+            @Param("idAsistencial") Long idAsistencial,
+            @Param("idEfector") Long idEfector);
+
+    @Query(nativeQuery = true, value = """
+                SELECT *
+                FROM distribuciones_consultorios d
+                WHERE d.id_persona = :idAsistencial
+                AND d.id_efector = :idEfector
+                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                AND CAST(:horaIngreso AS TIME) >= CAST(d.hora_ingreso AS TIME)
+                AND CAST(:horaEgreso AS TIME) <= DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
+                AND d.activo = 1
+                """)
+        Optional<DistribucionConsultorio> findValidDistribucion(
+                @Param("idAsistencial") Long idAsistencial,
+                @Param("idEfector") Long idEfector,
+                @Param("fechaIngreso") LocalDate fechaInicio,
+                @Param("horaIngreso") String horaIngreso, 
+                @Param("horaEgreso") String horaEgreso);
+
 }

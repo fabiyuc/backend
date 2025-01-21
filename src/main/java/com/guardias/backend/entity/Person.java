@@ -17,7 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -94,20 +93,16 @@ public abstract class Person {
             "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
-    /* @OneToOne(mappedBy = "person")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person" })
-    private Usuario usuario; */
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", 
             "person" })
     private List<Usuario> usuarios = new ArrayList<>();
 
-
+/* 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
     private List<HabilitacionesGuardia> habilitacionesGuardias = new ArrayList<>();
-
+ */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona" })
     private List<HabilitacionesGenerales> habilitacionesGenerales = new ArrayList<>();

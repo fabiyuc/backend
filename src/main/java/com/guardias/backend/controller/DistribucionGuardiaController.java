@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
@@ -92,7 +93,7 @@ public class DistribucionGuardiaController {
         if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
                 && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
-        
+
         if (distribucionGuardia.getServicio() == null ||
                 (distribucionGuardiaDto.getIdServicio() != null &&
                         !Objects.equals(distribucionGuardia.getServicio().getId(),
@@ -162,15 +163,24 @@ public class DistribucionGuardiaController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
+    // consulta si existe una distribucion de tipo Guardia o Consultorio
     @GetMapping("/existDistribucion/{dia}/{fecha}/{idAsistencial}/{idEfector}")
-    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial,idEfector);
+    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate fecha,
+            @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial, idEfector);
+    }
+
+    // busca distribucion guardia para comparar con cronograma tentativo
+    @PostMapping("/verificarCronogramaEnDistribucion")
+    public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
+        
+        return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
     }
 
     @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")
-    public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial,idEfector);
+    public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate fecha,
+            @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial, idEfector);
     }
 
-    
 }

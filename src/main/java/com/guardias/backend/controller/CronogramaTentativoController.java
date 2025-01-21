@@ -91,4 +91,11 @@ public class CronogramaTentativoController {
         }
     }
 
+    /* // busca cronograma tentativo para comparar con registro de actividad
+    @PostMapping("/verificarCronogramaEnDistribucion")
+    public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
+        
+        return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
+    } */
+
 }
