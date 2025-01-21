@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -188,9 +189,9 @@ public class AsistencialController {
     }
 
     @GetMapping("/listByEfector/{idEfector}")
-    public ResponseEntity<List<AsistencialDto>> getAsistencialesByEfector(
+    public ResponseEntity<List<AsistencialEfectorDto>> getAsistencialesByEfector(
             @PathVariable("idEfector") Long idEfector) {
-        List<AsistencialDto> asistenciales = asistencialService.getAsistencialesByEfector(idEfector);
+        List<AsistencialEfectorDto> asistenciales = asistencialService.getAsistencialesByEfector(idEfector);
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

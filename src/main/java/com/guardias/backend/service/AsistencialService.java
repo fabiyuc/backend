@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.controller.PersonController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -406,23 +407,24 @@ public class AsistencialService {
         return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
     }
 
-    public List<AsistencialDto> getAsistencialesByEfector(Long efectorId) {
+    public List<AsistencialEfectorDto> getAsistencialesByEfector(Long efectorId) {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return filterAsistencialesByEfector(asistenciales);
     }
 
-    public List<AsistencialDto> filterAsistencialesByEfector(List<Asistencial> asistenciales) {
-        List<AsistencialDto> EfectorList = new ArrayList<>();
+    public List<AsistencialEfectorDto> filterAsistencialesByEfector(List<Asistencial> asistenciales) {
+        List<AsistencialEfectorDto> dtoList = new ArrayList<>();
+
         for (Asistencial asistencial : asistenciales) {
-            AsistencialDto dto = new AsistencialDto();
-            dto.setId(asistencial.getId());
-            dto.setNombre(asistencial.getNombre());
-            dto.setApellido(asistencial.getApellido());
-            dto.setCuil(asistencial.getCuil());
-            dto.setActivo(asistencial.isActivo());
-            EfectorList.add(dto);
+            AsistencialEfectorDto dto = new AsistencialEfectorDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getCuil(),
+                    asistencial.isActivo());
+            dtoList.add(dto);
         }
-        return EfectorList;
+        return dtoList;
     }
 
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
