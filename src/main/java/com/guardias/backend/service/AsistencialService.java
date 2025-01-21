@@ -407,24 +407,31 @@ public class AsistencialService {
         return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
     }
 
-    public List<AsistencialEfectorDto> getAsistencialesByEfector(Long efectorId) {
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
-        return filterAsistencialesByEfector(asistenciales);
-    }
-
     public List<AsistencialEfectorDto> filterAsistencialesByEfector(List<Asistencial> asistenciales) {
-        List<AsistencialEfectorDto> dtoList = new ArrayList<>();
+        List<AsistencialEfectorDto> EfectorList = new ArrayList<>();
 
         for (Asistencial asistencial : asistenciales) {
             AsistencialEfectorDto dto = new AsistencialEfectorDto(
                     asistencial.getId(),
                     asistencial.getNombre(),
                     asistencial.getApellido(),
+                    asistencial.getDni(),
                     asistencial.getCuil(),
+                    asistencial.getFechaNacimiento(),
+                    asistencial.getSexo(),
+                    asistencial.getTelefono(),
+                    asistencial.getEmail(),
+                    asistencial.getDomicilio(),
+                    asistencial.isActivo(),
                     asistencial.isActivo());
-            dtoList.add(dto);
+            EfectorList.add(dto);
         }
-        return dtoList;
+        return EfectorList;
+    }
+
+    public List<AsistencialEfectorDto> getAsistencialesByEfector(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return filterAsistencialesByEfector(asistenciales);
     }
 
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
