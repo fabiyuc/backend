@@ -423,7 +423,12 @@ public class AsistencialService {
                     asistencial.getEmail(),
                     asistencial.getDomicilio(),
                     asistencial.isActivo(),
-                    asistencial.isActivo());
+                    asistencial.isActivo(),
+                    asistencial.getLegajos().stream()
+                            .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                            .map(Legajo::getId)
+                            .collect(Collectors.toList()));
+
             EfectorList.add(dto);
         }
         return EfectorList;

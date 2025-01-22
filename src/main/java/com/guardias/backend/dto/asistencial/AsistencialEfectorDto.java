@@ -1,6 +1,7 @@
 package com.guardias.backend.dto.asistencial;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -28,5 +29,6 @@ public class AsistencialEfectorDto {
     private String domicilio;
     private Boolean esAsistencial;
     private boolean activo;
+    private List<Long> idLegajos;
 
 }
