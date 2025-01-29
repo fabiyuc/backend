@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -75,11 +76,15 @@ public class DistribucionGuardiaController {
 
     @GetMapping("/detailpersona/{idPersona}")
     public ResponseEntity<List<DistribucionGuardia>> getByPersona(@PathVariable("idPersona") Long idPersona) {
-        if (!distribucionGuardiaService.existsByPersonaId(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-                    HttpStatus.NOT_FOUND);
-        List<DistribucionGuardia> distribucionGuardia = distribucionGuardiaService.findByPersonaId(idPersona).get();
-        return new ResponseEntity<>(distribucionGuardia, HttpStatus.OK);
+        // Si la persona no tiene distribuciones, devolvemos un 200 OK con una lista
+        // vacía
+        if (!distribucionGuardiaService.existsByPersonaId(idPersona)) {
+            return ResponseEntity.ok(Collections.emptyList()); // <-- SOLUCIÓN AQUÍ
+        }
+
+        List<DistribucionGuardia> distribucionGuardia = distribucionGuardiaService.findByPersonaId(idPersona)
+                .orElse(Collections.emptyList());
+        return ResponseEntity.ok(distribucionGuardia);
     }
 
     DistribucionGuardia createUpdate(DistribucionGuardia distribucionGuardia,
@@ -92,7 +97,7 @@ public class DistribucionGuardiaController {
         if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
                 && distribucionGuardiaDto.getTipoGuardia() != null)
             distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
-        
+
         if (distribucionGuardia.getServicio() == null ||
                 (distribucionGuardiaDto.getIdServicio() != null &&
                         !Objects.equals(distribucionGuardia.getServicio().getId(),
@@ -163,14 +168,15 @@ public class DistribucionGuardiaController {
     }
 
     @GetMapping("/existDistribucion/{dia}/{fecha}/{idAsistencial}/{idEfector}")
-    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial,idEfector);
+    public boolean existDistribucion(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate fecha,
+            @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.existDistribucion(dia, fecha, idAsistencial, idEfector);
     }
 
     @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")
-    public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate  fecha, @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
-        return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial,idEfector);
+    public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate fecha,
+            @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
+        return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial, idEfector);
     }
 
-    
 }
