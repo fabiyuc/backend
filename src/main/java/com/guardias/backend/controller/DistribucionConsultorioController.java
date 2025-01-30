@@ -75,14 +75,34 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<>(distribucionConsultorio, HttpStatus.OK);
     }
 
+    /*
+     * @GetMapping("/detailpersona/{idPersona}")
+     * public ResponseEntity<List<DistribucionConsultorio>>
+     * getByPersona(@PathVariable("idPersona") Long idPersona) {
+     * if (!distribucionConsultorioService.existsByPersonaId(idPersona))
+     * return new ResponseEntity(new Mensaje("no existe la carga horaria"),
+     * HttpStatus.NOT_FOUND);
+     * List<DistribucionConsultorio> distribucionConsultorio =
+     * distribucionConsultorioService
+     * .findByPersonaId(idPersona).get();
+     * return new ResponseEntity<>(distribucionConsultorio, HttpStatus.OK);
+     * }
+     */
+
+    // Nueva implementación de getByPersona que filtra solo las distribuciones
+    // activas
     @GetMapping("/detailpersona/{idPersona}")
-    public ResponseEntity<List<DistribucionConsultorio>> getByPersona(@PathVariable("idPersona") Long idPersona) {
-        if (!distribucionConsultorioService.existsByPersonaId(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-                    HttpStatus.NOT_FOUND);
-        List<DistribucionConsultorio> distribucionConsultorio = distribucionConsultorioService
-                .findByPersonaId(idPersona).get();
-        return new ResponseEntity<>(distribucionConsultorio, HttpStatus.OK);
+    public ResponseEntity<?> getByPersona(@PathVariable("idPersona") Long idPersona) {
+        if (!distribucionConsultorioService.existsByPersonaId(idPersona)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe la carga horaria"));
+        }
+
+        List<DistribucionConsultorio> distribucionConsultorioActivas = distribucionConsultorioService
+                .findByPersonaId(idPersona)
+                .map(lista -> lista.stream().filter(DistribucionConsultorio::isActivo).toList())
+                .orElseGet(List::of);
+
+        return ResponseEntity.ok(distribucionConsultorioActivas);
     }
 
     DistribucionConsultorio createUpdate(DistribucionConsultorio distribucionConsultorio,
@@ -96,7 +116,8 @@ public class DistribucionConsultorioController {
                 (distribucionConsultorioDto.getIdServicio() != null &&
                         !Objects.equals(distribucionConsultorio.getServicio().getId(),
                                 distribucionConsultorioDto.getIdServicio()))) {
-            distribucionConsultorio.setServicio(servicioService.findById(distribucionConsultorioDto.getIdServicio()).get());
+            distribucionConsultorio
+                    .setServicio(servicioService.findById(distribucionConsultorioDto.getIdServicio()).get());
         }
 
         if (distribucionConsultorioDto.getTipoConsultorio() != distribucionConsultorio.getTipoConsultorio()
@@ -107,12 +128,17 @@ public class DistribucionConsultorioController {
                 && distribucionConsultorioDto.getLugar() != null)
             distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
 
-        /* if (distribucionConsultorioDto.getEspecialidad() != distribucionConsultorio.getEspecialidad()
-                && distribucionConsultorioDto.getEspecialidad() != null)
-            distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.getEspecialidad());
-        if (distribucionConsultorioDto.getCantidadTurnos() != distribucionConsultorio.getCantidadTurnos())
-            distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.getCantidadTurnos());
- */
+        /*
+         * if (distribucionConsultorioDto.getEspecialidad() !=
+         * distribucionConsultorio.getEspecialidad()
+         * && distribucionConsultorioDto.getEspecialidad() != null)
+         * distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.
+         * getEspecialidad());
+         * if (distribucionConsultorioDto.getCantidadTurnos() !=
+         * distribucionConsultorio.getCantidadTurnos())
+         * distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.
+         * getCantidadTurnos());
+         */
         distribucionConsultorio.setActivo(true);
         return distribucionConsultorio;
     }

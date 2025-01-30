@@ -68,13 +68,33 @@ public class DistribucionOtraController {
         return new ResponseEntity<>(distribucionOtra, HttpStatus.OK);
     }
 
+    /*
+     * @GetMapping("/detailpersona/{idPersona}")
+     * public ResponseEntity<List<DistribucionOtra>>
+     * getByPersona(@PathVariable("idPersona") Long idPersona) {
+     * if (!distribucionOtraService.existsByPersonaId(idPersona))
+     * return new ResponseEntity(new Mensaje("no existe la carga horaria"),
+     * HttpStatus.NOT_FOUND);
+     * List<DistribucionOtra> distribucionOtra =
+     * distribucionOtraService.findByPersonaId(idPersona).get();
+     * return new ResponseEntity<>(distribucionOtra, HttpStatus.OK);
+     * }
+     */
+
+    // Nueva implementación de getByPersona que filtra solo las distribuciones
+    // activas
     @GetMapping("/detailpersona/{idPersona}")
-    public ResponseEntity<List<DistribucionOtra>> getByPersona(@PathVariable("idPersona") Long idPersona) {
-        if (!distribucionOtraService.existsByPersonaId(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-                    HttpStatus.NOT_FOUND);
-        List<DistribucionOtra> distribucionOtra = distribucionOtraService.findByPersonaId(idPersona).get();
-        return new ResponseEntity<>(distribucionOtra, HttpStatus.OK);
+    public ResponseEntity<?> getByPersona(@PathVariable("idPersona") Long idPersona) {
+        if (!distribucionOtraService.existsByPersonaId(idPersona)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe la carga horaria"));
+        }
+
+        // Obtener distribuciones y filtrar solo las activas
+        List<DistribucionOtra> distribucionOtraActivas = distribucionOtraService.findByPersonaId(idPersona)
+                .map(lista -> lista.stream().filter(DistribucionOtra::isActivo).toList()) // Filtrar activas
+                .orElseGet(List::of); // Si no hay resultados, devolver una lista vacía
+
+        return ResponseEntity.ok(distribucionOtraActivas);
     }
 
     DistribucionOtra createUpdate(DistribucionOtra distribucionOtra,

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,9 +83,14 @@ public class DistribucionGuardiaController {
             return ResponseEntity.ok(Collections.emptyList()); // <-- SOLUCIÓN AQUÍ
         }
 
-        List<DistribucionGuardia> distribucionGuardia = distribucionGuardiaService.findByPersonaId(idPersona)
-                .orElse(Collections.emptyList());
-        return ResponseEntity.ok(distribucionGuardia);
+        // Obtener distribuciones y filtrar solo las activas
+        List<DistribucionGuardia> distribucionGuardiaActivas = distribucionGuardiaService.findByPersonaId(idPersona)
+                .orElse(Collections.emptyList()) // Si el Optional está vacío, devuelve lista vacía
+                .stream()
+                .filter(DistribucionGuardia::isActivo) // Filtra solo las distribuciones activas
+                .collect(Collectors.toList()); // Convierte el resultado a lista
+
+        return ResponseEntity.ok(distribucionGuardiaActivas);
     }
 
     DistribucionGuardia createUpdate(DistribucionGuardia distribucionGuardia,
