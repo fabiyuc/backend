@@ -42,7 +42,7 @@ public class HabilitacionesGuardia {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "habilitacionesguardias_efectores", joinColumns = @JoinColumn(name = "permiso_id"),
         inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGuardias" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" })
     private List<Efector> efectores = new ArrayList<>();
 
 }
