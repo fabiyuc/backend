@@ -21,6 +21,8 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,9 +62,13 @@ public abstract class DistribucionHoraria {
     "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
     "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados"})
     private Efector efector;
-
+    
+    @Temporal(TemporalType.DATE)
     private LocalDate fechaInicio;
+
+    @Temporal(TemporalType.DATE)
     private LocalDate fechaFinalizacion;
+    
     private LocalTime horaIngreso;
 
     @Override

@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -7,9 +8,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
+import com.guardias.backend.dto.distribucionGuardia.DistribucionGuardiaRequestDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
 
@@ -80,12 +85,12 @@ public class DistribucionGuardiaService {
         distribucionGuardiaRepository.deleteById(id);
     }
 
-    public boolean existDistribucion(DiasEnum dia, LocalDate fecha,  Long idAsistencial, Long idEfector) {
+    public boolean existDistribucion(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 
         if (dia == null || fecha == null || idAsistencial == null || idEfector == null) {
-            throw new IllegalArgumentException("Los parámetros de día, fecha, horaIngreso, idAsistencial y idEfector no pueden ser nulos.");
+            throw new IllegalArgumentException(
+                    "Los parámetros de día, fecha, horaIngreso, idAsistencial y idEfector no pueden ser nulos.");
         }
-    
 
         if (!asistencialRepository.existsById(idAsistencial)) {
             throw new EntityNotFoundException("El asistencial con ID " + idAsistencial + " no existe.");
@@ -113,6 +118,21 @@ public class DistribucionGuardiaService {
 
     }
 
+    public boolean  validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo.");
+        }
+
+        //Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
+        String horaIngresoString = dto.getHoraIngreso().toString(); 
+        String horaEgresoString = dto.getHoraEgreso().toString();
+
+        // Intentar encontrar una distribución válida
+        Optional<DistribucionGuardia> distribucionValida = distribucionGuardiaRepository.findValidDistribucion(dto.getIdAsistencial(), dto.getIdEfector(), dto.getTipoGuardia(),dto.getFechaIngreso(), horaIngresoString, horaEgresoString);
+
+        // Retornar true si existe una distribución válida, false en caso contrario
+        return distribucionValida.isPresent();
+    }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 

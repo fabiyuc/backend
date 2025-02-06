@@ -33,16 +33,24 @@ public class HabilitacionesGuardia {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona", nullable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
     "registrosMensuales", "usuario","habilitacionesGuardias", "legajos"})
-    private Person persona;
+    private Person persona; */
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "id_asistencial")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "estado", "tipoGuardia", "descripcion", "tiposGuardias", "registrosActividades", "dni", "fechaNacimiento",
+            "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "suplentes", "autoridades" , "legajos","cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales", "novedadesPersonales", "distribucionesHorarias", "registrosMensuales" , "usuarios"})
+    private Asistencial asistencial;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "habilitacionesguardias_efectores", joinColumns = @JoinColumn(name = "permiso_id"),
         inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades","registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",  "nivelComplejidad", "caps", "valoresGuardiaBase","habilitacionesGuardias", "habilitacionesGenerales" ,"cronogramasTentativos", "feriados" })
+
     private List<Efector> efectores = new ArrayList<>();
 
 }

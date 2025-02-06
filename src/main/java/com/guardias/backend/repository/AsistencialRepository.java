@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 @Repository
 public interface AsistencialRepository extends JpaRepository<Asistencial, Long> {
@@ -40,4 +41,20 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
     @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND a.activo = true")
     List<Asistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
+
+    @Query("""
+                SELECT DISTINCT a
+                FROM asistenciales a
+                JOIN a.legajos l
+                JOIN l.tipoGuardias tg
+                JOIN l.efectores e
+                WHERE a.activo = true
+                  AND l.activo = true
+                  AND e.id = :idEfector
+                  AND tg.nombre = :tipoGuardia
+            """)
+    List<Asistencial> findByEfectorAndActivoTrueAndTG(
+            @Param("idEfector") Long idEfector,
+            @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia);
+
 }

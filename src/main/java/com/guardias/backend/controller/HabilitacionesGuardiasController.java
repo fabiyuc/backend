@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.service.HabilitacionesGuardiasService;
 
@@ -47,9 +48,25 @@ public class HabilitacionesGuardiasController {
     @GetMapping("/listAsistencialesByEfector/{idEfector}")
     public ResponseEntity<List<HabilitacionesGuardia>> listHabilitacionesGuardiasByEfectorAndAsistencial(
             @PathVariable Long idEfector) {
+
         List<HabilitacionesGuardia> habilitacionesGuardias = habilitacionesGuardiasService
                 .getHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
         return new ResponseEntity<>(habilitacionesGuardias, HttpStatus.OK);
+    }
+
+    // habilitaciones de guardias según el tipo de guardia EXTRA O CF
+    @GetMapping("/listAsistencialesByEfectorAndTG/{idEfector}/{tipoGuardia}")
+    public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
+            @PathVariable Long idEfector, @PathVariable String tipoGuardia) {
+
+        List<Asistencial> habilitaciones = habilitacionesGuardiasService
+        .getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
+
+        if (habilitaciones.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return ResponseEntity.ok(habilitaciones);
     }
 
     @GetMapping("/detail/{id}")
@@ -62,11 +79,11 @@ public class HabilitacionesGuardiasController {
     }
 
     @GetMapping("/detailAsistencial/{idPersona}")
-    public ResponseEntity<HabilitacionesGuardia> getByAsistencial(@PathVariable("idPersona") Long idPersona) {
-        if (!habilitacionesGuardiasService.activoByPersona(idPersona))
+    public ResponseEntity<HabilitacionesGuardia> getByAsistencial(@PathVariable("idPersona") Long idAsistencial) {
+        if (!habilitacionesGuardiasService.activoByAsistencial(idAsistencial))
             return new ResponseEntity(new Mensaje("no existe la habilitacion de guardia de este asistencial"),
                     HttpStatus.NOT_FOUND);
-        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findByPersona(idPersona).get();
+        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findByAsistencial  (idAsistencial).get();
         return new ResponseEntity<HabilitacionesGuardia>(habilitacionesGuardias, HttpStatus.OK);
     }
 
