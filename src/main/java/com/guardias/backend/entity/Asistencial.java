@@ -38,5 +38,4 @@ public class Asistencial extends Person {
                         "efectores", "asistencial" })
         private List<HabilitacionesGuardia> habilitacionesGuardias = new ArrayList<>();
 
-       
 }
