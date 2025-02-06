@@ -315,7 +315,7 @@ public class AsistencialService {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
     }
-
+*/
     public List<AsistencialEfectorDto> filterAsistencialesByEfector(List<Asistencial> asistenciales) {
         List<AsistencialEfectorDto> EfectorList = new ArrayList<>();
 
@@ -346,7 +346,7 @@ public class AsistencialService {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return filterAsistencialesByEfector(asistenciales);
     }
-*/
+
 
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
     public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
