@@ -6,16 +6,24 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Feriado;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.entity.Notificacion;
 import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.service.AutoridadService;
@@ -28,6 +36,8 @@ import com.guardias.backend.service.NotificacionService;
 import com.guardias.backend.service.RegionService;
 import com.guardias.backend.service.ServicioService;
 
+@RequestMapping("/efector")
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 public class EfectorController {
 
@@ -44,11 +54,17 @@ public class EfectorController {
     @Autowired
     LegajoService legajoService;
     @Autowired
+    @Lazy
     ServicioService servicioService;
     @Autowired
     NotificacionService notificacionService;
     @Autowired
     FeriadoService feriadoService;
+
+    @GetMapping("/tipo/{id}")
+    public ResponseEntity<?> getEfectorTipoEndpoint(@PathVariable Long id) {
+        return getEfectorTipo(id);
+    }
 
     public ResponseEntity<?> validations(EfectorDto efectorDto, Long id) {
         if (StringUtils.isBlank(efectorDto.getNombre()))
@@ -58,11 +74,9 @@ public class EfectorController {
             return new ResponseEntity(new Mensaje("el domicilio es obligatorio"),
                     HttpStatus.BAD_REQUEST);
         if (efectorDto.getIdRegion() == null)
-                    return new ResponseEntity(new Mensaje("es obligatorio indicar la region"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("es obligatorio indicar la region"), HttpStatus.BAD_REQUEST);
         if (efectorDto.getIdLocalidad() == null)
-                    return new ResponseEntity(new Mensaje("es obligatorio indicar la localidad"), HttpStatus.BAD_REQUEST);
-       
-        
+            return new ResponseEntity(new Mensaje("es obligatorio indicar la localidad"), HttpStatus.BAD_REQUEST);
 
         // SI EXISTEN CAPS CON NOMBRES IGUALES!!!!!!!!!!!!!!!!!!!!!!
         // VER si conviene comparar segun ele tipo de efector
@@ -73,7 +87,51 @@ public class EfectorController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public Efector  createUpdate(Efector efector, EfectorDto efectorDto) {
+    public ResponseEntity<?> getEfectorTipo(Long idEfector) {
+        // Verifica si existe el efector
+        if (!efectorService.existsById(idEfector)) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el efector con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // Obtiene el efector
+        Efector efector = efectorService.findById(idEfector);
+
+        // Determina el tipo de efector y genera el mensaje
+        String tipoEfector;
+        if (efector instanceof Hospital) {
+            tipoEfector = "Hospital";
+        } else if (efector instanceof Ministerio) {
+            tipoEfector = "Ministerio";
+        } else if (efector instanceof Caps) {
+            tipoEfector = "CAPS";
+        } else {
+            tipoEfector = "Desconocido";
+        }
+
+        EfectorDto efectorDto = new EfectorDto();
+        efectorDto.setId(efector.getId());
+        efectorDto.setNombre(efector.getNombre());
+        efectorDto.setDomicilio(efector.getDomicilio());
+        efectorDto.setTelefono(efector.getTelefono());
+        efectorDto.setEstado(efector.isEstado());
+        efectorDto.setActivo(efector.isActivo());
+        efectorDto.setObservacion(efector.getObservacion());
+        efectorDto.setIdRegion(efector.getRegion().getId());
+        efectorDto.setIdLocalidad(efector.getLocalidad().getId());
+
+        /*
+         * // Retorna el mensaje y el objeto
+         * return new ResponseEntity<>(new Object() {
+         * public final String mensaje = "El efector es de tipo: " + tipoEfector;
+         * public final EfectorDto efector = efectorDto;
+         * }, HttpStatus.OK);
+         */
+
+        return new ResponseEntity<>(efectorDto, HttpStatus.OK);
+    }
+
+    public Efector createUpdate(Efector efector, EfectorDto efectorDto) {
 
         if (efector.getNombre() == null
                 || (efectorDto.getNombre() != null && !Objects.equals(efector.getNombre(), efectorDto.getNombre())))
@@ -145,7 +203,7 @@ public class EfectorController {
                 legajoService.findById(id).get().setUdo(efector);
             }
         }
-        
+
         if (efectorDto.getIdLegajos() != null) {
             if (efector.getLegajos() == null) {
                 efector.setLegajos(new ArrayList<>());
@@ -270,5 +328,4 @@ public class EfectorController {
         return new ResponseEntity(new Mensaje("Efector eliminado correctamente"), HttpStatus.OK);
     }
 
-    
 }

@@ -12,23 +12,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EfectorDto {
 
+    private Long id;
+
     @NotBlank
     private String nombre;
-    
+
     @NotBlank
     private String domicilio;
-    
+
     private String telefono;
-    
+
     private boolean estado;
-    
+
     private boolean activo;
-    
+
     private String observacion;
-    
+
     @NotBlank
     private Long idRegion;
-    
+
     @NotBlank
     private Long idLocalidad;
 
@@ -46,5 +48,4 @@ public class EfectorDto {
     private List<Long> idCronogramasTentativos;
     private List<Long> idFeriados;
 
-    
 }

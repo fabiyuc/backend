@@ -1,7 +1,9 @@
-package com.guardias.backend.dto;
+package com.guardias.backend.dto.asistencial;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import com.guardias.backend.entity.Legajo;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -12,9 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonDto {
+public class AsistencialEfectorDto {
     private Long id;
-
     @NotBlank
     private String nombre;
     @NotBlank
@@ -23,23 +24,13 @@ public class PersonDto {
     private int dni;
     @NotBlank
     private String cuil;
-    @NotBlank
     private LocalDate fechaNacimiento;
     private String sexo;
     private String telefono;
-    @NotBlank
     private String email;
     private String domicilio;
-    @NotBlank
     private Boolean esAsistencial;
     private boolean activo;
-
-    private List<Long> idNovedadesPersonales;
-    private List<Long> idSuplentes;
-    private List<Long> idDistribucionesHorarias;
-    private List<Long> idAutoridades;
-    private List<Long> idLegajos;
-    private List<Long> idRegistrosMensuales;
-    private List<Long> idUsuarios;
+    private List<Legajo> idLegajos;
 
 }

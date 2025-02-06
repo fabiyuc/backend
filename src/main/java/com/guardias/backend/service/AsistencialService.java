@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.controller.PersonController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -303,6 +304,49 @@ public class AsistencialService {
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
     }
+
+
+    /* public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return getAsistencialesByTipoGuardiaCargo(asistenciales);
+    }
+
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndAgrupacion(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
+    }
+
+    public List<AsistencialEfectorDto> filterAsistencialesByEfector(List<Asistencial> asistenciales) {
+        List<AsistencialEfectorDto> EfectorList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            AsistencialEfectorDto dto = new AsistencialEfectorDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getDni(),
+                    asistencial.getCuil(),
+                    asistencial.getFechaNacimiento(),
+                    asistencial.getSexo(),
+                    asistencial.getTelefono(),
+                    asistencial.getEmail(),
+                    asistencial.getDomicilio(),
+                    asistencial.isActivo(),
+                    asistencial.isActivo(),
+                    asistencial.getLegajos().stream()
+                            .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                            .collect(Collectors.toList()));
+
+            EfectorList.add(dto);
+        }
+        return EfectorList;
+    }
+
+    public List<AsistencialEfectorDto> getAsistencialesByEfector(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+        return filterAsistencialesByEfector(asistenciales);
+    }
+*/
 
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
     public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {

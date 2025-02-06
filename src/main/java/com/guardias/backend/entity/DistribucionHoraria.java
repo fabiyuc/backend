@@ -51,7 +51,7 @@ public abstract class DistribucionHoraria {
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","distribucionesHorarias", "dni", "cuil",
-            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes"})
+            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes", "registrosMensuales", "habilitacionesGuardias", "habilitacionesGenerales"})
     private Person persona;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -60,7 +60,7 @@ public abstract class DistribucionHoraria {
     "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
     "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
     "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-    "registroMensual", "ddjjs", "registrosPendientes"})
+    "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados"})
     private Efector efector;
     
     @Temporal(TemporalType.DATE)

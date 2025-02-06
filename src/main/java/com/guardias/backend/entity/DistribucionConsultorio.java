@@ -22,7 +22,7 @@ public class DistribucionConsultorio extends DistribucionHoraria {
     
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_servicio")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesConsultorios" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "distribucionesConsultorios", "registrosActividades", "efectores", "distribucionesGuardias" })
     private Servicio servicio;
 
     @Column(columnDefinition = "VARCHAR(50)")

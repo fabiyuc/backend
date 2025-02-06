@@ -37,6 +37,7 @@ public class HabilitacionesGenerales {
     @JoinColumn(name = "id_persona", nullable = false)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "domicilio","novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
     "registrosMensuales", "usuarios","habilitacionesGenerales", "legajos"})
+
     private Person persona;
 
     @ManyToMany(fetch = FetchType.LAZY)

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -26,6 +27,7 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
+import com.guardias.backend.service.EfectorService;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -34,6 +36,8 @@ public class AsistencialController {
 
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    EfectorService efectorService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
@@ -163,6 +167,16 @@ public class AsistencialController {
         List<AsistencialSummaryDto> asistenciales = asistencialService
                 .getAsistencialesByEfectorAndTipoGuardiaExtraHabilitado(idEfector);
 
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfector/{idEfector}")
+    public ResponseEntity<List<AsistencialEfectorDto>> getAsistencialesByEfector(
+            @PathVariable("idEfector") Long idEfector) {
+        List<AsistencialEfectorDto> asistenciales = asistencialService.getAsistencialesByEfector(idEfector);
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

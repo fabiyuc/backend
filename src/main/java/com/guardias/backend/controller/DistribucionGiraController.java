@@ -68,13 +68,33 @@ public class DistribucionGiraController {
         return new ResponseEntity<>(distribucionGira, HttpStatus.OK);
     }
 
+    /*
+     * @GetMapping("/detailpersona/{idPersona}")
+     * public ResponseEntity<List<DistribucionGira>>
+     * getByPersona(@PathVariable("idPersona") Long idPersona) {
+     * if (!distribucionGiraService.existsByPersonaId(idPersona))
+     * return new ResponseEntity(new Mensaje("no existe la carga horaria"),
+     * HttpStatus.NOT_FOUND);
+     * List<DistribucionGira> distribucionGira =
+     * distribucionGiraService.findByPersonaId(idPersona).get();
+     * return new ResponseEntity<>(distribucionGira, HttpStatus.OK);
+     * }
+     */
+
+    // Nueva implementación de getByPersona que filtra solo las distribuciones
+    // activas
     @GetMapping("/detailpersona/{idPersona}")
-    public ResponseEntity<List<DistribucionGira>> getByPersona(@PathVariable("idPersona") Long idPersona) {
-        if (!distribucionGiraService.existsByPersonaId(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-                    HttpStatus.NOT_FOUND);
-        List<DistribucionGira> distribucionGira = distribucionGiraService.findByPersonaId(idPersona).get();
-        return new ResponseEntity<>(distribucionGira, HttpStatus.OK);
+    public ResponseEntity<?> getByPersona(@PathVariable("idPersona") Long idPersona) {
+        if (!distribucionGiraService.existsByPersonaId(idPersona)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("no existe la carga horaria"));
+        }
+
+        // Obtener distribuciones y filtrar solo las activas
+        List<DistribucionGira> distribucionGiraActivas = distribucionGiraService.findByPersonaId(idPersona)
+                .map(lista -> lista.stream().filter(DistribucionGira::isActivo).toList()) // Filtrar activas
+                .orElseGet(List::of); // Si no hay distribuciones, devolver lista vacía
+
+        return ResponseEntity.ok(distribucionGiraActivas);
     }
 
     DistribucionGira createUpdate(DistribucionGira distribucionGira,
@@ -86,13 +106,15 @@ public class DistribucionGiraController {
         if (distribucionGiraDto.getPuestoSalud() != distribucionGira.getPuestoSalud()
                 && distribucionGiraDto.getPuestoSalud() != null)
             distribucionGira.setPuestoSalud(distribucionGiraDto.getPuestoSalud());
-        
-       /*  if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
-                && distribucionGiraDto.getDestino() != null)
-            distribucionGira.setDestino(distribucionGiraDto.getDestino());
-        if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
-                && distribucionGiraDto.getDescripcion() != null)
-            distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion()); */
+
+        /*
+         * if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
+         * && distribucionGiraDto.getDestino() != null)
+         * distribucionGira.setDestino(distribucionGiraDto.getDestino());
+         * if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
+         * && distribucionGiraDto.getDescripcion() != null)
+         * distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
+         */
 
         distribucionGira.setActivo(true);
 

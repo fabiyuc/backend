@@ -1,8 +1,10 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,11 +78,20 @@ public class DistribucionGuardiaController {
 
     @GetMapping("/detailpersona/{idPersona}")
     public ResponseEntity<List<DistribucionGuardia>> getByPersona(@PathVariable("idPersona") Long idPersona) {
-        if (!distribucionGuardiaService.existsByPersonaId(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-                    HttpStatus.NOT_FOUND);
-        List<DistribucionGuardia> distribucionGuardia = distribucionGuardiaService.findByPersonaId(idPersona).get();
-        return new ResponseEntity<>(distribucionGuardia, HttpStatus.OK);
+        // Si la persona no tiene distribuciones, devolvemos un 200 OK con una lista
+        // vacía
+        if (!distribucionGuardiaService.existsByPersonaId(idPersona)) {
+            return ResponseEntity.ok(Collections.emptyList()); // <-- SOLUCIÓN AQUÍ
+        }
+
+        // Obtener distribuciones y filtrar solo las activas
+        List<DistribucionGuardia> distribucionGuardiaActivas = distribucionGuardiaService.findByPersonaId(idPersona)
+                .orElse(Collections.emptyList()) // Si el Optional está vacío, devuelve lista vacía
+                .stream()
+                .filter(DistribucionGuardia::isActivo) // Filtra solo las distribuciones activas
+                .collect(Collectors.toList()); // Convierte el resultado a lista
+
+        return ResponseEntity.ok(distribucionGuardiaActivas);
     }
 
     DistribucionGuardia createUpdate(DistribucionGuardia distribucionGuardia,

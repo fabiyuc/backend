@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.LocationEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -66,7 +67,7 @@ public class Legajo {
       "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
       "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
       "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-      "registroMensual", "ddjjs", "registrosPendientes" })
+      "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "feriados" ,"cronogramasTentativos"})
   private Efector udo;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -77,13 +78,22 @@ public class Legajo {
       "registrosMensuales", "habilitacionesGenerales" ,"usuarios" })
   private Person persona;
 
+  /* @Enumerated(EnumType.STRING) */
+  /* @Column(columnDefinition = "VARCHAR(15)") */
+  private LocationEnum tipoEfector;
+  /*
+   * @Enumerated(EnumType.STRING)
+   */
+  /* @Column(columnDefinition = "VARCHAR(15)") */
+  private LocationEnum tipoUdo;
+
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_efector", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
       "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
       "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
       "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-      "registroMensual", "ddjjs", "registrosPendientes" })
+      "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados", "valoresGuardiaBase" })
   private List<Efector> efectores = new ArrayList<>();
 
   @ManyToMany(fetch = FetchType.LAZY)
@@ -101,7 +111,7 @@ public class Legajo {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_tipoguardia", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_tipoGuardia"))
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
-      "registrosActividades", "legajos" })
+      "registrosActividades", "legajos", "cronogramasTentativos"})
   private List<TipoGuardia> tipoGuardias = new ArrayList<TipoGuardia>();
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -112,21 +122,19 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_region")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos"})
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "legajos" })
   private Region region;
 
   @Column(columnDefinition = "VARCHAR(10)")
-  private String nroresolucion; 
+  private String nroresolucion;
 
   @Temporal(TemporalType.DATE)
   private LocalDate fechaResolucion;
 
   @Column(columnDefinition = "VARCHAR(10)")
-  private String nrodecreto; 
+  private String nrodecreto;
 
   private LocalDate fechaBajaSistema;
-
-     
 
   @Override
   public boolean equals(Object obj) {

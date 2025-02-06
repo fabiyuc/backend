@@ -23,8 +23,8 @@ public class Asistencial extends Person {
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-                        "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
-                        "asistencial", "servicio", "efector", "registrosPendientes" })
+                        "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
+                        "asistencial", "servicio", "efector", "registrosPendientes", "registroMensual", "usuarioIngreso", "usuarioEgreso", "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso", "horaRegistroEgreso", "horasRealizadas" })
         private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
