@@ -51,16 +51,16 @@ public abstract class DistribucionHoraria {
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_persona")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","distribucionesHorarias", "dni", "cuil",
-            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes", "registrosMensuales", "habilitacionesGuardias", "habilitacionesGenerales"})
+            "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "novedades", "suplentes", "registrosMensuales", "habilitacionesGuardias", "habilitacionesGenerales", "legajos", "esAsistencial", "activo", "autoridades", "usuarios" })
     private Person persona;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
     "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
     "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
     "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-    "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados"})
+    "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados", "servicios"})
     private Efector efector;
     
     @Temporal(TemporalType.DATE)

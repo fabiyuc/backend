@@ -42,12 +42,7 @@ public class TipoGuardia {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardias", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre",
-            "apellido", "dni", "cuil", "legajos",
-            "novedadesPersonales", "suplentes",
-            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-            "domicilio",
-            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-            "descripcion", "esAsistencial", "tiposGuardias" })
+            "apellido", "dni", "cuil", "legajos", "fechaInicio", "fechaFinal", "esAutoridad", "esRegional", "matriculaNacional", "matriculaProvincial", "motivoBaja", "suspencion", "revista", "udo", "persona", "tipoEfector", "tipoUdo", "efectores", "especialidades" ,"profesion", "tipoGuardias", "cargo", "region", "nroresolucion", "fechaResolucion", "nrodecreto", "fechaBajaSistema", "novedadesPersonales", "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion", "esAsistencial", "tiposGuardias" })
     private List<Legajo> legajos = new ArrayList<Legajo>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.PERSIST)
@@ -59,7 +54,7 @@ public class TipoGuardia {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.PERSIST)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registrosPendientes" })
+            "servicio", "efector", "registrosPendientes", "aceptado", "observacion" })
     private List<CronogramaTentativo> cronogramasTentativos = new ArrayList<>();
 
     
