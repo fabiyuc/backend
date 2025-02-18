@@ -320,6 +320,45 @@ public class LegajoService {
         boolean esCargoOAgrupacion = legajoDto.getIdTipoGuardias() != null
                 && (legajoDto.getIdTipoGuardias().contains(1L) || legajoDto.getIdTipoGuardias().contains(2L));
 
+        boolean esExtra = legajoDto.getIdTipoGuardias() != null
+                && legajoDto.getIdTipoGuardias().contains(3L);
+
+        if (esExtra) {
+            if (legajo.getEfectores() == null || legajo.getEfectores().isEmpty()) {
+                legajo.setEfectores(new ArrayList<>());
+
+            }
+
+            List<Efector> efectoresActualizados = new ArrayList<>();
+            for (Efector efector : legajo.getEfectores()) {
+                if (legajoDto.getIdEfectores().contains(efector.getId())) {
+                    efectoresActualizados.add(efector);
+                } else {
+                    efector.getLegajos().remove(legajo);
+                }
+            }
+            legajo.setEfectores(efectoresActualizados);
+
+            for (Long id : legajoDto.getIdEfectores()) {
+                boolean found = false;
+                for (Efector efector : legajo.getEfectores()) {
+                    if (efector.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    Efector efectorToAdd = efectorService.findById(id);
+                    if (efectorToAdd != null) {
+                        legajo.getEfectores().add(efectorToAdd);
+                        efectorToAdd.getLegajos().add(legajo);
+                    } else {
+                        throw new RuntimeException("No se encontró el efector con ID: " + id);
+                    }
+                }
+            }
+        }
+
         if ((esAsistencial && !esContraFactura) && legajoDto.getEsAutoridad() == false) {
 
             if (legajo.getRevista() == null || !Objects.equals(legajo.getRevista().getId(), legajoDto.getIdRevista())) {

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.entity.Efector;
@@ -135,6 +136,15 @@ public class RegistroActividadService {
                 registroActividadDto.getHoraEgreso() != null)
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
 
+        if (registroActividadDto.getIdAsistencial() != null && registroActividadDto.getIdEfector() != null) {
+            boolean esPlanta = asistencialService.esPlanta(registroActividadDto.getIdAsistencial(),
+                    registroActividadDto.getIdEfector());
+
+            if (!esPlanta) {
+                throw new IllegalArgumentException("El asistencial no pertenece a la planta del efector");
+            }
+        }
+
         if (registroActividad.getAsistencial() == null ||
                 (registroActividadDto.getIdAsistencial() != null &&
                         !Objects.equals(registroActividad.getAsistencial().getId(),
@@ -181,17 +191,22 @@ public class RegistroActividadService {
 
             try {
                 // Valor de la guardia segun tipoGuardia y efector
-                /* !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un registro de aactividad de tipo extra*/
+                /*
+                 * !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un
+                 * registro de aactividad de tipo extra
+                 */
                 ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
-            
+
                 /* LAV */
-                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
                 horas.setMontoLav(totalMontoLav);
 
                 /* SDF */
-                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
                 BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
                 horas.setMontoSdf(totalMontoSdf);
 
@@ -204,18 +219,23 @@ public class RegistroActividadService {
         } else {
             System.out.println("es tipo guardia extra o cf");
             try {
-                /* !!!!!!!!!!!!!!REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un registro de aactividad de tipo extra*/
+                /*
+                 * !!!!!!!!!!!!!!REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un
+                 * registro de aactividad de tipo extra
+                 */
 
                 ValorGuardiaExtrayCF valorGuardiaBase = (ValorGuardiaExtrayCF) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
-                
+
                 /* LAV */
-                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
                 horas.setMontoLav(totalMontoLav);
 
                 /* SDF */
-                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
+                        RoundingMode.HALF_UP);
                 BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
                 horas.setMontoSdf(totalMontoSdf);
 
@@ -253,7 +273,7 @@ public class RegistroActividadService {
         sumaHorasService.save(horas);
 
         registroActividad.setHorasRealizadas(horas);
-        
+
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
 
@@ -263,7 +283,7 @@ public class RegistroActividadService {
         }
 
         save(registroActividad);
-        
+
         return respuestaDeletePendiente;
     }
 
@@ -277,6 +297,5 @@ public class RegistroActividadService {
 
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
     }
-
 
 }

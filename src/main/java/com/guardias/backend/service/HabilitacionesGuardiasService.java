@@ -10,17 +10,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
+import com.guardias.backend.repository.HabilitacionesGuardiasRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.MinisterioRepository;
-import com.guardias.backend.repository.HabilitacionesGuardiasRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -76,6 +76,68 @@ public class HabilitacionesGuardiasService {
         if (permisosDto.getIdAsistencial() == null)
             return new ResponseEntity(new Mensaje("el id del asistencial es obligatorio"),
                     HttpStatus.BAD_REQUEST);
+
+        /*
+         * // Nueva validación para tipoEfector y idEfectores
+         * 
+         * try {
+         * if (legajoDto.getTipoEfector() != null) {
+         * LocationEnum tipoEfector =
+         * LocationEnum.valueOf(legajoDto.getTipoEfector().toString());
+         * 
+         * if (LocationEnum.MINISTERIO == tipoEfector) {
+         * if (legajoDto.getIdEfectores() == null ||
+         * legajoDto.getIdEfectores().isEmpty()) {
+         * return new ResponseEntity<>(
+         * new Mensaje("El idEfectores es obligatorio para el tipo Ministerio"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * boolean isMinisterioValid =
+         * ministerioService.existsById(legajoDto.getIdEfectores().get(0));
+         * if (!isMinisterioValid) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores no corresponde a un Ministerio válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * }
+         * 
+         * if (LocationEnum.CAPS == tipoEfector) {
+         * if (legajoDto.getIdEfectores() == null ||
+         * legajoDto.getIdEfectores().isEmpty()) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * boolean isCapsValid =
+         * capsService.existsById(legajoDto.getIdEfectores().get(0));
+         * if (!isCapsValid) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores no corresponde a un CAPS válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * }
+         * 
+         * if (LocationEnum.HOSPITAL == tipoEfector) {
+         * if (legajoDto.getIdEfectores() == null ||
+         * legajoDto.getIdEfectores().isEmpty()) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * boolean isHospitalValid =
+         * hospitalService.existsById(legajoDto.getIdEfectores().get(0));
+         * if (!isHospitalValid) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * }
+         * }
+         * } catch (IllegalArgumentException e) {
+         * return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         */
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -178,7 +240,7 @@ public class HabilitacionesGuardiasService {
     }
 
     public List<Asistencial> getAsistencialesByEfectorAndTG(Long idEfector, String tipoGuardia) {
-        
+
         TipoGuardiaEnum tipoGuardiaEnum;
 
         if (idEfector == null || idEfector <= 0) {
