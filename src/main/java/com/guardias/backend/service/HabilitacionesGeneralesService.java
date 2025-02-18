@@ -16,6 +16,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGenerales;
 import com.guardias.backend.entity.Region;
+import com.guardias.backend.enums.LocationEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HabilitacionesGeneralesRepository;
@@ -43,12 +44,17 @@ public class HabilitacionesGeneralesService {
     PersonService personService;
     @Autowired
     HabilitacionesGeneralesRepository habilitacionesGeneralesRepository;
+    @Autowired
+    CapsService capsService;
+    @Autowired
+    HospitalService hospitalService;
 
     @Autowired
     RegionService regionService;
-    /* @Autowired
-    AutoridadService autoridadService; */
-    
+    /*
+     * @Autowired
+     * AutoridadService autoridadService;
+     */
 
     public Optional<List<HabilitacionesGenerales>> findByActivoTrue() {
         return habilitacionesGeneralesRepository.findByActivoTrue();
@@ -80,6 +86,44 @@ public class HabilitacionesGeneralesService {
         if (habilitacionesGeneralesDto.getIdPersona() == null)
             return new ResponseEntity(new Mensaje("el id de la persona es obligatorio"),
                     HttpStatus.BAD_REQUEST);
+
+        // Nueva validación para tipoEfector y idEfectores
+        try {
+            if (habilitacionesGeneralesDto.getTipoEfector() != null) {
+                LocationEnum tipoEfector = LocationEnum.valueOf(habilitacionesGeneralesDto.getTipoEfector().toString());
+
+                if (LocationEnum.CAPS == tipoEfector) {
+                    if (habilitacionesGeneralesDto.getIdEfectores() == null ||
+                            habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(
+                                new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isCapsValid = capsService.existsById(habilitacionesGeneralesDto.getIdEfectores().get(0));
+                    if (!isCapsValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.HOSPITAL == tipoEfector) {
+                    if (habilitacionesGeneralesDto.getIdEfectores() == null ||
+                            habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isHospitalValid = hospitalService
+                            .existsById(habilitacionesGeneralesDto.getIdEfectores().get(0));
+                    if (!isHospitalValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -130,6 +174,12 @@ public class HabilitacionesGeneralesService {
             }
         }
 
+        if (habilitacionesGeneralesDto.getTipoEfector() != null) {
+            habilitacionesGenerales.setTipoEfector(habilitacionesGeneralesDto.getTipoEfector());
+            System.out.println("tipoEfector: " + habilitacionesGeneralesDto.getTipoEfector()); // Verificar el valor
+
+        }
+
         habilitacionesGenerales.setActivo(true);
         return habilitacionesGenerales;
     }
@@ -167,7 +217,7 @@ public class HabilitacionesGeneralesService {
                             .anyMatch(efector -> efector.getId().equals(idEfector));
         }
 
-        return false; 
+        return false;
     }
 
     public List<HabilitacionesGenerales> getHabilitacionesGeneralesByEfectorAndAsistencial(Long idEfector) {
@@ -197,21 +247,22 @@ public class HabilitacionesGeneralesService {
         if (habilitacionExistente == null) {
 
             List<Long> idsEfectores = region.getEfectores().stream()
-                                .map(Efector::getId) 
-                                .collect(Collectors.toList()); 
+                    .map(Efector::getId)
+                    .collect(Collectors.toList());
 
             HabilitacionesGeneralesDto habilitacionDto = new HabilitacionesGeneralesDto();
             habilitacionDto.setIdPersona(idPersona);
             habilitacionDto.setIdEfectores(idsEfectores);
-            
-            HabilitacionesGenerales habilitacionesGenerales = createUpdate(new HabilitacionesGenerales(), habilitacionDto);
+
+            HabilitacionesGenerales habilitacionesGenerales = createUpdate(new HabilitacionesGenerales(),
+                    habilitacionDto);
 
             return habilitacionesGenerales;
-    
+
         } else {
-            for(Efector efectorDeRegion : region.getEfectores()){
+            for (Efector efectorDeRegion : region.getEfectores()) {
                 boolean found = false;
-                for (Efector efectorExistente : habilitacionExistente.getEfectores()){
+                for (Efector efectorExistente : habilitacionExistente.getEfectores()) {
                     if (efectorExistente.equals(efectorDeRegion)) {
                         found = true;
                         break;

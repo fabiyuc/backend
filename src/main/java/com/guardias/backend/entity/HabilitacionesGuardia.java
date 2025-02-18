@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.LocationEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,30 +27,37 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HabilitacionesGuardia {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(columnDefinition = "BIT DEFAULT 1")
-    private boolean activo;
+        @Column(columnDefinition = "BIT DEFAULT 1")
+        private boolean activo;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_asistencial")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "estado", "tipoGuardia", "descripcion", "tiposGuardias", "registrosActividades", "dni", "fechaNacimiento",
-            "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "suplentes", "autoridades", "legajos",
-            "cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales", "novedadesPersonales",
-            "distribucionesHorarias", "registrosMensuales", "usuarios" })
-    private Asistencial asistencial;
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_asistencial")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+                        "estado", "tipoGuardia", "descripcion", "tiposGuardias", "registrosActividades", "dni",
+                        "fechaNacimiento",
+                        "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "suplentes", "autoridades",
+                        "legajos",
+                        "cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales",
+                        "novedadesPersonales",
+                        "distribucionesHorarias", "registrosMensuales", "usuarios" })
+        private Asistencial asistencial;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "habilitacionesguardias_efectores", joinColumns = @JoinColumn(name = "permiso_id"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "domicilio", "telefono", "estado", "activo",
-            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios",
-            "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",
-            "nivelComplejidad", "caps", "valoresGuardiaBase", "habilitacionesGuardias", "habilitacionesGenerales",
-            "cronogramasTentativos", "feriados" })
+        @ManyToMany(fetch = FetchType.LAZY)
+        @JoinTable(name = "habilitacionesguardias_efectores", joinColumns = @JoinColumn(name = "permiso_id"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "domicilio", "telefono", "estado", "activo",
+                        "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+                        "servicios",
+                        "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera",
+                        "admitePasiva",
+                        "nivelComplejidad", "caps", "valoresGuardiaBase", "habilitacionesGuardias",
+                        "habilitacionesGenerales",
+                        "cronogramasTentativos", "feriados" })
 
-    private List<Efector> efectores = new ArrayList<>();
+        private List<Efector> efectores = new ArrayList<>();
 
+        private LocationEnum tipoEfector;
 }
