@@ -89,10 +89,11 @@ public class HabilitacionesGeneralesService {
 
         // Nueva validación para tipoEfector y idEfectores
         try {
-            if (habilitacionesGeneralesDto.getTipoEfector() != null) {
-                LocationEnum tipoEfector = LocationEnum.valueOf(habilitacionesGeneralesDto.getTipoEfector().toString());
+            if (habilitacionesGeneralesDto.getTipoEfectorEx() != null) {
+                LocationEnum tipoEfectorEx = LocationEnum
+                        .valueOf(habilitacionesGeneralesDto.getTipoEfectorEx().toString());
 
-                if (LocationEnum.CAPS == tipoEfector) {
+                if (LocationEnum.CAPS == tipoEfectorEx) {
                     if (habilitacionesGeneralesDto.getIdEfectores() == null ||
                             habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
                         return new ResponseEntity<>(
@@ -106,7 +107,7 @@ public class HabilitacionesGeneralesService {
                     }
                 }
 
-                if (LocationEnum.HOSPITAL == tipoEfector) {
+                if (LocationEnum.HOSPITAL == tipoEfectorEx) {
                     if (habilitacionesGeneralesDto.getIdEfectores() == null ||
                             habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
                         return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
@@ -174,9 +175,9 @@ public class HabilitacionesGeneralesService {
             }
         }
 
-        if (habilitacionesGeneralesDto.getTipoEfector() != null) {
-            habilitacionesGenerales.setTipoEfector(habilitacionesGeneralesDto.getTipoEfector());
-            System.out.println("tipoEfector: " + habilitacionesGeneralesDto.getTipoEfector()); // Verificar el valor
+        if (habilitacionesGeneralesDto.getTipoEfectorEx() != null) {
+            habilitacionesGenerales.setTipoEfectorEx(habilitacionesGeneralesDto.getTipoEfectorEx());
+            System.out.println("tipoEfector: " + habilitacionesGeneralesDto.getTipoEfectorEx()); // Verificar el valor
 
         }
 

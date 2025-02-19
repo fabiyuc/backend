@@ -27,29 +27,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HabilitacionesGenerales {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @Column(columnDefinition = "BIT DEFAULT 1")
-    private boolean activo;
+        @Column(columnDefinition = "BIT DEFAULT 1")
+        private boolean activo;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_persona", nullable = false)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "domicilio",
-            "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades", "registrosActividades",
-            "registrosMensuales", "usuarios", "habilitacionesGenerales", "legajos" })
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_persona", nullable = false)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "domicilio",
+                        "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades",
+                        "registrosActividades",
+                        "registrosMensuales", "usuarios", "habilitacionesGenerales", "legajos" })
 
-    private Person persona;
+        private Person persona;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "habilitacionesgenerales_efectores", joinColumns = @JoinColumn(name = "permiso_id"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "domicilio", "telefono", "estado", "activo",
-            "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "servicios",
-            "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera", "admitePasiva",
-            "nivelComplejidad", "caps", "valoresGuardiaBase", "habilitacionesGenerales", "habilitacionesGuardias",
-            "cronogramasTentativos", "feriados", "cabecera", "areaProgramatica", "tipoCaps" })
-    private List<Efector> efectores = new ArrayList<>();
+        @ManyToMany(fetch = FetchType.LAZY)
+        @JoinTable(name = "habilitacionesgenerales_efectores", joinColumns = @JoinColumn(name = "permiso_id"), inverseJoinColumns = @JoinColumn(name = "id_efector"))
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "domicilio", "telefono", "estado", "activo",
+                        "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+                        "servicios",
+                        "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "esCabecera",
+                        "admitePasiva",
+                        "nivelComplejidad", "caps", "valoresGuardiaBase", "habilitacionesGenerales",
+                        "habilitacionesGuardias",
+                        "cronogramasTentativos", "feriados", "cabecera", "areaProgramatica", "tipoCaps" })
+        private List<Efector> efectores = new ArrayList<>();
 
-    private LocationEnum tipoEfector;
+        private LocationEnum tipoEfectorEx;
 }

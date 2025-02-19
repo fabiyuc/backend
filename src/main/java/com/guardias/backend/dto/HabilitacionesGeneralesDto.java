@@ -20,5 +20,5 @@ public class HabilitacionesGeneralesDto {
     @NotBlank
     private List<Long> idEfectores;
 
-    private LocationEnum tipoEfector;
+    private LocationEnum tipoEfectorEx;
 }

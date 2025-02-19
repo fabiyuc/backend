@@ -84,10 +84,10 @@ public class HabilitacionesGuardiasService {
 
         // Nueva validación para tipoEfector y idEfectores
         try {
-            if (permisosDto.getTipoEfector() != null) {
-                LocationEnum tipoEfector = LocationEnum.valueOf(permisosDto.getTipoEfector().toString());
+            if (permisosDto.getTipoEfectorEx() != null) {
+                LocationEnum tipoEfectorEx = LocationEnum.valueOf(permisosDto.getTipoEfectorEx().toString());
 
-                if (LocationEnum.CAPS == tipoEfector) {
+                if (LocationEnum.CAPS == tipoEfectorEx) {
                     if (permisosDto.getIdEfectores() == null ||
                             permisosDto.getIdEfectores().isEmpty()) {
                         return new ResponseEntity<>(
@@ -101,7 +101,7 @@ public class HabilitacionesGuardiasService {
                     }
                 }
 
-                if (LocationEnum.HOSPITAL == tipoEfector) {
+                if (LocationEnum.HOSPITAL == tipoEfectorEx) {
                     if (permisosDto.getIdEfectores() == null ||
                             permisosDto.getIdEfectores().isEmpty()) {
                         return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
@@ -170,9 +170,9 @@ public class HabilitacionesGuardiasService {
             }
         }
 
-        if (habilitacionesGuardiasDto.getTipoEfector() != null) {
-            habilitacionesGuardias.setTipoEfector(habilitacionesGuardiasDto.getTipoEfector());
-            System.out.println("tipoEfector: " + habilitacionesGuardiasDto.getTipoEfector()); // Verificar el valor
+        if (habilitacionesGuardiasDto.getTipoEfectorEx() != null) {
+            habilitacionesGuardias.setTipoEfectorEx(habilitacionesGuardiasDto.getTipoEfectorEx());
+            System.out.println("tipoEfector: " + habilitacionesGuardiasDto.getTipoEfectorEx()); // Verificar el valor
 
         }
 

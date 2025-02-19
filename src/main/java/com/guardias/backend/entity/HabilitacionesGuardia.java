@@ -59,5 +59,5 @@ public class HabilitacionesGuardia {
 
         private List<Efector> efectores = new ArrayList<>();
 
-        private LocationEnum tipoEfector;
+        private LocationEnum tipoEfectorEx;
 }
