@@ -1,8 +1,10 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
-import com.guardias.backend.dto.distribucionConsultorio.DistribucionConsultorioRequestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionConsultorioService;
@@ -94,15 +95,18 @@ public class DistribucionConsultorioController {
     // Nueva implementación de getByPersona que filtra solo las distribuciones
     // activas
     @GetMapping("/detailpersona/{idPersona}")
-    public ResponseEntity<?> getByPersona(@PathVariable("idPersona") Long idPersona) {
+    public ResponseEntity<List<DistribucionConsultorio>> getByPersona(@PathVariable("idPersona") Long idPersona) {
+
         if (!distribucionConsultorioService.existsByPersonaId(idPersona)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe la carga horaria"));
+            return ResponseEntity.ok(Collections.emptyList());
         }
 
         List<DistribucionConsultorio> distribucionConsultorioActivas = distribucionConsultorioService
                 .findByPersonaId(idPersona)
-                .map(lista -> lista.stream().filter(DistribucionConsultorio::isActivo).toList())
-                .orElseGet(List::of);
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(DistribucionConsultorio::isActivo)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(distribucionConsultorioActivas);
     }

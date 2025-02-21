@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -84,16 +86,18 @@ public class DistribucionOtraController {
     // Nueva implementación de getByPersona que filtra solo las distribuciones
     // activas
     @GetMapping("/detailpersona/{idPersona}")
-    public ResponseEntity<?> getByPersona(@PathVariable("idPersona") Long idPersona) {
+    public ResponseEntity<List<DistribucionOtra>> getByPersona(@PathVariable("idPersona") Long idPersona) {
+
         if (!distribucionOtraService.existsByPersonaId(idPersona)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe la carga horaria"));
+            return ResponseEntity.ok(Collections.emptyList());
         }
 
         // Obtener distribuciones y filtrar solo las activas
         List<DistribucionOtra> distribucionOtraActivas = distribucionOtraService.findByPersonaId(idPersona)
-                .map(lista -> lista.stream().filter(DistribucionOtra::isActivo).toList()) // Filtrar activas
-                .orElseGet(List::of); // Si no hay resultados, devolver una lista vacía
-
+                .orElse(Collections.emptyList()) // Si el Optional está vacío, devuelve lista vacía
+                .stream()
+                .filter(DistribucionOtra::isActivo) // Filtra solo las distribuciones activas
+                .collect(Collectors.toList()); // Convierte el resultado a lista
         return ResponseEntity.ok(distribucionOtraActivas);
     }
 
