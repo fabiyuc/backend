@@ -67,6 +67,13 @@ public class DistribucionGuardiaController {
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoFechaInicio/{fechaInicio}")
+    public ResponseEntity<List<DistribucionGuardia>> getByActivoFechaInicio(
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoAndFechaInicio(true, fechaInicio);
+        return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionGuardia>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionGuardiaService.existsByEfectorId(idEfector))
@@ -184,7 +191,7 @@ public class DistribucionGuardiaController {
     // busca distribucion guardia para comparar con cronograma tentativo
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
-        
+
         return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
     }
 

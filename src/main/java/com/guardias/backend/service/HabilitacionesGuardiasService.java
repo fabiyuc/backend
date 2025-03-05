@@ -77,6 +77,10 @@ public class HabilitacionesGuardiasService {
         return habilitacionesGuardiasRepository.findByAsistencialId(idAsistencial);
     }
 
+    public Optional<HabilitacionesGuardia> findActivoByAsistencial(Long idAsistencial) {
+        return habilitacionesGuardiasRepository.findByAsistencialIdAndActivoTrue(idAsistencial);
+    }
+
     public ResponseEntity<?> validations(HabilitacionesGuardiasDto permisosDto) {
         if (permisosDto.getIdAsistencial() == null)
             return new ResponseEntity(new Mensaje("el id del asistencial es obligatorio"),
@@ -176,7 +180,7 @@ public class HabilitacionesGuardiasService {
 
         }
 
-        habilitacionesGuardias.setActivo(true);
+        habilitacionesGuardias.setActivo(habilitacionesGuardiasDto.getActivo());
         return habilitacionesGuardias;
     }
 

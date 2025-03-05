@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,13 +80,19 @@ public class HabilitacionesGuardiasController {
     }
 
     @GetMapping("/detailAsistencial/{idAsistencial}")
-    public ResponseEntity<HabilitacionesGuardia> getByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
-        if (!habilitacionesGuardiasService.activoByAsistencial(idAsistencial))
-            return new ResponseEntity(new Mensaje("no existe la habilitacion de guardia de este asistencial"),
+    public ResponseEntity<?> getByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
+        // Obtén la habilitación activa
+        Optional<HabilitacionesGuardia> habilitacionActiva = habilitacionesGuardiasService
+                .findActivoByAsistencial(idAsistencial);
+
+        // Si no hay habilitación activa, responde con un mensaje de error
+        if (habilitacionActiva.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No existe una habilitación activa para este asistencial"),
                     HttpStatus.NOT_FOUND);
-        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findByAsistencial(idAsistencial)
-                .get();
-        return new ResponseEntity<HabilitacionesGuardia>(habilitacionesGuardias, HttpStatus.OK);
+        }
+
+        // Si hay habilitación activa, devuelve la habilitación
+        return new ResponseEntity<>(habilitacionActiva.get(), HttpStatus.OK);
     }
 
     @PostMapping("/create")
