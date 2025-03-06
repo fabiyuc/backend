@@ -52,8 +52,9 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.findByFechaInicio(fechaInicio);
     }
 
-    public List<DistribucionGuardia> findByActivoAndFechaInicio(boolean activo, LocalDate fechaInicio) {
-        return distribucionGuardiaRepository.findByActivoAndFechaInicio(activo, fechaInicio);
+    public List<DistribucionGuardia> findByActivoAndPersonaAndFechaInicio(boolean activo, Long personaId,
+            LocalDate fechaInicio) {
+        return distribucionGuardiaRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
     }
 
     public Optional<List<DistribucionGuardia>> findByEfectorId(Long efectorId) {

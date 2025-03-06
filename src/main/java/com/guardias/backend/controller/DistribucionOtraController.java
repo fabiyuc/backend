@@ -61,6 +61,15 @@ public class DistribucionOtraController {
         return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicio/{idPersona}/{fechaInicio}")
+    public ResponseEntity<List<DistribucionOtra>> getByActivoFechaInicioAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionOtra> list = distribucionOtraService.findByActivoAndPersonaAndFechaInicio(true,
+                idPersona, fechaInicio);
+        return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionOtra>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionOtraService.existsByEfectorId(idEfector))

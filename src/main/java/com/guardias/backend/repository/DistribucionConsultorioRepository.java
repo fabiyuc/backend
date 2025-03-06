@@ -1,6 +1,5 @@
 package com.guardias.backend.repository;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -11,60 +10,63 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.DistribucionConsultorio;
-import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
 
 @Repository
 public interface DistribucionConsultorioRepository extends JpaRepository<DistribucionConsultorio, Long> {
 
-    Optional<List<DistribucionConsultorio>> findByActivoTrue();
+        Optional<List<DistribucionConsultorio>> findByActivoTrue();
 
-    List<DistribucionConsultorio> findByFechaInicio(LocalDate fechaInicio);
+        List<DistribucionConsultorio> findByFechaInicio(LocalDate fechaInicio);
 
-    @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.persona.id = :personaId")
-    Optional<List<DistribucionConsultorio>> findByPersonaId(@Param("personaId") Long personaId);
+        @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.persona.id = :personaId")
+        Optional<List<DistribucionConsultorio>> findByPersonaId(@Param("personaId") Long personaId);
 
-    @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.efector.id = :efectorId")
-    Optional<List<DistribucionConsultorio>> findByEfectorId(@Param("efectorId") Long efectorId);
+        @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.activo = :activo AND dc.persona.id = :personaId AND dc.fechaInicio = :fechaInicio")
+        List<DistribucionConsultorio> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
+                        @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
 
-    boolean existsById(Long id);
+        @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.efector.id = :efectorId")
+        Optional<List<DistribucionConsultorio>> findByEfectorId(@Param("efectorId") Long efectorId);
 
-    boolean existsByEfectorId(Long efectorId);
+        boolean existsById(Long id);
 
-    boolean existsByPersonaId(Long personaId);
+        boolean existsByEfectorId(Long efectorId);
 
-    List<DistribucionConsultorio> findByActivo(boolean activo);
+        boolean existsByPersonaId(Long personaId);
 
-    @Query("""
-            SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
-            FROM distribucionesConsultorios d
-            WHERE d.dia = :dia
-            AND :fecha BETWEEN d.fechaInicio AND d.fechaFinalizacion
-            AND d.persona.id = :idAsistencial
-            AND d.efector.id = :idEfector
-            AND d.activo = true
-            """)
-    boolean existsByDiaAndFechaAndPersonaAndEfector(
-            @Param("dia") DiasEnum dia,
-            @Param("fecha") LocalDate fecha,
-            @Param("idAsistencial") Long idAsistencial,
-            @Param("idEfector") Long idEfector);
+        List<DistribucionConsultorio> findByActivo(boolean activo);
 
-    @Query(nativeQuery = true, value = """
-                SELECT *
-                FROM distribuciones_consultorios d
-                WHERE d.id_persona = :idAsistencial
-                AND d.id_efector = :idEfector
-                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                AND CAST(:horaIngreso AS TIME) >= CAST(d.hora_ingreso AS TIME)
-                AND CAST(:horaEgreso AS TIME) <= DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
-                AND d.activo = 1
-                """)
+        @Query("""
+                        SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+                        FROM distribucionesConsultorios d
+                        WHERE d.dia = :dia
+                        AND :fecha BETWEEN d.fechaInicio AND d.fechaFinalizacion
+                        AND d.persona.id = :idAsistencial
+                        AND d.efector.id = :idEfector
+                        AND d.activo = true
+                        """)
+        boolean existsByDiaAndFechaAndPersonaAndEfector(
+                        @Param("dia") DiasEnum dia,
+                        @Param("fecha") LocalDate fecha,
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector);
+
+        @Query(nativeQuery = true, value = """
+                        SELECT *
+                        FROM distribuciones_consultorios d
+                        WHERE d.id_persona = :idAsistencial
+                        AND d.id_efector = :idEfector
+                        AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                        AND CAST(:horaIngreso AS TIME) >= CAST(d.hora_ingreso AS TIME)
+                        AND CAST(:horaEgreso AS TIME) <= DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
+                        AND d.activo = 1
+                        """)
         Optional<DistribucionConsultorio> findValidDistribucion(
-                @Param("idAsistencial") Long idAsistencial,
-                @Param("idEfector") Long idEfector,
-                @Param("fechaIngreso") LocalDate fechaInicio,
-                @Param("horaIngreso") String horaIngreso, 
-                @Param("horaEgreso") String horaEgreso);
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector,
+                        @Param("fechaIngreso") LocalDate fechaInicio,
+                        @Param("horaIngreso") String horaIngreso,
+                        @Param("horaEgreso") String horaEgreso);
 
 }

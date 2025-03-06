@@ -41,6 +41,11 @@ public class DistribucionGiraService {
         return distribucionGiraRepository.findByFechaInicio(fechaInicio);
     }
 
+    public List<DistribucionGira> findByActivoAndPersonaAndFechaInicio(boolean activo, Long personaId,
+            LocalDate fechaInicio) {
+        return distribucionGiraRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
+    }
+
     public Optional<List<DistribucionGira>> findByPersonaId(Long personaId) {
         return distribucionGiraRepository.findByPersonaId(personaId);
     }

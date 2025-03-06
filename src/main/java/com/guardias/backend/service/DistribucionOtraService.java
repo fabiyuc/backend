@@ -50,6 +50,11 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.findByFechaInicio(fechaInicio);
     }
 
+    public List<DistribucionOtra> findByActivoAndPersonaAndFechaInicio(boolean activo, Long personaId,
+            LocalDate fechaInicio) {
+        return distribucionOtraRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
+    }
+
     public Optional<List<DistribucionOtra>> findByEfectorId(Long efectorId) {
         return distribucionOtraRepository.findByEfectorId(efectorId);
     }

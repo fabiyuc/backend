@@ -61,6 +61,15 @@ public class DistribucionGiraController {
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicio/{idPersona}/{fechaInicio}")
+    public ResponseEntity<List<DistribucionGira>> getByActivoFechaInicioAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionGira> list = distribucionGiraService.findByActivoAndPersonaAndFechaInicio(true,
+                idPersona, fechaInicio);
+        return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionGira>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionGiraService.existsByEfectorId(idEfector))

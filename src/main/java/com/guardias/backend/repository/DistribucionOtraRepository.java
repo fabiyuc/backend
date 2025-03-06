@@ -20,6 +20,10 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
 
     List<DistribucionOtra> findByFechaInicio(LocalDate fechaInicio);
 
+    @Query("SELECT dg FROM distribucionesOtras dg WHERE dg.activo = :activo AND dg.persona.id = :personaId AND dg.fechaInicio = :fechaInicio")
+    List<DistribucionOtra> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
+            @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
+
     @Query("SELECT dg FROM distribucionesOtras dg WHERE dg.persona.id = :personaId")
     Optional<List<DistribucionOtra>> findByPersonaId(@Param("personaId") Long personaId);
 

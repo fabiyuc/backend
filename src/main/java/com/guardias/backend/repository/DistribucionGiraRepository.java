@@ -20,6 +20,10 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
 
     List<DistribucionGira> findByFechaInicio(LocalDate fechaInicio);
 
+    @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.activo = :activo AND dg.persona.id = :personaId AND dg.fechaInicio = :fechaInicio")
+    List<DistribucionGira> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
+            @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
+
     @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.persona.id = :personaId")
     Optional<List<DistribucionGira>> findByPersonaId(@Param("personaId") Long personaId);
 

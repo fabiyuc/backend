@@ -67,10 +67,12 @@ public class DistribucionGuardiaController {
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listByActivoFechaInicio/{fechaInicio}")
-    public ResponseEntity<List<DistribucionGuardia>> getByActivoFechaInicio(
+    @GetMapping("/listByActivoByPersonAndFechaInicio/{idPersona}/{fechaInicio}")
+    public ResponseEntity<List<DistribucionGuardia>> getByActivoFechaInicioAndPersona(
+            @PathVariable("idPersona") Long idPersona,
             @PathVariable("fechaInicio") LocalDate fechaInicio) {
-        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoAndFechaInicio(true, fechaInicio);
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoAndPersonaAndFechaInicio(true,
+                idPersona, fechaInicio);
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 

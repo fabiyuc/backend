@@ -21,7 +21,9 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
 
         List<DistribucionGuardia> findByFechaInicio(LocalDate fechaInicio);
 
-        List<DistribucionGuardia> findByActivoAndFechaInicio(boolean activo, LocalDate fechaInicio);
+        @Query("SELECT dg FROM distribucionesGuardias dg WHERE dg.activo = :activo AND dg.persona.id = :personaId AND dg.fechaInicio = :fechaInicio")
+        List<DistribucionGuardia> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
+                        @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
 
         @Query("SELECT dg FROM distribucionesGuardias dg WHERE dg.persona.id = :personaId")
         Optional<List<DistribucionGuardia>> findByPersonaId(@Param("personaId") Long personaId);

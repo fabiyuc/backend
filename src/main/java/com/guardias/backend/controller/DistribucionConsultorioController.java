@@ -53,6 +53,14 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<DistribucionConsultorio> getById(@PathVariable("id") Long id) {
+        if (!distribucionConsultorioService.activo(id))
+            return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
+        DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.findById(id).get();
+        return new ResponseEntity<DistribucionConsultorio>(distribucionConsultorio, HttpStatus.OK);
+    }
+
     @GetMapping("/list/{fechaInicio}")
     public ResponseEntity<List<DistribucionConsultorio>> getByFechainicio(
             @PathVariable("fechaInicio") LocalDate fechaInicio) {
@@ -60,12 +68,13 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<DistribucionConsultorio> getById(@PathVariable("id") Long id) {
-        if (!distribucionConsultorioService.activo(id))
-            return new ResponseEntity(new Mensaje("No existe la carga horaria"), HttpStatus.NOT_FOUND);
-        DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.findById(id).get();
-        return new ResponseEntity<DistribucionConsultorio>(distribucionConsultorio, HttpStatus.OK);
+    @GetMapping("/listByActivoByPersonAndFechaInicio/{idPersona}/{fechaInicio}")
+    public ResponseEntity<List<DistribucionConsultorio>> getByActivoFechaInicioAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionConsultorio> list = distribucionConsultorioService.findByActivoAndPersonaAndFechaInicio(true,
+                idPersona, fechaInicio);
+        return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detailefector/{idEfector}")
