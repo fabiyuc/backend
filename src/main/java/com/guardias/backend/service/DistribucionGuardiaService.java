@@ -78,6 +78,10 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
+    public List<DistribucionGuardia> findByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGuardiaRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
     public void save(DistribucionGuardia distribucionGuardia) {
         distribucionGuardiaRepository.save(distribucionGuardia);
     }

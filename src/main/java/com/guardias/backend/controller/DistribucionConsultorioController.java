@@ -77,6 +77,22 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<List<DistribucionConsultorio>> getByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        List<DistribucionConsultorio> distribuciones = distribucionConsultorioService
+                .findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+
+        if (distribuciones.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(distribuciones, HttpStatus.OK);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionConsultorio>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionConsultorioService.existsByEfectorId(idEfector))

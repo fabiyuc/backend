@@ -69,4 +69,12 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         @Param("horaIngreso") String horaIngreso,
                         @Param("horaEgreso") String horaEgreso);
 
+        @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.activo = true AND dc.persona.id = :idPersona " +
+                        "AND FUNCTION('MONTH', dc.fechaInicio) = :mes " +
+                        "AND FUNCTION('YEAR', dc.fechaInicio) = :anio")
+        List<DistribucionConsultorio> findByActivoPersonaAndFechaInicio(
+                        @Param("idPersona") Long idPersona,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
+
 }

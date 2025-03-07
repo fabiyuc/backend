@@ -37,4 +37,12 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
     boolean existsByPersonaId(Long personaId);
 
     List<DistribucionOtra> findByActivo(boolean activo);
+
+    @Query("SELECT dg FROM distribucionesOtras dg WHERE dg.activo = true AND dg.persona.id = :idPersona " +
+            "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
+            "AND FUNCTION('YEAR', dg.fechaInicio) = :anio")
+    List<DistribucionOtra> findByActivoPersonaAndFechaInicio(
+            @Param("idPersona") Long idPersona,
+            @Param("mes") int mes,
+            @Param("anio") int anio);
 }

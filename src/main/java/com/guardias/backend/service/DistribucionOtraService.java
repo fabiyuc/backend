@@ -76,6 +76,10 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
     }
 
+    public List<DistribucionOtra> findByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionOtraRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
     public void save(DistribucionOtra distribucionOtra) {
         distribucionOtraRepository.save(distribucionOtra);
     }

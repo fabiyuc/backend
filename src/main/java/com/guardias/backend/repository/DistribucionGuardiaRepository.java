@@ -66,4 +66,12 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("horaIngreso") String horaIngreso,
                         @Param("horaEgreso") String horaEgreso);
 
+        @Query("SELECT dg FROM distribucionesGuardias dg WHERE dg.activo = true AND dg.persona.id = :idPersona " +
+                        "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
+                        "AND FUNCTION('YEAR', dg.fechaInicio) = :anio")
+        List<DistribucionGuardia> findByActivoPersonaAndFechaInicio(
+                        @Param("idPersona") Long idPersona,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
+
 }
