@@ -74,4 +74,13 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("mes") int mes,
                         @Param("anio") int anio);
 
+        @Query("SELECT COUNT(dg) > 0 FROM distribucionesGuardias dg WHERE dg.activo = true AND dg.persona.id = :idPersona "
+                        +
+                        "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
+                        "AND FUNCTION('YEAR', dg.fechaInicio) = :anio")
+        boolean existsByActivoPersonaAndFechaInicio(
+                        @Param("idPersona") Long idPersona,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
+
 }

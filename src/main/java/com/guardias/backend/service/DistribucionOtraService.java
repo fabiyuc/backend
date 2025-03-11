@@ -80,6 +80,10 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionOtraRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
     public void save(DistribucionOtra distribucionOtra) {
         distribucionOtraRepository.save(distribucionOtra);
     }

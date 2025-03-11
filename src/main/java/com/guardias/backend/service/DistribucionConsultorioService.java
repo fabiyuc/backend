@@ -76,6 +76,10 @@ public class DistribucionConsultorioService {
         return distribucionConsultorioRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionConsultorioRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
     public void save(DistribucionConsultorio distribucionConsultorio) {
         distribucionConsultorioRepository.save(distribucionConsultorio);
     }

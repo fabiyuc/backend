@@ -75,6 +75,10 @@ public class DistribucionGiraService {
         return distribucionGiraRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGiraRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
     public void save(DistribucionGira distribucionGira) {
         distribucionGiraRepository.save(distribucionGira);
     }

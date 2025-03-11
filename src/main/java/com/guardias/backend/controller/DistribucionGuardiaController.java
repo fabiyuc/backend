@@ -92,6 +92,16 @@ public class DistribucionGuardiaController {
         return new ResponseEntity<>(distribuciones, HttpStatus.OK);
     }
 
+    @GetMapping("/existsByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existsByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        boolean exists = distribucionGuardiaService.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+        return ResponseEntity.ok(exists);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionGuardia>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionGuardiaService.existsByEfectorId(idEfector))

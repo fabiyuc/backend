@@ -77,4 +77,13 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         @Param("mes") int mes,
                         @Param("anio") int anio);
 
+        @Query("SELECT COUNT(dc) > 0 FROM distribucionesConsultorios dc WHERE dc.activo = true AND dc.persona.id = :idPersona "
+                        +
+                        "AND FUNCTION('MONTH', dc.fechaInicio) = :mes " +
+                        "AND FUNCTION('YEAR', dc.fechaInicio) = :anio")
+        boolean existsByActivoPersonaAndFechaInicio(
+                        @Param("idPersona") Long idPersona,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
+
 }

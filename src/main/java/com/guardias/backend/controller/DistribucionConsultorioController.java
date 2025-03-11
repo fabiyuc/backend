@@ -93,6 +93,16 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<>(distribuciones, HttpStatus.OK);
     }
 
+    @GetMapping("/existsByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existsByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        boolean exists = distribucionConsultorioService.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+        return ResponseEntity.ok(exists);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionConsultorio>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionConsultorioService.existsByEfectorId(idEfector))

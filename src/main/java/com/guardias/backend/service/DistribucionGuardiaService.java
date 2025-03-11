@@ -82,6 +82,10 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGuardiaRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
     public void save(DistribucionGuardia distribucionGuardia) {
         distribucionGuardiaRepository.save(distribucionGuardia);
     }
