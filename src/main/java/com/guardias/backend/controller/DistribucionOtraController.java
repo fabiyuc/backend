@@ -70,7 +70,7 @@ public class DistribucionOtraController {
         return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("detailByActivoByPersonAndFechaInicio/{idPersona}/{mes}/{anio}")
+    @GetMapping("detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
     public ResponseEntity<List<DistribucionOtra>> getByActivoPersonaAndFechaInicio(
             @PathVariable("idPersona") Long idPersona,
             @PathVariable("mes") int mes,
