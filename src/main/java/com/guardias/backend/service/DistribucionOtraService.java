@@ -50,6 +50,11 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.findByFechaInicio(fechaInicio);
     }
 
+    public List<DistribucionOtra> findByActivoAndPersonaAndFechaInicio(boolean activo, Long personaId,
+            LocalDate fechaInicio) {
+        return distribucionOtraRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
+    }
+
     public Optional<List<DistribucionOtra>> findByEfectorId(Long efectorId) {
         return distribucionOtraRepository.findByEfectorId(efectorId);
     }
@@ -69,6 +74,14 @@ public class DistribucionOtraService {
 
     public boolean existsByPersonaId(Long personaId) {
         return distribucionOtraRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
+    }
+
+    public List<DistribucionOtra> findByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionOtraRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionOtraRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
     public void save(DistribucionOtra distribucionOtra) {

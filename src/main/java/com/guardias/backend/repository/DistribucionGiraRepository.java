@@ -14,23 +14,44 @@ import com.guardias.backend.entity.DistribucionGira;
 @Repository
 public interface DistribucionGiraRepository extends JpaRepository<DistribucionGira, Long> {
 
-    Optional<DistribucionGira> findById(Long id);
+        Optional<DistribucionGira> findById(Long id);
 
-    Optional<List<DistribucionGira>> findByActivoTrue();
+        Optional<List<DistribucionGira>> findByActivoTrue();
 
-    List<DistribucionGira> findByFechaInicio(LocalDate fechaInicio);
+        List<DistribucionGira> findByFechaInicio(LocalDate fechaInicio);
 
-    @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.persona.id = :personaId")
-    Optional<List<DistribucionGira>> findByPersonaId(@Param("personaId") Long personaId);
+        @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.activo = :activo AND dg.persona.id = :personaId AND dg.fechaInicio = :fechaInicio")
+        List<DistribucionGira> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
+                        @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
 
-    @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.efector.id = :efectorId")
-    Optional<List<DistribucionGira>> findByEfectorId(@Param("efectorId") Long efectorId);
+        @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.persona.id = :personaId")
+        Optional<List<DistribucionGira>> findByPersonaId(@Param("personaId") Long personaId);
 
-    boolean existsById(Long id);
+        @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.efector.id = :efectorId")
+        Optional<List<DistribucionGira>> findByEfectorId(@Param("efectorId") Long efectorId);
 
-    boolean existsByEfectorId(Long efectorId);
+        boolean existsById(Long id);
 
-    boolean existsByPersonaId(Long personaId);
+        boolean existsByEfectorId(Long efectorId);
 
-    List<DistribucionGira> findByActivo(boolean activo);
+        boolean existsByPersonaId(Long personaId);
+
+        List<DistribucionGira> findByActivo(boolean activo);
+
+        @Query("SELECT dg FROM distribucionesGiras dg WHERE dg.activo = true AND dg.persona.id = :idPersona " +
+                        "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
+                        "AND FUNCTION('YEAR', dg.fechaInicio) = :anio")
+        List<DistribucionGira> findByActivoPersonaAndFechaInicio(
+                        @Param("idPersona") Long idPersona,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
+
+        @Query("SELECT COUNT (dg) > 0 FROM distribucionesGiras dg WHERE dg.activo = true AND dg.persona.id = :idPersona "
+                        +
+                        "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
+                        "AND FUNCTION('YEAR', dg.fechaInicio) = :anio")
+        boolean existsByActivoPersonaAndFechaInicio(
+                        @Param("idPersona") Long idPersona,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
 }

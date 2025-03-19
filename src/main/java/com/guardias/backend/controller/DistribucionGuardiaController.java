@@ -67,6 +67,41 @@ public class DistribucionGuardiaController {
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicio/{idPersona}/{fechaInicio}")
+    public ResponseEntity<List<DistribucionGuardia>> getByActivoFechaInicioAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoAndPersonaAndFechaInicio(true,
+                idPersona, fechaInicio);
+        return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<List<DistribucionGuardia>> getByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        List<DistribucionGuardia> distribuciones = distribucionGuardiaService
+                .findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+
+        if (distribuciones.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(distribuciones, HttpStatus.OK);
+    }
+
+    @GetMapping("/existsByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existsByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        boolean exists = distribucionGuardiaService.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+        return ResponseEntity.ok(exists);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionGuardia>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionGuardiaService.existsByEfectorId(idEfector))
@@ -184,7 +219,7 @@ public class DistribucionGuardiaController {
     // busca distribucion guardia para comparar con cronograma tentativo
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
-        
+
         return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
     }
 

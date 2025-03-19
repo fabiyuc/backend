@@ -39,17 +39,11 @@ public class RegistrosPendientes {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
-            "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
-            "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-            "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-            "registroMensual", "ddjjs", "registrosPendientes" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado", "activo", "observacion", "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "servicios", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados", "region", "localidad", "distribucionesHorarias" })
     private Efector efector;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "registrosPendientes", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
-            "servicio", "efector", "registroMensual", "registrosPendientes" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "efector", "registroMensual", "registrosPendientes", "usuarioEgreso" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",

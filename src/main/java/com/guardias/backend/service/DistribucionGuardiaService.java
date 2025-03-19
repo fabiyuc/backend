@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -9,12 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
-import com.guardias.backend.dto.distribucionGuardia.DistribucionGuardiaRequestDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
-import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
-import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
 
@@ -56,6 +52,11 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.findByFechaInicio(fechaInicio);
     }
 
+    public List<DistribucionGuardia> findByActivoAndPersonaAndFechaInicio(boolean activo, Long personaId,
+            LocalDate fechaInicio) {
+        return distribucionGuardiaRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
+    }
+
     public Optional<List<DistribucionGuardia>> findByEfectorId(Long efectorId) {
         return distribucionGuardiaRepository.findByEfectorId(efectorId);
     }
@@ -75,6 +76,14 @@ public class DistribucionGuardiaService {
 
     public boolean existsByPersonaId(Long personaId) {
         return distribucionGuardiaRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
+    }
+
+    public List<DistribucionGuardia> findByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGuardiaRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGuardiaRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
     public void save(DistribucionGuardia distribucionGuardia) {
@@ -118,17 +127,20 @@ public class DistribucionGuardiaService {
 
     }
 
-    public boolean  validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
+    public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
         if (dto == null) {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        //Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
-        String horaIngresoString = dto.getHoraIngreso().toString(); 
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+        // entenderlo luego como TIME en la comparacion
+        String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
         // Intentar encontrar una distribución válida
-        Optional<DistribucionGuardia> distribucionValida = distribucionGuardiaRepository.findValidDistribucion(dto.getIdAsistencial(), dto.getIdEfector(), dto.getTipoGuardia(),dto.getFechaIngreso(), horaIngresoString, horaEgresoString);
+        Optional<DistribucionGuardia> distribucionValida = distribucionGuardiaRepository.findValidDistribucion(
+                dto.getIdAsistencial(), dto.getIdEfector(), dto.getTipoGuardia(), dto.getFechaIngreso(),
+                horaIngresoString, horaEgresoString);
 
         // Retornar true si existe una distribución válida, false en caso contrario
         return distribucionValida.isPresent();

@@ -38,3 +38,20 @@ public class RegistroActividadDto {
     private Long idRegistrosPendientes;
     private Long idUsuario;
 }
+// dame el json completo
+/*
+ * {
+ * "fechaIngreso": "2021-09-01",
+ * "fechaEgreso": "2021-09-01",
+ * "horaIngreso": "10:00",
+ * "horaEgreso": "18:00",
+ * "idTipoGuardia": 1,
+ * "activo": true,
+ * "idAsistencial": 1,
+ * "idServicio": 1,
+ * "idEfector": 1,
+ * "idRegistroMensual": 1,
+ * "idRegistrosPendientes": 1,
+ * "idUsuario": 1
+ * }
+ */

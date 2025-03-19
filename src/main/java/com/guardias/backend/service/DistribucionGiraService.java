@@ -41,6 +41,11 @@ public class DistribucionGiraService {
         return distribucionGiraRepository.findByFechaInicio(fechaInicio);
     }
 
+    public List<DistribucionGira> findByActivoAndPersonaAndFechaInicio(boolean activo, Long personaId,
+            LocalDate fechaInicio) {
+        return distribucionGiraRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
+    }
+
     public Optional<List<DistribucionGira>> findByPersonaId(Long personaId) {
         return distribucionGiraRepository.findByPersonaId(personaId);
     }
@@ -64,6 +69,14 @@ public class DistribucionGiraService {
 
     public boolean existsByPersonaId(Long personaId) {
         return distribucionGiraRepository.existsByPersonaId(personaId) && personService.activoById(personaId);
+    }
+
+    public List<DistribucionGira> findByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGiraRepository.findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+    }
+
+    public boolean existsByActivoPersonaAndFechaInicio(Long idPersona, int mes, int anio) {
+        return distribucionGiraRepository.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
     }
 
     public void save(DistribucionGira distribucionGira) {

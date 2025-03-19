@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.service.HabilitacionesGuardiasService;
@@ -60,7 +61,7 @@ public class HabilitacionesGuardiasController {
             @PathVariable Long idEfector, @PathVariable String tipoGuardia) {
 
         List<Asistencial> habilitaciones = habilitacionesGuardiasService
-        .getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
+                .getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
 
         if (habilitaciones.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -78,13 +79,20 @@ public class HabilitacionesGuardiasController {
         return new ResponseEntity<HabilitacionesGuardia>(habilitacionesGuardias, HttpStatus.OK);
     }
 
-    @GetMapping("/detailAsistencial/{idPersona}")
-    public ResponseEntity<HabilitacionesGuardia> getByAsistencial(@PathVariable("idPersona") Long idAsistencial) {
-        if (!habilitacionesGuardiasService.activoByAsistencial(idAsistencial))
-            return new ResponseEntity(new Mensaje("no existe la habilitacion de guardia de este asistencial"),
+    @GetMapping("/detailAsistencial/{idAsistencial}")
+    public ResponseEntity<?> getByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
+        // Obtén la habilitación activa
+        Optional<HabilitacionesGuardia> habilitacionActiva = habilitacionesGuardiasService
+                .findActivoByAsistencial(idAsistencial);
+
+        // Si no hay habilitación activa, responde con un mensaje de error
+        if (habilitacionActiva.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No existe una habilitación activa para este asistencial"),
                     HttpStatus.NOT_FOUND);
-        HabilitacionesGuardia habilitacionesGuardias = habilitacionesGuardiasService.findByAsistencial  (idAsistencial).get();
-        return new ResponseEntity<HabilitacionesGuardia>(habilitacionesGuardias, HttpStatus.OK);
+        }
+
+        // Si hay habilitación activa, devuelve la habilitación
+        return new ResponseEntity<>(habilitacionActiva.get(), HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -139,10 +147,10 @@ public class HabilitacionesGuardiasController {
         return new ResponseEntity<>(new Mensaje("habilitaciones de Guardias eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/tieneHabilitacionesGuardias/{idPersona}/{idEfector}")
-    public boolean tieneHabilitacionesGuardias(@PathVariable("idPersona") long idPersona,
+    @GetMapping("/tieneHabilitacionesGuardias/{idAsistencial}/{idEfector}")
+    public boolean tieneHabilitacionesGuardias(@PathVariable("idAsistencial") long idAsistencial,
             @PathVariable("idEfector") long idEfector) {
-        return habilitacionesGuardiasService.tieneHabilitacionesGuardias(idPersona, idEfector);
+        return habilitacionesGuardiasService.tieneHabilitacionesGuardias(idAsistencial, idEfector);
     }
 
 }

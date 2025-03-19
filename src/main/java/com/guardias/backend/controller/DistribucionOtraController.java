@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,6 +61,41 @@ public class DistribucionOtraController {
         return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicio/{idPersona}/{fechaInicio}")
+    public ResponseEntity<List<DistribucionOtra>> getByActivoFechaInicioAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio) {
+        List<DistribucionOtra> list = distribucionOtraService.findByActivoAndPersonaAndFechaInicio(true,
+                idPersona, fechaInicio);
+        return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<List<DistribucionOtra>> getByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        List<DistribucionOtra> distribuciones = distribucionOtraService
+                .findByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+
+        if (distribuciones.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(distribuciones, HttpStatus.OK);
+    }
+
+    @GetMapping("/existsByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existsByActivoPersonaAndFechaInicio(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        boolean exists = distribucionOtraService.existsByActivoPersonaAndFechaInicio(idPersona, mes, anio);
+        return ResponseEntity.ok(exists);
+    }
+
     @GetMapping("/detailefector/{idEfector}")
     public ResponseEntity<List<DistribucionOtra>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         if (!distribucionOtraService.existsByEfectorId(idEfector))
@@ -84,16 +121,18 @@ public class DistribucionOtraController {
     // Nueva implementación de getByPersona que filtra solo las distribuciones
     // activas
     @GetMapping("/detailpersona/{idPersona}")
-    public ResponseEntity<?> getByPersona(@PathVariable("idPersona") Long idPersona) {
+    public ResponseEntity<List<DistribucionOtra>> getByPersona(@PathVariable("idPersona") Long idPersona) {
+
         if (!distribucionOtraService.existsByPersonaId(idPersona)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("No existe la carga horaria"));
+            return ResponseEntity.ok(Collections.emptyList());
         }
 
         // Obtener distribuciones y filtrar solo las activas
         List<DistribucionOtra> distribucionOtraActivas = distribucionOtraService.findByPersonaId(idPersona)
-                .map(lista -> lista.stream().filter(DistribucionOtra::isActivo).toList()) // Filtrar activas
-                .orElseGet(List::of); // Si no hay resultados, devolver una lista vacía
-
+                .orElse(Collections.emptyList()) // Si el Optional está vacío, devuelve lista vacía
+                .stream()
+                .filter(DistribucionOtra::isActivo) // Filtra solo las distribuciones activas
+                .collect(Collectors.toList()); // Convierte el resultado a lista
         return ResponseEntity.ok(distribucionOtraActivas);
     }
 
