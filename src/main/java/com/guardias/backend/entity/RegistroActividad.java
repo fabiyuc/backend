@@ -88,6 +88,11 @@ public class RegistroActividad {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial" })
         Usuario usuarioEgreso;
 
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_cronograma_definitivo")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio", "registroActividad", "efector", "ddjj", "sumaHoras" ,"asistencial"})
+        private CronogramaDefinitivo cronogramaDefinitivo;
+
         @Temporal(TemporalType.DATE)
         private LocalDate fechaRegistroIngreso;
 

@@ -50,7 +50,7 @@ public class CronogramaTentativo {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "id_tipo_guardia")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales", "activo", "registrosActividades", "descripcion" , "cronogramasTentativos" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales", "activo", "registrosActividades", "descripcion" , "cronogramasTentativos", "legajos" })
     private TipoGuardia tipoGuardia;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -65,7 +65,7 @@ public class CronogramaTentativo {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",
             "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
             "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs",
-            "registrosPendientes", "servicios", "cronogramasTentativos" })
+            "registrosPendientes", "servicios", "cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales", "feriados" })
     private Efector efector;
 
     @Column(columnDefinition = "VARCHAR(50)")
