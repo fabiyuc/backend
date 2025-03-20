@@ -57,7 +57,7 @@ public class CronogramaTentativo {
     @JoinColumn(name = "id_asistencial")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "estado", "tipoGuardia", "descripcion", "tiposGuardias", "registrosActividades", "dni", "fechaNacimiento",
-            "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "suplentes", "autoridades" , "cronogramasTentativos" })
+            "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "suplentes", "autoridades" , "cronogramasTentativos", "legajos", "novedadesPersonales", "distribucionesHorarias", "registrosMensuales", "usuarios", "habilitacionesGenerales", "habilitacionesGuardias", "cronogramasDefinitivos" })
     private Asistencial asistencial;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -65,7 +65,7 @@ public class CronogramaTentativo {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",
             "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
             "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs",
-            "registrosPendientes", "servicios", "cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales", "feriados" })
+            "registrosPendientes", "servicios", "cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales", "feriados", "cronogramasDefinitivos" })
     private Efector efector;
 
     @Column(columnDefinition = "VARCHAR(50)")

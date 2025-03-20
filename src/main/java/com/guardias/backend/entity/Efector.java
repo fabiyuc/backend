@@ -91,7 +91,7 @@ public abstract class Efector {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaIngreso", "fechaEgreso", "horaIngreso",
             "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector", "registrosPendientes", "registroMensual",
             "usuarioIngreso", "usuarioEgreso", "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso",
-            "horaRegistroEgreso", "horasRealizadas" })
+            "horaRegistroEgreso", "horasRealizadas", "cronogramaDefinitivo" })
     private List<RegistroActividad> registrosActividades = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
