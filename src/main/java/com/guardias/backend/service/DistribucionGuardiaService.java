@@ -30,7 +30,7 @@ public class DistribucionGuardiaService {
     @Autowired
     PersonService personService;
     @Autowired
-    AsistencialRepository asistencialRepository;;
+    AsistencialRepository asistencialRepository;
 
     public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
@@ -137,31 +137,21 @@ public class DistribucionGuardiaService {
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
-        // Intentar encontrar una distribución válida
-        Optional<DistribucionGuardia> distribucionValida = distribucionGuardiaRepository.findValidDistribucion(
-                dto.getIdAsistencial(), dto.getIdEfector(), dto.getTipoGuardia(), dto.getFechaIngreso(),
-                horaIngresoString, horaEgresoString);
-
-        // Retornar true si existe una distribución válida, false en caso contrario
-        return distribucionValida.isPresent();
+        // Buscar una distribución válida
+        return distribucionGuardiaRepository.findValidDistribucion(dto.getIdAsistencial(), dto.getIdEfector(),
+                dto.getTipoGuardia(), dto.getFechaIngreso(),
+                horaIngresoString, horaEgresoString).isPresent();
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 
-        // Buscar coincidencias en DistribucionGuardia
-        boolean guardiaExists = distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(
-                dia, fecha, idAsistencial, idEfector);
-
-        // Si existe DistribucionGuardia que coincida, retornar true
-        if (guardiaExists)
+        // Verificar si existe en DistribucionGuardia
+        if (distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(dia, fecha, idAsistencial, idEfector)) {
             return true;
+        }
 
-        // Buscar coincidencias en DistribucionConsultorio
-        boolean consultorioExists = distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(
-                dia, fecha, idAsistencial, idEfector);
-
-        // Si existe DistribucionConsultorio que coincida, retornar false
-        return !consultorioExists;
+        // Verificar si existe en DistribucionConsultorio
+        return !distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(dia, fecha, idAsistencial, idEfector);
 
     }
 

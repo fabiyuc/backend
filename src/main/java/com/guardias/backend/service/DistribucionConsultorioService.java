@@ -97,13 +97,11 @@ public class DistribucionConsultorioService {
         // entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
-
-        // Intentar encontrar una distribución válida
-        Optional<DistribucionConsultorio> distribucionValida = distribucionConsultorioRepository.findValidDistribucion(
-                dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(), horaIngresoString, horaEgresoString);
-
-        // Retornar true si existe una distribución válida, false en caso contrario
-        return distribucionValida.isPresent();
+        
+        // Buscar una distribución de consultorio válida
+        return distribucionConsultorioRepository.findValidDistribucion(
+                dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),
+                horaIngresoString, horaEgresoString).isPresent();
 
     }
 

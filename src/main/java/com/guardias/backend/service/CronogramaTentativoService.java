@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.CronogramaTentativo;
+import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 
@@ -29,6 +31,8 @@ public class CronogramaTentativoService {
     AsistencialService asistencialService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    AsistencialRepository asistencialRepository;
 
     public Optional<List<CronogramaTentativo>> findByActivoTrue() {
         return cronogramaTentativoRepository.findByActivoTrue();
@@ -51,66 +55,70 @@ public class CronogramaTentativoService {
 
         if (cronogramaTentativoDto.getFechaIngreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
-        
-            if (cronogramaTentativoDto.getFechaEgreso() == null)
+
+        if (cronogramaTentativoDto.getFechaEgreso() == null)
             return new ResponseEntity(new Mensaje("la fecha de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (cronogramaTentativoDto.getHoraIngreso() == null)
             return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
-        
+
         if (cronogramaTentativoDto.getHoraEgreso() == null)
             return new ResponseEntity(new Mensaje("la hora de egreso es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (cronogramaTentativoDto.getIdTipoGuardia() == null) 
-                return new ResponseEntity<>(new Mensaje("Indicar el tipo de guardia"),
-                        HttpStatus.BAD_REQUEST);
-       
+        if (cronogramaTentativoDto.getIdTipoGuardia() == null)
+            return new ResponseEntity<>(new Mensaje("Indicar el tipo de guardia"),
+                    HttpStatus.BAD_REQUEST);
+
         if (cronogramaTentativoDto.getIdAsistencial() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el asistencial"), HttpStatus.BAD_REQUEST);
 
-        if (cronogramaTentativoDto.getIdEfector() == null) 
+        if (cronogramaTentativoDto.getIdEfector() == null)
             return new ResponseEntity<>(new Mensaje("indicar el efector"), HttpStatus.BAD_REQUEST);
-        
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public CronogramaTentativo createUpdate(CronogramaTentativo cronogramaTentativo, CronogramaTentativoDto cronogramaTentativoDto) {
+    public CronogramaTentativo createUpdate(CronogramaTentativo cronogramaTentativo,
+            CronogramaTentativoDto cronogramaTentativoDto) {
 
         if (cronogramaTentativo.getFechaIngreso() != cronogramaTentativoDto.getFechaIngreso() &&
                 cronogramaTentativoDto.getFechaIngreso() != null)
             cronogramaTentativo.setFechaIngreso(cronogramaTentativoDto.getFechaIngreso());
 
         if (cronogramaTentativo.getFechaEgreso() != cronogramaTentativoDto.getFechaEgreso() &&
-        cronogramaTentativoDto.getFechaEgreso() != null)
-                cronogramaTentativo.setFechaEgreso(cronogramaTentativoDto.getFechaEgreso());
+                cronogramaTentativoDto.getFechaEgreso() != null)
+            cronogramaTentativo.setFechaEgreso(cronogramaTentativoDto.getFechaEgreso());
 
         if (cronogramaTentativo.getHoraIngreso() != cronogramaTentativoDto.getHoraIngreso() &&
-        cronogramaTentativoDto.getHoraIngreso() != null)
-                cronogramaTentativo.setHoraIngreso(cronogramaTentativoDto.getHoraIngreso());
+                cronogramaTentativoDto.getHoraIngreso() != null)
+            cronogramaTentativo.setHoraIngreso(cronogramaTentativoDto.getHoraIngreso());
 
         if (cronogramaTentativo.getHoraEgreso() != cronogramaTentativoDto.getHoraEgreso() &&
-        cronogramaTentativoDto.getHoraEgreso() != null)
-                cronogramaTentativo.setHoraEgreso(cronogramaTentativoDto.getHoraEgreso());
+                cronogramaTentativoDto.getHoraEgreso() != null)
+            cronogramaTentativo.setHoraEgreso(cronogramaTentativoDto.getHoraEgreso());
 
-        if (cronogramaTentativo.getTipoGuardia() == null || (cronogramaTentativoDto.getIdTipoGuardia() != null && !Objects.equals  (cronogramaTentativo.getTipoGuardia().getId(), cronogramaTentativoDto.getIdTipoGuardia()))) {
-            cronogramaTentativo.setTipoGuardia(tipoGuardiaService.findById(cronogramaTentativoDto.getIdTipoGuardia()).get());
+        if (cronogramaTentativo.getTipoGuardia() == null || (cronogramaTentativoDto.getIdTipoGuardia() != null
+                && !Objects.equals(cronogramaTentativo.getTipoGuardia().getId(),
+                        cronogramaTentativoDto.getIdTipoGuardia()))) {
+            cronogramaTentativo
+                    .setTipoGuardia(tipoGuardiaService.findById(cronogramaTentativoDto.getIdTipoGuardia()).get());
         }
 
         if (cronogramaTentativo.getAsistencial() == null ||
                 (cronogramaTentativoDto.getIdAsistencial() != null &&
                         !Objects.equals(cronogramaTentativo.getAsistencial().getId(),
-                        cronogramaTentativoDto.getIdAsistencial()))) {
-                            cronogramaTentativo.setAsistencial(asistencialService.findById(cronogramaTentativoDto.getIdAsistencial()).get());
+                                cronogramaTentativoDto.getIdAsistencial()))) {
+            cronogramaTentativo
+                    .setAsistencial(asistencialService.findById(cronogramaTentativoDto.getIdAsistencial()).get());
         }
 
         if (cronogramaTentativo.getEfector() == null ||
                 (cronogramaTentativoDto.getIdEfector() != null &&
                         !Objects.equals(cronogramaTentativo.getEfector().getId(),
-                        cronogramaTentativoDto.getIdEfector()))) {
-                                    cronogramaTentativo.setEfector(efectorService.findById(cronogramaTentativoDto.getIdEfector()));
+                                cronogramaTentativoDto.getIdEfector()))) {
+            cronogramaTentativo.setEfector(efectorService.findById(cronogramaTentativoDto.getIdEfector()));
         }
 
-        
         cronogramaTentativo.setActivo(true);
         return cronogramaTentativo;
     }
@@ -120,7 +128,7 @@ public class CronogramaTentativoService {
     }
 
     public void logicDelete(Long id, String observacion) {
-        
+
         CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
 
@@ -132,8 +140,37 @@ public class CronogramaTentativoService {
         // Actualiza el legajo
         cronogramaTentativo.setActivo(false);
         cronogramaTentativo.setObservacion(observacion);
-        
+
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
 
+    public boolean existCronograma(CronogramaTentativoDto dto) {
+        // Validar parámetros
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo.");
+        }
+
+        // Validar campos obligatorios
+        if (dto.getFechaIngreso() == null || dto.getFechaEgreso() == null ||
+                dto.getHoraIngreso() == null || dto.getHoraEgreso() == null ||
+                dto.getIdAsistencial() == null || dto.getIdEfector() == null ||
+                dto.getIdTipoGuardia() == null) {
+            throw new IllegalArgumentException("Los campos obligatorios no pueden ser nulos.");
+        }
+
+        // Verificar si el asistencial existe
+        if (!asistencialRepository.existsById(dto.getIdAsistencial())) {
+            throw new EntityNotFoundException("El asistencial con ID " + dto.getIdAsistencial() + " no existe.");
+        }
+
+        // Verificar si el efector existe
+        if (!efectorService.existsById(dto.getIdEfector())) {
+            throw new EntityNotFoundException("El efector con ID " + dto.getIdEfector() + " no existe.");
+        }
+
+        // Verificar si existe un cronograma tentativo que coincida con los datos proporcionados
+        return cronogramaTentativoRepository.existsByCronogramaTentativo(
+                dto.getFechaIngreso(), dto.getFechaEgreso(), dto.getHoraIngreso(), dto.getHoraEgreso(),
+                dto.getIdAsistencial(), dto.getIdEfector(), dto.getIdTipoGuardia());
+    }
 }

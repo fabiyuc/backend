@@ -17,4 +17,5 @@ public class CronogramaTentativoResquestDto {
     private LocalDate fechaIngreso;
     private LocalTime horaIngreso;
     private LocalTime horaEgreso;
+
 }

@@ -91,6 +91,13 @@ public class CronogramaTentativoController {
         }
     }
 
+    // verifica si existe un cronograma tentativo
+    @PostMapping("/existCronograma")
+    public boolean existCronograma(@RequestBody CronogramaTentativoDto dto) {
+        return cronogramaTentativoService.existCronograma(dto);
+    }
+
+
     /* // busca cronograma tentativo para comparar con registro de actividad
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
