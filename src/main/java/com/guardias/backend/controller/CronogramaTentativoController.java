@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import jakarta.validation.ValidationException;
 @RequestMapping("/cronogramaTentativo")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CronogramaTentativoController {
-    
+
     @Autowired
     CronogramaTentativoService cronogramaTentativoService;
 
@@ -41,11 +42,24 @@ public class CronogramaTentativoController {
         return new ResponseEntity<List<CronogramaTentativo>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/detailByEfector/{idEfector}")
+    public ResponseEntity<List<CronogramaTentativo>> getByEfector(@PathVariable("idEfector") Long idEfector) {
+        List<CronogramaTentativo> cronogramaTentativo = cronogramaTentativoService.findByEfectorId(idEfector)
+                .orElse(new ArrayList<>());
+
+        if (cronogramaTentativo.isEmpty()) {
+            return new ResponseEntity(new Mensaje("El efector no tiene cronograma tentativo activo"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(cronogramaTentativo, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<CronogramaTentativo>> getById(@PathVariable("id") Long id) {
         if (!cronogramaTentativoService.activo(id))
             return new ResponseEntity(new Mensaje("El cronograma tentativo no existe"), HttpStatus.NOT_FOUND);
-            CronogramaTentativo cronogramaTentativo = cronogramaTentativoService.findById(id).get();
+        CronogramaTentativo cronogramaTentativo = cronogramaTentativoService.findById(id).get();
         return new ResponseEntity(cronogramaTentativo, HttpStatus.OK);
     }
 
@@ -58,7 +72,7 @@ public class CronogramaTentativoController {
 
             CronogramaTentativo cronogramaTentativo = cronogramaTentativoService.createUpdate(new CronogramaTentativo(),
                     cronogramaTentativoDto);
-            
+
             cronogramaTentativoService.save(cronogramaTentativo);
 
             if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
@@ -71,7 +85,8 @@ public class CronogramaTentativoController {
         }
     }
 
-    //falta el update, donde tiene que hacer igual que en el create de valorGmicontroller
+    // falta el update, donde tiene que hacer igual que en el create de
+    // valorGmicontroller
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id, @RequestBody String observacion) {
@@ -79,7 +94,8 @@ public class CronogramaTentativoController {
         try {
             // Verifica que los valores requeridos estén presentes
             if (observacion == null || observacion.isBlank()) {
-                return new ResponseEntity<>(new Mensaje("Es obligatorio indicar una observacion"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new Mensaje("Es obligatorio indicar una observacion"),
+                        HttpStatus.BAD_REQUEST);
             }
 
             cronogramaTentativoService.logicDelete(id, observacion);
@@ -97,12 +113,15 @@ public class CronogramaTentativoController {
         return cronogramaTentativoService.existCronograma(dto);
     }
 
-
-    /* // busca cronograma tentativo para comparar con registro de actividad
-    @PostMapping("/verificarCronogramaEnDistribucion")
-    public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
-        
-        return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
-    } */
+    /*
+     * // busca cronograma tentativo para comparar con registro de actividad
+     * 
+     * @PostMapping("/verificarCronogramaEnDistribucion")
+     * public boolean verificarCronogramaEnDistribucion(@RequestBody
+     * CronogramaTentativoResquestDto dto) {
+     * 
+     * return distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
+     * }
+     */
 
 }

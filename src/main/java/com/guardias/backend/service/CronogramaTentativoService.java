@@ -47,6 +47,14 @@ public class CronogramaTentativoService {
                 && cronogramaTentativoRepository.findById(id).get().isActivo());
     }
 
+    public boolean existsByEfectorId(Long efectorId) {
+        return cronogramaTentativoRepository.existsByEfectorId(efectorId) && efectorService.activoById(efectorId);
+    }
+
+    public Optional<List<CronogramaTentativo>> findByEfectorId(Long efectorId) {
+        return cronogramaTentativoRepository.findByEfectorId(efectorId);
+    }
+
     public Optional<CronogramaTentativo> findById(Long id) {
         return cronogramaTentativoRepository.findById(id);
     }
@@ -168,7 +176,8 @@ public class CronogramaTentativoService {
             throw new EntityNotFoundException("El efector con ID " + dto.getIdEfector() + " no existe.");
         }
 
-        // Verificar si existe un cronograma tentativo que coincida con los datos proporcionados
+        // Verificar si existe un cronograma tentativo que coincida con los datos
+        // proporcionados
         return cronogramaTentativoRepository.existsByCronogramaTentativo(
                 dto.getFechaIngreso(), dto.getFechaEgreso(), dto.getHoraIngreso(), dto.getHoraEgreso(),
                 dto.getIdAsistencial(), dto.getIdEfector(), dto.getIdTipoGuardia());
