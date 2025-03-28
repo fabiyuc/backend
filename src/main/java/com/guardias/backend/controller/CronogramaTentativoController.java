@@ -55,6 +55,20 @@ public class CronogramaTentativoController {
         return new ResponseEntity<>(cronogramaTentativo, HttpStatus.OK);
     }
 
+    @GetMapping("/delailByEfectorAndServicio/{idEfector}/{idServicio}")
+    public ResponseEntity<List<CronogramaTentativo>> getByEfectorAndServicio(@PathVariable("idEfector") Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+        List<CronogramaTentativo> cronogramaTentativo = cronogramaTentativoService.findByEfectorAndServicio(idEfector,
+                idServicio).orElse(new ArrayList<>());
+
+        if (cronogramaTentativo.isEmpty()) {
+            return new ResponseEntity(new Mensaje("El efector y servicio no tienen cronograma tentativo activo"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(cronogramaTentativo, HttpStatus.OK);
+    }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<CronogramaTentativo>> getById(@PathVariable("id") Long id) {
         if (!cronogramaTentativoService.activo(id))

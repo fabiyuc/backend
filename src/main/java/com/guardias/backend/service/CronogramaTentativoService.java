@@ -55,6 +55,10 @@ public class CronogramaTentativoService {
         return cronogramaTentativoRepository.findByEfectorId(efectorId);
     }
 
+    public Optional<List<CronogramaTentativo>> findByEfectorAndServicio(Long efectorId, Long idServicio) {
+        return cronogramaTentativoRepository.findByEfectorAndServicio(efectorId, idServicio);
+    }
+
     public Optional<CronogramaTentativo> findById(Long id) {
         return cronogramaTentativoRepository.findById(id);
     }
@@ -182,4 +186,5 @@ public class CronogramaTentativoService {
                 dto.getFechaIngreso(), dto.getFechaEgreso(), dto.getHoraIngreso(), dto.getHoraEgreso(),
                 dto.getIdAsistencial(), dto.getIdEfector(), dto.getIdTipoGuardia());
     }
+
 }
