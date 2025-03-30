@@ -131,6 +131,10 @@ public class CronogramaTentativoService {
             cronogramaTentativo.setEfector(efectorService.findById(cronogramaTentativoDto.getIdEfector()));
         }
 
+        if (cronogramaTentativo.getObservacion() != cronogramaTentativoDto.getObservacion() &&
+                cronogramaTentativoDto.getObservacion() != null)
+            cronogramaTentativo.setObservacion(cronogramaTentativoDto.getObservacion());
+
         cronogramaTentativo.setActivo(true);
         return cronogramaTentativo;
     }
