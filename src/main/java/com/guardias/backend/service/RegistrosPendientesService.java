@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
@@ -79,6 +81,20 @@ public class RegistrosPendientesService {
             return null;
         }
     }
+
+    public List<Asistencial> findAsistencialesConPendientes(Long idEfector, int mes, int anio, Long idTipoGuardia) {
+    // Primero obtenemos todos los registros pendientes que cumplen con los criterios
+    List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository
+            .findByEfectorIdAndFechaMonthAndFechaYear(idEfector, mes, anio);
+    
+    // Filtramos por tipo de guardia y mapeamos a asistenciales únicos
+    return registrosPendientes.stream()
+            .flatMap(rp -> rp.getRegistrosActividades().stream())
+            .filter(ra -> ra.getTipoGuardia().getId().equals(idTipoGuardia) && ra.isActivo())
+            .map(RegistroActividad::getAsistencial)
+            .distinct()
+            .collect(Collectors.toList());
+}
 
     public void save(RegistrosPendientes registrosPendientes) {
         registrosPendientesRepository.save(registrosPendientes);

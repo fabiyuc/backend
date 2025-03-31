@@ -28,6 +28,7 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.RegistrosPendientesService;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -38,6 +39,8 @@ public class AsistencialController {
     AsistencialService asistencialService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    RegistrosPendientesService registrosPendientesService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
@@ -152,12 +155,14 @@ public class AsistencialController {
     public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
             @PathVariable Long idEfector,
             @PathVariable String tipoGuardia) {
-        
+
         List<Asistencial> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
 
-        /* if (asistenciales.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } */
+        /*
+         * if (asistenciales.isEmpty()) {
+         * return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+         * }
+         */
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
@@ -170,6 +175,18 @@ public class AsistencialController {
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/asistencialesConPendientes/{idEfector}/{mes}/{anio}/{idTipoGuardia}")
+    public ResponseEntity<List<Asistencial>> getAsistencialesConPendientes(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio,
+            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
+
+        List<Asistencial> asistenciales = registrosPendientesService.findAsistencialesConPendientes(idEfector, mes, anio, idTipoGuardia);
+
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 

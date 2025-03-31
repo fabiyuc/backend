@@ -116,4 +116,6 @@ public class RegistrosPendientesController {
             return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
         }
     }
+
+    
 }
