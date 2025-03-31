@@ -36,17 +36,18 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
         Optional<CronogramaTentativo> findById(Long id);
 
         @Query(nativeQuery = true, value = """
-                        SELECT CAST(CASE WHEN COUNT(c.id) > 0 THEN 1 ELSE 0 END AS BIT)
+                                                    SELECT CAST(CASE WHEN COUNT(c.id) > 0 THEN 1 ELSE 0 END AS BIT)
                         FROM cronogramas_tentativos c
-                        WHERE c.fecha_ingreso = :fechaIngreso
-                        AND c.fecha_egreso = :fechaEgreso
-                        AND c.hora_ingreso = CAST(:horaIngreso AS TIME)
-                        AND c.hora_egreso = CAST(:horaEgreso AS TIME)
-                        AND c.id_asistencial = :idAsistencial
+                        WHERE c.id_asistencial = :idAsistencial
                         AND c.id_efector = :idEfector
                         AND c.id_tipo_guardia = :idTipoGuardia
                         AND c.activo = 1
-                        """)
+                        AND (
+                            (CAST(:fechaIngreso AS DATETIME) + CAST(:horaIngreso AS DATETIME) >= CAST(c.fecha_ingreso AS DATETIME) + CAST(c.hora_ingreso AS DATETIME))
+                            AND
+                            (CAST(:fechaEgreso AS DATETIME) + CAST(:horaEgreso AS DATETIME) <= CAST(c.fecha_egreso AS DATETIME) + CAST(c.hora_egreso AS DATETIME))
+                        )
+                                                """)
         boolean existsByCronogramaTentativo(
                         @Param("fechaIngreso") LocalDate fechaIngreso,
                         @Param("fechaEgreso") LocalDate fechaEgreso,
