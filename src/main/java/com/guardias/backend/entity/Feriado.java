@@ -33,23 +33,26 @@ public class Feriado {
     private Long id;
     @Temporal(TemporalType.DATE)
     private LocalDate fecha;
-    @Column(columnDefinition = "VARCHAR(25)")
+    @Column(columnDefinition = "VARCHAR(55)")
     private String motivo;
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
     private TipoFeriadoEnum tipoFeriado;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
-    
+
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean esPatronal;
 
-    @Column(columnDefinition = "VARCHAR(50)")
+    @Column(columnDefinition = "VARCHAR(80)")
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes","servicios", "feriados" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono", "estado",
+            "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
+            "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual",
+            "ddjjs", "registrosPendientes", "servicios", "feriados" })
     private Efector efector;
 
     @Override
