@@ -58,19 +58,30 @@ public class FeriadoService {
         if (feriadoDto.getFecha() == null)
             return new ResponseEntity(new Mensaje("La fecha es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (existsByMotivo(feriadoDto.getMotivo())
-                && (findByMotivo(feriadoDto.getMotivo()).get().getId() != id))
-            return new ResponseEntity(new Mensaje("ese motivo ya existe"), HttpStatus.BAD_REQUEST);
+        /*
+         * if (existsByMotivo(feriadoDto.getMotivo())
+         * && (findByMotivo(feriadoDto.getMotivo()).get().getId() != id))
+         * return new ResponseEntity(new Mensaje("ese motivo ya existe"),
+         * HttpStatus.BAD_REQUEST);
+         */
+        // Buscar si existe otro feriado con el mismo motivo
+        Optional<Feriado> feriadoExistenteOpt = findByMotivo(feriadoDto.getMotivo());
 
-        if (feriadoDto.getEsPatronal() == null) 
+        // Si el motivo existe y pertenece a otro feriado, lanzar error
+        if (feriadoExistenteOpt.isPresent() && !feriadoExistenteOpt.get().getId().equals(id)) {
+            return new ResponseEntity<>(new Mensaje("Ese motivo ya existe"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (feriadoDto.getEsPatronal() == null)
             return new ResponseEntity<>(new Mensaje("Indicar si es patronal"), HttpStatus.BAD_REQUEST);
-        
+
         if (feriadoDto.getEsPatronal() == true) {
             if (feriadoDto.getIdEfector() == null) {
-                return new ResponseEntity<>(new Mensaje("Indicar el efector del feriado regional"),HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new Mensaje("Indicar el efector del feriado regional"),
+                        HttpStatus.BAD_REQUEST);
             }
         }
-            return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public Feriado createUpdate(Feriado feriado, FeriadoDto feriadoDto) {
@@ -91,12 +102,12 @@ public class FeriadoService {
 
         if (feriadoDto.getEsPatronal() == true) {
             if (feriado.getEfector() == null ||
-                (feriadoDto.getIdEfector() != null &&
-                        !Objects.equals(feriado.getEfector().getId(),
-                                feriadoDto.getIdEfector()))) {
-            feriado.setEfector(efectorService.findById(feriadoDto.getIdEfector()));
+                    (feriadoDto.getIdEfector() != null &&
+                            !Objects.equals(feriado.getEfector().getId(),
+                                    feriadoDto.getIdEfector()))) {
+                feriado.setEfector(efectorService.findById(feriadoDto.getIdEfector()));
+            }
         }
-        }    
         feriado.setActivo(true);
 
         return feriado;
