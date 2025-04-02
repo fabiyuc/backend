@@ -108,6 +108,11 @@ public class FeriadoService {
                 feriado.setEfector(efectorService.findById(feriadoDto.getIdEfector()));
             }
         }
+
+        if (feriadoDto.getEsPatronal() == false) {
+            feriado.setEfector(null);
+        }
+
         feriado.setActivo(true);
 
         return feriado;
