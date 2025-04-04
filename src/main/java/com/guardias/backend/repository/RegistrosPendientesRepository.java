@@ -44,4 +44,10 @@ public interface RegistrosPendientesRepository extends JpaRepository<RegistrosPe
                         @Param("idEfector") Long idEfector,
                         @Param("mes") int mes,
                         @Param("anio") int anio);
+                        
+        @Query("SELECT rp FROM registrosPendientes rp " +
+                        "WHERE rp.efector.id = :idEfector " +
+                        "AND rp.activo = true")
+        List<RegistrosPendientes> findByEfectorId(
+                        @Param("idEfector") Long idEfector);
 }

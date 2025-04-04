@@ -30,6 +30,9 @@ import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistrosPendientesService;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+
 @RestController
 @RequestMapping("/asistencial")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -166,6 +169,28 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
+    @GetMapping("/asistencialesConPendientes/{idEfector}/{mes}/{anio}/{idTipoGuardia}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesConPendientes(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") @Min(1) @Max(12) int mes,
+            @PathVariable("anio") @Min(1900) @Max(2200) int anio,
+            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
+
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findAsistencialesConPendientes(idEfector, mes, anio, idTipoGuardia);
+
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/ConPendientes/{idEfector}/{idTipoGuardia}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getConPendientes(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
+
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findConPendientes(idEfector, idTipoGuardia);
+
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
     @GetMapping("/listByEfectorAndTipoGuardiaExtraHabilitado/{idEfector}")
     public ResponseEntity<List<AsistencialSummaryDto>> listByEfectorAndTipoGuardiaExtraHabilitado(
             @PathVariable Long idEfector) {
@@ -175,18 +200,6 @@ public class AsistencialController {
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
-    }
-
-    @GetMapping("/asistencialesConPendientes/{idEfector}/{mes}/{anio}/{idTipoGuardia}")
-    public ResponseEntity<List<Asistencial>> getAsistencialesConPendientes(
-            @PathVariable("idEfector") Long idEfector,
-            @PathVariable("mes") int mes,
-            @PathVariable("anio") int anio,
-            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
-
-        List<Asistencial> asistenciales = registrosPendientesService.findAsistencialesConPendientes(idEfector, mes, anio, idTipoGuardia);
-
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
