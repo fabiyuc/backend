@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.caps.CapsNameDto;
+import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
@@ -197,4 +198,9 @@ public class HospitalController {
         return new ResponseEntity(new Mensaje("Hospital eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
+    @GetMapping("/serviciosActivos/{idHospital}")
+    public ResponseEntity<List<ServicioSummaryDto>> getServiciosActivos(@PathVariable Long idHospital) {
+        List<ServicioSummaryDto> servicios = hospitalService.getActiveServiciosByHospitalId(idHospital);
+        return ResponseEntity.ok(servicios); 
+    }
 }
