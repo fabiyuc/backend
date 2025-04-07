@@ -155,17 +155,27 @@ public class AsistencialController {
 
     // Lista asistenciales segun efector y tipoGuardia
     @GetMapping("/listByEfectorAndTG/{idEfector}/{tipoGuardia}")
-    public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndTG(
             @PathVariable Long idEfector,
             @PathVariable String tipoGuardia) {
 
-        List<Asistencial> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
+        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
 
         /*
          * if (asistenciales.isEmpty()) {
          * return new ResponseEntity<>(HttpStatus.NO_CONTENT);
          * }
          */
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/ConPendientes/{idEfector}/{tipoGuardia}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getConPendientes(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("tipoGuardia") String tipoGuardia) {
+
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findConPendientes(idEfector, tipoGuardia);
+
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
@@ -181,15 +191,7 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
-    @GetMapping("/ConPendientes/{idEfector}/{idTipoGuardia}")
-    public ResponseEntity<List<AsistencialSummaryDto>> getConPendientes(
-            @PathVariable("idEfector") Long idEfector,
-            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
-
-        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findConPendientes(idEfector, idTipoGuardia);
-
-        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
-    }
+    
 
     @GetMapping("/listByEfectorAndTipoGuardiaExtraHabilitado/{idEfector}")
     public ResponseEntity<List<AsistencialSummaryDto>> listByEfectorAndTipoGuardiaExtraHabilitado(

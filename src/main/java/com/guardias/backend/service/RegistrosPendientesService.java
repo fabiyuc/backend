@@ -16,6 +16,7 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistrosPendientesRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -101,7 +102,16 @@ public class RegistrosPendientesService {
                 .collect(Collectors.toList());
     }
 
-    public List<AsistencialSummaryDto> findConPendientes(Long idEfector, Long idTipoGuardia) {
+    public List<AsistencialSummaryDto> findConPendientes(Long idEfector, String tipoGuardia) {
+
+        // Validamos y convertimos el tipo de guardia
+        TipoGuardiaEnum tipoGuardiaEnum;
+        try {
+            tipoGuardiaEnum = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
+        }
+
         // Primero obtenemos todos los registros pendientes que cumplen con los
         // criterios
         List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository
@@ -110,7 +120,7 @@ public class RegistrosPendientesService {
         // Filtramos por tipo de guardia y mapeamos a asistenciales únicos
         return registrosPendientes.stream()
                 .flatMap(rp -> rp.getRegistrosActividades().stream())
-                .filter(ra -> ra.getTipoGuardia().getId().equals(idTipoGuardia) && ra.isActivo())
+                .filter(ra -> ra.getTipoGuardia().getNombre().equals(tipoGuardiaEnum) && ra.isActivo())
                 .map(RegistroActividad::getAsistencial)
                 .distinct()
                 .map(this::convertToDto)

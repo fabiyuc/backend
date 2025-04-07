@@ -265,8 +265,9 @@ public class AsistencialService {
         return dtoList;
     }
 
-    public List<Asistencial> getAsistencialesByEfectorAndTG(Long efectorId, String tipoGuardia) {
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTG(Long efectorId, String tipoGuardia) {
         
+        // Validamos y convertimos el tipo de guardia
         TipoGuardiaEnum tipoGuardiaEnum;
         
         try {
@@ -274,7 +275,23 @@ public class AsistencialService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
         }
-        return asistencialRepository.findByEfectorAndActivoTrueAndTG(efectorId, tipoGuardiaEnum);
+
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrueAndTG(efectorId, tipoGuardiaEnum);
+        return asistenciales.stream()
+        .map(this::convertToDto)
+        .collect(Collectors.toList());
+    }
+
+    private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
+        return new AsistencialSummaryDto(
+                asistencial.getId(),
+                asistencial.getNombre(),
+                asistencial.getApellido(),
+                asistencial.getLegajos().stream()
+                        .flatMap(l -> l.getTipoGuardias().stream())
+                        .map(tg -> tg.getNombre().name())
+                        .distinct()
+                        .collect(Collectors.toList()));
     }
 
     public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTipoGuardiaExtraHabilitado(Long idEfector) {
