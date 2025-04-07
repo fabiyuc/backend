@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.caps.CapsNameDto;
+import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.repository.HospitalRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -93,4 +95,11 @@ public class HospitalService {
         return hospital.isPresent() && hospital.get().isActivo();
     }
 
+    public List<ServicioSummaryDto> getActiveServiciosByHospitalId(Long idHospital) {
+        if (!hospitalRepository.existsByIdAndActivoTrue(idHospital)) {
+            throw new EntityNotFoundException("Hospital no encontrado o inactivo con ID: " + idHospital);
+        }
+        
+        return hospitalRepository.findActiveServiciosByHospitalId(idHospital);
+    }
 }

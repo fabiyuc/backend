@@ -28,6 +28,10 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.RegistrosPendientesService;
+
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 @RestController
 @RequestMapping("/asistencial")
@@ -38,6 +42,8 @@ public class AsistencialController {
     AsistencialService asistencialService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    RegistrosPendientesService registrosPendientesService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
@@ -149,17 +155,43 @@ public class AsistencialController {
 
     // Lista asistenciales segun efector y tipoGuardia
     @GetMapping("/listByEfectorAndTG/{idEfector}/{tipoGuardia}")
-    public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndTG(
             @PathVariable Long idEfector,
             @PathVariable String tipoGuardia) {
-        
-        List<Asistencial> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
 
-        /* if (asistenciales.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } */
+        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
+
+        /*
+         * if (asistenciales.isEmpty()) {
+         * return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+         * }
+         */
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
+
+    @GetMapping("/ConPendientes/{idEfector}/{tipoGuardia}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getConPendientes(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("tipoGuardia") String tipoGuardia) {
+
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findConPendientes(idEfector, tipoGuardia);
+
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    @GetMapping("/asistencialesConPendientes/{idEfector}/{mes}/{anio}/{idTipoGuardia}")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesConPendientes(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") @Min(1) @Max(12) int mes,
+            @PathVariable("anio") @Min(1900) @Max(2200) int anio,
+            @PathVariable("idTipoGuardia") Long idTipoGuardia) {
+
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findAsistencialesConPendientes(idEfector, mes, anio, idTipoGuardia);
+
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    
 
     @GetMapping("/listByEfectorAndTipoGuardiaExtraHabilitado/{idEfector}")
     public ResponseEntity<List<AsistencialSummaryDto>> listByEfectorAndTipoGuardiaExtraHabilitado(

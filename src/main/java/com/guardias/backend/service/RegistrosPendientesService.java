@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistrosPendientesRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -73,11 +77,65 @@ public class RegistrosPendientesService {
         }
 
         try {
-            return registrosPendientesRepository.findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
+            return registrosPendientesRepository.findByEfectorMonthYearAndAsistencial(idEfector, mes, anio,
+                    idAsistencial);
         } catch (Exception e) {
             System.err.println("Error en la búsqueda de registros: " + e.getMessage());
             return null;
         }
+    }
+
+    public List<AsistencialSummaryDto> findAsistencialesConPendientes(Long idEfector, int mes, int anio,
+            Long idTipoGuardia) {
+        // Primero obtenemos todos los registros pendientes que cumplen con los
+        // criterios
+        List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository
+                .findByEfectorIdAndFechaMonthAndFechaYear(idEfector, mes, anio);
+
+        // Filtramos por tipo de guardia y mapeamos a asistenciales únicos
+        return registrosPendientes.stream()
+                .flatMap(rp -> rp.getRegistrosActividades().stream())
+                .filter(ra -> ra.getTipoGuardia().getId().equals(idTipoGuardia) && ra.isActivo())
+                .map(RegistroActividad::getAsistencial)
+                .distinct()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<AsistencialSummaryDto> findConPendientes(Long idEfector, String tipoGuardia) {
+
+        // Validamos y convertimos el tipo de guardia
+        TipoGuardiaEnum tipoGuardiaEnum;
+        try {
+            tipoGuardiaEnum = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
+        }
+
+        // Primero obtenemos todos los registros pendientes que cumplen con los
+        // criterios
+        List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository
+                .findByEfectorId(idEfector);
+
+        // Filtramos por tipo de guardia y mapeamos a asistenciales únicos
+        return registrosPendientes.stream()
+                .flatMap(rp -> rp.getRegistrosActividades().stream())
+                .filter(ra -> ra.getTipoGuardia().getNombre().equals(tipoGuardiaEnum) && ra.isActivo())
+                .map(RegistroActividad::getAsistencial)
+                .distinct()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
+        return new AsistencialSummaryDto(
+                asistencial.getId(),
+                asistencial.getNombre(),
+                asistencial.getApellido(),
+                asistencial.getRegistrosActividades().stream()
+                        .map(ra -> ra.getTipoGuardia().getNombre().name())
+                        .distinct()
+                        .collect(Collectors.toList()));
     }
 
     public void save(RegistrosPendientes registrosPendientes) {
