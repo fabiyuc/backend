@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
@@ -165,4 +166,16 @@ public class RegistroActividadController {
     }
 
 
+    @GetMapping("/getRegActivPendiente")
+    public ResponseEntity<RegistroActividadDto> getRegActivPendiente(
+            @RequestParam Long idAsistencial,
+            @RequestParam Long idEfector) {
+        
+        RegistroActividadDto dto = registrosPendientesService
+            .obtenerRegistroPendienteDto(idAsistencial, idEfector);
+        
+        return dto != null 
+            ? ResponseEntity.ok(dto)
+            : ResponseEntity.noContent().build();
+    }
 }

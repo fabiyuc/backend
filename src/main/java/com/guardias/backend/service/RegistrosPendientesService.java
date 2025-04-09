@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
@@ -31,6 +32,8 @@ public class RegistrosPendientesService {
     EfectorService efectorService;
     @Autowired
     AsistencialService asistencialService;
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();
@@ -198,4 +201,58 @@ public class RegistrosPendientesService {
         }
     }
 
+    public RegistroActividadDto obtenerRegistroPendienteDto(Long idAsistencial, Long idEfector) {
+        RegistroActividad registro = obtenerRegistroActividadPendiente(idAsistencial, idEfector);
+        return registro != null ? convertToDto(registro) : null;
+    }
+
+    public RegistroActividad obtenerRegistroActividadPendiente(Long idAsistencial, Long idEfector) {
+        Optional<RegistrosPendientes> registroPendienteOpt = registrosPendientesRepository
+            .findByEfectorIdAndActivoTrue(idEfector);
+        
+        if (registroPendienteOpt.isEmpty()) {
+            return null;
+        }
+        
+        RegistrosPendientes registroPendiente = registroPendienteOpt.get();
+        
+        return registroPendiente.getRegistrosActividades().stream()
+            .filter(ra -> ra.getAsistencial() != null && ra.getAsistencial().getId().equals(idAsistencial))
+            .filter(RegistroActividad::isActivo)
+            .findFirst()
+            .orElse(null);
+    }
+
+    private RegistroActividadDto convertToDto(RegistroActividad registro) {
+        if (registro == null) {
+            return null;
+        }
+
+        RegistroActividadDto dto = new RegistroActividadDto();
+        dto.setFechaIngreso(registro.getFechaIngreso());
+        dto.setFechaEgreso(registro.getFechaEgreso());
+        dto.setHoraIngreso(registro.getHoraIngreso());
+        dto.setHoraEgreso(registro.getHoraEgreso());
+        
+        if (registro.getTipoGuardia() != null) {
+            dto.setIdTipoGuardia(registro.getTipoGuardia().getId());
+        }
+        if (registro.getAsistencial() != null) {
+            dto.setIdAsistencial(registro.getAsistencial().getId());
+        }
+        if (registro.getServicio() != null) {
+            dto.setIdServicio(registro.getServicio().getId());
+        }
+        if (registro.getEfector() != null) {
+            dto.setIdEfector(registro.getEfector().getId());
+        }
+        if (registro.getUsuarioIngreso() != null) {
+            dto.setIdUsuarioIngreso(registro.getUsuarioIngreso().getId());
+        }
+
+        return dto;
+    }
+    
+
+    
 }

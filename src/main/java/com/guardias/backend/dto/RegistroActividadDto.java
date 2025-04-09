@@ -36,7 +36,8 @@ public class RegistroActividadDto {
     private Long idEfector;
     private Long idRegistroMensual;
     private Long idRegistrosPendientes;
-    private Long idUsuario;
+    private Long idUsuarioIngreso;
+    private Long idUsuarioEgreso;
 }
 // dame el json completo
 /*

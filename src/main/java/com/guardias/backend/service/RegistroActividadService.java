@@ -23,6 +23,7 @@ import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.RegistroActividadRepository;
+import com.guardias.backend.repository.RegistrosPendientesRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
 import jakarta.transaction.Transactional;
@@ -167,7 +168,7 @@ public class RegistroActividadService {
                     registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
         }
 
-        registroActividad.setUsuarioIngreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        registroActividad.setUsuarioIngreso(usuarioService.findById(registroActividadDto.getIdUsuarioIngreso()).get());
         registroActividad.setHoraRegistroIngreso(LocalTime.now());
         registroActividad.setFechaRegistroIngreso(LocalDate.now());
         registroActividad.setActivo(true);
@@ -267,7 +268,7 @@ public class RegistroActividadService {
 
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());
-        registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
         SumaHoras horas = calcularHoras(registroActividad);
         sumaHorasService.save(horas);
