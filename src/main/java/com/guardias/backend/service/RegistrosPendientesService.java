@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
+import com.guardias.backend.dto.registroActividad.RegActivRegSalidaDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
@@ -32,8 +33,7 @@ public class RegistrosPendientesService {
     EfectorService efectorService;
     @Autowired
     AsistencialService asistencialService;
-    @Autowired
-    RegistroActividadService registroActividadService;
+    
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();
@@ -201,7 +201,7 @@ public class RegistrosPendientesService {
         }
     }
 
-    public RegistroActividadDto obtenerRegistroPendienteDto(Long idAsistencial, Long idEfector) {
+    public RegActivRegSalidaDto obtenerRegistroPendienteDto(Long idAsistencial, Long idEfector) {
         RegistroActividad registro = obtenerRegistroActividadPendiente(idAsistencial, idEfector);
         return registro != null ? convertToDto(registro) : null;
     }
@@ -223,16 +223,21 @@ public class RegistrosPendientesService {
             .orElse(null);
     }
 
-    private RegistroActividadDto convertToDto(RegistroActividad registro) {
+    private RegActivRegSalidaDto convertToDto(RegistroActividad registro) {
         if (registro == null) {
             return null;
         }
 
-        RegistroActividadDto dto = new RegistroActividadDto();
+        RegActivRegSalidaDto dto = new RegActivRegSalidaDto();
+        dto.setId(registro.getId());
         dto.setFechaIngreso(registro.getFechaIngreso());
-        dto.setFechaEgreso(registro.getFechaEgreso());
-        dto.setHoraIngreso(registro.getHoraIngreso());
-        dto.setHoraEgreso(registro.getHoraEgreso());
+
+        // Convertir LocalTime a String "HH:mm"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        dto.setHoraIngreso(registro.getHoraIngreso().format(formatter));
+    
+
+        //dto.setHoraIngreso(registro.getHoraIngreso());
         
         if (registro.getTipoGuardia() != null) {
             dto.setIdTipoGuardia(registro.getTipoGuardia().getId());
@@ -240,12 +245,15 @@ public class RegistrosPendientesService {
         if (registro.getAsistencial() != null) {
             dto.setIdAsistencial(registro.getAsistencial().getId());
         }
+
         if (registro.getServicio() != null) {
             dto.setIdServicio(registro.getServicio().getId());
         }
+
         if (registro.getEfector() != null) {
             dto.setIdEfector(registro.getEfector().getId());
         }
+
         if (registro.getUsuarioIngreso() != null) {
             dto.setIdUsuarioIngreso(registro.getUsuarioIngreso().getId());
         }

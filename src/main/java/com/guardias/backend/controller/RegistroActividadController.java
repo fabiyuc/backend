@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.dto.registroActividad.RegActivRegSalidaDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.AsistencialService;
@@ -165,13 +165,12 @@ public class RegistroActividadController {
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada FISICAMENTEE"), HttpStatus.OK);
     }
 
+    
 
-    @GetMapping("/getRegActivPendiente")
-    public ResponseEntity<RegistroActividadDto> getRegActivPendiente(
-            @RequestParam Long idAsistencial,
-            @RequestParam Long idEfector) {
+    @GetMapping("/getRegActivPendiente/{idAsistencial}/{idEfector}")
+    public ResponseEntity<RegActivRegSalidaDto> getRegActivPendiente(@PathVariable("idAsistencial") Long idAsistencial, @PathVariable("idEfector") Long idEfector) {
         
-        RegistroActividadDto dto = registrosPendientesService
+        RegActivRegSalidaDto dto = registrosPendientesService
             .obtenerRegistroPendienteDto(idAsistencial, idEfector);
         
         return dto != null 
