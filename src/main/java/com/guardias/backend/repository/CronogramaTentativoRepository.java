@@ -15,46 +15,50 @@ import com.guardias.backend.entity.CronogramaTentativo;
 @Repository
 public interface CronogramaTentativoRepository extends JpaRepository<CronogramaTentativo, Long> {
 
-        Optional<List<CronogramaTentativo>> findByActivoTrue();
+    Optional<List<CronogramaTentativo>> findByActivoTrue();
 
-        @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true")
-        Optional<List<CronogramaTentativo>> findByEfectorId(@Param("efectorId") Long efectorId);
+    @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true")
+    Optional<List<CronogramaTentativo>> findByEfectorId(@Param("efectorId") Long efectorId);
 
-        @Query("SELECT ct FROM cronogramasTentativos ct " +
-                        "JOIN ct.efector e " +
-                        "JOIN e.servicios s " +
-                        "WHERE e.id = :efectorId " +
-                        "AND s.id = :idServicio " +
-                        "AND ct.activo = true")
-        Optional<List<CronogramaTentativo>> findByEfectorAndServicio(@Param("efectorId") Long efectorId,
-                        @Param("idServicio") Long idServicio);
+    @Query("SELECT ct FROM cronogramasTentativos ct " +
+            "WHERE ct.efector.id = :efectorId " +
+            "AND ct.servicio.id = :idServicio " +
+            "AND ct.activo = true")
+    Optional<List<CronogramaTentativo>> findByEfectorAndServicio(@Param("efectorId") Long efectorId,
+            @Param("idServicio") Long idServicio);
 
-        boolean existsById(Long id);
+    boolean existsById(Long id);
 
-        boolean existsByEfectorId(Long efectorId);
+    boolean existsByEfectorId(Long efectorId);
 
-        Optional<CronogramaTentativo> findById(Long id);
+    Optional<CronogramaTentativo> findById(Long id);
 
-        @Query(nativeQuery = true, value = """
-                                                    SELECT CAST(CASE WHEN COUNT(c.id) > 0 THEN 1 ELSE 0 END AS BIT)
-                        FROM cronogramas_tentativos c
-                        WHERE c.id_asistencial = :idAsistencial
-                        AND c.id_efector = :idEfector
-                        AND c.id_tipo_guardia = :idTipoGuardia
-                        AND c.activo = 1
-                        AND (
-                            (CAST(:fechaIngreso AS DATETIME) + CAST(:horaIngreso AS DATETIME) >= CAST(c.fecha_ingreso AS DATETIME) + CAST(c.hora_ingreso AS DATETIME))
-                            AND
-                            (CAST(:fechaEgreso AS DATETIME) + CAST(:horaEgreso AS DATETIME) <= CAST(c.fecha_egreso AS DATETIME) + CAST(c.hora_egreso AS DATETIME))
-                        )
-                                                """)
-        boolean existsByCronogramaTentativo(
-                        @Param("fechaIngreso") LocalDate fechaIngreso,
-                        @Param("fechaEgreso") LocalDate fechaEgreso,
-                        @Param("horaIngreso") LocalTime horaIngreso,
-                        @Param("horaEgreso") LocalTime horaEgreso,
-                        @Param("idAsistencial") Long idAsistencial,
-                        @Param("idEfector") Long idEfector,
-                        @Param("idTipoGuardia") Long idTipoGuardia);
+    @Query(value = """
+            SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
+            FROM cronogramas_tentativos c
+            WHERE c.id_asistencial = :idAsistencial
+              AND c.id_efector = :idEfector
 
+              AND c.activo = 1
+              AND (
+                DATETIMEFROMPARTS(YEAR(c.fecha_ingreso), MONTH(c.fecha_ingreso), DAY(c.fecha_ingreso),
+                                  DATEPART(HOUR, c.hora_ingreso), DATEPART(MINUTE, c.hora_ingreso), 0, 0)
+                <
+                DATETIMEFROMPARTS(YEAR(:fechaEgreso), MONTH(:fechaEgreso), DAY(:fechaEgreso),
+                                  DATEPART(HOUR, :horaEgreso), DATEPART(MINUTE, :horaEgreso), 0, 0)
+                AND
+                DATETIMEFROMPARTS(YEAR(c.fecha_egreso), MONTH(c.fecha_egreso), DAY(c.fecha_egreso),
+                                  DATEPART(HOUR, c.hora_egreso), DATEPART(MINUTE, c.hora_egreso), 0, 0)
+                >
+                DATETIMEFROMPARTS(YEAR(:fechaIngreso), MONTH(:fechaIngreso), DAY(:fechaIngreso),
+                                  DATEPART(HOUR, :horaIngreso), DATEPART(MINUTE, :horaIngreso), 0, 0)
+              )
+            """, nativeQuery = true)
+    boolean existsByCronogramaTentativo(
+            @Param("fechaIngreso") LocalDate fechaIngreso,
+            @Param("fechaEgreso") LocalDate fechaEgreso,
+            @Param("horaIngreso") LocalTime horaIngreso,
+            @Param("horaEgreso") LocalTime horaEgreso,
+            @Param("idAsistencial") Long idAsistencial,
+            @Param("idEfector") Long idEfector);
 }

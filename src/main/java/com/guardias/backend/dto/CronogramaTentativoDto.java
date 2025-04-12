@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CronogramaTentativoDto {
-    
+
     @NotBlank
     private LocalDate fechaIngreso;
     @NotBlank
@@ -23,7 +23,7 @@ public class CronogramaTentativoDto {
     private LocalTime horaEgreso;
 
     private Boolean activo;
-    
+
     private Boolean aceptado;
 
     @NotBlank
@@ -31,7 +31,10 @@ public class CronogramaTentativoDto {
 
     @NotBlank
     private Long idAsistencial;
-    
+
+    @NotBlank
+    private Long idServicio;
+
     @NotBlank
     private Long idEfector;
 

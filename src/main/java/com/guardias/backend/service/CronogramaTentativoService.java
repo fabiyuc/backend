@@ -30,6 +30,8 @@ public class CronogramaTentativoService {
     @Autowired
     AsistencialService asistencialService;
     @Autowired
+    ServicioService servicioService;
+    @Autowired
     EfectorService efectorService;
     @Autowired
     AsistencialRepository asistencialRepository;
@@ -84,6 +86,9 @@ public class CronogramaTentativoService {
         if (cronogramaTentativoDto.getIdAsistencial() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el asistencial"), HttpStatus.BAD_REQUEST);
 
+        if (cronogramaTentativoDto.getIdServicio() == null)
+            return new ResponseEntity<>(new Mensaje("indicar el servicio"), HttpStatus.BAD_REQUEST);
+
         if (cronogramaTentativoDto.getIdEfector() == null)
             return new ResponseEntity<>(new Mensaje("indicar el efector"), HttpStatus.BAD_REQUEST);
 
@@ -122,6 +127,13 @@ public class CronogramaTentativoService {
                                 cronogramaTentativoDto.getIdAsistencial()))) {
             cronogramaTentativo
                     .setAsistencial(asistencialService.findById(cronogramaTentativoDto.getIdAsistencial()).get());
+        }
+
+        if (cronogramaTentativo.getServicio() == null ||
+                (cronogramaTentativoDto.getIdServicio() != null &&
+                        !Objects.equals(cronogramaTentativo.getServicio().getId(),
+                                cronogramaTentativoDto.getIdServicio()))) {
+            cronogramaTentativo.setServicio(servicioService.findById(cronogramaTentativoDto.getIdServicio()).get());
         }
 
         if (cronogramaTentativo.getEfector() == null ||
@@ -169,8 +181,7 @@ public class CronogramaTentativoService {
         // Validar campos obligatorios
         if (dto.getFechaIngreso() == null || dto.getFechaEgreso() == null ||
                 dto.getHoraIngreso() == null || dto.getHoraEgreso() == null ||
-                dto.getIdAsistencial() == null || dto.getIdEfector() == null ||
-                dto.getIdTipoGuardia() == null) {
+                dto.getIdAsistencial() == null || dto.getIdEfector() == null) {
             throw new IllegalArgumentException("Los campos obligatorios no pueden ser nulos.");
         }
 
@@ -188,7 +199,7 @@ public class CronogramaTentativoService {
         // proporcionados
         return cronogramaTentativoRepository.existsByCronogramaTentativo(
                 dto.getFechaIngreso(), dto.getFechaEgreso(), dto.getHoraIngreso(), dto.getHoraEgreso(),
-                dto.getIdAsistencial(), dto.getIdEfector(), dto.getIdTipoGuardia());
+                dto.getIdAsistencial(), dto.getIdEfector());
     }
 
 }
