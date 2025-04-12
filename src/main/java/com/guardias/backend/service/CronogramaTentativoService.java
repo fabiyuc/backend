@@ -202,4 +202,20 @@ public class CronogramaTentativoService {
                 dto.getIdAsistencial(), dto.getIdEfector());
     }
 
+    public List<Long> efectoresConCronogramaSuperpuesto(CronogramaTentativoDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo.");
+        }
+
+        if (dto.getFechaIngreso() == null || dto.getFechaEgreso() == null ||
+                dto.getHoraIngreso() == null || dto.getHoraEgreso() == null ||
+                dto.getIdAsistencial() == null || dto.getIdEfector() == null) {
+            throw new IllegalArgumentException("Los campos obligatorios no pueden ser nulos.");
+        }
+
+        return cronogramaTentativoRepository.findEfectoresConCronogramaSuperpuesto(
+                dto.getFechaIngreso(), dto.getFechaEgreso(),
+                dto.getHoraIngreso(), dto.getHoraEgreso(),
+                dto.getIdAsistencial());
+    }
 }

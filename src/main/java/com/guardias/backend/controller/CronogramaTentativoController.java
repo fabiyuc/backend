@@ -127,6 +127,12 @@ public class CronogramaTentativoController {
         return cronogramaTentativoService.existCronograma(dto);
     }
 
+    @PostMapping("/existCronogramaConEfector")
+    public ResponseEntity<List<Long>> efectoresConCronograma(@RequestBody CronogramaTentativoDto dto) {
+        List<Long> efectores = cronogramaTentativoService.efectoresConCronogramaSuperpuesto(dto);
+        return ResponseEntity.ok(efectores);
+    }
+
     /*
      * // busca cronograma tentativo para comparar con registro de actividad
      * 
