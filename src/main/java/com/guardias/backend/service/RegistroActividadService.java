@@ -167,7 +167,7 @@ public class RegistroActividadService {
                     registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
         }
 
-        registroActividad.setUsuarioIngreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        registroActividad.setUsuarioIngreso(usuarioService.findById(registroActividadDto.getIdUsuarioIngreso()).get());
         registroActividad.setHoraRegistroIngreso(LocalTime.now());
         registroActividad.setFechaRegistroIngreso(LocalDate.now());
         registroActividad.setActivo(true);
@@ -267,7 +267,8 @@ public class RegistroActividadService {
 
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());
-        registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuario()).get());
+        registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
+        registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
         SumaHoras horas = calcularHoras(registroActividad);
         sumaHorasService.save(horas);

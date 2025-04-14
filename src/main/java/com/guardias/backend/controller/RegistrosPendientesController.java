@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.service.EfectorService;
@@ -117,5 +120,13 @@ public class RegistrosPendientesController {
         }
     }
 
+   /*  @GetMapping("/detailByAsistencial/{dni}")
+    public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
+        if (!asistencialService.existsByDniAndActivoTrue(dni))
+            return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
+        Asistencial asistencial = asistencialService.findByDniAndActivoTrue(dni).get();
+        return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
+
+    } */
     
 }

@@ -191,8 +191,6 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
-    
-
     @GetMapping("/listByEfectorAndTipoGuardiaExtraHabilitado/{idEfector}")
     public ResponseEntity<List<AsistencialSummaryDto>> listByEfectorAndTipoGuardiaExtraHabilitado(
             @PathVariable Long idEfector) {
