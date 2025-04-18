@@ -88,6 +88,20 @@ public class AsistencialController {
                 HttpStatus.OK);
     }
 
+    // Lista de asistenciales que son autoridades, con sus datos personales
+    @GetMapping("/listAutoridades")
+    public ResponseEntity<List<AsistencialListDto>> listAutoridades() {
+        List<AsistencialListDto> autoridades = asistencialService.getAsistencialListAutoridades();
+        return ResponseEntity.ok(autoridades);
+    }
+
+    // Lista de asistenciales que son autoridades regionales
+    @GetMapping("/listAutoridadesRegionales")
+    public ResponseEntity<List<AsistencialListDto>> listAutoridadesRegionales() {
+        List<AsistencialListDto> autoridades = asistencialService.getAsistencialListAutoridadesRegionales();
+        return ResponseEntity.ok(autoridades);
+    }
+
     // lista asistenciales habilitados para crear legajo segun tipoGuardia
     @GetMapping("/listForLegajosDtos")
     public ResponseEntity<List<AsistencialListForLegajosDto>> listForLegajosDtos() {
@@ -159,7 +173,8 @@ public class AsistencialController {
             @PathVariable Long idEfector,
             @PathVariable String tipoGuardia) {
 
-        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
+        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector,
+                tipoGuardia);
 
         /*
          * if (asistenciales.isEmpty()) {
@@ -174,7 +189,8 @@ public class AsistencialController {
             @PathVariable("idEfector") Long idEfector,
             @PathVariable("tipoGuardia") String tipoGuardia) {
 
-        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findConPendientes(idEfector, tipoGuardia);
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findConPendientes(idEfector,
+                tipoGuardia);
 
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
@@ -186,7 +202,8 @@ public class AsistencialController {
             @PathVariable("anio") @Min(1900) @Max(2200) int anio,
             @PathVariable("idTipoGuardia") Long idTipoGuardia) {
 
-        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findAsistencialesConPendientes(idEfector, mes, anio, idTipoGuardia);
+        List<AsistencialSummaryDto> asistenciales = registrosPendientesService.findAsistencialesConPendientes(idEfector,
+                mes, anio, idTipoGuardia);
 
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }

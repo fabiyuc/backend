@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,9 +71,12 @@ public class NoAsistencialService {
                 && noAsistencialRepository.findById(id).get().isActivo());
     }
 
-    /* public boolean activoDni(int dni) {
-        return (noAsistencialRepository.existsByDni(dni) && noAsistencialRepository.findByDni(dni).get().isActivo());
-    } */
+    /*
+     * public boolean activoDni(int dni) {
+     * return (noAsistencialRepository.existsByDni(dni) &&
+     * noAsistencialRepository.findByDni(dni).get().isActivo());
+     * }
+     */
 
     public List<NoAsistencialListDto> getNoAsistencialList() {
         List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
@@ -125,6 +129,49 @@ public class NoAsistencialService {
     public List<NoAsistencialSummaryDto> getNoAsistencialesByEfector(Long efectorId) {
         List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return filterNoAsistencialesByEfector(noAsistenciales);
+    }
+
+    public List<NoAsistencialListDto> getAsistencialListAutoridades() {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+
+        return noAsistenciales.stream()
+                .filter(noAsistencial -> noAsistencial.getAutoridades() != null
+                        && !noAsistencial.getAutoridades().isEmpty())
+                .map(noAsistencial -> new NoAsistencialListDto(
+                        noAsistencial.getId(),
+                        noAsistencial.getNombre(),
+                        noAsistencial.getApellido(),
+                        noAsistencial.getDni(),
+                        noAsistencial.getCuil(),
+                        noAsistencial.getFechaNacimiento(),
+                        noAsistencial.getSexo(),
+                        noAsistencial.getTelefono(),
+                        noAsistencial.getEmail(),
+                        noAsistencial.getDomicilio()))
+                .collect(Collectors.toList());
+    }
+
+    public List<NoAsistencialListDto> getAsistencialListAutoridadesRegionales() {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+
+        return noAsistenciales.stream()
+                .filter(noAsistencial -> noAsistencial.getAutoridades() != null
+                        && !noAsistencial.getAutoridades().isEmpty())
+                .filter(noAsistencial -> noAsistencial.getLegajos().stream()
+                        .anyMatch(legajo -> legajo.getFechaFinal() == null &&
+                                Boolean.TRUE.equals(legajo.getEsRegional())))
+                .map(noAsistencial -> new NoAsistencialListDto(
+                        noAsistencial.getId(),
+                        noAsistencial.getNombre(),
+                        noAsistencial.getApellido(),
+                        noAsistencial.getDni(),
+                        noAsistencial.getCuil(),
+                        noAsistencial.getFechaNacimiento(),
+                        noAsistencial.getSexo(),
+                        noAsistencial.getTelefono(),
+                        noAsistencial.getEmail(),
+                        noAsistencial.getDomicilio()))
+                .collect(Collectors.toList());
     }
 
 }

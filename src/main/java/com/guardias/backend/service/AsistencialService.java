@@ -266,20 +266,21 @@ public class AsistencialService {
     }
 
     public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTG(Long efectorId, String tipoGuardia) {
-        
+
         // Validamos y convertimos el tipo de guardia
         TipoGuardiaEnum tipoGuardiaEnum;
-        
+
         try {
             tipoGuardiaEnum = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
         }
 
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrueAndTG(efectorId, tipoGuardiaEnum);
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrueAndTG(efectorId,
+                tipoGuardiaEnum);
         return asistenciales.stream()
-        .map(this::convertToDto)
-        .collect(Collectors.toList());
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
@@ -322,17 +323,21 @@ public class AsistencialService {
                 .collect(Collectors.toList());
     }
 
-
-    /* public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long efectorId) {
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
-        return getAsistencialesByTipoGuardiaCargo(asistenciales);
-    }
-
-    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndAgrupacion(Long efectorId) {
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
-        return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
-    }
-*/
+    /*
+     * public List<AsistencialSummaryDto> getAsistencialesByEfectorAndCargo(Long
+     * efectorId) {
+     * List<Asistencial> asistenciales =
+     * asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+     * return getAsistencialesByTipoGuardiaCargo(asistenciales);
+     * }
+     * 
+     * public List<AsistencialSummaryDto>
+     * getAsistencialesByEfectorAndAgrupacion(Long efectorId) {
+     * List<Asistencial> asistenciales =
+     * asistencialRepository.findByEfectorAndActivoTrue(efectorId);
+     * return getAsistencialesByTipoGuardiaAgrupacion(asistenciales);
+     * }
+     */
     public List<AsistencialEfectorDto> filterAsistencialesByEfector(List<Asistencial> asistenciales) {
         List<AsistencialEfectorDto> EfectorList = new ArrayList<>();
 
@@ -363,7 +368,6 @@ public class AsistencialService {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return filterAsistencialesByEfector(asistenciales);
     }
-
 
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION
     public List<AsistencialSummaryDto> getAsistencialesByUdoAndTipoGuardia(Long udoId) {
@@ -397,6 +401,67 @@ public class AsistencialService {
                 .filter(Legajo::isActivo) // Solo consideramos el legajo activo
                 .flatMap(legajo -> legajo.getEfectores().stream())
                 .anyMatch(efector -> efector.getId().equals(idEfector));
+    }
+
+    public List<AsistencialListDto> getAsistencialListAutoridades() {
+        List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+
+        return asistenciales.stream()
+                .filter(asistencial -> asistencial.getAutoridades() != null && !asistencial.getAutoridades().isEmpty())
+                .map(asistencial -> {
+                    List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                            .filter(legajo -> legajo.getFechaFinal() == null)
+                            .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                            .map(tg -> tg.getNombre().name())
+                            .collect(Collectors.toList());
+
+                    return new AsistencialListDto(
+                            asistencial.getId(),
+                            asistencial.getNombre(),
+                            asistencial.getApellido(),
+                            asistencial.getDni(),
+                            asistencial.getCuil(),
+                            asistencial.getFechaNacimiento(),
+                            asistencial.getSexo(),
+                            asistencial.getTelefono(),
+                            asistencial.getEmail(),
+                            asistencial.getDomicilio(),
+                            nombresTiposGuardias);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<AsistencialListDto> getAsistencialListAutoridadesRegionales() {
+        List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+
+        return asistenciales.stream()
+                // Filtra los que son autoridades
+                .filter(asistencial -> asistencial.getAutoridades() != null && !asistencial.getAutoridades().isEmpty())
+                // Filtra los que tienen al menos un legajo activo y regional
+                .filter(asistencial -> asistencial.getLegajos().stream()
+                        .anyMatch(legajo -> legajo.getFechaFinal() == null &&
+                                Boolean.TRUE.equals(legajo.getEsRegional())))
+                .map(asistencial -> {
+                    List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                            .filter(legajo -> legajo.getFechaFinal() == null)
+                            .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                            .map(tg -> tg.getNombre().name())
+                            .collect(Collectors.toList());
+
+                    return new AsistencialListDto(
+                            asistencial.getId(),
+                            asistencial.getNombre(),
+                            asistencial.getApellido(),
+                            asistencial.getDni(),
+                            asistencial.getCuil(),
+                            asistencial.getFechaNacimiento(),
+                            asistencial.getSexo(),
+                            asistencial.getTelefono(),
+                            asistencial.getEmail(),
+                            asistencial.getDomicilio(),
+                            nombresTiposGuardias);
+                })
+                .collect(Collectors.toList());
     }
 
 }

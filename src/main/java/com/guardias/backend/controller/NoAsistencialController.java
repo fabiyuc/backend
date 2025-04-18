@@ -51,6 +51,20 @@ public class NoAsistencialController {
         return new ResponseEntity<List<NoAsistencialListDto>>(noAsistencialListDtos, HttpStatus.OK);
     }
 
+    // Lista de noAsistenciales que son autoridades, con sus datos personales
+    @GetMapping("/listAutoridades")
+    public ResponseEntity<List<NoAsistencialListDto>> listAutoridades() {
+        List<NoAsistencialListDto> autoridades = noAsistencialService.getAsistencialListAutoridades();
+        return ResponseEntity.ok(autoridades);
+    }
+
+    // Lista de no asistenciales que son autoridades regionales
+    @GetMapping("/listAutoridadesRegionales")
+    public ResponseEntity<List<NoAsistencialListDto>> listAutoridadesRegionales() {
+        List<NoAsistencialListDto> autoridades = noAsistencialService.getAsistencialListAutoridadesRegionales();
+        return ResponseEntity.ok(autoridades);
+    }
+
     @GetMapping("/listAll")
     public ResponseEntity<List<NoAsistencial>> listAll() {
         List<NoAsistencial> list = noAsistencialService.findAll();
