@@ -16,6 +16,7 @@ import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegSalidaDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -33,7 +34,6 @@ public class RegistrosPendientesService {
     EfectorService efectorService;
     @Autowired
     AsistencialService asistencialService;
-    
 
     public List<RegistrosPendientes> findByActivo() {
         return registrosPendientesRepository.findByActivoTrue();
@@ -131,11 +131,23 @@ public class RegistrosPendientesService {
     }
 
     private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
+        // Obtiene el legajo activo
+        Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+                .filter(legajo -> legajo.getFechaFinal() == null)
+                .findFirst();
+
+        // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+        // profesión)
+        String profesion = legajoActivo
+                .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                .orElse(null);
+
         return new AsistencialSummaryDto(
                 asistencial.getId(),
                 asistencial.getNombre(),
                 asistencial.getApellido(),
                 asistencial.getCuil(),
+                profesion,
                 asistencial.getRegistrosActividades().stream()
                         .map(ra -> ra.getTipoGuardia().getNombre().name())
                         .distinct()
@@ -209,19 +221,19 @@ public class RegistrosPendientesService {
 
     public RegistroActividad obtenerRegistroActividadPendiente(Long idAsistencial, Long idEfector) {
         Optional<RegistrosPendientes> registroPendienteOpt = registrosPendientesRepository
-            .findByEfectorIdAndActivoTrue(idEfector);
-        
+                .findByEfectorIdAndActivoTrue(idEfector);
+
         if (registroPendienteOpt.isEmpty()) {
             return null;
         }
-        
+
         RegistrosPendientes registroPendiente = registroPendienteOpt.get();
-        
+
         return registroPendiente.getRegistrosActividades().stream()
-            .filter(ra -> ra.getAsistencial() != null && ra.getAsistencial().getId().equals(idAsistencial))
-            .filter(RegistroActividad::isActivo)
-            .findFirst()
-            .orElse(null);
+                .filter(ra -> ra.getAsistencial() != null && ra.getAsistencial().getId().equals(idAsistencial))
+                .filter(RegistroActividad::isActivo)
+                .findFirst()
+                .orElse(null);
     }
 
     private RegActivRegSalidaDto convertToDto(RegistroActividad registro) {
@@ -236,10 +248,9 @@ public class RegistrosPendientesService {
         // Convertir LocalTime a String "HH:mm"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         dto.setHoraIngreso(registro.getHoraIngreso().format(formatter));
-    
 
-        //dto.setHoraIngreso(registro.getHoraIngreso());
-        
+        // dto.setHoraIngreso(registro.getHoraIngreso());
+
         if (registro.getTipoGuardia() != null) {
             dto.setIdTipoGuardia(registro.getTipoGuardia().getId());
         }
@@ -261,7 +272,5 @@ public class RegistrosPendientesService {
 
         return dto;
     }
-    
 
-    
 }

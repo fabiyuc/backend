@@ -17,6 +17,7 @@ import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGuardia;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.enums.LocationEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
@@ -248,6 +249,17 @@ public class HabilitacionesGuardiasService {
                 tipoGuardiaEnum);
         List<AsistencialSummaryDto> dtoList = new ArrayList<>();
         for (Asistencial asistencial : asistenciales) {
+            // Obtiene el legajo activo
+            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+                    .filter(legajo -> legajo.getFechaFinal() == null)
+                    .findFirst();
+
+            // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+            // profesión)
+            String profesion = legajoActivo
+                    .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                    .orElse(null); 
+
             // Mapea los nombres de los tipos de guardia
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                     .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
@@ -261,6 +273,7 @@ public class HabilitacionesGuardiasService {
                     asistencial.getNombre(),
                     asistencial.getApellido(),
                     asistencial.getCuil(),
+                    profesion,
                     nombresTiposGuardias);
             dtoList.add(dto);
         }

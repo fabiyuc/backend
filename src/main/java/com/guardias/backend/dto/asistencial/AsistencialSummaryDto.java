@@ -15,6 +15,8 @@ public class AsistencialSummaryDto {
     private String nombre;
     private String apellido;
     private String cuil;
+    private String profesion;
     private List<String> nombresTiposGuardias;
+    
 
 }

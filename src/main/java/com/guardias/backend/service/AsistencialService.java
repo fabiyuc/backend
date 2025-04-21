@@ -137,6 +137,16 @@ public class AsistencialService {
         List<AsistencialSummaryDto> summaryDtoList = new ArrayList<>();
         // Recorre la lista de Asistenciales
         for (Asistencial asistencial : asistenciales) {
+            // Obtiene el legajo activo
+            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+                    .filter(legajo -> legajo.getFechaFinal() == null)
+                    .findFirst();
+
+            // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+            // profesión)
+            String profesion = legajoActivo
+                    .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                    .orElse(null); 
             // Mapea los nombres de los tipos de guardia a una lista de strings
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                     .filter(legajo -> legajo.getFechaFinal() == null) // Legajos activos
@@ -150,6 +160,7 @@ public class AsistencialService {
                     asistencial.getNombre(),
                     asistencial.getApellido(),
                     asistencial.getCuil(),
+                    profesion,
                     nombresTiposGuardias);
             // Agrega el DTO a la lista
             summaryDtoList.add(dto);
@@ -247,6 +258,16 @@ public class AsistencialService {
                             tipoGuardia.getNombre().name().equals("AGRUPACION"));
 
             if (hasCargoOrAgrupacion) {
+                // Obtiene el legajo activo
+            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+            .filter(legajo -> legajo.getFechaFinal() == null)
+            .findFirst();
+
+    // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+    // profesión)
+    String profesion = legajoActivo
+            .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+            .orElse(null); 
                 // Mapea los nombres de los tipos de guardia
                 List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                         .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
@@ -260,6 +281,7 @@ public class AsistencialService {
                         asistencial.getNombre(),
                         asistencial.getApellido(),
                         asistencial.getCuil(),
+                        profesion,
                         nombresTiposGuardias);
                 dtoList.add(dto);
             }
@@ -286,11 +308,22 @@ public class AsistencialService {
     }
 
     private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
+        // Obtiene el legajo activo
+        Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+        .filter(legajo -> legajo.getFechaFinal() == null)
+        .findFirst();
+
+// Obtiene el nombre de la profesión (o null si no hay legajo activo o
+// profesión)
+String profesion = legajoActivo
+        .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+        .orElse(null); 
         return new AsistencialSummaryDto(
                 asistencial.getId(),
                 asistencial.getNombre(),
                 asistencial.getApellido(),
                 asistencial.getCuil(),
+                profesion,
                 asistencial.getLegajos().stream()
                         .flatMap(l -> l.getTipoGuardias().stream())
                         .map(tg -> tg.getNombre().name())
@@ -314,16 +347,30 @@ public class AsistencialService {
                                 .anyMatch(efector -> efector.getId().equals(idEfector)))) // Verifica relación con
                                                                                           // efectores
                 // Mapea los datos al DTO
-                .map(asistencial -> new AsistencialSummaryDto(
-                        asistencial.getId(),
-                        asistencial.getNombre(),
-                        asistencial.getApellido(),
-                        asistencial.getCuil(),
-                        asistencial.getLegajos().stream()
-                                .flatMap(legajo -> legajo.getTipoGuardias().stream())
-                                .map(tipoGuardia -> tipoGuardia.getNombre().name())
-                                .distinct()
-                                .collect(Collectors.toList())))
+                .map(asistencial -> {
+                    // Obtiene el legajo activo
+            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+            .filter(legajo -> legajo.getFechaFinal() == null)
+            .findFirst();
+
+    // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+    // profesión)
+    String profesion = legajoActivo
+            .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+            .orElse(null); 
+
+                    return new AsistencialSummaryDto(
+                            asistencial.getId(),
+                            asistencial.getNombre(),
+                            asistencial.getApellido(),
+                            asistencial.getCuil(),
+                            profesion, // Nuevo campo
+                            asistencial.getLegajos().stream()
+                                    .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                                    .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                                    .distinct()
+                                    .collect(Collectors.toList()));
+                })
                 .collect(Collectors.toList());
     }
 
