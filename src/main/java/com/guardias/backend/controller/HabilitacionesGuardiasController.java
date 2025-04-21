@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.service.HabilitacionesGuardiasService;
@@ -57,10 +58,10 @@ public class HabilitacionesGuardiasController {
 
     // habilitaciones de guardias según el tipo de guardia EXTRA O CF
     @GetMapping("/listAsistencialesByEfectorAndTG/{idEfector}/{tipoGuardia}")
-    public ResponseEntity<List<Asistencial>> getAsistencialesByEfectorAndTG(
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesByEfectorAndTG(
             @PathVariable Long idEfector, @PathVariable String tipoGuardia) {
 
-        List<Asistencial> habilitaciones = habilitacionesGuardiasService
+        List<AsistencialSummaryDto> habilitaciones = habilitacionesGuardiasService
                 .getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
 
         if (habilitaciones.isEmpty()) {
