@@ -135,6 +135,7 @@ public class RegistrosPendientesService {
                 asistencial.getId(),
                 asistencial.getNombre(),
                 asistencial.getApellido(),
+                asistencial.getCuil(),
                 asistencial.getRegistrosActividades().stream()
                         .map(ra -> ra.getTipoGuardia().getNombre().name())
                         .distinct()

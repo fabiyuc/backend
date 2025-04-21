@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGuardia;
@@ -229,7 +231,7 @@ public class HabilitacionesGuardiasService {
         return habilitacionesGuardiasRepository.findHabilitacionesGuardiasByEfectorAndAsistencial(idEfector);
     }
 
-    public List<Asistencial> getAsistencialesByEfectorAndTG(Long idEfector, String tipoGuardia) {
+    public List<AsistencialSummaryDto> getAsistencialesByEfectorAndTG(Long idEfector, String tipoGuardia) {
 
         TipoGuardiaEnum tipoGuardiaEnum;
 
@@ -241,6 +243,28 @@ public class HabilitacionesGuardiasService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("El tipo de guardia proporcionado no es válido: " + tipoGuardia);
         }
-        return habilitacionesGuardiasRepository.findByEfectorAndActivoTrueAndTG(idEfector, tipoGuardiaEnum);
+
+        List<Asistencial> asistenciales = habilitacionesGuardiasRepository.findByEfectorAndActivoTrueAndTG(idEfector,
+                tipoGuardiaEnum);
+        List<AsistencialSummaryDto> dtoList = new ArrayList<>();
+        for (Asistencial asistencial : asistenciales) {
+            // Mapea los nombres de los tipos de guardia
+            List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                    .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                    .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                    .map(tguardia -> tguardia.getNombre().name())
+                    .collect(Collectors.toList());
+
+            // Crea el DTO
+            AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getCuil(),
+                    nombresTiposGuardias);
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 }
