@@ -57,8 +57,8 @@ public class Legajo {
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_revista")
-  @JsonIgnoreProperties({ "hibernateLazyInitializer",
-      "handler", "legajos" })
+  @JsonIgnoreProperties({ "hibernateLazyInitializer", "tipoRevista", "categoria",
+      "adicional", "agrupacion", "handler", "legajos" })
   private Revista revista;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -67,7 +67,8 @@ public class Legajo {
       "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
       "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
       "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-      "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "feriados" ,"cronogramasTentativos"})
+      "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales",
+      "feriados", "cronogramasTentativos" })
   private Efector udo;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -75,7 +76,7 @@ public class Legajo {
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "fechaNacimiento", "sexo", "telefono",
       "email", "domicilio", "esAsistencial", "activo", "legajos", "novedadesPersonales", "suplentes",
       "distribucionesHorarias", "autoridades", "descripcion",
-      "registrosMensuales", "habilitacionesGenerales" ,"usuarios" })
+      "registrosMensuales", "habilitacionesGenerales", "usuarios" })
   private Person persona;
 
   /* @Enumerated(EnumType.STRING) */
@@ -93,7 +94,8 @@ public class Legajo {
       "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
       "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
       "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
-      "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados", "valoresGuardiaBase" })
+      "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales",
+      "cronogramasTentativos", "feriados", "valoresGuardiaBase" })
   private List<Efector> efectores = new ArrayList<>();
 
   @ManyToMany(fetch = FetchType.LAZY)
@@ -111,7 +113,7 @@ public class Legajo {
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "legajo_tipoguardia", joinColumns = @JoinColumn(name = "id_legajo"), inverseJoinColumns = @JoinColumn(name = "id_tipoGuardia"))
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "activo", "asistenciales",
-      "registrosActividades", "legajos", "cronogramasTentativos"})
+      "registrosActividades", "legajos", "cronogramasTentativos" })
   private List<TipoGuardia> tipoGuardias = new ArrayList<TipoGuardia>();
 
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
