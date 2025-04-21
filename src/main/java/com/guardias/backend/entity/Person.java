@@ -58,11 +58,16 @@ public abstract class Person {
     private boolean activo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "matriculaNacional", "matriculaProvincial",  "suspencion", "persona", "revista", "udo", "profesion", "motivoBaja", "especialidades", "profesion", "cargo", "region", "nroresolucion", "fechaResolucion", "nrodecreto", "fechaBajaSistema" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "matriculaNacional",
+            "matriculaProvincial", "suspencion", "persona", "udo", "profesion", "motivoBaja",
+            "especialidades", "profesion", "cargo", "region", "nroresolucion", "fechaResolucion", "nrodecreto",
+            "fechaBajaSistema" })
     private List<Legajo> legajos = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "puedeRealizarGuardia", "cobraSueldo", "necesitaReemplazo", "persona", "suplente", "ley", "articulo", "inciso", "activo", "fechaInicio", "fechaFinal", "tipoLicencia" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "puedeRealizarGuardia", "cobraSueldo",
+            "necesitaReemplazo", "persona", "suplente", "ley", "articulo", "inciso", "activo", "fechaInicio",
+            "fechaFinal", "tipoLicencia" })
     private List<NovedadPersonal> novedadesPersonales = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "suplente", cascade = CascadeType.ALL)
@@ -73,9 +78,9 @@ public abstract class Person {
     private List<NovedadPersonal> suplentes = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","dia", "fechaInicio", "fechaFinalizacion",
-    "horaIngreso", "cantidadHoras", "efector", "persona", "lugar", "especialidad", "cantidadTurnos",
-    "destino", "descripcion", "servicio", "tipoConsultorio", "activo", "tipoGuardia"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dia", "fechaInicio", "fechaFinalizacion",
+            "horaIngreso", "cantidadHoras", "efector", "persona", "lugar", "especialidad", "cantidadTurnos",
+            "destino", "descripcion", "servicio", "tipoConsultorio", "activo", "tipoGuardia" })
     private List<DistribucionHoraria> distribucionesHorarias = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
@@ -84,20 +89,27 @@ public abstract class Person {
     private List<Autoridad> autoridades = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "asistencial", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "mes", "fechaEgreso", "anio","totalHoras", "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial", "activo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "mes", "fechaEgreso", "anio", "totalHoras",
+            "registroActividad", "idAsistencial", "efector", "ddjj", "sumaHoras", "asistencial", "activo" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person", "registrosIngresos", "registrosEgresos", "nombreUsuario", "password", "activo", "roles" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "person", "registrosIngresos", "registrosEgresos",
+            "nombreUsuario", "password", "activo", "roles" })
     private List<Usuario> usuarios = new ArrayList<>();
 
-/* 
+    /*
+     * @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade =
+     * CascadeType.ALL)
+     * 
+     * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona",
+     * "efectores" })
+     * private List<HabilitacionesGuardia> habilitacionesGuardias = new
+     * ArrayList<>();
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona", "efectores" })
-    private List<HabilitacionesGuardia> habilitacionesGuardias = new ArrayList<>();
- */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona", "habilitacionesGenerales", "efectores", "activo", "tipoEfectorEx" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "persona", "habilitacionesGenerales", "efectores",
+            "activo", "tipoEfectorEx" })
     private List<HabilitacionesGenerales> habilitacionesGenerales = new ArrayList<>();
 
     @Override
