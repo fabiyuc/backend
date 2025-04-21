@@ -260,6 +260,7 @@ public class HabilitacionesGuardiasService {
                     asistencial.getId(),
                     asistencial.getNombre(),
                     asistencial.getApellido(),
+                    asistencial.getCuil(),
                     nombresTiposGuardias);
             dtoList.add(dto);
         }

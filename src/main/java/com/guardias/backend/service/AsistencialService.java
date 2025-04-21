@@ -149,6 +149,7 @@ public class AsistencialService {
                     asistencial.getId(),
                     asistencial.getNombre(),
                     asistencial.getApellido(),
+                    asistencial.getCuil(),
                     nombresTiposGuardias);
             // Agrega el DTO a la lista
             summaryDtoList.add(dto);
@@ -258,6 +259,7 @@ public class AsistencialService {
                         asistencial.getId(),
                         asistencial.getNombre(),
                         asistencial.getApellido(),
+                        asistencial.getCuil(),
                         nombresTiposGuardias);
                 dtoList.add(dto);
             }
@@ -288,6 +290,7 @@ public class AsistencialService {
                 asistencial.getId(),
                 asistencial.getNombre(),
                 asistencial.getApellido(),
+                asistencial.getCuil(),
                 asistencial.getLegajos().stream()
                         .flatMap(l -> l.getTipoGuardias().stream())
                         .map(tg -> tg.getNombre().name())
@@ -315,6 +318,7 @@ public class AsistencialService {
                         asistencial.getId(),
                         asistencial.getNombre(),
                         asistencial.getApellido(),
+                        asistencial.getCuil(),
                         asistencial.getLegajos().stream()
                                 .flatMap(legajo -> legajo.getTipoGuardias().stream())
                                 .map(tipoGuardia -> tipoGuardia.getNombre().name())
