@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -258,7 +259,7 @@ public class HabilitacionesGuardiasService {
             // profesión)
             String profesion = legajoActivo
                     .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
-                    .orElse(null); 
+                    .orElse(null);
 
             // Mapea los nombres de los tipos de guardia
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
@@ -280,4 +281,40 @@ public class HabilitacionesGuardiasService {
 
         return dtoList;
     }
+
+    public List<AsistencialDto> getAsistencialesWithCfAndExtraByEfector(Long idEfector) {
+        List<Asistencial> asistenciales = habilitacionesGuardiasRepository
+                .findAsistencialesWithCfAndExtraByEfector(idEfector);
+
+        return asistenciales.stream().map(asistencial -> {
+            AsistencialDto dto = new AsistencialDto();
+
+            dto.setId(asistencial.getId());
+            dto.setNombre(asistencial.getNombre());
+            dto.setApellido(asistencial.getApellido());
+            dto.setCuil(asistencial.getCuil());
+            dto.setEsAsistencial(true);
+            dto.setActivo(true); // o según lo que determine tu lógica
+
+            // Legajos activos
+            List<Long> legajoIds = asistencial.getLegajos().stream()
+                    .filter(l -> l.getFechaFinal() == null)
+                    .map(Legajo::getId)
+                    .collect(Collectors.toList());
+
+            dto.setIdLegajos(legajoIds);
+
+            // Si necesitás más campos (fechaNacimiento, email, etc), y están en la entidad
+            // Person, podés mapearlos acá si están disponibles
+            dto.setDni(asistencial.getDni());
+            dto.setFechaNacimiento(asistencial.getFechaNacimiento());
+            dto.setSexo(asistencial.getSexo());
+            dto.setTelefono(asistencial.getTelefono());
+            dto.setEmail(asistencial.getEmail());
+            dto.setDomicilio(asistencial.getDomicilio());
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }

@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
-import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.service.HabilitacionesGuardiasService;
 
@@ -63,6 +63,21 @@ public class HabilitacionesGuardiasController {
 
         List<AsistencialSummaryDto> habilitaciones = habilitacionesGuardiasService
                 .getAsistencialesByEfectorAndTG(idEfector, tipoGuardia);
+
+        if (habilitaciones.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return ResponseEntity.ok(habilitaciones);
+
+    }
+
+    @GetMapping("/listAsistencialesWithCfAndExtraByEfector/{idEfector}")
+    public ResponseEntity<List<AsistencialDto>> getAsistencialesWithCfAndExtraByEfector(
+            @PathVariable Long idEfector) {
+
+        List<AsistencialDto> habilitaciones = habilitacionesGuardiasService
+                .getAsistencialesWithCfAndExtraByEfector(idEfector);
 
         if (habilitaciones.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
