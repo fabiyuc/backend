@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionGira;
 
 @Repository
@@ -54,4 +55,22 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
                         @Param("idPersona") Long idPersona,
                         @Param("mes") int mes,
                         @Param("anio") int anio);
+
+        @Query(nativeQuery = true, value = """
+                        SELECT *
+                        FROM distribuciones_giras d
+                        WHERE d.id_persona = :idAsistencial
+                        AND d.id_efector = :idEfector
+                        AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                        AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
+                        AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
+                        AND d.activo = 1
+                        """)
+        Optional<DistribucionGira> findValidDistribucion(
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector,
+                        @Param("fechaIngreso") LocalDate fechaInicio,
+                        @Param("horaIngreso") String horaIngreso,
+                        @Param("horaEgreso") String horaEgreso);
+
 }

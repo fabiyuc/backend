@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionOtra;
 import com.guardias.backend.repository.DistribucionOtraRepository;
 
@@ -90,6 +91,22 @@ public class DistribucionOtraService {
 
     public void deleteById(Long id) {
         distribucionOtraRepository.deleteById(id);
+    }
+
+    public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo.");
+        }
+
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
+        String horaIngresoString = dto.getHoraIngreso().toString();
+        String horaEgresoString = dto.getHoraEgreso().toString();
+        
+        // Busca una distribución otra válida
+        return distribucionOtraRepository.findValidDistribucion(
+                dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),
+                horaIngresoString, horaEgresoString).isPresent();
+
     }
 
 }

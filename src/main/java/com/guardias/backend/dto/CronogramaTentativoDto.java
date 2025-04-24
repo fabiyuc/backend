@@ -22,9 +22,9 @@ public class CronogramaTentativoDto {
     @NotBlank
     private LocalTime horaEgreso;
 
-    private Boolean activo;
+    private boolean activo;
 
-    private Boolean aceptado;
+    private boolean aceptado;
 
     @NotBlank
     private Long idTipoGuardia;

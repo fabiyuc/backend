@@ -132,12 +132,11 @@ public class DistribucionGuardiaService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
-        // entenderlo luego como TIME en la comparacion
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
-        // Buscar una distribución válida
+        // Busca una distribución válida
         return distribucionGuardiaRepository.findValidDistribucion(dto.getIdAsistencial(), dto.getIdEfector(),
                 dto.getTipoGuardia(), dto.getFechaIngreso(),
                 horaIngresoString, horaEgresoString).isPresent();

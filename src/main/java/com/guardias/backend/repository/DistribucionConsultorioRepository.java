@@ -58,8 +58,8 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         WHERE d.id_persona = :idAsistencial
                         AND d.id_efector = :idEfector
                         AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                        AND CAST(:horaIngreso AS TIME) >= CAST(d.hora_ingreso AS TIME)
-                        AND CAST(:horaEgreso AS TIME) <= DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
+                        AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
+                        AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
                         AND d.activo = 1
                         """)
         Optional<DistribucionConsultorio> findValidDistribucion(

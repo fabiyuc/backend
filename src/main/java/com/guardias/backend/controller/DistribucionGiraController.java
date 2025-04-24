@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.DistribucionGiraDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionGira;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionGiraService;
@@ -215,5 +216,11 @@ public class DistribucionGiraController {
             return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
         distribucionGiraService.deleteById(id);
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
+    }
+
+    //busca distribucion gira para verificar si es igual al tentativo que recibe
+    @PostMapping("/verificarCronogramaEnDistribucion")
+    public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
+        return distribucionGiraService.validarCronogramaEnDistribucion(dto);
     }
 }

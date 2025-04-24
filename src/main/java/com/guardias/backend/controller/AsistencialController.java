@@ -175,12 +175,6 @@ public class AsistencialController {
 
         List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialesByEfectorAndTG(idEfector,
                 tipoGuardia);
-
-        /*
-         * if (asistenciales.isEmpty()) {
-         * return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-         * }
-         */
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
