@@ -122,8 +122,21 @@ public class NovedadPersonalController {
     }
 
     @GetMapping("/puedeHacerGuardia/{idPersona}")
-    public boolean puedeHacerGuardia(@PathVariable Long idPersona) {
-        return novedadPersonalService.puedeHacerGuardia(idPersona);
+    public ResponseEntity<Boolean>  puedeHacerGuardia(@PathVariable Long idPersona) {
+        boolean resultado = novedadPersonalService.puedeHacerGuardia(idPersona);
+        return ResponseEntity.ok(resultado);
+    }
+
+    @GetMapping("/tieneLicenciaLAO/{idPersona}")
+    public ResponseEntity<Boolean> tieneLicenciaLAO(@PathVariable Long idPersona) {
+        boolean resultado = novedadPersonalService.tieneLicenciaLAO(idPersona);
+        return ResponseEntity.ok(resultado);
+    }
+
+    @GetMapping("/tieneLicenciaCompensatorio/{idPersona}")
+    public ResponseEntity<Boolean> tieneLicenciaCompensatorio(@PathVariable Long idPersona) {
+        boolean resultado = novedadPersonalService.tieneLicenciaCompensatorio(idPersona);
+        return ResponseEntity.ok(resultado);
     }
 
 }

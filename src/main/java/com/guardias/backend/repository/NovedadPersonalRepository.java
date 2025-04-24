@@ -32,5 +32,10 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
     List<NovedadPersonal> findByActivo(boolean activo);
 
-    Boolean existsByPersonaIdAndTipoLicenciaNombreIn(Long personaId, List<String> nombresLicencias);
+    boolean existsByPersonaIdAndTipoLicenciaNombreIn(Long personaId, List<String> nombresLicencias);
+
+    // Método para verificar si existe una novedad con nombreLicencia 
+    boolean existsByPersonaIdAndTipoLicenciaNombre(Long personaId, String nombreLicencia);
+    
+    
 }

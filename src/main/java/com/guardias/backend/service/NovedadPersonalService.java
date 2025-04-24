@@ -143,9 +143,38 @@ public class NovedadPersonalService {
         /* List<String> nombresLicencias = Arrays.asList("Compensatorio", "MATERNIDAD", "Licencia anual ordinaria"); */
 
         // Buscar coincidencias en Novedades personales
-        Boolean esElegibleParaGuardia = novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+       // Boolean esElegibleParaGuardia = novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
 
-        return  Boolean.TRUE.equals(esElegibleParaGuardia);
+       
+       return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+
+    }
+
+    public boolean tieneLicenciaLAO(Long idPersona) {
+
+        if (idPersona == null) {
+            throw new IllegalArgumentException("el id de la persona no pueden ser nulo.");
+        }
+
+        if (!personaService.activoById(idPersona)) {
+            throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
+        }
+
+        return  novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "LAO");
+
+    }
+
+    public boolean tieneLicenciaCompensatorio(Long idPersona) {
+
+        if (idPersona == null) {
+            throw new IllegalArgumentException("el id de la persona no pueden ser nulo.");
+        }
+
+        if (!personaService.activoById(idPersona)) {
+            throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
+        }
+
+        return  novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "Compensatorio");
 
     }
 
