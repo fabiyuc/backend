@@ -52,16 +52,18 @@ public class NoAsistencialController {
     }
 
     // Lista de noAsistenciales que son autoridades, con sus datos personales
-    @GetMapping("/listAutoridades")
-    public ResponseEntity<List<NoAsistencialListDto>> listAutoridades() {
-        List<NoAsistencialListDto> autoridades = noAsistencialService.getAsistencialListAutoridades();
+    @GetMapping("/listAutoridadesByEfector/{idEfector}")
+    public ResponseEntity<List<NoAsistencialListDto>> listAutoridadesByEfector(@PathVariable Long idEfector) {
+        List<NoAsistencialListDto> autoridades = noAsistencialService
+                .getNoAsistencialListAutoridadesByEfector(idEfector);
         return ResponseEntity.ok(autoridades);
     }
 
     // Lista de no asistenciales que son autoridades regionales
-    @GetMapping("/listAutoridadesRegionales")
-    public ResponseEntity<List<NoAsistencialListDto>> listAutoridadesRegionales() {
-        List<NoAsistencialListDto> autoridades = noAsistencialService.getAsistencialListAutoridadesRegionales();
+    @GetMapping("/listAutoridadesRegionalesByEfector/{idEfector}")
+    public ResponseEntity<List<NoAsistencialListDto>> listAutoridadesRegionalesByEfector(@PathVariable Long idEfector) {
+        List<NoAsistencialListDto> autoridades = noAsistencialService
+                .getNoAsistencialListAutoridadesRegionalesByEfector(idEfector);
         return ResponseEntity.ok(autoridades);
     }
 

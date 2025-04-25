@@ -89,16 +89,17 @@ public class AsistencialController {
     }
 
     // Lista de asistenciales que son autoridades, con sus datos personales
-    @GetMapping("/listAutoridades")
-    public ResponseEntity<List<AsistencialListDto>> listAutoridades() {
-        List<AsistencialListDto> autoridades = asistencialService.getAsistencialListAutoridades();
+    @GetMapping("/listAutoridadesByEfector/{idEfector}")
+    public ResponseEntity<List<AsistencialListDto>> listAutoridadesByEfector(@PathVariable Long idEfector) {
+        List<AsistencialListDto> autoridades = asistencialService.getAsistencialListAutoridadesByEfector(idEfector);
         return ResponseEntity.ok(autoridades);
     }
 
     // Lista de asistenciales que son autoridades regionales
-    @GetMapping("/listAutoridadesRegionales")
-    public ResponseEntity<List<AsistencialListDto>> listAutoridadesRegionales() {
-        List<AsistencialListDto> autoridades = asistencialService.getAsistencialListAutoridadesRegionales();
+    @GetMapping("/listAutoridadesRegionalesByEfector/{idEfector}")
+    public ResponseEntity<List<AsistencialListDto>> listAutoridadesRegionalesByEfector(@PathVariable Long idEfector) {
+        List<AsistencialListDto> autoridades = asistencialService
+                .getAsistencialListAutoridadesRegionalesByEfector(idEfector);
         return ResponseEntity.ok(autoridades);
     }
 

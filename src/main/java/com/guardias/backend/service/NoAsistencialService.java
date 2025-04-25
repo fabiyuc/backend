@@ -131,12 +131,15 @@ public class NoAsistencialService {
         return filterNoAsistencialesByEfector(noAsistenciales);
     }
 
-    public List<NoAsistencialListDto> getAsistencialListAutoridades() {
+    public List<NoAsistencialListDto> getNoAsistencialListAutoridadesByEfector(Long idEfector) {
         List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
 
         return noAsistenciales.stream()
                 .filter(noAsistencial -> noAsistencial.getAutoridades() != null
                         && !noAsistencial.getAutoridades().isEmpty())
+                .filter(noAsistencial -> noAsistencial.getLegajos().stream()
+                        .anyMatch(legajo -> legajo.getFechaFinal() == null &&
+                                legajo.getEfectores().stream().anyMatch(e -> e.getId().equals(idEfector))))
                 .map(noAsistencial -> new NoAsistencialListDto(
                         noAsistencial.getId(),
                         noAsistencial.getNombre(),
@@ -151,7 +154,7 @@ public class NoAsistencialService {
                 .collect(Collectors.toList());
     }
 
-    public List<NoAsistencialListDto> getAsistencialListAutoridadesRegionales() {
+    public List<NoAsistencialListDto> getNoAsistencialListAutoridadesRegionalesByEfector(Long idEfector) {
         List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
 
         return noAsistenciales.stream()
@@ -159,7 +162,8 @@ public class NoAsistencialService {
                         && !noAsistencial.getAutoridades().isEmpty())
                 .filter(noAsistencial -> noAsistencial.getLegajos().stream()
                         .anyMatch(legajo -> legajo.getFechaFinal() == null &&
-                                Boolean.TRUE.equals(legajo.getEsRegional())))
+                                Boolean.TRUE.equals(legajo.getEsRegional()) &&
+                                legajo.getEfectores().stream().anyMatch(e -> e.getId().equals(idEfector))))
                 .map(noAsistencial -> new NoAsistencialListDto(
                         noAsistencial.getId(),
                         noAsistencial.getNombre(),

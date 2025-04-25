@@ -146,7 +146,7 @@ public class AsistencialService {
             // profesión)
             String profesion = legajoActivo
                     .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
-                    .orElse(null); 
+                    .orElse(null);
             // Mapea los nombres de los tipos de guardia a una lista de strings
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                     .filter(legajo -> legajo.getFechaFinal() == null) // Legajos activos
@@ -259,15 +259,15 @@ public class AsistencialService {
 
             if (hasCargoOrAgrupacion) {
                 // Obtiene el legajo activo
-            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-            .filter(legajo -> legajo.getFechaFinal() == null)
-            .findFirst();
+                Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+                        .filter(legajo -> legajo.getFechaFinal() == null)
+                        .findFirst();
 
-    // Obtiene el nombre de la profesión (o null si no hay legajo activo o
-    // profesión)
-    String profesion = legajoActivo
-            .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
-            .orElse(null); 
+                // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+                // profesión)
+                String profesion = legajoActivo
+                        .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                        .orElse(null);
                 // Mapea los nombres de los tipos de guardia
                 List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                         .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
@@ -310,14 +310,14 @@ public class AsistencialService {
     private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
         // Obtiene el legajo activo
         Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-        .filter(legajo -> legajo.getFechaFinal() == null)
-        .findFirst();
+                .filter(legajo -> legajo.getFechaFinal() == null)
+                .findFirst();
 
-// Obtiene el nombre de la profesión (o null si no hay legajo activo o
-// profesión)
-String profesion = legajoActivo
-        .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
-        .orElse(null); 
+        // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+        // profesión)
+        String profesion = legajoActivo
+                .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                .orElse(null);
         return new AsistencialSummaryDto(
                 asistencial.getId(),
                 asistencial.getNombre(),
@@ -349,15 +349,15 @@ String profesion = legajoActivo
                 // Mapea los datos al DTO
                 .map(asistencial -> {
                     // Obtiene el legajo activo
-            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-            .filter(legajo -> legajo.getFechaFinal() == null)
-            .findFirst();
+                    Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+                            .filter(legajo -> legajo.getFechaFinal() == null)
+                            .findFirst();
 
-    // Obtiene el nombre de la profesión (o null si no hay legajo activo o
-    // profesión)
-    String profesion = legajoActivo
-            .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
-            .orElse(null); 
+                    // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+                    // profesión)
+                    String profesion = legajoActivo
+                            .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                            .orElse(null);
 
                     return new AsistencialSummaryDto(
                             asistencial.getId(),
@@ -454,11 +454,15 @@ String profesion = legajoActivo
                 .anyMatch(efector -> efector.getId().equals(idEfector));
     }
 
-    public List<AsistencialListDto> getAsistencialListAutoridades() {
+    public List<AsistencialListDto> getAsistencialListAutoridadesByEfector(Long idEfector) {
         List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
 
         return asistenciales.stream()
                 .filter(asistencial -> asistencial.getAutoridades() != null && !asistencial.getAutoridades().isEmpty())
+                .filter(asistencial -> asistencial.getLegajos().stream()
+                        .anyMatch(legajo -> legajo.getFechaFinal() == null &&
+                                legajo.getEfectores().stream()
+                                        .anyMatch(ef -> ef.getId().equals(idEfector))))
                 .map(asistencial -> {
                     List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                             .filter(legajo -> legajo.getFechaFinal() == null)
@@ -482,7 +486,7 @@ String profesion = legajoActivo
                 .collect(Collectors.toList());
     }
 
-    public List<AsistencialListDto> getAsistencialListAutoridadesRegionales() {
+    public List<AsistencialListDto> getAsistencialListAutoridadesRegionalesByEfector(Long idEfector) {
         List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
 
         return asistenciales.stream()
@@ -491,7 +495,9 @@ String profesion = legajoActivo
                 // Filtra los que tienen al menos un legajo activo y regional
                 .filter(asistencial -> asistencial.getLegajos().stream()
                         .anyMatch(legajo -> legajo.getFechaFinal() == null &&
-                                Boolean.TRUE.equals(legajo.getEsRegional())))
+                                Boolean.TRUE.equals(legajo.getEsRegional()) &&
+                                legajo.getEfectores().stream()
+                                        .anyMatch(ef -> ef.getId().equals(idEfector))))
                 .map(asistencial -> {
                     List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
                             .filter(legajo -> legajo.getFechaFinal() == null)
