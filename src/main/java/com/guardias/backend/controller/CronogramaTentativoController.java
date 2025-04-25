@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.service.CronogramaTentativoService;
 
@@ -40,6 +43,20 @@ public class CronogramaTentativoController {
     public ResponseEntity<List<CronogramaTentativo>> listAll() {
         List<CronogramaTentativo> list = cronogramaTentativoService.findAll();
         return new ResponseEntity<List<CronogramaTentativo>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfectorAndAutorizadoFalse/{idEfector}")
+    public ResponseEntity<List<CronogramaTentativoSummaryDto>> listByEfectorAndAutorizadoFalse(
+            @PathVariable Long idEfector) {
+        Optional<List<CronogramaTentativoSummaryDto>> result = cronogramaTentativoService
+                .findByEfectorIdAndActivoTrueAndAutorizadoFalse(idEfector);
+
+        return result.map(tentativos -> {
+            if (tentativos.isEmpty()) {
+                return new ResponseEntity<List<CronogramaTentativoSummaryDto>>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(tentativos, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
     @GetMapping("/detailByEfector/{idEfector}")

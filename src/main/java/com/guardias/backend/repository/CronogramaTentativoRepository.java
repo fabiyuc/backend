@@ -87,4 +87,8 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
       @Param("horaIngreso") LocalTime horaIngreso,
       @Param("horaEgreso") LocalTime horaEgreso,
       @Param("idAsistencial") Long idAsistencial);
+
+
+      Optional<List<CronogramaTentativo>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector);
+
 }

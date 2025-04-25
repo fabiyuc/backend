@@ -1,8 +1,10 @@
 package com.guardias.backend.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
@@ -229,6 +233,42 @@ public class CronogramaTentativoService {
         cronogramaTentativo.setAutorizado(true);
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
+
+     public Optional<List<CronogramaTentativoSummaryDto>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector) {
+
+        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository.findByEfectorIdAndActivoTrueAndAutorizadoFalse(idEfector)
+        .orElse(Collections.emptyList());
+    
+    List<CronogramaTentativoSummaryDto> dtos = tentativos.stream()
+        .map(this::convertToDto)
+        .collect(Collectors.toList());
+        
+    return Optional.of(dtos);
+    }
+
+    public CronogramaTentativoSummaryDto convertToDto(CronogramaTentativo tentativo) {
+        CronogramaTentativoSummaryDto dto = new CronogramaTentativoSummaryDto();
+        
+        dto.setId(tentativo.getId());
+        dto.setFechaIngreso(tentativo.getFechaIngreso());
+        dto.setFechaEgreso(tentativo.getFechaEgreso());
+        dto.setHoraIngreso(tentativo.getHoraIngreso());
+        dto.setHoraEgreso(tentativo.getHoraEgreso());
+        dto.setActivo(tentativo.isActivo());
+        dto.setAceptado(tentativo.isAceptado());
+        dto.setAutorizado(tentativo.isAutorizado());
+        dto.setIdTipoGuardia(tentativo.getTipoGuardia().getId());
+        dto.setIdAsistencial(tentativo.getAsistencial().getId());
+        dto.setIdServicio(tentativo.getServicio().getId());
+        dto.setIdEfector(tentativo.getEfector().getId());
+        dto.setObservacion(tentativo.getObservacion());
+        
+        return dto;
+    }
+
+
+
+
 
 
 }
