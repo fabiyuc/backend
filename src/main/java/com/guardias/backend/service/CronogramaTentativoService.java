@@ -148,6 +148,7 @@ public class CronogramaTentativoService {
             cronogramaTentativo.setObservacion(cronogramaTentativoDto.getObservacion());
 
         cronogramaTentativo.setAceptado(cronogramaTentativo.isAceptado());
+        cronogramaTentativo.setAutorizado(cronogramaTentativoDto.isAutorizado());
         cronogramaTentativo.setActivo(true);
         return cronogramaTentativo;
     }
@@ -219,4 +220,15 @@ public class CronogramaTentativoService {
                 dto.getHoraIngreso(), dto.getHoraEgreso(),
                 dto.getIdAsistencial());
     }
+
+    public void autorizar(Long id) {
+        CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
+
+        // Actualiza el tentativo
+        cronogramaTentativo.setAutorizado(true);
+        cronogramaTentativoRepository.save(cronogramaTentativo);
+    }
+
+
 }

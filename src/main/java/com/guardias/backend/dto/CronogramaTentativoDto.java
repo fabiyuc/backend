@@ -26,6 +26,8 @@ public class CronogramaTentativoDto {
 
     private boolean aceptado;
 
+    private boolean autorizado;
+
     @NotBlank
     private Long idTipoGuardia;
 

@@ -48,6 +48,9 @@ public class CronogramaTentativo {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean aceptado;
 
+        @Column(columnDefinition = "BIT DEFAULT 1")
+        private boolean autorizado;
+
         @ManyToOne(fetch = FetchType.LAZY, optional = true)
         @JoinColumn(name = "id_tipo_guardia")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales", "activo",

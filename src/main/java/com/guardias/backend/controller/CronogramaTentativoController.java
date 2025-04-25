@@ -133,6 +133,19 @@ public class CronogramaTentativoController {
         return ResponseEntity.ok(efectores);
     }
 
+    @PutMapping("/autorizar/{id}")
+    public ResponseEntity<?> autorizar(@PathVariable("id") Long id) {
+
+        try {
+            cronogramaTentativoService.autorizar(id);
+            return new ResponseEntity<>(new Mensaje("Cronograma tentativo autorizado.."), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     /*
      * // busca cronograma tentativo para comparar con registro de actividad
      * 
