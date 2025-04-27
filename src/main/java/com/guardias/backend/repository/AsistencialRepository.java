@@ -14,47 +14,50 @@ import com.guardias.backend.enums.TipoGuardiaEnum;
 @Repository
 public interface AsistencialRepository extends JpaRepository<Asistencial, Long> {
 
-    Optional<List<Asistencial>> findByActivoTrue();
+  Optional<List<Asistencial>> findByActivoTrue();
 
-    Optional<Asistencial> findById(Long id);
+  Optional<Asistencial> findById(Long id);
 
-    Optional<Asistencial> findByDniAndActivoTrue(int dni);
+  Optional<Asistencial> findByDniAndActivoTrue(int dni);
 
-    Optional<Asistencial> findByCuil(String cuil);
+  Optional<Asistencial> findByCuil(String cuil);
 
-    boolean existsById(Long id);
+  boolean existsById(Long id);
 
-    boolean existsByDniAndActivoTrue(int dni);
+  boolean existsByDniAndActivoTrue(int dni);
 
-    boolean existsByDni(int dni);
+  boolean existsByDni(int dni);
 
-    boolean existsByCuil(String cuil);
+  boolean existsByCuil(String cuil);
 
-    boolean existsByEmailAndActivoTrue(String email);
+  boolean existsByEmailAndActivoTrue(String email);
 
-    Optional<Asistencial> findByEmailAndActivoTrue(String email);
+  Optional<Asistencial> findByEmailAndActivoTrue(String email);
 
-    List<Asistencial> findByActivo(boolean activo);
+  List<Asistencial> findByActivo(boolean activo);
 
-    @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND a.activo = true")
-    List<Asistencial> findByUdoAndActivoTrue(@Param("idUdo") Long idUdo);
+  @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND a.activo = true")
+  List<Asistencial> findByEfectorByActivoTrue(@Param("idEfector") Long idEfector);
 
-    @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND a.activo = true")
-    List<Asistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
+  @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND a.activo = true")
+  List<Asistencial> findByUdoAndActivoTrue(@Param("idUdo") Long idUdo);
 
-    @Query("""
-                SELECT DISTINCT a
-                FROM asistenciales a
-                JOIN a.legajos l
-                JOIN l.tipoGuardias tg
-                JOIN l.efectores e
-                WHERE a.activo = true
-                  AND l.activo = true
-                  AND e.id = :idEfector
-                  AND tg.nombre = :tipoGuardia
-            """)
-    List<Asistencial> findByEfectorAndActivoTrueAndTG(
-            @Param("idEfector") Long idEfector,
-            @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia);
+  @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND a.activo = true")
+  List<Asistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
+
+  @Query("""
+          SELECT DISTINCT a
+          FROM asistenciales a
+          JOIN a.legajos l
+          JOIN l.tipoGuardias tg
+          JOIN l.efectores e
+          WHERE a.activo = true
+            AND l.activo = true
+            AND e.id = :idEfector
+            AND tg.nombre = :tipoGuardia
+      """)
+  List<Asistencial> findByEfectorAndActivoTrueAndTG(
+      @Param("idEfector") Long idEfector,
+      @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia);
 
 }

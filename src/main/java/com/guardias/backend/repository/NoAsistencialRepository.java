@@ -20,13 +20,13 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
     Optional<NoAsistencial> findByDniAndActivoTrue(int dni);
 
     Optional<NoAsistencial> findByCuil(String cuil);
-    
+
     Optional<NoAsistencial> findByEmailAndActivoTrue(String email);
 
     boolean existsById(Long id);
 
     boolean existsByDni(int dni);
-    
+
     boolean existsByDniAndActivoTrue(int dni);
 
     boolean existsByCuil(String cuil);
@@ -34,6 +34,9 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
     boolean existsByEmailAndActivoTrue(String email);
 
     List<NoAsistencial> findByActivo(boolean activo);
+
+    @Query("SELECT n FROM noAsistenciales n JOIN n.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND n.activo = true")
+    List<NoAsistencial> findByEfectorByActivoTrue(@Param("idEfector") Long idEfector);
 
     @Query("SELECT n FROM noAsistenciales n JOIN n.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND n.activo = true")
     List<NoAsistencial> findByUdoAndActivoTrue(@Param("idUdo") Long idUdo);

@@ -44,6 +44,18 @@ public class NoAsistencialController {
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listNoAsistencialByEfector/{idEfector}")
+    public ResponseEntity<List<NoAsistencial>> listByEfector(@PathVariable Long idEfector) {
+        List<NoAsistencial> list = noAsistencialService.findByEfectorByActivoTrue(idEfector);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/listAllByEfector/{idEfector}")
+    public ResponseEntity<List<NoAsistencial>> listAllByEfector(@PathVariable Long idEfector) {
+        List<NoAsistencial> list = noAsistencialService.findByEfectorAndActivoTrue(idEfector);
+        return ResponseEntity.ok(list);
+    }
+
     @GetMapping("/listDtos")
     public ResponseEntity<List<NoAsistencialListDto>> listDtos() {
         List<NoAsistencialListDto> noAsistencialListDtos = noAsistencialService.getNoAsistencialList();

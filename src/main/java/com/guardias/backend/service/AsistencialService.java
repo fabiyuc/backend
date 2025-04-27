@@ -62,6 +62,14 @@ public class AsistencialService {
         return asistencialRepository.findByCuil(cuil);
     }
 
+    public List<Asistencial> findAsistencialByEfectorAndActivoTrue(Long idEfector) {
+        return asistencialRepository.findByEfectorByActivoTrue(idEfector);
+    }
+
+    public List<Asistencial> findByEfectorAndActivoTrue(Long idEfector) {
+        return asistencialRepository.findByEfectorAndActivoTrue(idEfector);
+    }
+
     public boolean existsById(Long id) {
         return asistencialRepository.existsById(id);
     }

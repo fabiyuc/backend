@@ -38,6 +38,14 @@ public class NoAsistencialService {
         return noAsistencialRepository.findByCuil(cuil);
     }
 
+    public List<NoAsistencial> findByEfectorByActivoTrue(Long idEfector) {
+        return noAsistencialRepository.findByEfectorByActivoTrue(idEfector);
+    }
+
+    public List<NoAsistencial> findByEfectorAndActivoTrue(Long idEfector) {
+        return noAsistencialRepository.findByEfectorAndActivoTrue(idEfector);
+    }
+
     public boolean existsById(Long id) {
         return noAsistencialRepository.existsById(id);
     }
