@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
@@ -60,6 +61,12 @@ public class CapsController {
     @GetMapping("/listAll")
     public ResponseEntity<List<Caps>> listAll() {
         List<Caps> list = capsService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listSelection")
+    public ResponseEntity<List<EfectorSummaryDto>> listActivos() {
+        List<EfectorSummaryDto> list = capsService.findActiveEfectors();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

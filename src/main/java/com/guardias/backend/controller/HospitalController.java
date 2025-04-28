@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.caps.CapsNameDto;
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
@@ -64,6 +65,12 @@ public class HospitalController {
     public ResponseEntity<List<Hospital>> listAll() {
         List<Hospital> list = hospitalService.findAll();
         return new ResponseEntity<List<Hospital>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listSelection")
+    public ResponseEntity<List<EfectorSummaryDto>> listActivos() {
+        List<EfectorSummaryDto> list = hospitalService.findActiveEfectors();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/listPasivas")
@@ -201,6 +208,6 @@ public class HospitalController {
     @GetMapping("/serviciosActivos/{idHospital}")
     public ResponseEntity<List<ServicioSummaryDto>> getServiciosActivos(@PathVariable Long idHospital) {
         List<ServicioSummaryDto> servicios = hospitalService.getActiveServiciosByHospitalId(idHospital);
-        return ResponseEntity.ok(servicios); 
+        return ResponseEntity.ok(servicios);
     }
 }

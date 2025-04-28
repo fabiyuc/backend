@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.caps.CapsNameDto;
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.repository.HospitalRepository;
@@ -99,7 +101,16 @@ public class HospitalService {
         if (!hospitalRepository.existsByIdAndActivoTrue(idHospital)) {
             throw new EntityNotFoundException("Hospital no encontrado o inactivo con ID: " + idHospital);
         }
-        
+
         return hospitalRepository.findActiveServiciosByHospitalId(idHospital);
+    }
+
+    public List<EfectorSummaryDto> findActiveEfectors() {
+        // Convierte la lista de Hospital a EfectorSummaryDto
+        return hospitalRepository.findByActivoTrue()
+                .orElse(new ArrayList<>())
+                .stream()
+                .map(hospital -> new EfectorSummaryDto(hospital.getId(), hospital.getNombre()))
+                .collect(Collectors.toList());
     }
 }
