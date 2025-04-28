@@ -16,6 +16,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.CronogramaTentativo;
+import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 
@@ -152,7 +153,7 @@ public class CronogramaTentativoService {
             cronogramaTentativo.setObservacion(cronogramaTentativoDto.getObservacion());
 
         cronogramaTentativo.setAceptado(cronogramaTentativo.isAceptado());
-        cronogramaTentativo.setAutorizado(cronogramaTentativoDto.isAutorizado());
+        cronogramaTentativo.setAutorizado(cronogramaTentativoDto.getAutorizado());
         cronogramaTentativo.setActivo(true);
         return cronogramaTentativo;
     }
@@ -230,7 +231,7 @@ public class CronogramaTentativoService {
                 .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
 
         // Actualiza el tentativo
-        cronogramaTentativo.setAutorizado(true);
+        cronogramaTentativo.setAutorizado(AutorizadoTentativoEnum.CONFIRMADO);
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
 
@@ -256,7 +257,7 @@ public class CronogramaTentativoService {
         dto.setHoraEgreso(tentativo.getHoraEgreso());
         dto.setActivo(tentativo.isActivo());
         dto.setAceptado(tentativo.isAceptado());
-        dto.setAutorizado(tentativo.isAutorizado());
+        dto.setAutorizado(tentativo.getAutorizado());
         dto.setIdTipoGuardia(tentativo.getTipoGuardia().getId());
         dto.setIdAsistencial(tentativo.getAsistencial().getId());
         dto.setIdServicio(tentativo.getServicio().getId());

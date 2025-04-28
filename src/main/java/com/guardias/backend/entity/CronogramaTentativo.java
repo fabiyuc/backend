@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.AutorizadoTentativoEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,7 +50,7 @@ public class CronogramaTentativo {
         private boolean aceptado;
 
         @Column(columnDefinition = "BIT DEFAULT 1")
-        private boolean autorizado;
+        private AutorizadoTentativoEnum autorizado;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true)
         @JoinColumn(name = "id_tipo_guardia")

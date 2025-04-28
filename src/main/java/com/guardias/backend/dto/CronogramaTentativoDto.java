@@ -3,6 +3,8 @@ package com.guardias.backend.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.guardias.backend.enums.AutorizadoTentativoEnum;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +28,7 @@ public class CronogramaTentativoDto {
 
     private boolean aceptado;
 
-    private boolean autorizado;
+    private AutorizadoTentativoEnum autorizado;
 
     @NotBlank
     private Long idTipoGuardia;
