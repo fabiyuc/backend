@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.entity.RegistroActividad;
@@ -55,6 +56,12 @@ public class MinisterioController {
     @GetMapping("/listAll")
     public ResponseEntity<List<Ministerio>> listAll() {
         List<Ministerio> list = ministerioService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listSelection")
+    public ResponseEntity<List<EfectorSummaryDto>> listActivos() {
+        List<EfectorSummaryDto> list = ministerioService.findActiveEfectors();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

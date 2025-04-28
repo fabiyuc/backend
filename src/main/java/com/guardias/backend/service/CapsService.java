@@ -1,11 +1,14 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.repository.CapsRepository;
 
@@ -62,5 +65,13 @@ public class CapsService {
     public boolean isCaps(Long id) {
         Optional<Caps> caps = capsRepository.findById(id);
         return caps.isPresent() && caps.get().isActivo();
+    }
+
+    public List<EfectorSummaryDto> findActiveEfectors() {
+        return capsRepository.findByActivoTrue()
+                .orElse(new ArrayList<>())
+                .stream()
+                .map(caps -> new EfectorSummaryDto(caps.getId(), caps.getNombre()))
+                .collect(Collectors.toList());
     }
 }

@@ -1,11 +1,14 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.repository.MinisterioRepository;
 
@@ -63,6 +66,14 @@ public class MinisterioService {
     public boolean isMinisterio(Long id) {
         Optional<Ministerio> ministerio = ministerioRepository.findById(id);
         return ministerio.isPresent() && ministerio.get().isActivo();
+    }
+
+    public List<EfectorSummaryDto> findActiveEfectors() {
+        return ministerioRepository.findByActivoTrue()
+                .orElse(new ArrayList<>())
+                .stream()
+                .map(ministerio -> new EfectorSummaryDto(ministerio.getId(), ministerio.getNombre()))
+                .collect(Collectors.toList());
     }
 
 }
