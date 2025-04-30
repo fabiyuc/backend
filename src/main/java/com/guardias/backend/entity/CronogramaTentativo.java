@@ -9,6 +9,8 @@ import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -49,7 +51,8 @@ public class CronogramaTentativo {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean aceptado;
 
-        @Column(columnDefinition = "BIT DEFAULT 1")
+        @Column(columnDefinition = "VARCHAR(20)")
+        @Enumerated(EnumType.STRING)
         private AutorizadoTentativoEnum autorizado;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true)

@@ -152,7 +152,7 @@ public class CronogramaTentativoService {
                 cronogramaTentativoDto.getObservacion() != null)
             cronogramaTentativo.setObservacion(cronogramaTentativoDto.getObservacion());
 
-        cronogramaTentativo.setAceptado(cronogramaTentativo.isAceptado());
+        cronogramaTentativo.setAceptado(cronogramaTentativoDto.isAceptado());
         cronogramaTentativo.setAutorizado(cronogramaTentativoDto.getAutorizado());
         cronogramaTentativo.setActivo(true);
         return cronogramaTentativo;
