@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NoAsistencialDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
+import com.guardias.backend.dto.noAsistencial.NoAsistencialListEfectorDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialSummaryDto;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
@@ -45,9 +46,9 @@ public class NoAsistencialController {
     }
 
     @GetMapping("/listNoAsistencialByEfector/{idEfector}")
-    public ResponseEntity<List<NoAsistencial>> listByEfector(@PathVariable Long idEfector) {
-        List<NoAsistencial> list = noAsistencialService.findByEfectorByActivoTrue(idEfector);
-        return ResponseEntity.ok(list);
+    public ResponseEntity<List<NoAsistencialListEfectorDto>> listByEfector(@PathVariable Long idEfector) {
+        List<NoAsistencialListEfectorDto> list = noAsistencialService.findByEfectorByActivoTrue(idEfector);
+        return new ResponseEntity<List<NoAsistencialListEfectorDto>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAllByEfector/{idEfector}")

@@ -15,6 +15,7 @@ import com.guardias.backend.controller.PersonController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
+import com.guardias.backend.dto.asistencial.AsistencialEfectorRegistroActividadDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -60,10 +61,6 @@ public class AsistencialService {
 
     public Optional<Asistencial> findByCuil(String cuil) {
         return asistencialRepository.findByCuil(cuil);
-    }
-
-    public List<Asistencial> findAsistencialByEfectorAndActivoTrue(Long idEfector) {
-        return asistencialRepository.findByEfectorByActivoTrue(idEfector);
     }
 
     public List<Asistencial> findByEfectorAndActivoTrue(Long idEfector) {
@@ -426,6 +423,40 @@ public class AsistencialService {
     public List<AsistencialEfectorDto> getAsistencialesByEfector(Long efectorId) {
         List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(efectorId);
         return filterAsistencialesByEfector(asistenciales);
+    }
+
+    public List<AsistencialEfectorRegistroActividadDto> filterAsistencialesByEfectorAndRegistroActividad(
+            List<Asistencial> asistenciales) {
+        List<AsistencialEfectorRegistroActividadDto> EfectorList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            AsistencialEfectorRegistroActividadDto dto = new AsistencialEfectorRegistroActividadDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getDni(),
+                    asistencial.getCuil(),
+                    asistencial.getFechaNacimiento(),
+                    asistencial.getSexo(),
+                    asistencial.getTelefono(),
+                    asistencial.getEmail(),
+                    asistencial.getDomicilio(),
+                    asistencial.isActivo(),
+                    asistencial.isActivo(),
+                    asistencial.getLegajos().stream()
+                            .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                            .collect(Collectors.toList()),
+                    asistencial.getRegistrosActividades().stream()
+                            .filter(registro -> registro.isActivo())
+                            .collect(Collectors.toList()));
+            EfectorList.add(dto);
+        }
+        return EfectorList;
+    }
+
+    public List<AsistencialEfectorRegistroActividadDto> findAsistencialByEfectorAndActivoTrue(Long idEfector) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(idEfector);
+        return filterAsistencialesByEfectorAndRegistroActividad(asistenciales);
     }
 
     // Asistenciales por Udo y tipoGuardia CARGO y AGRUPACION

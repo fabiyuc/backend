@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
+import com.guardias.backend.dto.asistencial.AsistencialEfectorRegistroActividadDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
@@ -65,9 +66,23 @@ public class AsistencialController {
     }
 
     @GetMapping("/listAsistencialByEfector/{idEfector}")
-    public ResponseEntity<List<Asistencial>> listAsistencialByEfector(@PathVariable Long idEfector) {
-        List<Asistencial> asistencial = asistencialService.findAsistencialByEfectorAndActivoTrue(idEfector);
-        return ResponseEntity.ok(asistencial);
+    public ResponseEntity<List<AsistencialEfectorRegistroActividadDto>> listAsistencialByEfector(
+            @PathVariable Long idEfector) {
+        List<AsistencialEfectorRegistroActividadDto> asistencialList = asistencialService
+                .findAsistencialByEfectorAndActivoTrue(idEfector);
+        List<AsistencialEfectorRegistroActividadDto> listaFiltrada = new ArrayList<>();
+
+        for (AsistencialEfectorRegistroActividadDto asistencial : asistencialList) {
+            List<RegistroActividad> activeRegActividades = new ArrayList<>();
+            for (RegistroActividad registroActividad : asistencial.getIdRegistrosActividades()) {
+                if (registroActividad.isActivo()) {
+                    activeRegActividades.add(registroActividad);
+                }
+            }
+            asistencial.setIdRegistrosActividades(activeRegActividades);
+            listaFiltrada.add(asistencial);
+        }
+        return new ResponseEntity<>(listaFiltrada, HttpStatus.OK);
     }
 
     @GetMapping("/listAllByEfector/{idEfector}")

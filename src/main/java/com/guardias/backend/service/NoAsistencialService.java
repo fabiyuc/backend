@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
+import com.guardias.backend.dto.noAsistencial.NoAsistencialListEfectorDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialSummaryDto;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.repository.NoAsistencialRepository;
@@ -36,10 +37,6 @@ public class NoAsistencialService {
 
     public Optional<NoAsistencial> findByCuil(String cuil) {
         return noAsistencialRepository.findByCuil(cuil);
-    }
-
-    public List<NoAsistencial> findByEfectorByActivoTrue(Long idEfector) {
-        return noAsistencialRepository.findByEfectorByActivoTrue(idEfector);
     }
 
     public List<NoAsistencial> findByEfectorAndActivoTrue(Long idEfector) {
@@ -108,6 +105,32 @@ public class NoAsistencialService {
             DtoList.add(dto);
         }
         return DtoList;
+    }
+
+    public List<NoAsistencialListEfectorDto> filterNoAsistencialByEfector(
+            List<NoAsistencial> noAsistenciales) {
+        List<NoAsistencialListEfectorDto> EfectorList = new ArrayList<>();
+        for (NoAsistencial noAsistencial : noAsistenciales) {
+
+            NoAsistencialListEfectorDto dto = new NoAsistencialListEfectorDto(
+                    noAsistencial.getId(),
+                    noAsistencial.getNombre(),
+                    noAsistencial.getApellido(),
+                    noAsistencial.getDni(),
+                    noAsistencial.getCuil(),
+                    noAsistencial.getFechaNacimiento(),
+                    noAsistencial.getSexo(),
+                    noAsistencial.getTelefono(),
+                    noAsistencial.getEmail(),
+                    noAsistencial.getDomicilio());
+            EfectorList.add(dto);
+        }
+        return EfectorList;
+    }
+
+    public List<NoAsistencialListEfectorDto> findByEfectorByActivoTrue(Long idEfector) {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByEfectorByActivoTrue(idEfector);
+        return filterNoAsistencialByEfector(noAsistenciales);
     }
 
     /*
