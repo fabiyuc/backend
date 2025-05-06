@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.service.CronogramaTentativoService;

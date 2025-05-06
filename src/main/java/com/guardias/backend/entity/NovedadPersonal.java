@@ -1,6 +1,7 @@
 package com.guardias.backend.entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -33,6 +34,10 @@ public class NovedadPersonal {
     private LocalDate fechaInicio;
     @Temporal(TemporalType.DATE)
     private LocalDate fechaFinal;
+    @Temporal(TemporalType.TIME)
+    private LocalTime horaInicio;
+    @Temporal(TemporalType.TIME)
+    private LocalTime horaFinal;
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
     private boolean necesitaReemplazo;

@@ -1,6 +1,8 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
+import com.guardias.backend.dto.novedadPersonal.ConsultaLicenciaCompensatorioDto;
 import com.guardias.backend.entity.NovedadPersonal;
+import com.guardias.backend.entity.TipoLicencia;
 import com.guardias.backend.repository.NovedadPersonalRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -84,7 +88,20 @@ public class NovedadPersonalService {
             return new ResponseEntity(new Mensaje("la persona es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+        // Obtengo el tipo de licencia para verificar si es COMPENSATORIO
+        Optional<TipoLicencia> tipoLicenciaOpt = tipoLicenciaService.findById(novedadPersonalDto.getIdTipoLicencia());
+
+        if (tipoLicenciaOpt.isPresent() && "Compensatorio".equalsIgnoreCase(tipoLicenciaOpt.get().getNombre())) {
+            if (novedadPersonalDto.getHoraInicio() == null)
+                return new ResponseEntity(new Mensaje("La hora de inicio es obligatoria para licencias compensatorias"),
+                        HttpStatus.BAD_REQUEST);
+
+            if (novedadPersonalDto.getHoraFinal() == null)
+                return new ResponseEntity(new Mensaje("La hora final es obligatoria para licencias compensatorias"),
+                        HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(new Mensaje("Válido"), HttpStatus.OK);
     }
 
     public NovedadPersonal createUpdate(NovedadPersonal novedadPersonal, NovedadPersonalDto novedadPersonalDto) {
@@ -96,6 +113,14 @@ public class NovedadPersonalService {
         if (novedadPersonalDto.getFechaFinal() != null
                 && !novedadPersonalDto.getFechaFinal().equals(novedadPersonal.getFechaFinal()))
             novedadPersonal.setFechaFinal(novedadPersonalDto.getFechaFinal());
+
+        if (novedadPersonalDto.getHoraInicio() != null
+                && !novedadPersonalDto.getHoraInicio().equals(novedadPersonal.getHoraInicio()))
+            novedadPersonal.setHoraInicio(novedadPersonalDto.getHoraInicio());
+
+        if (novedadPersonalDto.getHoraFinal() != null
+                && !novedadPersonalDto.getHoraFinal().equals(novedadPersonal.getHoraFinal()))
+            novedadPersonal.setHoraFinal(novedadPersonalDto.getHoraFinal());
 
         novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
@@ -140,13 +165,17 @@ public class NovedadPersonalService {
 
         // Lista de nombres de licencias que se deben verificar
         List<String> nombresLicencias = Arrays.asList("MATERNIDAD");
-        /* List<String> nombresLicencias = Arrays.asList("Compensatorio", "MATERNIDAD", "Licencia anual ordinaria"); */
+        /*
+         * List<String> nombresLicencias = Arrays.asList("Compensatorio", "MATERNIDAD",
+         * "Licencia anual ordinaria");
+         */
 
         // Buscar coincidencias en Novedades personales
-       // Boolean esElegibleParaGuardia = novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+        // Boolean esElegibleParaGuardia =
+        // novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona,
+        // nombresLicencias);
 
-       
-       return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+        return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
 
     }
 
@@ -160,7 +189,7 @@ public class NovedadPersonalService {
             throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
         }
 
-        return  novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "LAO");
+        return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "LAO");
 
     }
 
@@ -174,8 +203,44 @@ public class NovedadPersonalService {
             throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
         }
 
-        return  novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "Compensatorio");
+        return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "Compensatorio");
 
     }
 
+    public boolean tieneLicenciaCompensatorio(ConsultaLicenciaCompensatorioDto consulta) {
+        
+        if (consulta.getIdPersona() == null || consulta.getFechaInicioConsulta() == null || consulta.getFechaFinConsulta() == null) {
+            throw new IllegalArgumentException("ID persona, fecha inicio y fecha fin son obligatorios.");
+        }
+
+        if (consulta.getFechaInicioConsulta().isAfter(consulta.getFechaFinConsulta())) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha final.");
+        }
+
+        // Busca novedad de tipo compensatorios activos para la persona
+        List<NovedadPersonal> compensatorios = novedadPersonalRepository
+                .findByPersonaIdAndTipoLicenciaNombreIgnoreCaseAndActivoTrue(consulta.getIdPersona(), "Compensatorio");
+
+        // Verificacion de superposición
+        return compensatorios.stream().anyMatch(comp -> {
+            LocalDateTime inicioComp = toLocalDateTime(comp.getFechaInicio(), comp.getHoraInicio(), false);
+            LocalDateTime finComp = toLocalDateTime(
+                comp.getFechaFinal() != null ? comp.getFechaFinal() : comp.getFechaInicio(), 
+                comp.getHoraFinal(), 
+                true
+            );
+
+            LocalDateTime inicioConsulta = toLocalDateTime(consulta.getFechaInicioConsulta(), consulta.getHoraInicioConsulta(), false);
+            LocalDateTime finConsulta = toLocalDateTime(consulta.getFechaFinConsulta(), consulta.getHoraFinConsulta(), true);
+
+            return inicioConsulta.isBefore(finComp) && finConsulta.isAfter(inicioComp);
+        });
+    }
+
+    private LocalDateTime toLocalDateTime(LocalDate date, LocalTime time, boolean endOfDay) {
+        if (time == null) {
+            return date.atTime(endOfDay ? LocalTime.MAX : LocalTime.MIN);
+        }
+        return date.atTime(time);
+    }
 }

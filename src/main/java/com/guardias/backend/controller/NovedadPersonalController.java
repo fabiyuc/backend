@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NovedadPersonalDto;
+import com.guardias.backend.dto.novedadPersonal.ConsultaLicenciaCompensatorioDto;
 import com.guardias.backend.entity.NovedadPersonal;
 import com.guardias.backend.service.NovedadPersonalService;
 
@@ -133,9 +134,11 @@ public class NovedadPersonalController {
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/tieneLicenciaCompensatorio/{idPersona}")
-    public ResponseEntity<Boolean> tieneLicenciaCompensatorio(@PathVariable Long idPersona) {
-        boolean resultado = novedadPersonalService.tieneLicenciaCompensatorio(idPersona);
+    @PostMapping("/tieneLicenciaCompensatorio")
+    public ResponseEntity<Boolean> tieneLicenciaCompensatorio(
+            @RequestBody ConsultaLicenciaCompensatorioDto consulta) {
+        
+        boolean resultado = novedadPersonalService.tieneLicenciaCompensatorio(consulta);
         return ResponseEntity.ok(resultado);
     }
 

@@ -17,18 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.RegistroActividad;
-import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.CronogramaDefinitivoService;
-import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
-import com.guardias.backend.service.RegistroMensualService;
-import com.guardias.backend.service.SumaHorasService;
 
 @RestController
 @RequestMapping("/cronogramaDefinitivo")
