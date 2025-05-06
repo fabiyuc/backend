@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
+import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.AsistencialRepository;
@@ -144,14 +145,42 @@ public class DistribucionGuardiaService {
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 
-        // Verificar si existe en DistribucionGuardia
+        // Verifica si existe en DistribucionGuardia
         if (distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(dia, fecha, idAsistencial, idEfector)) {
             return true;
         }
 
-        // Verificar si existe en DistribucionConsultorio
+        // Verifica si existe en DistribucionConsultorio
         return !distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(dia, fecha, idAsistencial, idEfector);
 
+    }
+
+    public boolean tieneDistribucionActiva(DistribucionCheckDto request) {
+        // Primero verifica si existe alguna distribución activa para esa persona y efector
+        if (!distribucionGuardiaRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(
+                request.getIdPersona(), request.getIdEfector())) {
+            return false;
+        }
+        
+        // Si existe, entonces filtra por fechas
+        int mes = request.getFecha().getMonthValue();
+        int anio = request.getFecha().getYear();
+        
+        return distribucionGuardiaRepository
+                .findByPersonaIdAndEfectorIdAndActivoTrue(request.getIdPersona(), request.getIdEfector())
+                .stream()
+                .anyMatch(d -> esFechaValida(d, mes, anio));
+    }
+    
+    /* private boolean esFechaValida(DistribucionGuardia distribucion, int mes, int anio) {
+        boolean inicioValido = distribucion.getFechaInicio().getYear() == anio && 
+                             distribucion.getFechaInicio().getMonthValue() == mes;
+        return inicioValido;
+    } */
+
+    private boolean esFechaValida(DistribucionGuardia distribucion, int mes, int anio) {
+        LocalDate fechaInicio = distribucion.getFechaInicio();
+        return fechaInicio.getYear() == anio && fechaInicio.getMonthValue() == mes;
     }
 
 }
