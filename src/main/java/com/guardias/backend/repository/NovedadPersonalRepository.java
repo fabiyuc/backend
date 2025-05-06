@@ -37,7 +37,7 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
     // Método para verificar si existe una novedad con nombreLicencia 
     boolean existsByPersonaIdAndTipoLicenciaNombre(Long personaId, String nombreLicencia);
     
-    @Query("SELECT n FROM NovedadPersonal n " +
+    @Query("SELECT n FROM novedadesPersonales n " +
            "WHERE n.persona.id = :personaId " +
            "AND UPPER(n.tipoLicencia.nombre) = UPPER(:nombreLicencia) " +
            "AND n.activo = true")

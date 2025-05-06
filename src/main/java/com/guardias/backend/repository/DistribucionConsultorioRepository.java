@@ -85,5 +85,5 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         @Param("idPersona") Long idPersona,
                         @Param("mes") int mes,
                         @Param("anio") int anio);
-
+        
 }

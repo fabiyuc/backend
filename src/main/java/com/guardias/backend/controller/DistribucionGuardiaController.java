@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
+import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
@@ -227,6 +228,12 @@ public class DistribucionGuardiaController {
     public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate fecha,
             @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {
         return distribucionGuardiaService.esGuardia(dia, fecha, idAsistencial, idEfector);
+    }
+
+    @PostMapping("/tieneDistribucionActiva")
+    public ResponseEntity<Boolean> tieneDistribucionActiva(@RequestBody DistribucionCheckDto request) {
+        boolean existe = distribucionGuardiaService.tieneDistribucionActiva(request);
+        return ResponseEntity.ok(existe);
     }
 
 }
