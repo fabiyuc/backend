@@ -171,12 +171,6 @@ public class DistribucionGuardiaService {
                 .stream()
                 .anyMatch(d -> esFechaValida(d, mes, anio));
     }
-    
-    /* private boolean esFechaValida(DistribucionGuardia distribucion, int mes, int anio) {
-        boolean inicioValido = distribucion.getFechaInicio().getYear() == anio && 
-                             distribucion.getFechaInicio().getMonthValue() == mes;
-        return inicioValido;
-    } */
 
     private boolean esFechaValida(DistribucionGuardia distribucion, int mes, int anio) {
         LocalDate fechaInicio = distribucion.getFechaInicio();
