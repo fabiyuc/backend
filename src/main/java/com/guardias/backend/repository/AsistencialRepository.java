@@ -36,7 +36,15 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
   List<Asistencial> findByActivo(boolean activo);
 
-  @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND a.activo = true")
+  @Query("""
+          SELECT DISTINCT a
+          FROM asistenciales a
+          JOIN a.legajos l
+          JOIN l.efectores e
+          WHERE a.activo = true
+            AND l.activo = true
+            AND e.id = :idEfector
+      """)
   List<Asistencial> findByEfectorByActivoTrue(@Param("idEfector") Long idEfector);
 
   @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND a.activo = true")

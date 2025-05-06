@@ -34,5 +34,6 @@ public class AsistencialEfectorRegistroActividadDto {
     private boolean activo;
     private List<Legajo> idLegajos;
     private List<RegistroActividad> idRegistrosActividades;
+    private List<String> nombresTiposGuardias;
 
 }

@@ -430,6 +430,13 @@ public class AsistencialService {
         List<AsistencialEfectorRegistroActividadDto> EfectorList = new ArrayList<>();
 
         for (Asistencial asistencial : asistenciales) {
+            // Obtener nombres de tipos de guardias de los legajos activos
+            List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                    .filter(Legajo::isActivo) // Filtra legajos activos
+                    .flatMap(legajo -> legajo.getTipoGuardias().stream())
+                    .map(tipoGuardia -> tipoGuardia.getNombre().name())
+                    .collect(Collectors.toList());
+
             AsistencialEfectorRegistroActividadDto dto = new AsistencialEfectorRegistroActividadDto(
                     asistencial.getId(),
                     asistencial.getNombre(),
@@ -444,18 +451,19 @@ public class AsistencialService {
                     asistencial.isActivo(),
                     asistencial.isActivo(),
                     asistencial.getLegajos().stream()
-                            .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                            .filter(Legajo::isActivo) // Solo legajos activos
                             .collect(Collectors.toList()),
                     asistencial.getRegistrosActividades().stream()
                             .filter(registro -> registro.isActivo())
-                            .collect(Collectors.toList()));
+                            .collect(Collectors.toList()),
+                    nombresTiposGuardias);
             EfectorList.add(dto);
         }
         return EfectorList;
     }
 
     public List<AsistencialEfectorRegistroActividadDto> findAsistencialByEfectorAndActivoTrue(Long idEfector) {
-        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndActivoTrue(idEfector);
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorByActivoTrue(idEfector);
         return filterAsistencialesByEfectorAndRegistroActividad(asistenciales);
     }
 
