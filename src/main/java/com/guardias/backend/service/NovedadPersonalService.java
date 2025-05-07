@@ -164,7 +164,7 @@ public class NovedadPersonalService {
         }
 
         // Lista de nombres de licencias que se deben verificar
-        List<String> nombresLicencias = Arrays.asList("MATERNIDAD");
+        List<String> nombresLicencias = Arrays.asList("Licencia por maternidad", "Parte por enfermedad", "Duelo");
         /*
          * List<String> nombresLicencias = Arrays.asList("Compensatorio", "MATERNIDAD",
          * "Licencia anual ordinaria");

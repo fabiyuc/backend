@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
@@ -267,9 +268,17 @@ public class CronogramaTentativoService {
         return dto;
     }
 
-
-
-
-
+    public boolean verificarRegistroIngresoEnTentativo(RegActivRegIngresoDto dto) {
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
+            dto.getIdAsistencial(),
+            dto.getIdEfector(),
+            dto.getIdTipoGuardia(),
+            dto.getIdServicio(),
+            dto.getFechaIngreso(),
+            dto.getHoraIngreso()
+        );
+        
+        return !cronogramas.isEmpty(); // True si hay al menos una coincidencia
+    }
 
 }
