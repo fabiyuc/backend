@@ -165,12 +165,24 @@ public class CronogramaTentativoController {
         }
     }
 
-    
     // busca cronograma tentativo para comparar con registro de actividad
     @PostMapping("/verificarRegistroIngresoEnTentativo")
     public boolean verificarRegistroIngresoEnTentativo(@RequestBody RegActivRegIngresoDto dto) {
 
         return cronogramaTentativoService.verificarRegistroIngresoEnTentativo(dto);
+    }
+
+    @PutMapping("/aceptar/{id}")
+    public ResponseEntity<?> aceptar(@PathVariable("id") Long id) {
+
+        try {
+            cronogramaTentativoService.autorizar(id);
+            return new ResponseEntity<>(new Mensaje("Cronograma tentativo autorizado.."), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
