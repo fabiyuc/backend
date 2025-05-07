@@ -568,4 +568,30 @@ public class AsistencialService {
                 .collect(Collectors.toList());
     }
 
+    public List<AsistencialEfectorDto> findAsistencialByCargaHorariaAndCategoria(Long idEfector, Long idCargaHoraria,
+            Long idCategoria) {
+        List<Asistencial> asistenciales = asistencialRepository.findByEfectorAndCategoriaAndCargaHoraria(idEfector,
+                idCargaHoraria, idCategoria);
+
+        // Mapear a DTO
+        return asistenciales.stream()
+                .map(asistencial -> new AsistencialEfectorDto(
+                        asistencial.getId(),
+                        asistencial.getNombre(),
+                        asistencial.getApellido(),
+                        asistencial.getDni(),
+                        asistencial.getCuil(),
+                        asistencial.getFechaNacimiento(),
+                        asistencial.getSexo(),
+                        asistencial.getTelefono(),
+                        asistencial.getEmail(),
+                        asistencial.getDomicilio(),
+                        asistencial.isEsAsistencial(),
+                        asistencial.isActivo(),
+                        asistencial.getLegajos().stream()
+                                .filter(Legajo::isActivo)
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
 }

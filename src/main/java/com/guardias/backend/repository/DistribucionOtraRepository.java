@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionOtra;
 
 @Repository
@@ -72,4 +71,8 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
                         @Param("fechaIngreso") LocalDate fechaInicio,
                         @Param("horaIngreso") String horaIngreso,
                         @Param("horaEgreso") String horaEgreso);
+
+        List<DistribucionOtra> findByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        
+        boolean existsByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
 }

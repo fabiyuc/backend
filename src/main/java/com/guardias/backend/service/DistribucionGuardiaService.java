@@ -10,10 +10,13 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
+import com.guardias.backend.repository.DistribucionGiraRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
+import com.guardias.backend.repository.DistribucionOtraRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -26,6 +29,10 @@ public class DistribucionGuardiaService {
     DistribucionGuardiaRepository distribucionGuardiaRepository;
     @Autowired
     DistribucionConsultorioRepository distribucionConsultorioRepository;
+    @Autowired
+    DistribucionGiraRepository distribucionGiraRepository;
+    @Autowired
+    DistribucionOtraRepository distribucionOtraRepository;
     @Autowired
     EfectorService efectorService;
     @Autowired
@@ -156,23 +163,50 @@ public class DistribucionGuardiaService {
     }
 
     public boolean tieneDistribucionActiva(DistribucionCheckDto request) {
-        // Primero verifica si existe alguna distribución activa para esa persona y efector
-        if (!distribucionGuardiaRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(
-                request.getIdPersona(), request.getIdEfector())) {
-            return false;
-        }
-        
-        // Si existe, entonces filtra por fechas
+        Long idPersona = request.getIdPersona();
+        Long idEfector = request.getIdEfector();
         int mes = request.getFecha().getMonthValue();
         int anio = request.getFecha().getYear();
-        
-        return distribucionGuardiaRepository
-                .findByPersonaIdAndEfectorIdAndActivoTrue(request.getIdPersona(), request.getIdEfector())
+    
+        // 1. Verifica DistribucionGuardia
+        if (distribucionGuardiaRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+            boolean existe = distribucionGuardiaRepository
+                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
                 .stream()
                 .anyMatch(d -> esFechaValida(d, mes, anio));
+            if (existe) return true;
+        }
+    
+        // 2. Verifica DistribucionConsultorio
+        if (distribucionConsultorioRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+            boolean existe = distribucionConsultorioRepository
+                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .stream()
+                .anyMatch(d -> esFechaValida(d, mes, anio));
+            if (existe) return true;
+        }
+    
+        // 3. Verifica DistribucionGira
+        if (distribucionGiraRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+            boolean existe = distribucionGiraRepository
+                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .stream()
+                .anyMatch(d -> esFechaValida(d, mes, anio));
+            if (existe) return true;
+        }
+    
+        // 4. Verifica DistribucionOtra
+        if (distribucionOtraRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+            return distribucionOtraRepository
+                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .stream()
+                .anyMatch(d -> esFechaValida(d, mes, anio));
+        }
+    
+        return false;
     }
 
-    private boolean esFechaValida(DistribucionGuardia distribucion, int mes, int anio) {
+    private boolean esFechaValida(DistribucionHoraria distribucion, int mes, int anio) {
         LocalDate fechaInicio = distribucion.getFechaInicio();
         return fechaInicio.getYear() == anio && fechaInicio.getMonthValue() == mes;
     }
