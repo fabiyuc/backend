@@ -68,4 +68,22 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
       @Param("idEfector") Long idEfector,
       @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia);
 
+  @Query("""
+          SELECT DISTINCT a
+          FROM asistenciales a
+          JOIN a.legajos l
+          JOIN l.revista r
+          JOIN r.categoria c
+          JOIN r.cargaHoraria ch
+          JOIN l.efectores e
+          WHERE a.activo = true
+            AND l.activo = true
+            AND e.id = :idEfector
+            AND c.id = :idCategoria
+            AND ch.id = :idCargaHoraria
+      """)
+  List<Asistencial> findByEfectorAndCategoriaAndCargaHoraria(
+      @Param("idEfector") Long idEfector,
+      @Param("idCargaHoraria") Long idCargaHoraria,
+      @Param("idCategoria") Long idCategoria);
 }

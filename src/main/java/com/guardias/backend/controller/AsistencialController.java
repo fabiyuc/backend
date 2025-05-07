@@ -91,6 +91,19 @@ public class AsistencialController {
         return ResponseEntity.ok(asistencial);
     }
 
+    @GetMapping("/listAsistencialByCargaHorariaAndCategoria/{idEfector}/{idCargaHoraria}/{idCategoria}")
+    public ResponseEntity<List<AsistencialEfectorDto>> listAsistencialByCargaHorariaAndCategoria(
+            @PathVariable Long idEfector,
+            @PathVariable Long idCargaHoraria,
+            @PathVariable Long idCategoria) {
+
+        // Llamada al servicio para obtener la lista filtrada
+        List<AsistencialEfectorDto> asistenciales = asistencialService
+                .findAsistencialByCargaHorariaAndCategoria(idEfector, idCargaHoraria, idCategoria);
+
+        return ResponseEntity.ok(asistenciales);
+    }
+
     @GetMapping("/listAll")
     public ResponseEntity<List<Asistencial>> listAll() {
         List<Asistencial> list = asistencialService.findAll();
