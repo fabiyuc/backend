@@ -73,7 +73,7 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
                         @Param("horaEgreso") String horaEgreso);
 
 
-        List<DistribucionGira> findByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        List<DistribucionGira> findByPersonaIdAndActivoTrue(Long idPersona);
         
-        boolean existsByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

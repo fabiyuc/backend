@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DistribucionCheckDto {
     private Long idPersona;
-    private Long idEfector;
     private LocalDate fecha;
    
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.CronogramaTentativo;
+import com.guardias.backend.enums.AutorizadoTentativoEnum;
 
 @Repository
 public interface CronogramaTentativoRepository extends JpaRepository<CronogramaTentativo, Long> {
@@ -108,4 +109,6 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
       @Param("fechaIngreso") LocalDate fechaIngreso,
       @Param("horaIngreso") LocalTime horaIngreso);
 
+@Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
+Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId, @Param("autorizado") AutorizadoTentativoEnum autorizado);
 }

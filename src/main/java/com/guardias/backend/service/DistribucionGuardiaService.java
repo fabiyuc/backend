@@ -164,41 +164,40 @@ public class DistribucionGuardiaService {
 
     public boolean tieneDistribucionActiva(DistribucionCheckDto request) {
         Long idPersona = request.getIdPersona();
-        Long idEfector = request.getIdEfector();
         int mes = request.getFecha().getMonthValue();
         int anio = request.getFecha().getYear();
     
         // 1. Verifica DistribucionGuardia
-        if (distribucionGuardiaRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+        if (distribucionGuardiaRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             boolean existe = distribucionGuardiaRepository
-                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .findByPersonaIdAndActivoTrue(idPersona)
                 .stream()
                 .anyMatch(d -> esFechaValida(d, mes, anio));
             if (existe) return true;
         }
     
         // 2. Verifica DistribucionConsultorio
-        if (distribucionConsultorioRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+        if (distribucionConsultorioRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             boolean existe = distribucionConsultorioRepository
-                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .findByPersonaIdAndActivoTrue(idPersona)
                 .stream()
                 .anyMatch(d -> esFechaValida(d, mes, anio));
             if (existe) return true;
         }
     
         // 3. Verifica DistribucionGira
-        if (distribucionGiraRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+        if (distribucionGiraRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             boolean existe = distribucionGiraRepository
-                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .findByPersonaIdAndActivoTrue(idPersona)
                 .stream()
                 .anyMatch(d -> esFechaValida(d, mes, anio));
             if (existe) return true;
         }
     
         // 4. Verifica DistribucionOtra
-        if (distribucionOtraRepository.existsByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)) {
+        if (distribucionOtraRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             return distribucionOtraRepository
-                .findByPersonaIdAndEfectorIdAndActivoTrue(idPersona, idEfector)
+                .findByPersonaIdAndActivoTrue(idPersona)
                 .stream()
                 .anyMatch(d -> esFechaValida(d, mes, anio));
         }

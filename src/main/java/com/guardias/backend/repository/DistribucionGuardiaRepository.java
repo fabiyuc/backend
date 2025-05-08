@@ -83,7 +83,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("mes") int mes,
                         @Param("anio") int anio);
 
-        List<DistribucionGuardia> findByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        List<DistribucionGuardia> findByPersonaIdAndActivoTrue(Long idPersona);
         
-        boolean existsByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

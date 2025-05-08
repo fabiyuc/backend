@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
-import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.repository.AsistencialRepository;
@@ -281,4 +281,29 @@ public class CronogramaTentativoService {
         return !cronogramas.isEmpty(); // True si hay al menos una coincidencia
     }
 
+    public Optional<List<CronogramaTentativoListAtorizadoDto>> findByEfectorIdAndAutorizado(Long efectorId, AutorizadoTentativoEnum autorizado) {
+        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository.findByEfectorIdAndAutorizado(efectorId, autorizado).orElse(Collections.emptyList());
+        
+        List<CronogramaTentativoListAtorizadoDto> dtos = tentativos.stream()
+        .map(this::convertToDtoAutorizados)
+        .collect(Collectors.toList());
+
+    return Optional.of(dtos);
+}
+
+public CronogramaTentativoListAtorizadoDto convertToDtoAutorizados(CronogramaTentativo tentativo) {
+        CronogramaTentativoListAtorizadoDto dto = new CronogramaTentativoListAtorizadoDto();
+        
+        dto.setId(tentativo.getId());
+        dto.setIdAsistencial(tentativo.getAsistencial().getId());
+        dto.setIdEfector(tentativo.getEfector().getId());
+        dto.setTipoGuardia(tentativo.getTipoGuardia().getNombre().name());
+        dto.setFechaIngreso(tentativo.getFechaIngreso());
+        dto.setFechaEgreso(tentativo.getFechaEgreso());
+        dto.setHoraIngreso(tentativo.getHoraIngreso());
+        dto.setHoraEgreso(tentativo.getHoraEgreso());
+        dto.setAutorizado(tentativo.getAutorizado());
+        
+        return dto;
+    }
 }
