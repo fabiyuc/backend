@@ -86,4 +86,12 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
       @Param("idEfector") Long idEfector,
       @Param("idCargaHoraria") Long idCargaHoraria,
       @Param("idCategoria") Long idCategoria);
+
+  @Query("""
+        SELECT a
+        FROM asistenciales a
+        WHERE a.activo = true
+          AND a.legajos IS EMPTY
+      """)
+  List<Asistencial> findAsistencialSinLegajo();
 }

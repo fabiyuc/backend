@@ -209,4 +209,23 @@ public class NoAsistencialService {
                 .collect(Collectors.toList());
     }
 
+    public List<NoAsistencialListDto> getNoAsistencialSinLegajo() {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findNoAsistencialSinLegajo();
+
+        return noAsistenciales.stream()
+
+                .map(noAsistencial -> new NoAsistencialListDto(
+                        noAsistencial.getId(),
+                        noAsistencial.getNombre(),
+                        noAsistencial.getApellido(),
+                        noAsistencial.getDni(),
+                        noAsistencial.getCuil(),
+                        noAsistencial.getFechaNacimiento(),
+                        noAsistencial.getSexo(),
+                        noAsistencial.getTelefono(),
+                        noAsistencial.getEmail(),
+                        noAsistencial.getDomicilio()))
+                .collect(Collectors.toList());
+    }
+
 }

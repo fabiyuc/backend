@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -591,6 +592,29 @@ public class AsistencialService {
                         asistencial.getLegajos().stream()
                                 .filter(Legajo::isActivo)
                                 .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
+    public List<AsistencialEfectorDto> findAsistencialSinLegajo() {
+        List<Asistencial> asistenciales = asistencialRepository.findAsistencialSinLegajo();
+
+        // Mapear a DTO
+        return asistenciales.stream()
+                .map(asistencial -> new AsistencialEfectorDto(
+                        asistencial.getId(),
+                        asistencial.getNombre(),
+                        asistencial.getApellido(),
+                        asistencial.getDni(),
+                        asistencial.getCuil(),
+                        asistencial.getFechaNacimiento(),
+                        asistencial.getSexo(),
+                        asistencial.getTelefono(),
+                        asistencial.getEmail(),
+                        asistencial.getDomicilio(),
+                        asistencial.isEsAsistencial(),
+                        asistencial.isActivo(),
+                        Collections.emptyList() // Sin legajos
+                ))
                 .collect(Collectors.toList());
     }
 

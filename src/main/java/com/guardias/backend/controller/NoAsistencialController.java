@@ -80,6 +80,12 @@ public class NoAsistencialController {
         return ResponseEntity.ok(autoridades);
     }
 
+    @GetMapping("/listNoAsistencialSinLegajo")
+    public ResponseEntity<List<NoAsistencialListDto>> listNoAsistencialSinLegajo() {
+        List<NoAsistencialListDto> noAsistencialListDtos = noAsistencialService.getNoAsistencialSinLegajo();
+        return new ResponseEntity<List<NoAsistencialListDto>>(noAsistencialListDtos, HttpStatus.OK);
+    }
+
     @GetMapping("/listAll")
     public ResponseEntity<List<NoAsistencial>> listAll() {
         List<NoAsistencial> list = noAsistencialService.findAll();

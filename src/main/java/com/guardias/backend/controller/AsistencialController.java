@@ -104,6 +104,12 @@ public class AsistencialController {
         return ResponseEntity.ok(asistenciales);
     }
 
+    @GetMapping("/listAsistencialSinLegajo")
+    public ResponseEntity<List<AsistencialEfectorDto>> listAsistencialSinLegajo() {
+        List<AsistencialEfectorDto> asistenciales = asistencialService.findAsistencialSinLegajo();
+        return ResponseEntity.ok(asistenciales);
+    }
+
     @GetMapping("/listAll")
     public ResponseEntity<List<Asistencial>> listAll() {
         List<Asistencial> list = asistencialService.findAll();
