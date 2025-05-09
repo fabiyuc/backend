@@ -201,4 +201,13 @@ public class CronogramaTentativoController {
         return new ResponseEntity<>(cronogramas, HttpStatus.OK);
     }
 
+    @GetMapping("/countPendientesByEfector/{idEfector}")
+    public ResponseEntity<Long> countPendientesByEfector(
+            @PathVariable("idEfector") Long idEfector) {
+
+        Long count = cronogramaTentativoService.countPendientesByEfectorId(idEfector);
+
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
 }

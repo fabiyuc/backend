@@ -92,15 +92,15 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
   Optional<List<CronogramaTentativo>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector);
 
   @Query(value = """
-    SELECT ct.* FROM cronogramas_tentativos ct
-    WHERE ct.id_asistencial = :idAsistencial
-    AND ct.id_efector = :idEfector
-    AND ct.id_tipo_guardia = :idTipoGuardia
-    AND ct.id_servicio = :idServicio
-    AND ct.fecha_ingreso = :fechaIngreso
-    AND ABS(DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME))) <= 15
-    AND ct.activo = 1
-    """, nativeQuery = true)
+      SELECT ct.* FROM cronogramas_tentativos ct
+      WHERE ct.id_asistencial = :idAsistencial
+      AND ct.id_efector = :idEfector
+      AND ct.id_tipo_guardia = :idTipoGuardia
+      AND ct.id_servicio = :idServicio
+      AND ct.fecha_ingreso = :fechaIngreso
+      AND ABS(DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME))) <= 15
+      AND ct.activo = 1
+      """, nativeQuery = true)
   List<CronogramaTentativo> findCronogramaParaRegistro(
       @Param("idAsistencial") Long idAsistencial,
       @Param("idEfector") Long idEfector,
@@ -109,6 +109,15 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
       @Param("fechaIngreso") LocalDate fechaIngreso,
       @Param("horaIngreso") LocalTime horaIngreso);
 
-@Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
-Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId, @Param("autorizado") AutorizadoTentativoEnum autorizado);
+  @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
+  Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId,
+      @Param("autorizado") AutorizadoTentativoEnum autorizado);
+
+  @Query("SELECT COUNT(ct) FROM cronogramasTentativos ct " +
+      "WHERE ct.efector.id = :idEfector " +
+      "AND ct.autorizado = :estado " +
+      "AND ct.activo = true")
+  Long countByEfectorIdAndEstado(
+      @Param("idEfector") Long idEfector,
+      @Param("estado") AutorizadoTentativoEnum estado);
 }

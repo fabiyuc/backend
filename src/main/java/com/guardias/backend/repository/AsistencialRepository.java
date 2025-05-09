@@ -94,4 +94,8 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
           AND a.legajos IS EMPTY
       """)
   List<Asistencial> findAsistencialSinLegajo();
+
+  @Query("SELECT a FROM asistenciales a WHERE a.id = :id AND a.activo = true")
+  Optional<Asistencial> findByIdAndActivoTrue(@Param("id") Long id);
+    
 }

@@ -306,4 +306,11 @@ public CronogramaTentativoListAtorizadoDto convertToDtoAutorizados(CronogramaTen
         
         return dto;
     }
+
+    public Long countPendientesByEfectorId(Long idEfector) {
+        return cronogramaTentativoRepository.countByEfectorIdAndEstado(
+                idEfector, 
+                AutorizadoTentativoEnum.PENDIENTE);
+    }
+
 }

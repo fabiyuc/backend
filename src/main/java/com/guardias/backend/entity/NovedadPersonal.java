@@ -40,7 +40,7 @@ public class NovedadPersonal {
     private LocalTime horaFinal;
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
-    private boolean necesitaReemplazo;
+    //private boolean necesitaReemplazo;
 
     /*
      * @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
@@ -64,7 +64,7 @@ public class NovedadPersonal {
             "descripcion", "esAsistencial" })
     private Person persona;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_suplente")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "legajos",
             "novedadesPersonales", "suplentes",
@@ -72,7 +72,7 @@ public class NovedadPersonal {
             "domicilio",
             "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
             "descripcion", "esAsistencial" })
-    private Person suplente;
+    private Person suplente; */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_licencia")
