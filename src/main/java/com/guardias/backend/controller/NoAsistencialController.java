@@ -92,6 +92,12 @@ public class NoAsistencialController {
         return new ResponseEntity<List<NoAsistencial>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listNoAsistencialAll")
+    public ResponseEntity<List<NoAsistencialSummaryDto>> listNoAsistencialAll() {
+        List<NoAsistencialSummaryDto> noAsistencialListDtos = noAsistencialService.getNoAsistencialListAll();
+        return new ResponseEntity<List<NoAsistencialSummaryDto>>(noAsistencialListDtos, HttpStatus.OK);
+    }
+
     @GetMapping("/legajos/{id}")
     public ResponseEntity<List<Legajo>> getLegajosByNoAsistencial(@PathVariable("id") Long id) {
         if (!noAsistencialService.activo(id))

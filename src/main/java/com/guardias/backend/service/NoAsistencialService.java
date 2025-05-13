@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialListDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialListEfectorDto;
 import com.guardias.backend.dto.noAsistencial.NoAsistencialSummaryDto;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.repository.NoAsistencialRepository;
 
@@ -226,6 +227,33 @@ public class NoAsistencialService {
                         noAsistencial.getEmail(),
                         noAsistencial.getDomicilio()))
                 .collect(Collectors.toList());
+    }
+
+    public List<NoAsistencialSummaryDto> getNoAsistencialListAll() {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        List<NoAsistencial> noAsistencialesConLegajoActivo = noAsistenciales.stream()
+                .filter(noAsistencial -> noAsistencial.getLegajos().stream().anyMatch(Legajo::isActivo))
+                .collect(Collectors.toList());
+
+        List<NoAsistencialSummaryDto> EfectorList = new ArrayList<>();
+        for (NoAsistencial noAsistencial : noAsistencialesConLegajoActivo) {
+
+            NoAsistencialSummaryDto dto = new NoAsistencialSummaryDto(
+                    noAsistencial.getId(),
+                    noAsistencial.getNombre(),
+                    noAsistencial.getApellido(),
+                    noAsistencial.getDni(),
+                    noAsistencial.getCuil(),
+                    noAsistencial.getFechaNacimiento(),
+                    noAsistencial.getSexo(),
+                    noAsistencial.getTelefono(),
+                    noAsistencial.getEmail(),
+                    noAsistencial.getDomicilio()
+
+            );
+            EfectorList.add(dto);
+        }
+        return EfectorList;
     }
 
 }

@@ -116,6 +116,13 @@ public class AsistencialController {
         return new ResponseEntity<List<Asistencial>>(list, HttpStatus.OK);
     }
 
+    // habilitaciones de guardias con el tipo de guardia EXTRA O CF
+    @GetMapping("/listAsistencialesAndEfectorAndTG")
+    public ResponseEntity<List<AsistencialSummaryDto>> getAsistencialesAndEfectorAndTG() {
+        List<AsistencialSummaryDto> asistenciales = asistencialService.getAsistencialSummaryListTG();
+        return new ResponseEntity<List<AsistencialSummaryDto>>(asistenciales, HttpStatus.OK);
+    }
+
     // lista asistenciales con datos personales resumido
     @GetMapping("/listSummary")
     public ResponseEntity<List<AsistencialSummaryDto>> listSummary() {

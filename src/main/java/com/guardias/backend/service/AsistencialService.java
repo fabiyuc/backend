@@ -618,4 +618,50 @@ public class AsistencialService {
                 .collect(Collectors.toList());
     }
 
+    // Método para obtener la lista de Asistenciales y convertirlos a
+    // AsistencialSummaryDto
+    public List<AsistencialSummaryDto> getAsistencialSummaryListTG() {
+        // Obtiene la lista de Asistenciales activos
+        List<Asistencial> asistenciales = asistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        // Filtra asistenciales que tienen al menos un legajo activo
+        List<Asistencial> asistencialesConLegajoActivo = asistenciales.stream()
+                .filter(asistencial -> asistencial.getLegajos().stream().anyMatch(Legajo::isActivo))
+                .collect(Collectors.toList());
+
+        // Crea una lista de AsistencialSummaryDto
+        List<AsistencialSummaryDto> summaryDtoList = new ArrayList<>();
+        // Recorre la lista de Asistenciales
+        for (Asistencial asistencial : asistencialesConLegajoActivo) {
+            // Obtiene el legajo activo
+            Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
+                    .filter(Legajo::isActivo) // Legajos activos
+                    .findFirst();
+
+            // Obtiene el nombre de la profesión (o null si no hay legajo activo o
+            // profesión)
+            String profesion = legajoActivo
+                    .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
+                    .orElse(null);
+            // Mapea los nombres de los tipos de guardia a una lista de strings
+            List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
+                    .filter(Legajo::isActivo) // Legajos activos
+                    .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Obtener tipos de guardia de cada legajo
+                                                                          // activo
+                    .map(tipoGuardia -> tipoGuardia.getNombre().name()) // Usa el método name() del enum
+                    .collect(Collectors.toList()); // Convierte el stream a una lista
+            // Crea el DTO
+            AsistencialSummaryDto dto = new AsistencialSummaryDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getCuil(),
+                    profesion,
+                    nombresTiposGuardias);
+            // Agrega el DTO a la lista
+            summaryDtoList.add(dto);
+        }
+        // Retorna la lista de DTOs
+        return summaryDtoList;
+    }
+
 }
