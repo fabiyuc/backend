@@ -87,7 +87,7 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         @Param("anio") int anio);
         
 
-        List<DistribucionConsultorio> findByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        List<DistribucionConsultorio> findByPersonaIdAndActivoTrue(Long idPersona);
         
-        boolean existsByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

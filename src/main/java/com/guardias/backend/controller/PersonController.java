@@ -101,7 +101,7 @@ public class PersonController {
                 && !personDto.getTelefono().isEmpty())
             person.setTelefono(personDto.getTelefono());
 
-        if (personDto.getIdSuplentes() != null) {
+        /* if (personDto.getIdSuplentes() != null) {
             List<Long> idList = new ArrayList();
             if (person.getSuplentes() != null) {
                 for (NovedadPersonal novedadPersonal : person.getSuplentes()) {
@@ -118,7 +118,7 @@ public class PersonController {
                 person.getSuplentes().add(novedadPersonalService.findById(id).get());
                 novedadPersonalService.findById(id).get().setSuplente(person);
             }
-        }
+        } */
 
         if (personDto.getIdAutoridades() != null) {
             List<Long> idList = new ArrayList();

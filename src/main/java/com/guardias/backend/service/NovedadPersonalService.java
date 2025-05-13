@@ -124,7 +124,7 @@ public class NovedadPersonalService {
 
         novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
-        novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
+        //novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
 
         // Si el suplente es nulo, se puede asignar null
         if (novedadPersonal.getPersona() == null ||
@@ -133,14 +133,14 @@ public class NovedadPersonalService {
             novedadPersonal.setPersona(personaService.findById(novedadPersonalDto.getIdPersona()));
         }
 
-        // Si el suplente es nulo, se puede asignar null
+       /*  // Si el suplente es nulo, se puede asignar null
         if (novedadPersonalDto.getIdSuplente() == null) {
             novedadPersonal.setSuplente(null);
         } else if (novedadPersonal.getSuplente() == null ||
                 (novedadPersonalDto.getIdSuplente() != null &&
                         !Objects.equals(novedadPersonal.getSuplente().getId(), novedadPersonalDto.getIdSuplente()))) {
             novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.getIdSuplente()));
-        }
+        } */
 
         if (novedadPersonal.getTipoLicencia() == null ||
                 (novedadPersonalDto.getIdTipoLicencia() != null &&

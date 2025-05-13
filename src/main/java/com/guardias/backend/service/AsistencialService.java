@@ -618,6 +618,22 @@ public class AsistencialService {
                 .collect(Collectors.toList());
     }
 
+    public boolean esCargoOAgrupacion(Long idAsistencial) {
+
+        // Buscar el asistencial por ID (solo si está activo)
+        Asistencial asistencial = asistencialRepository.findByIdAndActivoTrue(idAsistencial)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Asistencial activo no encontrado con ID: " + idAsistencial));
+
+        // Verificar si tiene legajos activos con los tipos de guardia cargo o
+        // agrupacion
+        return asistencial.getLegajos().stream()
+                .filter(legajo -> legajo.isActivo())
+                .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Obtengo todos los tipos de guardia
+                .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CARGO ||
+                        tipoGuardia.getNombre() == TipoGuardiaEnum.AGRUPACION);
+    }
+
     // Método para obtener la lista de Asistenciales y convertirlos a
     // AsistencialSummaryDto
     public List<AsistencialSummaryDto> getAsistencialSummaryListTG() {

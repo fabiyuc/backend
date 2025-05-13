@@ -72,7 +72,7 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
                         @Param("horaIngreso") String horaIngreso,
                         @Param("horaEgreso") String horaEgreso);
 
-        List<DistribucionOtra> findByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        List<DistribucionOtra> findByPersonaIdAndActivoTrue(Long idPersona);
         
-        boolean existsByPersonaIdAndEfectorIdAndActivoTrue(Long idPersona, Long idEfector);
+        boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

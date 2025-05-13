@@ -20,7 +20,7 @@ public class NovedadPersonalDto {
     private LocalTime horaFinal;
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
-    private boolean necesitaReemplazo;
+    //private boolean necesitaReemplazo;
     /* private boolean actual; // quitar */
     private boolean activo;
 
@@ -32,7 +32,7 @@ public class NovedadPersonalDto {
     @NotNull
     private Long idPersona;
 
-    private Long idSuplente;
+    //private Long idSuplente;
 
     @NotNull
     private Long idTipoLicencia;

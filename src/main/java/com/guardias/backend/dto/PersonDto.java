@@ -35,7 +35,7 @@ public class PersonDto {
     private boolean activo;
 
     private List<Long> idNovedadesPersonales;
-    private List<Long> idSuplentes;
+    //private List<Long> idSuplentes;
     private List<Long> idDistribucionesHorarias;
     private List<Long> idAutoridades;
     private List<Long> idLegajos;

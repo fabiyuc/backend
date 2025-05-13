@@ -349,4 +349,9 @@ public class AsistencialController {
         return asistencialService.esPlanta(idAsistencial, idEfector);
     }
 
+    @GetMapping("/es-cargo-o-agrupacion/{idAsistencial}")
+    public boolean esCargoOAgrupacion(@PathVariable Long idAsistencial) {
+        return asistencialService.esCargoOAgrupacion(idAsistencial);
+    }
+
 }
