@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
+import com.guardias.backend.dto.efector.EfectorhospitalDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.repository.HospitalRepository;
@@ -113,4 +114,15 @@ public class HospitalService {
                 .map(hospital -> new EfectorSummaryDto(hospital.getId(), hospital.getNombre()))
                 .collect(Collectors.toList());
     }
+
+    public List<EfectorhospitalDto> findByIdNombre(Long id) {
+        List<EfectorhospitalDto> list = new ArrayList<>();
+        Optional<Hospital> hospital = hospitalRepository.findById(id);
+        if (hospital.isPresent()) {
+            list.add(new EfectorhospitalDto(hospital.get().getId(), hospital.get().getNombre(),
+                    hospital.get().getNivelComplejidad()));
+        }
+        return list;
+    }
+
 }

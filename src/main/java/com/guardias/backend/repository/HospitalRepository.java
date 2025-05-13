@@ -43,7 +43,8 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
     List<Long> findValidIds(List<Long> ids);
 
     @Query("SELECT new com.guardias.backend.dto.servicio.ServicioSummaryDto(s.id, s.descripcion) " +
-           "FROM Hospital h JOIN h.servicios s " +
-           "WHERE h.id = :idHospital AND s.activo = true")
+            "FROM Hospital h JOIN h.servicios s " +
+            "WHERE h.id = :idHospital AND s.activo = true")
     List<ServicioSummaryDto> findActiveServiciosByHospitalId(@Param("idHospital") Long idHospital);
+
 }

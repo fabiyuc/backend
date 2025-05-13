@@ -20,6 +20,7 @@ import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
+import com.guardias.backend.dto.efector.EfectorhospitalDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
@@ -88,6 +89,15 @@ public class HospitalController {
         } else {
             return new ResponseEntity<>("Hospital no encontrado o no está activo", HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/detailNombreAll/{id}")
+    public ResponseEntity<EfectorhospitalDto> getByIdNombre(@PathVariable Long id) {
+        List<EfectorhospitalDto> list = hospitalService.findByIdNombre(id);
+        if (list.isEmpty()) {
+            return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
