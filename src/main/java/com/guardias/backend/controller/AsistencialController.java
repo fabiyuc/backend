@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
 import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
 import com.guardias.backend.dto.asistencial.AsistencialEfectorRegistroActividadDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
@@ -284,6 +285,14 @@ public class AsistencialController {
             return new ResponseEntity(new Mensaje("No existe la persona tipo asistencial"), HttpStatus.NOT_FOUND);
         Asistencial asistencial = asistencialService.findById(id).get();
         return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
+    }
+
+    @GetMapping("/detailAsistencial/{id}")
+    public ResponseEntity<AsistencialDetailDto> getByIdDetail(@PathVariable("id") Long id) {
+        if (!asistencialService.activo(id))
+            return new ResponseEntity(new Mensaje("No existe la persona tipo asistencial"), HttpStatus.NOT_FOUND);
+        List<AsistencialDetailDto> asistencial = asistencialService.findByIdDetail(id);
+        return new ResponseEntity(asistencial, HttpStatus.OK);
     }
 
     @GetMapping("/detaildni/{dni}")

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.controller.PersonController;
 import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
 import com.guardias.backend.dto.asistencial.AsistencialEfectorDto;
 import com.guardias.backend.dto.asistencial.AsistencialEfectorRegistroActividadDto;
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
@@ -678,6 +679,22 @@ public class AsistencialService {
         }
         // Retorna la lista de DTOs
         return summaryDtoList;
+    }
+
+    public List<AsistencialDetailDto> findByIdDetail(Long id) {
+        List<AsistencialDetailDto> list = new ArrayList<>();
+        Optional<Asistencial> asistencial = asistencialRepository.findById(id);
+        if (asistencial.isPresent()) {
+            AsistencialDetailDto dto = new AsistencialDetailDto(
+                    asistencial.get().getId(),
+                    asistencial.get().getNombre(),
+                    asistencial.get().getApellido(),
+                    asistencial.get().getDni(),
+                    asistencial.get().getCuil());
+            list.add(dto);
+        }
+        return list;
+
     }
 
 }
