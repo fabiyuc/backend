@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,12 +93,12 @@ public class HospitalController {
     }
 
     @GetMapping("/detailNombreAll/{id}")
-    public ResponseEntity<EfectorhospitalDto> getByIdNombre(@PathVariable Long id) {
-        List<EfectorhospitalDto> list = hospitalService.findByIdNombre(id);
-        if (list.isEmpty()) {
-            return new ResponseEntity(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
+        Optional<EfectorhospitalDto> efectorhospitalDto = hospitalService.findByIdNombre(id);
+        if (efectorhospitalDto.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity(list, HttpStatus.OK);
+        return new ResponseEntity<>(efectorhospitalDto.get(), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

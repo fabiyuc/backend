@@ -115,14 +115,15 @@ public class HospitalService {
                 .collect(Collectors.toList());
     }
 
-    public List<EfectorhospitalDto> findByIdNombre(Long id) {
-        List<EfectorhospitalDto> list = new ArrayList<>();
+    public Optional<EfectorhospitalDto> findByIdNombre(Long id) {
         Optional<Hospital> hospital = hospitalRepository.findById(id);
         if (hospital.isPresent()) {
-            list.add(new EfectorhospitalDto(hospital.get().getId(), hospital.get().getNombre(),
+            return Optional.of(new EfectorhospitalDto(
+                    hospital.get().getId(),
+                    hospital.get().getNombre(),
                     hospital.get().getNivelComplejidad()));
         }
-        return list;
+        return Optional.empty();
     }
 
 }
