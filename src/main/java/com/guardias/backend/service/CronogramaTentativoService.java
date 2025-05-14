@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
@@ -314,7 +315,15 @@ public class CronogramaTentativoService {
         CronogramaTentativoListAtorizadoDto dto = new CronogramaTentativoListAtorizadoDto();
 
         dto.setId(tentativo.getId());
-        dto.setIdAsistencial(tentativo.getAsistencial().getId());
+
+        // Convertir Asistencial a AsistencialDetailDto
+        AsistencialDetailDto asistencialDetail = new AsistencialDetailDto();
+        asistencialDetail.setId(tentativo.getAsistencial().getId());
+        asistencialDetail.setNombre(tentativo.getAsistencial().getNombre());
+        asistencialDetail.setApellido(tentativo.getAsistencial().getApellido());
+        asistencialDetail.setCuil(tentativo.getAsistencial().getCuil());
+        dto.setAsistencial(asistencialDetail);
+
         dto.setIdEfector(tentativo.getEfector().getId());
         dto.setTipoGuardia(tentativo.getTipoGuardia().getNombre().name());
         dto.setFechaIngreso(tentativo.getFechaIngreso());

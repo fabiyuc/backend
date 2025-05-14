@@ -3,6 +3,7 @@ package com.guardias.backend.dto.cronogramaTentativo;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CronogramaTentativoListAtorizadoDto {
     private Long id;
-    private Long idAsistencial;
+    private AsistencialDetailDto asistencial; // Cambiado de Long a AsistencialDetailDto
     private Long idEfector;
     private String tipoGuardia;
     private LocalDate fechaIngreso;

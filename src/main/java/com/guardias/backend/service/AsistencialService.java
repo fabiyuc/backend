@@ -689,7 +689,6 @@ public class AsistencialService {
                     asistencial.get().getId(),
                     asistencial.get().getNombre(),
                     asistencial.get().getApellido(),
-                    asistencial.get().getDni(),
                     asistencial.get().getCuil());
             list.add(dto);
         }
