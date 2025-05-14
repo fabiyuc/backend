@@ -236,21 +236,35 @@ public class CronogramaTentativoService {
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
 
-     public Optional<List<CronogramaTentativoSummaryDto>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector) {
+    public void autorizarUpdate(Long id, AutorizadoTentativoEnum nuevoEstado) {
+        CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
 
-        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository.findByEfectorIdAndActivoTrueAndAutorizadoFalse(idEfector)
-        .orElse(Collections.emptyList());
-    
-    List<CronogramaTentativoSummaryDto> dtos = tentativos.stream()
-        .map(this::convertToDto)
-        .collect(Collectors.toList());
-        
-    return Optional.of(dtos);
+        if (nuevoEstado == null) {
+            throw new ValidationException("El estado autorizado no puede ser nulo.");
+        }
+
+        cronogramaTentativo.setAutorizado(nuevoEstado);
+        cronogramaTentativoRepository.save(cronogramaTentativo);
+    }
+
+    public Optional<List<CronogramaTentativoSummaryDto>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(
+            Long idEfector) {
+
+        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository
+                .findByEfectorIdAndActivoTrueAndAutorizadoFalse(idEfector)
+                .orElse(Collections.emptyList());
+
+        List<CronogramaTentativoSummaryDto> dtos = tentativos.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+
+        return Optional.of(dtos);
     }
 
     public CronogramaTentativoSummaryDto convertToDto(CronogramaTentativo tentativo) {
         CronogramaTentativoSummaryDto dto = new CronogramaTentativoSummaryDto();
-        
+
         dto.setId(tentativo.getId());
         dto.setFechaIngreso(tentativo.getFechaIngreso());
         dto.setFechaEgreso(tentativo.getFechaEgreso());
@@ -264,36 +278,37 @@ public class CronogramaTentativoService {
         dto.setIdServicio(tentativo.getServicio().getId());
         dto.setIdEfector(tentativo.getEfector().getId());
         dto.setObservacion(tentativo.getObservacion());
-        
+
         return dto;
     }
 
     public boolean verificarRegistroIngresoEnTentativo(RegActivRegIngresoDto dto) {
         List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
-            dto.getIdAsistencial(),
-            dto.getIdEfector(),
-            dto.getIdTipoGuardia(),
-            dto.getIdServicio(),
-            dto.getFechaIngreso(),
-            dto.getHoraIngreso()
-        );
-        
+                dto.getIdAsistencial(),
+                dto.getIdEfector(),
+                dto.getIdTipoGuardia(),
+                dto.getIdServicio(),
+                dto.getFechaIngreso(),
+                dto.getHoraIngreso());
+
         return !cronogramas.isEmpty(); // True si hay al menos una coincidencia
     }
 
-    public Optional<List<CronogramaTentativoListAtorizadoDto>> findByEfectorIdAndAutorizado(Long efectorId, AutorizadoTentativoEnum autorizado) {
-        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository.findByEfectorIdAndAutorizado(efectorId, autorizado).orElse(Collections.emptyList());
-        
+    public Optional<List<CronogramaTentativoListAtorizadoDto>> findByEfectorIdAndAutorizado(Long efectorId,
+            AutorizadoTentativoEnum autorizado) {
+        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository
+                .findByEfectorIdAndAutorizado(efectorId, autorizado).orElse(Collections.emptyList());
+
         List<CronogramaTentativoListAtorizadoDto> dtos = tentativos.stream()
-        .map(this::convertToDtoAutorizados)
-        .collect(Collectors.toList());
+                .map(this::convertToDtoAutorizados)
+                .collect(Collectors.toList());
 
-    return Optional.of(dtos);
-}
+        return Optional.of(dtos);
+    }
 
-public CronogramaTentativoListAtorizadoDto convertToDtoAutorizados(CronogramaTentativo tentativo) {
+    public CronogramaTentativoListAtorizadoDto convertToDtoAutorizados(CronogramaTentativo tentativo) {
         CronogramaTentativoListAtorizadoDto dto = new CronogramaTentativoListAtorizadoDto();
-        
+
         dto.setId(tentativo.getId());
         dto.setIdAsistencial(tentativo.getAsistencial().getId());
         dto.setIdEfector(tentativo.getEfector().getId());
@@ -303,13 +318,13 @@ public CronogramaTentativoListAtorizadoDto convertToDtoAutorizados(CronogramaTen
         dto.setHoraIngreso(tentativo.getHoraIngreso());
         dto.setHoraEgreso(tentativo.getHoraEgreso());
         dto.setAutorizado(tentativo.getAutorizado());
-        
+
         return dto;
     }
 
     public Long countPendientesByEfectorId(Long idEfector) {
         return cronogramaTentativoRepository.countByEfectorIdAndEstado(
-                idEfector, 
+                idEfector,
                 AutorizadoTentativoEnum.PENDIENTE);
     }
 

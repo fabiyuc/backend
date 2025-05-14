@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
@@ -25,6 +26,7 @@ import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.service.CronogramaTentativoService;
 
+import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 
 @RestController
@@ -163,6 +165,15 @@ public class CronogramaTentativoController {
         } catch (ValidationException e) {
             return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PutMapping("/autorizarUpdate/{id}")
+    public ResponseEntity<?> autorizarUpdate(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody AutorizadoUpdateDto updateDto) {
+        cronogramaTentativoService.autorizarUpdate(id, updateDto.getAutorizado());
+        return new ResponseEntity<>(new Mensaje("El estado del cronograma tentativo fue actualizado correctamente."),
+                HttpStatus.OK);
     }
 
     // busca cronograma tentativo para comparar con registro de actividad
