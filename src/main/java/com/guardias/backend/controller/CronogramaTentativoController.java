@@ -98,6 +98,12 @@ public class CronogramaTentativoController {
         return new ResponseEntity(cronogramaTentativo, HttpStatus.OK);
     }
 
+    @GetMapping("/detailByIdAsistencial/{idAsistencial}")
+    public ResponseEntity<List<CronogramaTentativo>> getByIdAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
+        List<CronogramaTentativo> cronogramasTentativos = cronogramaTentativoService.findByIdAsistencial(idAsistencial).get();
+        return ResponseEntity.ok(cronogramasTentativos);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CronogramaTentativoDto cronogramaTentativoDto) {
 

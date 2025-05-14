@@ -71,6 +71,10 @@ public class CronogramaTentativoService {
         return cronogramaTentativoRepository.findById(id);
     }
 
+    public Optional<List<CronogramaTentativo>> findByIdAsistencial(Long id) {
+        return cronogramaTentativoRepository.findByIdAsistencial(id);
+    }
+
     public ResponseEntity<?> validations(CronogramaTentativoDto cronogramaTentativoDto) {
 
         if (cronogramaTentativoDto.getFechaIngreso() == null)
