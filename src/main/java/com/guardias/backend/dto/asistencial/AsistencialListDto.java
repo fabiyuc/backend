@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AsistencialListDto {
-    
+
     private Long id;
     private String nombre;
     private String apellido;
@@ -22,6 +22,7 @@ public class AsistencialListDto {
     private String telefono;
     private String email;
     private String domicilio;
+    private Boolean esAsistencial;
     private List<String> nombresTiposGuardias;
     /* private List<Long> idTiposGuardias; */
 }

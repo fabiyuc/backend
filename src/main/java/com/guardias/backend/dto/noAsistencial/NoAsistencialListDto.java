@@ -20,4 +20,5 @@ public class NoAsistencialListDto {
     private String telefono;
     private String email;
     private String domicilio;
+    private Boolean esAsistencial;
 }

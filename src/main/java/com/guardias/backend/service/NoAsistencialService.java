@@ -101,7 +101,8 @@ public class NoAsistencialService {
                     noAsistencial.getSexo(),
                     noAsistencial.getTelefono(),
                     noAsistencial.getEmail(),
-                    noAsistencial.getDomicilio());
+                    noAsistencial.getDomicilio(),
+                    noAsistencial.isEsAsistencial());
 
             DtoList.add(dto);
         }
@@ -182,7 +183,8 @@ public class NoAsistencialService {
                         noAsistencial.getSexo(),
                         noAsistencial.getTelefono(),
                         noAsistencial.getEmail(),
-                        noAsistencial.getDomicilio()))
+                        noAsistencial.getDomicilio(),
+                        noAsistencial.isEsAsistencial()))
                 .collect(Collectors.toList());
     }
 
@@ -206,7 +208,8 @@ public class NoAsistencialService {
                         noAsistencial.getSexo(),
                         noAsistencial.getTelefono(),
                         noAsistencial.getEmail(),
-                        noAsistencial.getDomicilio()))
+                        noAsistencial.getDomicilio(),
+                        noAsistencial.isEsAsistencial()))
                 .collect(Collectors.toList());
     }
 
@@ -225,7 +228,8 @@ public class NoAsistencialService {
                         noAsistencial.getSexo(),
                         noAsistencial.getTelefono(),
                         noAsistencial.getEmail(),
-                        noAsistencial.getDomicilio()))
+                        noAsistencial.getDomicilio(),
+                        noAsistencial.isEsAsistencial()))
                 .collect(Collectors.toList());
     }
 

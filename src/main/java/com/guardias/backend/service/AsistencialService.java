@@ -204,6 +204,7 @@ public class AsistencialService {
                     asistencial.getTelefono(),
                     asistencial.getEmail(),
                     asistencial.getDomicilio(),
+                    asistencial.isEsAsistencial(),
                     nombresTiposGuardias);
 
             // Agrega el DTO a la lista
@@ -530,6 +531,7 @@ public class AsistencialService {
                             asistencial.getTelefono(),
                             asistencial.getEmail(),
                             asistencial.getDomicilio(),
+                            asistencial.isEsAsistencial(),
                             nombresTiposGuardias);
                 })
                 .collect(Collectors.toList());
@@ -565,6 +567,7 @@ public class AsistencialService {
                             asistencial.getTelefono(),
                             asistencial.getEmail(),
                             asistencial.getDomicilio(),
+                            asistencial.isEsAsistencial(),
                             nombresTiposGuardias);
                 })
                 .collect(Collectors.toList());
