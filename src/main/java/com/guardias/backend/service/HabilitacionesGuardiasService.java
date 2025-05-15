@@ -293,8 +293,8 @@ public class HabilitacionesGuardiasService {
             dto.setNombre(asistencial.getNombre());
             dto.setApellido(asistencial.getApellido());
             dto.setCuil(asistencial.getCuil());
-            dto.setEsAsistencial(true);
-            dto.setActivo(true); // o según lo que determine tu lógica
+            dto.setEsAsistencial(asistencial.isEsAsistencial());
+            dto.setActivo(asistencial.isActivo()); // o según lo que determine tu lógica
 
             // Legajos activos
             List<Long> legajoIds = asistencial.getLegajos().stream()

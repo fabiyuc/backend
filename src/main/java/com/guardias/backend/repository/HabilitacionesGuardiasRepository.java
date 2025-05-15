@@ -53,6 +53,7 @@ public interface HabilitacionesGuardiasRepository extends JpaRepository<Habilita
           JOIN l.tipoGuardias tg
           JOIN hg.efectores e
           WHERE hg.activo = true
+          AND a.activo = true
             AND l.fechaFinal IS NULL
             AND e.id = :idEfector
             AND (tg.nombre = 'CONTRAFACTURA' OR tg.nombre = 'EXTRA')
