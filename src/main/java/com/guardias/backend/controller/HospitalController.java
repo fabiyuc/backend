@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.caps.CapsNameDto;
+import com.guardias.backend.dto.efector.EfectorHospitalDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
-import com.guardias.backend.dto.efector.EfectorhospitalDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
@@ -94,11 +94,11 @@ public class HospitalController {
 
     @GetMapping("/detailNombreAll/{id}")
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
-        Optional<EfectorhospitalDto> efectorhospitalDto = hospitalService.findByIdNombre(id);
-        if (efectorhospitalDto.isEmpty()) {
+        Optional<EfectorHospitalDto> efectorHospitalDto = hospitalService.findByIdNombre(id);
+        if (efectorHospitalDto.isEmpty()) {
             return new ResponseEntity<>(new Mensaje("Hospital no encontrado"), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(efectorhospitalDto.get(), HttpStatus.OK);
+        return new ResponseEntity<>(efectorHospitalDto.get(), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

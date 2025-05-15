@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.caps.CapsNameDto;
+import com.guardias.backend.dto.efector.EfectorHospitalDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
-import com.guardias.backend.dto.efector.EfectorhospitalDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.repository.HospitalRepository;
@@ -115,10 +115,10 @@ public class HospitalService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<EfectorhospitalDto> findByIdNombre(Long id) {
+    public Optional<EfectorHospitalDto> findByIdNombre(Long id) {
         Optional<Hospital> hospital = hospitalRepository.findById(id);
         if (hospital.isPresent()) {
-            return Optional.of(new EfectorhospitalDto(
+            return Optional.of(new EfectorHospitalDto(
                     hospital.get().getId(),
                     hospital.get().getNombre(),
                     hospital.get().getNivelComplejidad()));

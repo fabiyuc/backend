@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.efector.EfectorCapsDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.repository.CapsRepository;
@@ -73,5 +74,15 @@ public class CapsService {
                 .stream()
                 .map(caps -> new EfectorSummaryDto(caps.getId(), caps.getNombre()))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<EfectorCapsDto> findByIdNombre(Long id) {
+        Optional<Caps> caps = capsRepository.findById(id);
+        if (caps.isPresent()) {
+            return Optional.of(new EfectorCapsDto(
+                    caps.get().getId(),
+                    caps.get().getNombre()));
+        }
+        return Optional.empty();
     }
 }

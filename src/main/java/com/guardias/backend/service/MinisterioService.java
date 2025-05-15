@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.efector.EfectorMinisterioDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.repository.MinisterioRepository;
@@ -76,4 +77,13 @@ public class MinisterioService {
                 .collect(Collectors.toList());
     }
 
+    public Optional<EfectorMinisterioDto> findByIdNombre(Long id) {
+        Optional<Ministerio> ministerio = ministerioRepository.findById(id);
+        if (ministerio.isPresent()) {
+            return Optional.of(new EfectorMinisterioDto(
+                    ministerio.get().getId(),
+                    ministerio.get().getNombre()));
+        }
+        return Optional.empty();
+    }
 }

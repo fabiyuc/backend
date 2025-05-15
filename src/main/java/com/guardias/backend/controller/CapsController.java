@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.efector.EfectorCapsDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
@@ -68,6 +70,15 @@ public class CapsController {
     public ResponseEntity<List<EfectorSummaryDto>> listActivos() {
         List<EfectorSummaryDto> list = capsService.findActiveEfectors();
         return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/detailNombreAll/{id}")
+    public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
+        Optional<EfectorCapsDto> efectorCapsDto = capsService.findByIdNombre(id);
+        if (efectorCapsDto.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("Caps no encontrado"), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(efectorCapsDto.get(), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
