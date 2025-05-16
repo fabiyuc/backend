@@ -11,9 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.guardias.backend.dto.AsistencialDto;
 import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialListNombreTGDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
@@ -282,12 +282,12 @@ public class HabilitacionesGuardiasService {
         return dtoList;
     }
 
-    public List<AsistencialDto> getAsistencialesWithCfAndExtraByEfector(Long idEfector) {
+    public List<AsistencialListNombreTGDto> getAsistencialesWithCfAndExtraByEfector(Long idEfector) {
         List<Asistencial> asistenciales = habilitacionesGuardiasRepository
                 .findAsistencialesWithCfAndExtraByEfector(idEfector);
 
         return asistenciales.stream().map(asistencial -> {
-            AsistencialDto dto = new AsistencialDto();
+            AsistencialListNombreTGDto dto = new AsistencialListNombreTGDto();
 
             dto.setId(asistencial.getId());
             dto.setNombre(asistencial.getNombre());
@@ -312,6 +312,11 @@ public class HabilitacionesGuardiasService {
             dto.setTelefono(asistencial.getTelefono());
             dto.setEmail(asistencial.getEmail());
             dto.setDomicilio(asistencial.getDomicilio());
+            dto.setNombresTiposGuardias(asistencial.getLegajos().stream()
+                    .filter(l -> l.getFechaFinal() == null)
+                    .flatMap(l -> l.getTipoGuardias().stream())
+                    .map(tg -> tg.getNombre().name())
+                    .collect(Collectors.toList()));
 
             return dto;
         }).collect(Collectors.toList());

@@ -451,7 +451,7 @@ public class AsistencialService {
                     asistencial.getTelefono(),
                     asistencial.getEmail(),
                     asistencial.getDomicilio(),
-                    asistencial.isActivo(),
+                    asistencial.isEsAsistencial(),
                     asistencial.isActivo(),
                     asistencial.getLegajos().stream()
                             .filter(Legajo::isActivo) // Solo legajos activos
