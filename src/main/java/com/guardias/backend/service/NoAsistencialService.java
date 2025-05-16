@@ -153,7 +153,10 @@ public class NoAsistencialService {
                     noAsistencial.getSexo(),
                     noAsistencial.getTelefono(),
                     noAsistencial.getEmail(),
-                    noAsistencial.getDomicilio());
+                    noAsistencial.getDomicilio(),
+                    noAsistencial.getLegajos().stream()
+                            .filter(Legajo::isActivo)
+                            .collect(Collectors.toList()));
             EfectorList.add(dto);
         }
         return EfectorList;
@@ -252,7 +255,10 @@ public class NoAsistencialService {
                     noAsistencial.getSexo(),
                     noAsistencial.getTelefono(),
                     noAsistencial.getEmail(),
-                    noAsistencial.getDomicilio()
+                    noAsistencial.getDomicilio(),
+                    noAsistencial.getLegajos().stream()
+                            .filter(Legajo::isActivo)
+                            .collect(Collectors.toList())
 
             );
             EfectorList.add(dto);

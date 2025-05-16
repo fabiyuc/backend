@@ -50,7 +50,7 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
   @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.udo u WHERE u.id = :idUdo AND u.activo = true AND a.activo = true")
   List<Asistencial> findByUdoAndActivoTrue(@Param("idUdo") Long idUdo);
 
-  @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND a.activo = true")
+  @Query("SELECT a FROM asistenciales a JOIN a.legajos l JOIN l.efectores e WHERE e.id = :idEfector AND e.activo = true AND a.activo = true AND l.activo = true")
   List<Asistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
 
   @Query("""
@@ -97,5 +97,5 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
 
   @Query("SELECT a FROM asistenciales a WHERE a.id = :id AND a.activo = true")
   Optional<Asistencial> findByIdAndActivoTrue(@Param("id") Long id);
-    
+
 }

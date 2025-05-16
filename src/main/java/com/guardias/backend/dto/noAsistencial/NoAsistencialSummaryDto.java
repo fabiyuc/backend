@@ -1,6 +1,9 @@
 package com.guardias.backend.dto.noAsistencial;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.guardias.backend.entity.Legajo;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -28,5 +31,6 @@ public class NoAsistencialSummaryDto {
     private String telefono;
     private String email;
     private String domicilio;
+    private List<Legajo> idLegajos;
 
 }

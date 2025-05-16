@@ -415,7 +415,7 @@ public class AsistencialService {
                     asistencial.isActivo(),
                     asistencial.isActivo(),
                     asistencial.getLegajos().stream()
-                            .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                            .filter(Legajo::isActivo) // Solo legajos activos
                             .collect(Collectors.toList()));
 
             EfectorList.add(dto);
