@@ -522,7 +522,7 @@ public class LegajoService {
             // TipoGuardia de CONTRAFACTURA
             return persona.getLegajos().stream()
                     .filter(legajo -> legajo.getFechaFinal() == null) // modificar esto, debe validar que activo = true
-                    .flatMap((Legajo legajo) -> legajo.getTipoGuardias().stream()) // Obtener los tipos de guardias de
+                    .flatMap( legajo -> legajo.getTipoGuardias().stream()) // Obtener los tipos de guardias de
                                                                                    // cada legajo activo
                     .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CONTRAFACTURA);
         }
