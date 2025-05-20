@@ -13,22 +13,32 @@ import com.guardias.backend.entity.Autoridad;
 @Repository
 public interface AutoridadRepository extends JpaRepository<Autoridad, Long> {
 
-    Optional<List<Autoridad>> findByActivoTrue();
+  Optional<List<Autoridad>> findByActivoTrue();
 
-    Optional<Autoridad> findById(Long id);
+  Optional<Autoridad> findById(Long id);
 
-    @Query("SELECT a FROM autoridades a WHERE a.persona.id = :personaId")
-    Optional<List<Autoridad>> findByPersonaId(@Param("personaId") Long personaId);
+  @Query("SELECT a FROM autoridades a WHERE a.persona.id = :personaId")
+  Optional<List<Autoridad>> findByPersonaId(@Param("personaId") Long personaId);
 
-   
-    boolean existsById(Long id);
+  boolean existsById(Long id);
 
-    boolean existsByPersonaId(Long personaId);
+  boolean existsByPersonaId(Long personaId);
 
-    List<Autoridad> findByActivo(boolean activo);
+  List<Autoridad> findByActivo(boolean activo);
 
-    boolean existsByPersonaIdAndActivoTrueAndConfirmadoTrue(Long idPersona);
-    
-    boolean existsByPersonaIdAndActivoTrue(Long idPersona);
+  boolean existsByPersonaIdAndActivoTrueAndConfirmadoTrue(Long idPersona);
 
+  boolean existsByPersonaIdAndActivoTrue(Long idPersona);
+
+  @Query("""
+      SELECT DISTINCT a
+      FROM autoridades a
+      JOIN a.persona p
+      JOIN p.legajos l
+      WHERE a.activo = true
+        AND l.activo = true
+        AND l.esAutoridad = true
+        AND p.id = :idPersona
+      """)
+  Optional<Autoridad> findActiveAutoridadLegajoByPersonaId(@Param("idPersona") Long idPersona);
 }

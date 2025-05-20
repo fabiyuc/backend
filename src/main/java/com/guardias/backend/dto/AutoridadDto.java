@@ -17,14 +17,15 @@ public class AutoridadDto {
 }
 
 // genera el json
-
-// {
-// "nombre": "nombre",
-// "fechaInicio": "2021-09-01",
-// "fechaFinal": "2021-09-01",
-// "esRegional": true,
-// "activo": true,
-// "idEfector": 1,
-// "idPersona": 1,
-// "idCargo": 1
-// }
+/*
+ * {
+ * "nombre": "nombre",
+ * "fechaInicio": "2021-09-01",
+ * "fechaFinal": "2021-09-01",
+ * "esRegional": true,
+ * "activo": true,
+ * "idEfector": 1,
+ * "idPersona": 1,
+ * "idCargo": 1
+ * }
+ */

@@ -128,4 +128,10 @@ public class AutoridadController {
         return new ResponseEntity<>(isAutoridad, HttpStatus.OK);
     }
 
+    @GetMapping("/hasActiveAutoridadLegajo/{idPersona}")
+    public ResponseEntity<Boolean> hasActiveAutoridadLegajo(@PathVariable Long idPersona) {
+        boolean hasActiveAutoridadLegajo = autoridadService.hasActiveAutoridadLegajo(idPersona);
+        return new ResponseEntity<>(hasActiveAutoridadLegajo, HttpStatus.OK);
+    }
+
 }
