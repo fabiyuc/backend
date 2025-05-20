@@ -48,16 +48,26 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("idEfector") Long idEfector);
 
         @Query(nativeQuery = true, value = """
-                        SELECT *
-                        FROM distribuciones_guardias d
-                        WHERE d.id_persona = :idAsistencial
-                        AND d.id_efector = :idEfector
-                        AND d.tipo_guardia = :tipoGuardia
-                        AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                        AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
-                        AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
-                        AND d.activo = 1
-                        """)
+                SELECT *
+                FROM distribuciones_guardias d
+                WHERE d.id_persona = :idAsistencial                        
+                AND d.id_efector = :idEfector
+                AND d.tipo_guardia = :tipoGuardia
+                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
+                AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
+                AND d.activo = 1
+                AND d.dia =
+                        CASE DATEPART(WEEKDAY, :fechaIngreso)
+                                WHEN 1 THEN 'LUNES'
+                                WHEN 2 THEN 'MARTES'
+                                WHEN 3 THEN 'MIERCOLES' 
+                                WHEN 4 THEN 'JUEVES'
+                                WHEN 5 THEN 'VIERNES'
+                                WHEN 6 THEN 'SABADO'
+                                WHEN 7 THEN 'DOMINGO'
+                        END
+                """)
         Optional<DistribucionGuardia> findValidDistribucion(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
@@ -84,6 +94,6 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("anio") int anio);
 
         List<DistribucionGuardia> findByPersonaIdAndActivoTrue(Long idPersona);
-        
+
         boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

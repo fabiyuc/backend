@@ -175,7 +175,7 @@ public class NovedadPersonalService {
         // novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona,
         // nombresLicencias);
 
-        return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+        return !novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
 
     }
 

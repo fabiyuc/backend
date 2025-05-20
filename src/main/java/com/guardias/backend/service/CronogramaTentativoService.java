@@ -16,6 +16,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
@@ -240,6 +241,15 @@ public class CronogramaTentativoService {
         cronogramaTentativo.setAutorizado(AutorizadoTentativoEnum.CONFIRMADO);
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
+    
+    public void aceptar(Long id) {
+        CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
+
+        // Actualiza el tentativo
+        cronogramaTentativo.setAceptado(true);
+        cronogramaTentativoRepository.save(cronogramaTentativo);
+    }
 
     public void autorizarUpdate(Long id, AutorizadoTentativoEnum nuevoEstado) {
         CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
@@ -287,7 +297,7 @@ public class CronogramaTentativoService {
         return dto;
     }
 
-    public boolean verificarRegistroIngresoEnTentativo(RegActivRegIngresoDto dto) {
+    public VerificacionTentativoResponseDto verificarRegistroIngresoEnTentativo(RegActivRegIngresoDto dto) {
         List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
@@ -296,7 +306,11 @@ public class CronogramaTentativoService {
                 dto.getFechaIngreso(),
                 dto.getHoraIngreso());
 
-        return !cronogramas.isEmpty(); // True si hay al menos una coincidencia
+        if(cronogramas.isEmpty()) {
+            return new VerificacionTentativoResponseDto(null, false);
+        }
+        
+        return new VerificacionTentativoResponseDto(cronogramas.get(0).getId(), true);
     }
 
     public Optional<List<CronogramaTentativoListAtorizadoDto>> findByEfectorIdAndAutorizado(Long efectorId,

@@ -21,6 +21,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
@@ -184,7 +185,7 @@ public class CronogramaTentativoController {
 
     // busca cronograma tentativo para comparar con registro de actividad
     @PostMapping("/verificarRegistroIngresoEnTentativo")
-    public boolean verificarRegistroIngresoEnTentativo(@RequestBody RegActivRegIngresoDto dto) {
+    public VerificacionTentativoResponseDto  verificarRegistroIngresoEnTentativo(@RequestBody RegActivRegIngresoDto dto) {
 
         return cronogramaTentativoService.verificarRegistroIngresoEnTentativo(dto);
     }
@@ -193,8 +194,8 @@ public class CronogramaTentativoController {
     public ResponseEntity<?> aceptar(@PathVariable("id") Long id) {
 
         try {
-            cronogramaTentativoService.autorizar(id);
-            return new ResponseEntity<>(new Mensaje("Cronograma tentativo autorizado.."), HttpStatus.OK);
+            cronogramaTentativoService.aceptar(id);
+            return new ResponseEntity<>(new Mensaje("Cronograma tentativo aceptado.."), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
         } catch (ValidationException e) {
