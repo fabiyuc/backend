@@ -68,9 +68,9 @@ public class RegistroMensualController {
             List<RegistroMensual> registrosMensuales = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
 
-            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+            return new ResponseEntity<>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Registros mensuales de Cargo y reagrupacion no encontrados"),
+            return new ResponseEntity(new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -109,7 +109,7 @@ public class RegistroMensualController {
             List<RegistroMensual> registrosMensuales = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
 
-            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+            return new ResponseEntity<>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Registros mensuales extra no encontrados"), HttpStatus.BAD_REQUEST);
         }
@@ -149,7 +149,7 @@ public class RegistroMensualController {
             List<RegistroMensual> registrosMensuales = registroMensualService
                     .findByAnioMesEfectorAndTipoGuardiaCF(anio, mesEnum, idEfector);
 
-            return new ResponseEntity<List<RegistroMensual>>(registrosMensuales, HttpStatus.OK);
+            return new ResponseEntity<>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Registros mensuales extra no encontrados"), HttpStatus.BAD_REQUEST);
         }
