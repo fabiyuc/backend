@@ -71,7 +71,7 @@ public class RegistroMensualService {
 
         return registrosMensuales;
     }
-    
+
     public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCF(int anio, MesesEnum mes,
             Long idEfector) {
         List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
@@ -90,6 +90,61 @@ public class RegistroMensualService {
             MesesEnum mes, int anio) {
         return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId, mes,
                 anio);
+    }
+
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacionAndServicio(
+            int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+
+        // Utilizamos directamente la consulta personalizada del repositorio
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+
+        // Filtro adicional para dejar solo las actividades de tipo CARGO o AGRUPACION
+        for (RegistroMensual registroMensual : registrosMensuales) {
+            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
+                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                            || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                    .collect(Collectors.toList());
+            registroMensual.setRegistroActividad(actividadesFiltradas);
+        }
+
+        return registrosMensuales;
+    }
+
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaExtraAndServicio(int anio, MesesEnum mes,
+            Long idEfector, Long idServicio) {
+
+        // Utilizamos directamente la consulta personalizada del repositorio
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+
+        // Filtro adicional para dejar solo las actividades de tipo EXTRA
+        for (RegistroMensual registroMensual : registrosMensuales) {
+            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
+                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                    .collect(Collectors.toList());
+            registroMensual.setRegistroActividad(actividadesFiltradas);
+        }
+
+        return registrosMensuales;
+    }
+
+    public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCFAndServicio(int anio, MesesEnum mes,
+            Long idEfector, Long idServicio) {
+
+        // Utilizamos directamente la consulta personalizada del repositorio
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+
+        // Filtro adicional para dejar solo las actividades de tipo CONTRAFACTURA
+        for (RegistroMensual registroMensual : registrosMensuales) {
+            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
+                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                    .collect(Collectors.toList());
+            registroMensual.setRegistroActividad(actividadesFiltradas);
+        }
+
+        return registrosMensuales;
     }
 
     // public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, Long
@@ -172,7 +227,7 @@ public class RegistroMensualService {
         return registroMensual;
     }
 
-     public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+    public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
 
         RegistroMensual registroMensual = new RegistroMensual();
         registroMensual.setMes(mesEnum);
@@ -206,7 +261,8 @@ public class RegistroMensualService {
         RegistroMensual registroMensual = new RegistroMensual();
 
         try {
-            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
+            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
+                    .get();
             System.out.println("##### id del registro mensual encontrado: " + registroMensual.getId());
         } catch (Exception exception) {
             System.out.println("id no encontrado registroMensualService Ln215 - " + exception.getMessage());
@@ -218,33 +274,36 @@ public class RegistroMensualService {
         // sumo las horas y los montos
         System.out.println("... CREANDO UN NUEVO SUMAHORAS.... : ");
 
-
-        System.out.println("... id sumahoras del reg mensual.... : "+ registroMensual.getTotalHoras().getId());
+        System.out.println("... id sumahoras del reg mensual.... : " + registroMensual.getTotalHoras().getId());
 
         SumaHoras horas = registroMensual.getTotalHoras();
 
-        if (horas == null) {   
+        if (horas == null) {
             horas = new SumaHoras();
             registroMensual.setTotalHoras(horas);
         }
-            
+
         sumaHorasService.sumarHorasMensuales(horas, registroActividad.getHorasRealizadas());
-        
+
         sumaHorasService.save(horas);
 
         // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
         // registroActividad);
-        //luego vemos el json //JsonFile jsonFile = new JsonFile();
+        // luego vemos el json //JsonFile jsonFile = new JsonFile();
         try {
             registroActividad.setRegistroMensual(findById(id).get());
-            /*luego vemos el json // if (registroMensual.getJsonFile() != null) {
-                jsonFile = registroMensual.getJsonFile();
-            } */
+            /*
+             * luego vemos el json // if (registroMensual.getJsonFile() != null) {
+             * jsonFile = registroMensual.getJsonFile();
+             * }
+             */
         } catch (Exception e) {
             System.out.println("error: idRegistroMensual nulo  registroMensualService Ln247 -- " + e.getMessage());
         }
         // jsonFileService.save(jsonFile);
-        //luego vemos el json //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
+        // luego vemos el json
+        // //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile,
+        // registroActividad));
 
         return registroActividad;
     }

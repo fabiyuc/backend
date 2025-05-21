@@ -38,4 +38,12 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         boolean existsById(Long id);
 
         List<RegistroMensual> findByActivo(boolean activo);
+
+        @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra "
+                        + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector "
+                        + "AND ra.servicio.id = :idServicio")
+        List<RegistroMensual> findByAnioMesEfectorAndServicio(@Param("anio") int anio,
+                        @Param("mes") MesesEnum mes,
+                        @Param("idEfector") Long idEfector,
+                        @Param("idServicio") Long idServicio);
 }
