@@ -122,9 +122,9 @@ public class NovedadPersonalController {
         return new ResponseEntity<>(new Mensaje("novedad eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/puedeHacerGuardia/{idPersona}")
-    public ResponseEntity<Boolean>  puedeHacerGuardia(@PathVariable Long idPersona) {
-        boolean resultado = novedadPersonalService.puedeHacerGuardia(idPersona);
+    @GetMapping("/puedeHacerGuardia/{idPersona}/{fechaConsulta}")
+    public ResponseEntity<Boolean>  puedeHacerGuardia(@PathVariable Long idPersona, @PathVariable LocalDate fechaConsulta) {
+        boolean resultado = novedadPersonalService.puedeHacerGuardia(idPersona, fechaConsulta);
         return ResponseEntity.ok(resultado);
     }
 

@@ -153,29 +153,21 @@ public class NovedadPersonalService {
         return novedadPersonal;
     }
 
-    public boolean puedeHacerGuardia(Long idPersona) {
+    public boolean puedeHacerGuardia(Long idPersona, LocalDate fechaConsulta) {
 
-        if (idPersona == null) {
-            throw new IllegalArgumentException("el id de la persona no pueden ser nulo.");
+        if (idPersona == null || fechaConsulta == null) {
+            throw new IllegalArgumentException("el id de la persona y fecha de consulta no pueden ser nulos.");
         }
 
         if (!personaService.activoById(idPersona)) {
             throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
         }
 
-        // Lista de nombres de licencias que se deben verificar
-        List<String> nombresLicencias = Arrays.asList("Licencia por maternidad", "Parte por enfermedad", "Duelo");
-        /*
-         * List<String> nombresLicencias = Arrays.asList("Compensatorio", "MATERNIDAD",
-         * "Licencia anual ordinaria");
-         */
+        // Lista de nombres de licencias que impiden hacer guardia
+        List<String> licenciasBloqueantes = Arrays.asList("Licencia por maternidad", "Parte por enfermedad", "Duelo");
 
-        // Buscar coincidencias en Novedades personales
-        // Boolean esElegibleParaGuardia =
-        // novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona,
-        // nombresLicencias);
-
-        return !novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombreIn(idPersona, nombresLicencias);
+        // Verifica si existe alguna novedad activa en la fecha consultada
+        return !novedadPersonalRepository.existeNovedadBloqueante(idPersona, licenciasBloqueantes, fechaConsulta);
 
     }
 
