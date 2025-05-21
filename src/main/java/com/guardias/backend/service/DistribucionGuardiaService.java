@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
+import com.guardias.backend.dto.cronogramaTentativo.ValidacionCronogramaResponseDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
@@ -135,30 +136,54 @@ public class DistribucionGuardiaService {
 
     }
 
-    public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
+    public ValidacionCronogramaResponseDto validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
         if (dto == null) {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+        // entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
-        // Busca una distribución válida
-        return distribucionGuardiaRepository.findValidDistribucion(dto.getIdAsistencial(), dto.getIdEfector(),
-                dto.getTipoGuardia(), dto.getFechaIngreso(),
-                horaIngresoString, horaEgresoString).isPresent();
+        // 1. Primero verificamos si hay coincidencia exacta
+        boolean coincideExactamente = distribucionGuardiaRepository.findValidDistribucion(
+                dto.getIdAsistencial(),
+                dto.getIdEfector(),
+                dto.getTipoGuardia(),
+                dto.getFechaIngreso(),
+                horaIngresoString,
+                horaEgresoString).isPresent();
+
+        if (coincideExactamente) {
+            return new ValidacionCronogramaResponseDto(true, false, false);
+        }
+
+        // 2. Verificación de distribución activa parcial (mismo mes y año)
+        boolean existeDistribucionParcial = distribucionGuardiaRepository.existsByPersonaAndEfectorAndTipoInMonth(
+                        dto.getIdAsistencial(),
+                        dto.getIdEfector(),
+                        dto.getTipoGuardia(),
+                        dto.getFechaIngreso().getMonthValue(),
+                        dto.getFechaIngreso().getYear());
+
+        // 3. Determinar si no hay ninguna distribución
+        boolean sinDistribucion = !existeDistribucionParcial;
+
+        return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial,sinDistribucion);
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 
         // Verifica si existe en DistribucionGuardia
-        if (distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(dia, fecha, idAsistencial, idEfector)) {
+        if (distribucionGuardiaRepository.existsByDiaAndFechaAndIdPersonaAndIdEfector(dia, fecha, idAsistencial,
+                idEfector)) {
             return true;
         }
 
         // Verifica si existe en DistribucionConsultorio
-        return !distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(dia, fecha, idAsistencial, idEfector);
+        return !distribucionConsultorioRepository.existsByDiaAndFechaAndPersonaAndEfector(dia, fecha, idAsistencial,
+                idEfector);
 
     }
 
@@ -166,42 +191,45 @@ public class DistribucionGuardiaService {
         Long idPersona = request.getIdPersona();
         int mes = request.getFecha().getMonthValue();
         int anio = request.getFecha().getYear();
-    
+
         // 1. Verifica DistribucionGuardia
         if (distribucionGuardiaRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             boolean existe = distribucionGuardiaRepository
-                .findByPersonaIdAndActivoTrue(idPersona)
-                .stream()
-                .anyMatch(d -> esFechaValida(d, mes, anio));
-            if (existe) return true;
+                    .findByPersonaIdAndActivoTrue(idPersona)
+                    .stream()
+                    .anyMatch(d -> esFechaValida(d, mes, anio));
+            if (existe)
+                return true;
         }
-    
+
         // 2. Verifica DistribucionConsultorio
         if (distribucionConsultorioRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             boolean existe = distribucionConsultorioRepository
-                .findByPersonaIdAndActivoTrue(idPersona)
-                .stream()
-                .anyMatch(d -> esFechaValida(d, mes, anio));
-            if (existe) return true;
+                    .findByPersonaIdAndActivoTrue(idPersona)
+                    .stream()
+                    .anyMatch(d -> esFechaValida(d, mes, anio));
+            if (existe)
+                return true;
         }
-    
+
         // 3. Verifica DistribucionGira
         if (distribucionGiraRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             boolean existe = distribucionGiraRepository
-                .findByPersonaIdAndActivoTrue(idPersona)
-                .stream()
-                .anyMatch(d -> esFechaValida(d, mes, anio));
-            if (existe) return true;
+                    .findByPersonaIdAndActivoTrue(idPersona)
+                    .stream()
+                    .anyMatch(d -> esFechaValida(d, mes, anio));
+            if (existe)
+                return true;
         }
-    
+
         // 4. Verifica DistribucionOtra
         if (distribucionOtraRepository.existsByPersonaIdAndActivoTrue(idPersona)) {
             return distribucionOtraRepository
-                .findByPersonaIdAndActivoTrue(idPersona)
-                .stream()
-                .anyMatch(d -> esFechaValida(d, mes, anio));
+                    .findByPersonaIdAndActivoTrue(idPersona)
+                    .stream()
+                    .anyMatch(d -> esFechaValida(d, mes, anio));
         }
-    
+
         return false;
     }
 

@@ -32,7 +32,19 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
     List<NovedadPersonal> findByActivo(boolean activo);
 
-    boolean existsByPersonaIdAndTipoLicenciaNombreIn(Long personaId, List<String> nombresLicencias);
+    @Query("SELECT CASE WHEN COUNT(n) > 0 THEN true ELSE false END " +
+           "FROM novedadesPersonales n " +
+           "WHERE n.persona.id = :personaId " +
+           "AND n.tipoLicencia.nombre IN :licencias " +
+           "AND n.activo = true " +
+           "AND :fecha BETWEEN n.fechaInicio AND n.fechaFinal")
+    boolean existeNovedadBloqueante(
+        @Param("personaId") Long personaId,
+        @Param("licencias") List<String> licencias,
+        @Param("fecha") LocalDate fecha
+    );
+
+    //boolean existsByPersonaIdAndTipoLicenciaNombreIn(Long personaId, List<String> nombresLicencias);
 
     // Método para verificar si existe una novedad con nombreLicencia 
     boolean existsByPersonaIdAndTipoLicenciaNombre(Long personaId, String nombreLicencia);
