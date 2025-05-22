@@ -16,12 +16,14 @@ public class ConsultaLicenciaCompensatorioDto {
     private Long idPersona;
     
     @NotNull
-    private LocalDate fechaInicioConsulta;  // Fecha inicial del rango a verificar
-    
-    private LocalTime horaInicioConsulta;   // Hora inicial (opcional, si es null = todo el día)
+    private LocalDate fechaInicioConsulta;
     
     @NotNull
-    private LocalDate fechaFinConsulta;     // Fecha final del rango a verificar
+    private LocalTime horaInicioConsulta;
     
-    private LocalTime horaFinConsulta;      // Hora final (opcional, si es null = todo el día)
+    @NotNull
+    private LocalDate fechaFinConsulta;
+    
+    @NotNull
+    private LocalTime horaFinConsulta;
 }

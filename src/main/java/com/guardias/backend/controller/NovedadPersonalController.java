@@ -128,9 +128,10 @@ public class NovedadPersonalController {
         return ResponseEntity.ok(resultado);
     }
 
-    @GetMapping("/tieneLicenciaLAO/{idPersona}")
-    public ResponseEntity<Boolean> tieneLicenciaLAO(@PathVariable Long idPersona) {
-        boolean resultado = novedadPersonalService.tieneLicenciaLAO(idPersona);
+    @GetMapping("/tieneLicenciaLAO/{idPersona}/{fechaConsulta}")
+    public ResponseEntity<Boolean> tieneLicenciaLAO(@PathVariable Long idPersona,
+        @PathVariable LocalDate fechaConsulta) {
+        boolean resultado = novedadPersonalService.tieneLicenciaLAO(idPersona, fechaConsulta);
         return ResponseEntity.ok(resultado);
     }
 

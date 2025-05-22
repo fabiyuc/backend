@@ -124,7 +124,7 @@ public class NovedadPersonalService {
 
         novedadPersonal.setPuedeRealizarGuardia(novedadPersonalDto.isPuedeRealizarGuardia());
         novedadPersonal.setCobraSueldo(novedadPersonalDto.isCobraSueldo());
-        //novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
+        // novedadPersonal.setNecesitaReemplazo(novedadPersonalDto.isNecesitaReemplazo());
 
         // Si el suplente es nulo, se puede asignar null
         if (novedadPersonal.getPersona() == null ||
@@ -133,14 +133,18 @@ public class NovedadPersonalService {
             novedadPersonal.setPersona(personaService.findById(novedadPersonalDto.getIdPersona()));
         }
 
-       /*  // Si el suplente es nulo, se puede asignar null
-        if (novedadPersonalDto.getIdSuplente() == null) {
-            novedadPersonal.setSuplente(null);
-        } else if (novedadPersonal.getSuplente() == null ||
-                (novedadPersonalDto.getIdSuplente() != null &&
-                        !Objects.equals(novedadPersonal.getSuplente().getId(), novedadPersonalDto.getIdSuplente()))) {
-            novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.getIdSuplente()));
-        } */
+        /*
+         * // Si el suplente es nulo, se puede asignar null
+         * if (novedadPersonalDto.getIdSuplente() == null) {
+         * novedadPersonal.setSuplente(null);
+         * } else if (novedadPersonal.getSuplente() == null ||
+         * (novedadPersonalDto.getIdSuplente() != null &&
+         * !Objects.equals(novedadPersonal.getSuplente().getId(),
+         * novedadPersonalDto.getIdSuplente()))) {
+         * novedadPersonal.setSuplente(personaService.findById(novedadPersonalDto.
+         * getIdSuplente()));
+         * }
+         */
 
         if (novedadPersonal.getTipoLicencia() == null ||
                 (novedadPersonalDto.getIdTipoLicencia() != null &&
@@ -171,38 +175,28 @@ public class NovedadPersonalService {
 
     }
 
-    public boolean tieneLicenciaLAO(Long idPersona) {
+    public boolean tieneLicenciaLAO(Long idPersona, LocalDate fechaConsulta) {
 
-        if (idPersona == null) {
-            throw new IllegalArgumentException("el id de la persona no pueden ser nulo.");
+        if (idPersona == null || fechaConsulta == null) {
+            throw new IllegalArgumentException("el id de persona y fecha de consulta no pueden ser nulos.");
         }
 
         if (!personaService.activoById(idPersona)) {
             throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
         }
 
-        return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "LAO");
-
-    }
-
-    public boolean tieneLicenciaCompensatorio(Long idPersona) {
-
-        if (idPersona == null) {
-            throw new IllegalArgumentException("el id de la persona no pueden ser nulo.");
-        }
-
-        if (!personaService.activoById(idPersona)) {
-            throw new EntityNotFoundException("La persona con ID " + idPersona + " no existe.");
-        }
-
-        return novedadPersonalRepository.existsByPersonaIdAndTipoLicenciaNombre(idPersona, "Compensatorio");
-
+        return novedadPersonalRepository.tieneLicenciaActivaEnFecha(
+                idPersona,
+                "Licencia anual ordinaria",
+                fechaConsulta);
     }
 
     public boolean tieneLicenciaCompensatorio(ConsultaLicenciaCompensatorioDto consulta) {
-        
-        if (consulta.getIdPersona() == null || consulta.getFechaInicioConsulta() == null || consulta.getFechaFinConsulta() == null) {
-            throw new IllegalArgumentException("ID persona, fecha inicio y fecha fin son obligatorios.");
+
+        if (consulta.getIdPersona() == null || 
+        consulta.getFechaInicioConsulta() == null || consulta.getHoraInicioConsulta() == null ||
+        consulta.getFechaFinConsulta() == null || consulta.getHoraFinConsulta() == null) {
+            throw new IllegalArgumentException("Todos los campos son obligatorios.");
         }
 
         if (consulta.getFechaInicioConsulta().isAfter(consulta.getFechaFinConsulta())) {
@@ -217,13 +211,14 @@ public class NovedadPersonalService {
         return compensatorios.stream().anyMatch(comp -> {
             LocalDateTime inicioComp = toLocalDateTime(comp.getFechaInicio(), comp.getHoraInicio(), false);
             LocalDateTime finComp = toLocalDateTime(
-                comp.getFechaFinal() != null ? comp.getFechaFinal() : comp.getFechaInicio(), 
-                comp.getHoraFinal(), 
-                true
-            );
+                    comp.getFechaFinal() != null ? comp.getFechaFinal() : comp.getFechaInicio(),
+                    comp.getHoraFinal(),
+                    true);
 
-            LocalDateTime inicioConsulta = toLocalDateTime(consulta.getFechaInicioConsulta(), consulta.getHoraInicioConsulta(), false);
-            LocalDateTime finConsulta = toLocalDateTime(consulta.getFechaFinConsulta(), consulta.getHoraFinConsulta(), true);
+            LocalDateTime inicioConsulta = toLocalDateTime(consulta.getFechaInicioConsulta(),
+                    consulta.getHoraInicioConsulta(), false);
+            LocalDateTime finConsulta = toLocalDateTime(consulta.getFechaFinConsulta(), consulta.getHoraFinConsulta(),
+                    true);
 
             return inicioConsulta.isBefore(finComp) && finConsulta.isAfter(inicioComp);
         });

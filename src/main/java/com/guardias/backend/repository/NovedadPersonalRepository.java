@@ -14,46 +14,51 @@ import com.guardias.backend.entity.NovedadPersonal;
 @Repository
 public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal, Long> {
 
-    Optional<List<NovedadPersonal>> findByActivoTrue();
+       Optional<List<NovedadPersonal>> findByActivoTrue();
 
-    Optional<NovedadPersonal> findById(Long id);
+       Optional<NovedadPersonal> findById(Long id);
 
-    @Query("SELECT np FROM novedadesPersonales np WHERE np.persona.id = :personaId")
-    Optional<List<NovedadPersonal>> findByPersona(@Param("personaId") Long personaId);
+       @Query("SELECT np FROM novedadesPersonales np WHERE np.persona.id = :personaId")
+       Optional<List<NovedadPersonal>> findByPersona(@Param("personaId") Long personaId);
 
-    Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fechaInicio);
+       Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fechaInicio);
 
-    @Query("SELECT np FROM novedadesPersonales np WHERE np.fechaInicio = :fechaInicio and np.activo=true")
-    Boolean existsByFechaInicio(LocalDate fechaInicio);
+       @Query("SELECT np FROM novedadesPersonales np WHERE np.fechaInicio = :fechaInicio and np.activo=true")
+       Boolean existsByFechaInicio(LocalDate fechaInicio);
 
-    boolean existsByPersonaId(Long personaId);
+       boolean existsByPersonaId(Long personaId);
 
-    boolean existsById(Long id);
+       boolean existsById(Long id);
 
-    List<NovedadPersonal> findByActivo(boolean activo);
+       List<NovedadPersonal> findByActivo(boolean activo);
 
-    @Query("SELECT CASE WHEN COUNT(n) > 0 THEN true ELSE false END " +
-           "FROM novedadesPersonales n " +
-           "WHERE n.persona.id = :personaId " +
-           "AND n.tipoLicencia.nombre IN :licencias " +
-           "AND n.activo = true " +
-           "AND :fecha BETWEEN n.fechaInicio AND n.fechaFinal")
-    boolean existeNovedadBloqueante(
-        @Param("personaId") Long personaId,
-        @Param("licencias") List<String> licencias,
-        @Param("fecha") LocalDate fecha
-    );
+       @Query("SELECT CASE WHEN COUNT(n) > 0 THEN true ELSE false END " +
+                     "FROM novedadesPersonales n " +
+                     "WHERE n.persona.id = :personaId " +
+                     "AND n.tipoLicencia.nombre IN :licencias " +
+                     "AND n.activo = true " +
+                     "AND :fecha BETWEEN n.fechaInicio AND n.fechaFinal")
+       boolean existeNovedadBloqueante(
+                     @Param("personaId") Long personaId,
+                     @Param("licencias") List<String> licencias,
+                     @Param("fecha") LocalDate fecha);
 
-    //boolean existsByPersonaIdAndTipoLicenciaNombreIn(Long personaId, List<String> nombresLicencias);
+       @Query("SELECT CASE WHEN COUNT(n) > 0 THEN true ELSE false END " +
+                     "FROM novedadesPersonales n " +
+                     "WHERE n.persona.id = :personaId " +
+                     "AND n.tipoLicencia.nombre = :nombreLicencia " +
+                     "AND n.activo = true " +
+                     "AND :fecha BETWEEN n.fechaInicio AND n.fechaFinal")
+       boolean tieneLicenciaActivaEnFecha(
+                     @Param("personaId") Long personaId,
+                     @Param("nombreLicencia") String nombreLicencia,
+                     @Param("fecha") LocalDate fecha);
 
-    // Método para verificar si existe una novedad con nombreLicencia 
-    boolean existsByPersonaIdAndTipoLicenciaNombre(Long personaId, String nombreLicencia);
-    
-    @Query("SELECT n FROM novedadesPersonales n " +
-           "WHERE n.persona.id = :personaId " +
-           "AND UPPER(n.tipoLicencia.nombre) = UPPER(:nombreLicencia) " +
-           "AND n.activo = true")
-    List<NovedadPersonal> findByPersonaIdAndTipoLicenciaNombreIgnoreCaseAndActivoTrue(
-            @Param("personaId") Long personaId,
-            @Param("nombreLicencia") String nombreLicencia);
+       @Query("SELECT n FROM novedadesPersonales n " +
+                     "WHERE n.persona.id = :personaId " +
+                     "AND UPPER(n.tipoLicencia.nombre) = UPPER(:nombreLicencia) " +
+                     "AND n.activo = true")
+       List<NovedadPersonal> findByPersonaIdAndTipoLicenciaNombreIgnoreCaseAndActivoTrue(
+                     @Param("personaId") Long personaId,
+                     @Param("nombreLicencia") String nombreLicencia);
 }
