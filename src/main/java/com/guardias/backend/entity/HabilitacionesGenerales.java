@@ -39,7 +39,7 @@ public class HabilitacionesGenerales {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaNacimiento", "domicilio",
                         "novedadesPersonales", "suplentes", "distribucionesHorarias", "autoridades",
                         "registrosActividades",
-                        "registrosMensuales", "usuarios", "habilitacionesGenerales", "legajos" })
+                        "registrosMensuales", "usuarios", "legajos" })
 
         private Person persona;
 
