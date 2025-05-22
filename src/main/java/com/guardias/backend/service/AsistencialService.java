@@ -146,7 +146,7 @@ public class AsistencialService {
         for (Asistencial asistencial : asistenciales) {
             // Obtiene el legajo activo
             Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null)
+                    .filter(Legajo::isActivo)
                     .findFirst();
 
             // Obtiene el nombre de la profesión (o null si no hay legajo activo o
@@ -156,7 +156,7 @@ public class AsistencialService {
                     .orElse(null);
             // Mapea los nombres de los tipos de guardia a una lista de strings
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null) // Legajos activos
+                    .filter(Legajo::isActivo) // Legajos activos
                     .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Obtener tipos de guardia de cada legajo
                                                                           // activo
                     .map(tipoGuardia -> tipoGuardia.getNombre().name()) // Usa el método name() del enum
@@ -186,7 +186,7 @@ public class AsistencialService {
         for (Asistencial asistencial : asistenciales) {
             // Mapea los nombres de los tipos de guardia activos a una lista de strings
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null) // Legajos activos
+                    .filter(Legajo::isActivo) // Legajos activos
                     .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Obtener tipos de guardia de cada legajo
                                                                           // activo
                     .map(tipoGuardia -> tipoGuardia.getNombre().name()) // Usa el método name() del enum
@@ -227,7 +227,7 @@ public class AsistencialService {
             // Verifica si alguno de los tipos de guardia de los legajos activos es
             // 'CONTRAFACTURA'
             boolean hasContrafactura = asistencial.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                    .filter(Legajo::isActivo) // Solo legajos activos
                     .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Extrae tipos de guardia de cada legajo
                                                                           // activo
                     .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CONTRAFACTURA"));
@@ -235,7 +235,7 @@ public class AsistencialService {
             if (!hasContrafactura) {
                 // Mapea los nombres de los tipos de guardia activos a una lista de strings
                 List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
-                        .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                        .filter(Legajo::isActivo) // Solo legajos activos
                         .flatMap(legajo -> legajo.getTipoGuardias().stream())
                         .map(tipoGuardia -> tipoGuardia.getNombre().name())
                         .collect(Collectors.toList());
@@ -259,7 +259,7 @@ public class AsistencialService {
         for (Asistencial asistencial : asistenciales) {
             // Filtra por tipos de guardia CARGO o AGRUPACION
             boolean hasCargoOrAgrupacion = asistencial.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                    .filter(Legajo::isActivo) // Solo legajos activos
                     .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Extrae tipos de guardia de cada legajo
                                                                           // activo
                     .anyMatch(tipoGuardia -> tipoGuardia.getNombre().name().equals("CARGO") ||
@@ -268,7 +268,7 @@ public class AsistencialService {
             if (hasCargoOrAgrupacion) {
                 // Obtiene el legajo activo
                 Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-                        .filter(legajo -> legajo.getFechaFinal() == null)
+                        .filter(Legajo::isActivo)
                         .findFirst();
 
                 // Obtiene el nombre de la profesión (o null si no hay legajo activo o
@@ -278,7 +278,7 @@ public class AsistencialService {
                         .orElse(null);
                 // Mapea los nombres de los tipos de guardia
                 List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
-                        .filter(legajo -> legajo.getFechaFinal() == null) // Solo legajos activos
+                        .filter(Legajo::isActivo) // Solo legajos activos
                         .flatMap(legajo -> legajo.getTipoGuardias().stream())
                         .map(tipoGuardia -> tipoGuardia.getNombre().name())
                         .collect(Collectors.toList());
@@ -318,7 +318,7 @@ public class AsistencialService {
     private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
         // Obtiene el legajo activo
         Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-                .filter(legajo -> legajo.getFechaFinal() == null)
+                .filter(Legajo::isActivo)
                 .findFirst();
 
         // Obtiene el nombre de la profesión (o null si no hay legajo activo o
@@ -346,7 +346,7 @@ public class AsistencialService {
         return asistenciales.stream()
                 // Filtra asistenciales con legajos activos y tipo de guardia "EXTRA"
                 .filter(asistencial -> asistencial.getLegajos().stream()
-                        .filter(legajo -> legajo.getFechaFinal() == null) // Legajos activos
+                        .filter(Legajo::isActivo) // Legajos activos
                         .flatMap(legajo -> legajo.getTipoGuardias().stream())
                         .anyMatch(tipoGuardia -> "EXTRA".equals(tipoGuardia.getNombre().name()))) // Filtra por "EXTRA"
                 // Filtra asistenciales con habilitaciones válidas para el efector especificado
@@ -358,7 +358,7 @@ public class AsistencialService {
                 .map(asistencial -> {
                     // Obtiene el legajo activo
                     Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-                            .filter(legajo -> legajo.getFechaFinal() == null)
+                            .filter(Legajo::isActivo)
                             .findFirst();
 
                     // Obtiene el nombre de la profesión (o null si no hay legajo activo o
@@ -515,7 +515,7 @@ public class AsistencialService {
                                         .anyMatch(ef -> ef.getId().equals(idEfector))))
                 .map(asistencial -> {
                     List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
-                            .filter(legajo -> legajo.getFechaFinal() == null)
+                            .filter(Legajo::isActivo)
                             .flatMap(legajo -> legajo.getTipoGuardias().stream())
                             .map(tg -> tg.getNombre().name())
                             .collect(Collectors.toList());
@@ -551,7 +551,7 @@ public class AsistencialService {
                                         .anyMatch(ef -> ef.getId().equals(idEfector))))
                 .map(asistencial -> {
                     List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
-                            .filter(legajo -> legajo.getFechaFinal() == null)
+                            .filter(Legajo::isActivo)
                             .flatMap(legajo -> legajo.getTipoGuardias().stream())
                             .map(tg -> tg.getNombre().name())
                             .collect(Collectors.toList());

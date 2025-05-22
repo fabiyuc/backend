@@ -410,16 +410,17 @@ public class LegajoService {
                 }
             }
         }
+        // revisar validacion para despues
+        /* if (esAsistencial && legajoDto.getEsAutoridad() == false) { */
 
-        if (esAsistencial && legajoDto.getEsAutoridad() == false) {
-
-            if (legajo.getProfesion() == null
-                    || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
-                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
-            }
-
-            updateTipoGuardias(legajo, legajoDto);
+        if (legajo.getProfesion() == null
+                || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
+            legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
         }
+        /*
+         * updateTipoGuardias(legajo, legajoDto);
+         * }
+         */
 
         if (legajoDto.getEsAutoridad() == true) {
 
@@ -522,8 +523,8 @@ public class LegajoService {
             // TipoGuardia de CONTRAFACTURA
             return persona.getLegajos().stream()
                     .filter(legajo -> legajo.getFechaFinal() == null) // modificar esto, debe validar que activo = true
-                    .flatMap( legajo -> legajo.getTipoGuardias().stream()) // Obtener los tipos de guardias de
-                                                                                   // cada legajo activo
+                    .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Obtener los tipos de guardias de
+                                                                          // cada legajo activo
                     .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CONTRAFACTURA);
         }
         // Si no existe la persona, retorna false

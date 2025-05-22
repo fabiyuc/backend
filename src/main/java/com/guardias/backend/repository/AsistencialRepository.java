@@ -43,6 +43,7 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
           JOIN l.efectores e
           WHERE a.activo = true
             AND l.activo = true
+            AND l.esAutoridad = false
             AND e.id = :idEfector
       """)
   List<Asistencial> findByEfectorByActivoTrue(@Param("idEfector") Long idEfector);
