@@ -417,10 +417,8 @@ public class LegajoService {
                 || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
             legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
         }
-        /*
-         * updateTipoGuardias(legajo, legajoDto);
-         * }
-         */
+
+        updateTipoGuardias(legajo, legajoDto);
 
         if (legajoDto.getEsAutoridad() == true) {
 
