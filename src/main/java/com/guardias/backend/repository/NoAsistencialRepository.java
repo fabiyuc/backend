@@ -45,10 +45,14 @@ public interface NoAsistencialRepository extends JpaRepository<NoAsistencial, Lo
     List<NoAsistencial> findByEfectorAndActivoTrue(@Param("idEfector") Long idEfector);
 
     @Query("""
-            SELECT n
+            SELECT DISTINCT n
             FROM noAsistenciales n
+            LEFT JOIN n.legajos l
             WHERE n.activo = true
-            AND n.legajos IS EMPTY
+            AND (l IS NULL OR NOT EXISTS(
+            SELECT 1
+            FROM n.legajos legajo
+            WHERE legajo.activo = true))
             """)
     List<NoAsistencial> findNoAsistencialSinLegajo();
 }

@@ -89,10 +89,15 @@ public interface AsistencialRepository extends JpaRepository<Asistencial, Long> 
       @Param("idCategoria") Long idCategoria);
 
   @Query("""
-        SELECT a
-        FROM asistenciales a
-        WHERE a.activo = true
-          AND a.legajos IS EMPTY
+      SELECT DISTINCT a
+      FROM asistenciales a
+      LEFT JOIN a.legajos l
+      WHERE a.activo = true
+        AND (l IS NULL OR NOT EXISTS (
+              SELECT 1
+              FROM a.legajos legajo
+              WHERE legajo.activo = true
+            ))
       """)
   List<Asistencial> findAsistencialSinLegajo();
 
