@@ -140,7 +140,7 @@ public class RegistroActividadService {
             boolean esPlanta = asistencialService.esPlanta(registroActividadDto.getIdAsistencial(),
                     registroActividadDto.getIdEfector());
 
-            if (!esPlanta) {
+            if (!esPlanta && !(esExtraoCf(registroActividadDto.getIdTipoGuardia()))) {
                 throw new IllegalArgumentException("El asistencial no pertenece a la planta del efector");
             }
         }
@@ -172,6 +172,14 @@ public class RegistroActividadService {
         registroActividad.setFechaRegistroIngreso(LocalDate.now());
         registroActividad.setActivo(true);
         return registroActividad;
+    }
+
+    private boolean esExtraoCf(Long idTipoguardia){
+        TipoGuardiaEnum nombre = tipoGuardiaService.findById(idTipoguardia).get().getNombre();
+         if (nombre == TipoGuardiaEnum.EXTRA || nombre == TipoGuardiaEnum.CONTRAFACTURA){
+            return true;
+         } else
+         return false; 
     }
 
     private SumaHoras calcularHoras(RegistroActividad registroActividad) {
