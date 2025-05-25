@@ -418,7 +418,18 @@ public class LegajoService {
             legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
         }
 
-        updateTipoGuardias(legajo, legajoDto);
+        // Validar si idTipoGuardias no es null
+        if (legajoDto.getIdTipoGuardias() != null) {
+            // Si no es null, procesar los tipos de guardia
+            for (Long idTipoGuardia : legajoDto.getIdTipoGuardias()) {
+                // Lógica para procesar cada idTipoGuardia
+                TipoGuardia tipoGuardia = tipoGuardiaService.findById(idTipoGuardia).orElse(null);
+                if (tipoGuardia != null && !legajo.getTipoGuardias().contains(tipoGuardia)) {
+                    legajo.getTipoGuardias().add(tipoGuardia);
+                    tipoGuardia.getLegajos().add(legajo);
+                }
+            }
+        }
 
         if (legajoDto.getEsAutoridad() == true) {
 
