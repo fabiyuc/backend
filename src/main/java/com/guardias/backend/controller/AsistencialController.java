@@ -257,6 +257,7 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
+    //NO VA, NO VIENE AL CASO PORQUE NO HAY Q BUSCAR EN LA LISTA DE ASISTENCIALES SINO EN LA LISTA DE HABILIT EN GUARDIAS EXTRAS
     @GetMapping("/listByEfectorAndTipoGuardiaExtraHabilitado/{idEfector}")
     public ResponseEntity<List<AsistencialSummaryDto>> listByEfectorAndTipoGuardiaExtraHabilitado(
             @PathVariable Long idEfector) {
