@@ -270,6 +270,8 @@ public class RegistroMensualService {
         }
     }
 
+    //busca o crea un registro mensual
+    //acumla horas y montos
     public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();

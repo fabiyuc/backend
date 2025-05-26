@@ -182,7 +182,10 @@ public class RegistroActividadService {
          return false; 
     }
 
+    //calculo de las horas trabajadas
+    //Calcula montos según tipo de guardia
     private SumaHoras calcularHoras(RegistroActividad registroActividad) {
+        //determino tipo de día
         SumaHoras horas = sumaHorasService.calcularHoras(registroActividad.getFechaIngreso(),
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
@@ -260,11 +263,12 @@ public class RegistroActividadService {
 
     public ResponseEntity<?> registrarSalida(Long id, RegistroActividadDto registroActividadDto) {
 
-        if (!activo(id))
-            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
+        /* if (!activo(id))
+            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND); */
 
         RegistroActividad registroActividad = findById(id).get();
 
+        //seteo los datos de salida al registro de actividad
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
             registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
@@ -278,16 +282,18 @@ public class RegistroActividadService {
         registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
-        SumaHoras horas = calcularHoras(registroActividad);
+        //calculo de horas y montos
+        SumaHoras horas = calcularHoras(registroActividad); //determina horas LAV/SDF
         sumaHorasService.save(horas);
-
         registroActividad.setHorasRealizadas(horas);
 
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
 
+        //gestión de registros pendientes
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             registroActividad.setRegistrosPendientes(null);
+            //Actualización de registro mensual
             registroActividad = registroMensualService.setRegistroMensual(registroActividad);
         }
 
