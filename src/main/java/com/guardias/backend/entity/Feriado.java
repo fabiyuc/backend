@@ -33,7 +33,7 @@ public class Feriado {
     private Long id;
     @Temporal(TemporalType.DATE)
     private LocalDate fecha;
-    @Column(columnDefinition = "VARCHAR(55)")
+    @Column(columnDefinition = "VARCHAR(90)")
     private String motivo;
     @Enumerated(EnumType.STRING)
     @Column(length = 25)
@@ -44,7 +44,7 @@ public class Feriado {
     @Column(columnDefinition = "BIT DEFAULT 1")
     private Boolean esPatronal;
 
-    @Column(columnDefinition = "VARCHAR(80)")
+    @Column(columnDefinition = "VARCHAR(90)")
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
