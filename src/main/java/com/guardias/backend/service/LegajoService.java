@@ -413,11 +413,18 @@ public class LegajoService {
         // revisar validacion para despues
         /* if (esAsistencial && legajoDto.getEsAutoridad() == false) { */
 
-        if (legajo.getProfesion() == null
-                || !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion())) {
-            legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).get());
-        }
+        if (legajo.getProfesion() == null ||
+                (legajoDto.getIdProfesion() != null &&
+                        !Objects.equals(legajo.getProfesion().getId(), legajoDto.getIdProfesion()))) {
 
+            // Asignar la profesión si `idProfesion` no es null
+            if (legajoDto.getIdProfesion() != null) {
+                legajo.setProfesion(profesionService.findById(legajoDto.getIdProfesion()).orElse(null));
+            } else {
+                // Permitir guardar con profesión null
+                legajo.setProfesion(null);
+            }
+        }
         // Validar si idTipoGuardias no es null
         if (legajoDto.getIdTipoGuardias() != null) {
             // Si no es null, procesar los tipos de guardia
