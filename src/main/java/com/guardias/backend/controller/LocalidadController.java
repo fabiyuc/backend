@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LocalidadDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.Localidad.LocalidaListDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.service.DepartamentoService;
@@ -57,6 +58,22 @@ public class LocalidadController {
             return new ResponseEntity(new Mensaje("localidad no existe"), HttpStatus.NOT_FOUND);
         Localidad localidad = localidadService.findById(id).get();
         return new ResponseEntity(localidad, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByDepartamento/{idDepartamento}")
+    public ResponseEntity<List<LocalidaListDto>> listByDepartamento(
+            @PathVariable("idDepartamento") Long idDepartamento) {
+        if (!departamentoService.activo(idDepartamento)) {
+            return new ResponseEntity(new Mensaje("El departamento no existe o no está activo"), HttpStatus.NOT_FOUND);
+        }
+
+        List<LocalidaListDto> localidades = localidadService.findByDepartamentoIdAndActivoTrue(idDepartamento);
+        if (localidades.isEmpty()) {
+            return new ResponseEntity(new Mensaje("No hay localidades activas en este departamento"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(localidades, HttpStatus.OK);
     }
 
     @GetMapping("/detailnombre/{nombre}")

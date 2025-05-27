@@ -1,11 +1,13 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.Localidad.LocalidaListDto;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.repository.LocalidadRepository;
 
@@ -60,4 +62,15 @@ public class LocalidadService {
         return localidadRepository.existsByNombre(nombre);
     }
 
+    public List<LocalidaListDto> findByDepartamentoIdAndActivoTrue(Long idDepartamento) {
+        List<LocalidaListDto> list = new ArrayList<>();
+        List<Localidad> localidades = localidadRepository.findByDepartamentoIdAndActivoTrue(idDepartamento);
+        for (Localidad localidad : localidades) {
+            LocalidaListDto dto = new LocalidaListDto(
+                    localidad.getId(),
+                    localidad.getNombre());
+            list.add(dto);
+        }
+        return list;
+    }
 }
