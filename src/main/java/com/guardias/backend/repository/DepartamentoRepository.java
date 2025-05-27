@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Departamento;
@@ -26,4 +27,7 @@ public interface DepartamentoRepository extends JpaRepository<Departamento, Long
     boolean existsById(Long id);
 
     List<Departamento> findByActivo(boolean activo);
+
+    @Query("SELECT COUNT(d) > 0 FROM departamentos d WHERE d.activo = true")
+    boolean existsByActivoTrue();
 }

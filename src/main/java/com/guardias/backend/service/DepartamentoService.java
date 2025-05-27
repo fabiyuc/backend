@@ -66,4 +66,10 @@ public class DepartamentoService {
     public boolean existsByCodigoPostal(String codigoPostal) {
         return departamentoRepository.existsByCodigoPostal(codigoPostal);
     }
+
+    public boolean existsByActivoTrue() {
+        return departamentoRepository.findByActivoTrue()
+                .map(departamentos -> !departamentos.isEmpty())
+                .orElse(false);
+    }
 }

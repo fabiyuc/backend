@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.DepartamentoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.departamento.DepartamentoListDto;
 import com.guardias.backend.entity.Departamento;
 import com.guardias.backend.entity.Localidad;
 import com.guardias.backend.service.DepartamentoService;
@@ -50,6 +52,20 @@ public class DepartamentoController {
     public ResponseEntity<List<Departamento>> listAll() {
         List<Departamento> list = departamentoService.findAll();
         return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/ListDepartamentos")
+    public ResponseEntity<List<DepartamentoListDto>> listDepartamentos() {
+        if (!departamentoService.existsByActivoTrue()) {
+            return new ResponseEntity(new Mensaje("No existen departamentos"), HttpStatus.NOT_FOUND);
+        }
+
+        List<Departamento> departamentos = departamentoService.findByActivoTrue().orElse(new ArrayList<>());
+        List<DepartamentoListDto> departamentoDtos = departamentos.stream()
+                .map(departamento -> new DepartamentoListDto(departamento.getId(), departamento.getNombre()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(departamentoDtos, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
