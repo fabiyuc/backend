@@ -47,6 +47,12 @@ public class DistribucionGiraService {
         return distribucionGiraRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
     }
 
+    public List<DistribucionGira> findByActivoAndPersonaAndFechaInicioAndFechaFin(boolean activo, Long personaId,
+            LocalDate fechaInicio, LocalDate fechaFinalizacion) {
+        return distribucionGiraRepository.findByActivoAndPersonaIdAndFechaInicioAndFechaFin(activo,
+                personaId, fechaInicio, fechaFinalizacion);
+    }
+
     public Optional<List<DistribucionGira>> findByPersonaId(Long personaId) {
         return distribucionGiraRepository.findByPersonaId(personaId);
     }
@@ -93,10 +99,11 @@ public class DistribucionGiraService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+        // entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
-        
+
         // Busca una distribución de gira válida
         return distribucionGiraRepository.findValidDistribucion(
                 dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),

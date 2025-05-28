@@ -77,6 +77,17 @@ public class DistribucionConsultorioController {
         return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicioAndFechaFin/{idPersona}/{fechaInicio}/{fechaFinalizacion}")
+    public ResponseEntity<List<DistribucionConsultorio>> getByActivoFechaInicioAndFechaFinAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio,
+            @PathVariable("fechaFinalizacion") LocalDate fechaFinalizacion) {
+        List<DistribucionConsultorio> list = distribucionConsultorioService
+                .findByActivoAndPersonaAndFechaInicioAndFechaFin(true,
+                        idPersona, fechaInicio, fechaFinalizacion);
+        return new ResponseEntity<List<DistribucionConsultorio>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
     public ResponseEntity<List<DistribucionConsultorio>> getByActivoPersonaAndFechaInicio(
             @PathVariable("idPersona") Long idPersona,
@@ -241,7 +252,8 @@ public class DistribucionConsultorioController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    //busca distribucion consultorio para verificar si es igual al tentativo que recibe
+    // busca distribucion consultorio para verificar si es igual al tentativo que
+    // recibe
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
         return distribucionConsultorioService.validarCronogramaEnDistribucion(dto);

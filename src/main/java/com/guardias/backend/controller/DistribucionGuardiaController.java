@@ -23,7 +23,6 @@ import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.cronogramaTentativo.ValidacionCronogramaResponseDto;
-import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
@@ -76,6 +75,17 @@ public class DistribucionGuardiaController {
             @PathVariable("fechaInicio") LocalDate fechaInicio) {
         List<DistribucionGuardia> list = distribucionGuardiaService.findByActivoAndPersonaAndFechaInicio(true,
                 idPersona, fechaInicio);
+        return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByActivoByPersonAndFechaInicioAndFechaFin/{idPersona}/{fechaInicio}/{fechaFinalizacion}")
+    public ResponseEntity<List<DistribucionGuardia>> getByActivoFechaInicioAndFechaFinAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio,
+            @PathVariable("fechaFinalizacion") LocalDate fechaFinalizacion) {
+        List<DistribucionGuardia> list = distribucionGuardiaService
+                .findByActivoAndPersonaAndFechaInicioAndFechaFin(true,
+                        idPersona, fechaInicio, fechaFinalizacion);
         return new ResponseEntity<List<DistribucionGuardia>>(list, HttpStatus.OK);
     }
 
@@ -221,9 +231,10 @@ public class DistribucionGuardiaController {
 
     // busca distribucion guardia para comparar con cronograma tentativo
     @PostMapping("/verificarCronogramaEnDistribucion")
-    public ResponseEntity<ValidacionCronogramaResponseDto> verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
+    public ResponseEntity<ValidacionCronogramaResponseDto> verificarCronogramaEnDistribucion(
+            @RequestBody CronogramaTentativoResquestDto dto) {
 
-            return ResponseEntity.ok(distribucionGuardiaService.validarCronogramaEnDistribucion(dto));
+        return ResponseEntity.ok(distribucionGuardiaService.validarCronogramaEnDistribucion(dto));
     }
 
     @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")

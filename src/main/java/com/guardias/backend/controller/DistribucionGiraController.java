@@ -71,6 +71,17 @@ public class DistribucionGiraController {
         return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicioAndFechaFin/{idPersona}/{fechaInicio}/{fechaFinalizacion}")
+    public ResponseEntity<List<DistribucionGira>> getByActivoFechaInicioAndFechaFinAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio,
+            @PathVariable("fechaFinalizacion") LocalDate fechaFinalizacion) {
+        List<DistribucionGira> list = distribucionGiraService
+                .findByActivoAndPersonaAndFechaInicioAndFechaFin(true,
+                        idPersona, fechaInicio, fechaFinalizacion);
+        return new ResponseEntity<List<DistribucionGira>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
     public ResponseEntity<List<DistribucionGira>> getByActivoPersonaAndFechaInicio(
             @PathVariable("idPersona") Long idPersona,
@@ -218,7 +229,7 @@ public class DistribucionGiraController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    //busca distribucion gira para verificar si es igual al tentativo que recibe
+    // busca distribucion gira para verificar si es igual al tentativo que recibe
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
         return distribucionGiraService.validarCronogramaEnDistribucion(dto);

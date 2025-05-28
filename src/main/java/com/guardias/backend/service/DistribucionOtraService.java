@@ -56,6 +56,12 @@ public class DistribucionOtraService {
         return distribucionOtraRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
     }
 
+    public List<DistribucionOtra> findByActivoAndPersonaAndFechaInicioAndFechaFin(boolean activo, Long personaId,
+            LocalDate fechaInicio, LocalDate fechaFinalizacion) {
+        return distribucionOtraRepository.findByActivoAndPersonaIdAndFechaInicioAndFechaFin(activo,
+                personaId, fechaInicio, fechaFinalizacion);
+    }
+
     public Optional<List<DistribucionOtra>> findByEfectorId(Long efectorId) {
         return distribucionOtraRepository.findByEfectorId(efectorId);
     }
@@ -98,10 +104,11 @@ public class DistribucionOtraService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+        // entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
-        
+
         // Busca una distribución otra válida
         return distribucionOtraRepository.findValidDistribucion(
                 dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),

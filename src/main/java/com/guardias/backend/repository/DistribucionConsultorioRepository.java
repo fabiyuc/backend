@@ -26,6 +26,11 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
         List<DistribucionConsultorio> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
                         @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
 
+        @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.activo = :activo AND dc.persona.id = :personaId AND dc.fechaInicio = :fechaInicio AND dc.fechaFinalizacion = :fechaFinalizacion")
+        List<DistribucionConsultorio> findByActivoAndPersonaIdAndFechaInicioAndFechaFin(@Param("activo") boolean activo,
+                        @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio,
+                        @Param("fechaFinalizacion") LocalDate fechaFinalizacion);
+
         @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.efector.id = :efectorId")
         Optional<List<DistribucionConsultorio>> findByEfectorId(@Param("efectorId") Long efectorId);
 
@@ -85,9 +90,8 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         @Param("idPersona") Long idPersona,
                         @Param("mes") int mes,
                         @Param("anio") int anio);
-        
 
         List<DistribucionConsultorio> findByPersonaIdAndActivoTrue(Long idPersona);
-        
+
         boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

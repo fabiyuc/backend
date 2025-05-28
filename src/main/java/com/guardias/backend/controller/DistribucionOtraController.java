@@ -71,6 +71,17 @@ public class DistribucionOtraController {
         return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
     }
 
+    @GetMapping("/listByActivoByPersonAndFechaInicioAndFechaFin/{idPersona}/{fechaInicio}/{fechaFinalizacion}")
+    public ResponseEntity<List<DistribucionOtra>> getByActivoFechaInicioAndFechaFinAndPersona(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("fechaInicio") LocalDate fechaInicio,
+            @PathVariable("fechaFinalizacion") LocalDate fechaFinalizacion) {
+        List<DistribucionOtra> list = distribucionOtraService
+                .findByActivoAndPersonaAndFechaInicioAndFechaFin(true,
+                        idPersona, fechaInicio, fechaFinalizacion);
+        return new ResponseEntity<List<DistribucionOtra>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("detailByActivoByPersonaAndFechaInicio/{idPersona}/{mes}/{anio}")
     public ResponseEntity<List<DistribucionOtra>> getByActivoPersonaAndFechaInicio(
             @PathVariable("idPersona") Long idPersona,
@@ -154,7 +165,7 @@ public class DistribucionOtraController {
         if (distribucionOtraDto.getTipo() != (distribucionOtra.getTipo())
                 && distribucionOtraDto.getTipo() != null)
             distribucionOtra.setTipo(distribucionOtraDto.getTipo());
-        
+
         distribucionOtra.setActivo(true);
 
         return distribucionOtra;
@@ -217,7 +228,7 @@ public class DistribucionOtraController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    //busca distribucion otra para verificar si es igual al tentativo que recibe
+    // busca distribucion otra para verificar si es igual al tentativo que recibe
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
         return distribucionOtraService.validarCronogramaEnDistribucion(dto);

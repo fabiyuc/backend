@@ -24,6 +24,11 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
         List<DistribucionOtra> findByActivoAndPersonaIdAndFechaInicio(@Param("activo") boolean activo,
                         @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio);
 
+        @Query("SELECT dg FROM distribucionesOtras dg WHERE dg.activo = :activo AND dg.persona.id = :personaId AND dg.fechaInicio = :fechaInicio AND dg.fechaFinalizacion = :fechaFinalizacion")
+        List<DistribucionOtra> findByActivoAndPersonaIdAndFechaInicioAndFechaFin(@Param("activo") boolean activo,
+                        @Param("personaId") Long personaId, @Param("fechaInicio") LocalDate fechaInicio,
+                        @Param("fechaFinalizacion") LocalDate fechaFinalizacion);
+
         @Query("SELECT dg FROM distribucionesOtras dg WHERE dg.persona.id = :personaId")
         Optional<List<DistribucionOtra>> findByPersonaId(@Param("personaId") Long personaId);
 
@@ -73,6 +78,6 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
                         @Param("horaEgreso") String horaEgreso);
 
         List<DistribucionOtra> findByPersonaIdAndActivoTrue(Long idPersona);
-        
+
         boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 }

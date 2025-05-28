@@ -52,6 +52,12 @@ public class DistribucionConsultorioService {
         return distribucionConsultorioRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
     }
 
+    public List<DistribucionConsultorio> findByActivoAndPersonaAndFechaInicioAndFechaFin(boolean activo, Long personaId,
+            LocalDate fechaInicio, LocalDate fechaFinalizacion) {
+        return distribucionConsultorioRepository.findByActivoAndPersonaIdAndFechaInicioAndFechaFin(activo,
+                personaId, fechaInicio, fechaFinalizacion);
+    }
+
     public Optional<List<DistribucionConsultorio>> findByPersonaId(Long personaId) {
         return distribucionConsultorioRepository.findByPersonaId(personaId);
     }
@@ -93,10 +99,11 @@ public class DistribucionConsultorioService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+        // entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
-        
+
         // Busca una distribución de consultorio válida
         return distribucionConsultorioRepository.findValidDistribucion(
                 dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),

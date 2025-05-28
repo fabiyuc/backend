@@ -66,6 +66,12 @@ public class DistribucionGuardiaService {
         return distribucionGuardiaRepository.findByActivoAndPersonaIdAndFechaInicio(activo, personaId, fechaInicio);
     }
 
+    public List<DistribucionGuardia> findByActivoAndPersonaAndFechaInicioAndFechaFin(boolean activo, Long personaId,
+            LocalDate fechaInicio, LocalDate fechaFinalizacion) {
+        return distribucionGuardiaRepository.findByActivoAndPersonaIdAndFechaInicioAndFechaFin(activo,
+                personaId, fechaInicio, fechaFinalizacion);
+    }
+
     public Optional<List<DistribucionGuardia>> findByEfectorId(Long efectorId) {
         return distribucionGuardiaRepository.findByEfectorId(efectorId);
     }
@@ -161,16 +167,16 @@ public class DistribucionGuardiaService {
 
         // 2. Verificación de distribución activa parcial (mismo mes y año)
         boolean existeDistribucionParcial = distribucionGuardiaRepository.existsByPersonaAndEfectorAndTipoInMonth(
-                        dto.getIdAsistencial(),
-                        dto.getIdEfector(),
-                        dto.getTipoGuardia(),
-                        dto.getFechaIngreso().getMonthValue(),
-                        dto.getFechaIngreso().getYear());
+                dto.getIdAsistencial(),
+                dto.getIdEfector(),
+                dto.getTipoGuardia(),
+                dto.getFechaIngreso().getMonthValue(),
+                dto.getFechaIngreso().getYear());
 
         // 3. Determinar si no hay ninguna distribución
         boolean sinDistribucion = !existeDistribucionParcial;
 
-        return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial,sinDistribucion);
+        return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
