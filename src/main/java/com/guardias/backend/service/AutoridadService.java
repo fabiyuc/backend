@@ -168,6 +168,8 @@ public class AutoridadService {
         Autoridad autoridad = new Autoridad();
         autoridad.setActivo(true);
         autoridad.setPersona(personaService.findById(autoridadDto.getIdPersona()));
+        if (autoridadDto.getMotivo() != null)
+            autoridad.setMotivo(autoridadDto.getMotivo());
         return autoridad;
     }
 

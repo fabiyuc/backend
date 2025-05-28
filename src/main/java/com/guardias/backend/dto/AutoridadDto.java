@@ -14,6 +14,7 @@ public class AutoridadDto {
     private Boolean confirmado;
     @NotNull
     private Long idPersona;
+    private String motivo;
 }
 
 // genera el json

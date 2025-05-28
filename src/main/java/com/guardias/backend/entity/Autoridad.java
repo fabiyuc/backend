@@ -36,6 +36,9 @@ public class Autoridad {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "legajos","novedadesPersonales", "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion", "usuario", "registrosMensuales" })
         private Person persona;
 
+        @Column(columnDefinition = "VARCHAR(50)")
+        private String motivo;
+
 
         @Override
         public boolean equals(Object obj) {
