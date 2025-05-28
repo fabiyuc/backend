@@ -134,4 +134,12 @@ public class AutoridadController {
         return new ResponseEntity<>(hasActiveAutoridadLegajo, HttpStatus.OK);
     }
 
+    @GetMapping("/countPendientes")
+    public ResponseEntity<Long> countPendientes() {
+
+        Long count = autoridadService.countPendientes();
+
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
 }

@@ -185,4 +185,8 @@ public class AutoridadService {
         return autoridadRepository.findActiveAutoridadLegajoByPersonaId(idPersona).isPresent();
     }
 
+    public Long countPendientes() {
+        return autoridadRepository.countPendientes();
+    }
+
 }

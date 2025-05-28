@@ -28,6 +28,7 @@ public class Autoridad {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
         
+        /*a futuro cambiar el booleano confirmado a tipo Enum */
         @Column(columnDefinition = "BIT DEFAULT 1")
         private Boolean confirmado;
 
