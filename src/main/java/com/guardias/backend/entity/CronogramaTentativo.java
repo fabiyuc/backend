@@ -51,6 +51,8 @@ public class CronogramaTentativo {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean aceptado;
 
+        /******* el nombre del atributo deberia llamarse "estado" en lugar de "autorizado" 
+         * cambio a realizar a futuro, usar EstadoTentativoEnum********/
         @Column(columnDefinition = "VARCHAR(20)")
         @Enumerated(EnumType.STRING)
         private AutorizadoTentativoEnum autorizado;

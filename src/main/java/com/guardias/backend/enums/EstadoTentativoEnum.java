@@ -1,6 +1,6 @@
 package com.guardias.backend.enums;
 
-public enum AutorizadoTentativoEnum {
+public enum EstadoTentativoEnum {
     CONFIRMADO,
     PENDIENTE,
     RECHAZADO,
