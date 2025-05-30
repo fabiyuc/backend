@@ -43,9 +43,11 @@ public class ValorGuardiaCargoYagrupService {
         return valorGuardiaCargoYagrupRepository.findById(id);
     }
 
-    /* public Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector(Long idEfector) {
-        return valorGuardiaCargoYagrupRepository.buscarPorIdEfector(idEfector);
-    } */
+    /*
+     * public Optional<ValorGuardiaCargoYagrup> buscarPorIdEfector(Long idEfector) {
+     * return valorGuardiaCargoYagrupRepository.buscarPorIdEfector(idEfector);
+     * }
+     */
 
     public boolean existsById(Long id) {
         return valorGuardiaCargoYagrupRepository.existsById(id);
@@ -64,36 +66,42 @@ public class ValorGuardiaCargoYagrupService {
                 && valorGuardiaCargoYagrupRepository.findById(id).get().isActivo());
     }
 
+    /* Crea registros de ValorGuardiaCargoYagrup basados en el ValorGmi activo */
     public void crearValoresGuardiaCargoYagrup() {
 
-        System.out.println("·························· entrooo a ");
-        // Buscar el valorGMI activo
+        System.out.println("············ busco el valor Gmi activo ");
+
+        // Obtiene el valorGmi activo
         ValorGmi valorGmi = valorGmiService.findByActivoTrue().get().get(0);
+        System.out.println("········· el valor de GMI es:  " + valorGmi);
 
-        System.out.println("·························· valro de GMI  " + valorGmi);
-        // Buscar el BonoUti activo
+        System.out.println("······busco el id del BonoUti ativo ");
+        // Obtiene el BonoUti activo
         Long idBonoUti = bonoUtiService.findByActivoTrue().get().get(0).getId();
+        System.out.println("·······el id del bono uti es: " + idBonoUti);
 
-        System.out.println("·························· id bopno uti  " + idBonoUti);
-
-        // Crear valores de guardia por nivel
+        /* Ejecuta crearPorNivel() para 4 niveles de complejidad (1 al 4) */
         crearPorNivel(1, valorGmi, idBonoUti);
         crearPorNivel(2, valorGmi, idBonoUti);
         crearPorNivel(3, valorGmi, idBonoUti);
         crearPorNivel(4, valorGmi, idBonoUti);
     }
 
+    /*
+     * Crea registros de ValorGuardiaCargoYagrup por nivel de complejidad de
+     * hospitales
+     */
     private void crearPorNivel(int nivel, ValorGmi valorGmi, Long idBonoUti) {
 
         ValorGuardiaCargoYagrup valorGuardia;
 
         switch (nivel) {
             case 1:
-                System.out.println("·························· entra a caso 1" );
+                System.out.println("......nivel 1 caso especial hospital SUSQUES");
 
-                // Crear ValorGuardiaCargoYagrup con el hospital "Susques"
+                /* Crea un registro solo para "SUSQUES" (con montos incrementados en 140%) */
                 Hospital hospital1 = hospitalService.findByNombre("SUSQUES").get();
-                System.out.println("·························· nombre hospital1 " + hospital1.getNombre() );
+                System.out.println("····· hospital nivel 1: " + hospital1.getNombre());
 
                 List<Hospital> hospital1ConSusques = new ArrayList<>();
                 hospital1ConSusques.add(hospital1);
@@ -101,7 +109,9 @@ public class ValorGuardiaCargoYagrupService {
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital1ConSusques, valorGmi, idBonoUti);
                 valorGuardiaCargoYagrupRepository.save(valorGuardia);
 
-                // Crear ValorGuardiaCargoYagrup con otros hospitales de nivel 1 excepto "Susques"
+                /*
+                 * Crea otro registro para todos los demás hospitales de nivel 1 (montos al 50%)
+                 */
                 List<Hospital> hospital1SinSusques = hospitalService.findHospitalesPorNivelExcluyendo(1, "SUSQUES");
                 System.out.println("hospitales nivel 1" + hospital1SinSusques.get(0));
 
@@ -110,10 +120,10 @@ public class ValorGuardiaCargoYagrupService {
                 break;
 
             case 2:
-                System.out.println("·························· entra a caso 2" );
-                // Crear ValorGuardiaCargoYagrup con el hospital "Uro"
+                System.out.println("·········nivel 2 caso especial hospital JORGE URO");
+                /* Crea un registro solo para "JORGE URO" (montos al 80% del 70% base) */
                 Hospital hospital2 = hospitalService.findByNombre("JORGE URO").get();
-                System.out.println("·························· nombre hospital2 " + hospital2.getNombre() );
+                System.out.println("······· hospital nivel 2: " + hospital2.getNombre());
 
                 List<Hospital> hospital2ConUro = new ArrayList<>();
                 hospital2ConUro.add(hospital2);
@@ -121,7 +131,7 @@ public class ValorGuardiaCargoYagrupService {
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital2ConUro, valorGmi, idBonoUti);
                 valorGuardiaCargoYagrupRepository.save(valorGuardia);
 
-                // Crear ValorGuardiaCargoYagrup con otros hospitales de nivel 2 excepto "Uro"
+                /* Crea otro registro para otros hospitales de nivel 2 (montos al 60%) */
                 List<Hospital> hospital2SinUro = hospitalService.findHospitalesPorNivelExcluyendo(2, "JORGE URO");
 
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital2SinUro, valorGmi, idBonoUti);
@@ -129,7 +139,10 @@ public class ValorGuardiaCargoYagrupService {
                 break;
 
             case 3:
-                // Crear ValorGuardiaCargoYagrup con efectores de nivel 3
+                /*
+                 * Crear un registro para todos los hospitales de nivel 3 (montos distribuidos:
+                 * 70% decreto 1178, 30% decreto 1657).
+                 */
                 List<Hospital> hospital3 = hospitalService.findHospitalesPorNivel(3);
 
                 valorGuardia = crearValorGuardiaCargoYagrup(nivel, hospital3, valorGmi, idBonoUti);
@@ -137,8 +150,11 @@ public class ValorGuardiaCargoYagrupService {
                 break;
 
             case 4:
-                // Crear ValorGuardiaCargoYagrup con el efector "SAME"
+                /* Caso especial efector "SAME" */
+                // Crea un registro con montos al doble del ValorGmi (100% decreto 1178, sin
+                // decreto 1657).
                 Hospital hospital4 = hospitalService.findByNombre("SAME").get();
+                System.out.println("····· efector nivel 4: " + hospital4.getNombre());
 
                 List<Hospital> hospital4ConSame = new ArrayList<>();
                 hospital4ConSame.add(hospital4);
@@ -152,9 +168,13 @@ public class ValorGuardiaCargoYagrupService {
         }
     }
 
-    private ValorGuardiaCargoYagrup crearValorGuardiaCargoYagrup(int nivel, List<Hospital> hospitales,
-            ValorGmi valorGmi, Long idBonoUti) {
-                System.out.println("entro a crear valor guardia cargo y agrup ");
+    private ValorGuardiaCargoYagrup crearValorGuardiaCargoYagrup(
+            int nivel,
+            List<Hospital> hospitales,
+            ValorGmi valorGmi,
+            Long idBonoUti) {
+        System.out.println("entro a crear valor guardia cargo y agrup ");
+        /*Construyo un objeto con datos base del ValorGmi(fechas, tipo de guardias) */
         ValorGuardiaCargoYagrup valorGuardia = new ValorGuardiaCargoYagrup();
         valorGuardia.setActivo(true);
         valorGuardia.setTipoGuardia(valorGmi.getTipoGuardia());
@@ -168,13 +188,19 @@ public class ValorGuardiaCargoYagrupService {
         BigDecimal montoValorGmi = valorGmi.getMonto();
         BigDecimal montoMultiplicado = montoValorGmi.multiply(BigDecimal.valueOf(2));
 
+        /*Cálculo de montos segun nivel y hospital */
         switch (nivel) {
             case 4:
+                /*decreto1178Lav / decreto1178Sdf: Montos base + 10% para SDF. */
                 valorGuardia.setDecreto1178Lav(montoMultiplicado);
                 valorGuardia
                         .setDecreto1178Sdf(montoMultiplicado.add(montoMultiplicado.multiply(BigDecimal.valueOf(0.10))));
+                
+                /*Decreto1657Lav / decreto1657Sdf: Complemento (según nivel). */
                 valorGuardia.setDecreto1657Lav(null);
                 valorGuardia.setDecreto1657Sdf(null);
+                
+                /*totalLav / totalSdf: Suma de los montos de decretos + bono UTI. */
                 valorGuardia.setTotalLav(
                         valorGuardia.getDecreto1178Lav()
                                 .add(valorGuardia.getBonoUti().getMonto()));
@@ -208,7 +234,7 @@ public class ValorGuardiaCargoYagrupService {
                 BigDecimal seventyPercent2 = valorGmi.getMonto().multiply(BigDecimal.valueOf(2))
                         .multiply(BigDecimal.valueOf(0.70));
 
-                if (hospitales.stream().anyMatch(hospital -> hospital.getNombre().equals("Uro"))) {
+                if (hospitales.stream().anyMatch(hospital -> hospital.getNombre().equals("JORGE URO"))) {
                     BigDecimal eightyPercentOfSeventyPercent = seventyPercent2.multiply(BigDecimal.valueOf(0.80))
                             .multiply(BigDecimal.valueOf(2));
                     valorGuardia.setDecreto1178Lav(eightyPercentOfSeventyPercent);
@@ -234,7 +260,7 @@ public class ValorGuardiaCargoYagrupService {
                 break;
 
             case 1:
-                if (hospitales.stream().anyMatch(hospital -> hospital.getNombre().equals("Susques"))) {
+                if (hospitales.stream().anyMatch(hospital -> hospital.getNombre().equals("SUSQUES"))) {
                     BigDecimal oneFortyPercent = montoMultiplicado.multiply(BigDecimal.valueOf(1.40));
                     valorGuardia.setDecreto1178Lav(oneFortyPercent);
                     valorGuardia

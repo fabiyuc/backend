@@ -247,16 +247,19 @@ public class RegistroMensualService {
         return registroMensual;
     }
 
+    /*Crea un nuevo RegistroMensual con valores iniciales (horas/montos en 0) */
     public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
 
+        /*Inicializa un nuevo RegistroMensual con mes/año, asistencial,efector */
         RegistroMensual registroMensual = new RegistroMensual();
         registroMensual.setMes(mesEnum);
         registroMensual.setAnio(anio);
         registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
         registroMensual.setEfector(efectorService.findById(idEfector));
         registroMensual.setActivo(true);
+        
+        //Creo SumaHoras vacio 
         SumaHoras horas = new SumaHoras();
-
         horas.setHorasLav(0L);
         horas.setHorasSdf(0L);
         registroMensual.setTotalHoras(horas);
@@ -270,8 +273,7 @@ public class RegistroMensualService {
         }
     }
 
-    //busca o crea un registro mensual
-    //acumla horas y montos
+    /*Busca o crea un registro mensual para el asistencial/efector/mes/año y acumula horas/montos*/
     public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
@@ -283,10 +285,11 @@ public class RegistroMensualService {
         RegistroMensual registroMensual = new RegistroMensual();
 
         try {
-            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
+            /*Busca el registro mensual existente */
+            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
             System.out.println("##### id del registro mensual encontrado: " + registroMensual.getId());
         } catch (Exception exception) {
+            /*Si no existe, crea uno nuevo */
             System.out.println("id no encontrado registroMensualService Ln215 - " + exception.getMessage());
             registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
@@ -305,14 +308,15 @@ public class RegistroMensualService {
             registroMensual.setTotalHoras(horas);
         }
 
+        /*Acumula horas LAV/SDF y montos de un registros de actividad al total mensual */
         sumaHorasService.sumarHorasMensuales(horas, registroActividad.getHorasRealizadas());
 
         sumaHorasService.save(horas);
 
-        // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
-        // registroActividad);
+        // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(), registroActividad);
         // luego vemos el json //JsonFile jsonFile = new JsonFile();
         try {
+            /*Vincular registro de actividad al mensual */
             registroActividad.setRegistroMensual(findById(id).get());
             /*
              * luego vemos el json // if (registroMensual.getJsonFile() != null) {

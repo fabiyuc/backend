@@ -80,14 +80,17 @@ public class ValorGmiController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody ValorGmiDto valorGmiDto) {
+        /*Valida el DTO recibido */
         ResponseEntity<?> respuestaValidaciones = valorGmiService.validations(valorGmiDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
+            /*Crea/actualiza un ValorGmi con los datos del DTO */
             ValorGmi valorGmi = valorGmiService.createUpdate(new ValorGmi(), valorGmiDto);
             valorGmiService.save(valorGmi);
 
-             // Llamada al método para crear valores de guardia cargo y agrup
+            /*Genera valores asociados */
+            // Llama para crear registros de ValorGuardiaCargoYagrup vinculados al ValorGmi recien creado 
             valorGuardiaCargoYagrupService.crearValoresGuardiaCargoYagrup();
 
             return new ResponseEntity(new Mensaje("Valor creado correctamente"), HttpStatus.OK);

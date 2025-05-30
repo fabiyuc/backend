@@ -47,11 +47,7 @@ public class RegistroActividadService {
     @Autowired
     SumaHorasService sumaHorasService;
     @Autowired
-    ValorGmiService valorGmiService;
-    @Autowired
     RegistrosPendientesService registrosPendientesService;
-    @Autowired
-    ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
     @Autowired
     ValorGuardiaExtraYcfService valorGuardiaExtraYcfService;
     @Autowired
@@ -182,10 +178,9 @@ public class RegistroActividadService {
          return false; 
     }
 
-    //calculo de las horas trabajadas
-    //Calcula montos según tipo de guardia
+    /*Calcula horas trabajadas (LAV/SDF) y montos según el tipo de guardia*/
     private SumaHoras calcularHoras(RegistroActividad registroActividad) {
-        //determino tipo de día
+        /*A. Cálculo de horas brutas  */
         SumaHoras horas = sumaHorasService.calcularHoras(registroActividad.getFechaIngreso(),
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
@@ -197,6 +192,8 @@ public class RegistroActividadService {
 
         Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
 
+        /*B. Determinar el tipo de guardia */
+        //si es Cargo o Agrupacion
         if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia == TipoGuardiaEnum.AGRUPACION) {
             System.out.println("es tipo guardia cargo o agrup");
 
@@ -206,9 +203,12 @@ public class RegistroActividadService {
                  * !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un
                  * registro de aactividad de tipo extra
                  */
+
+                /*Obtiene valores de guardia */ 
                 ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
 
+                /*Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
                 /* LAV */
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
@@ -228,6 +228,7 @@ public class RegistroActividadService {
                 System.out.println("Error al buscar ValorGuardiaCargoYagrup: " + e.getMessage());
             }
         } else {
+            /*Si es Extra o CF */
             System.out.println("es tipo guardia extra o cf");
             try {
                 /*
@@ -235,9 +236,12 @@ public class RegistroActividadService {
                  * registro de aactividad de tipo extra
                  */
 
+
+                /*Obtiene valores de guardia */ 
                 ValorGuardiaExtrayCF valorGuardiaBase = (ValorGuardiaExtrayCF) efectorService
                         .obtenerValorGuardiaActivo(hospital.getId()).get();
 
+                /*Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
                 /* LAV */
                 BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
@@ -257,18 +261,16 @@ public class RegistroActividadService {
                 System.out.println("Error al buscar ValorGuardiaExtraYcf: " + e.getMessage());
             }
         }
-
+        /*Retorna objeto SumaHoras con horas y montos calculados */
         return horas;
     }
 
     public ResponseEntity<?> registrarSalida(Long id, RegistroActividadDto registroActividadDto) {
 
-        /* if (!activo(id))
-            return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND); */
-
+        /*A. obtengo el registro de actividad*/
         RegistroActividad registroActividad = findById(id).get();
 
-        //seteo los datos de salida al registro de actividad
+        /*B. actualizo los datos de salida al registro de actividad*/
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
             registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
@@ -282,15 +284,19 @@ public class RegistroActividadService {
         registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
-        //calculo de horas y montos
-        SumaHoras horas = calcularHoras(registroActividad); //determina horas LAV/SDF
+        /*C. Cálculo de horas y montos*/
+        //
+        SumaHoras horas = calcularHoras(registroActividad); 
+        //guarda las horas calculadas en BD
         sumaHorasService.save(horas);
         registroActividad.setHorasRealizadas(horas);
 
+        /*D. Gestión de registros pendientes */
+        //elimina el registro de la lista de pendientes
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
                 .deleteRegistroActividad(registroActividad);
 
-        //gestión de registros pendientes
+        //si la eliminacion fue exitosa desvincula el reg pendiente
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             registroActividad.setRegistrosPendientes(null);
             //Actualización de registro mensual
@@ -299,6 +305,7 @@ public class RegistroActividadService {
 
         save(registroActividad);
 
+        //devuelvo el resultado de deleteRegistroActividad
         return respuestaDeletePendiente;
     }
 

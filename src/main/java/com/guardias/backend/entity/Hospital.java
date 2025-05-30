@@ -29,7 +29,7 @@ public class Hospital extends Efector {
     private Long nivelComplejidad;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera", "domicilio", "telefono", "observacion", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" , "cronogramasDefinitivos" })
     private List<Caps> caps = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "hospitales", cascade = CascadeType.ALL)

@@ -30,7 +30,7 @@ public class Caps extends Efector {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
             "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
             "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
-            "nivelComplejidad", "cabecera", "ministerios" })
+            "nivelComplejidad", "ministerios", "servicios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados", "cronogramasDefinitivos", "valoresGuardiaBase"})
     Hospital cabecera;
 
     @Column(columnDefinition = "int default 1")
