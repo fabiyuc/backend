@@ -51,6 +51,6 @@ public interface RegistrosPendientesRepository extends JpaRepository<RegistrosPe
         List<RegistrosPendientes> findByEfectorId(
                         @Param("idEfector") Long idEfector);
 
-        Optional<RegistrosPendientes> findByEfectorIdAndActivoTrue(Long idEfector);
+        List<RegistrosPendientes> findAllByEfectorIdAndActivoTrue(Long idEfector);
 
 }

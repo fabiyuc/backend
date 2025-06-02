@@ -190,10 +190,10 @@ public class RegistrosPendientesService {
         return registroActividad;
     }
 
-    /*Elimina un registro de actividad de la lista de pendientes */
+    /* Elimina un registro de actividad de la lista de pendientes */
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
 
-        //busca el registro pendiente 
+        // busca el registro pendiente
         Long id = registroActividad.getRegistrosPendientes().getId();
         try {
             if (!activo(id))
@@ -201,7 +201,7 @@ public class RegistrosPendientesService {
 
             RegistrosPendientes registrosPendientes = findById(id).get();
 
-            //remueve el registro de actividad de la lista
+            // remueve el registro de actividad de la lista
             registrosPendientes.getRegistrosActividades().remove(registroActividad);
             save(registrosPendientes);
 
@@ -224,20 +224,26 @@ public class RegistrosPendientesService {
     }
 
     public RegistroActividad obtenerRegistroActividadPendiente(Long idAsistencial, Long idEfector) {
-        Optional<RegistrosPendientes> registroPendienteOpt = registrosPendientesRepository
-                .findByEfectorIdAndActivoTrue(idEfector);
+        List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository
+                .findAllByEfectorIdAndActivoTrue(idEfector);
 
-        if (registroPendienteOpt.isEmpty()) {
+        if (registrosPendientes.isEmpty()) {
             return null;
         }
 
-        RegistrosPendientes registroPendiente = registroPendienteOpt.get();
+        // Buscar en todos los registros pendientes del asistencial
+        for (RegistrosPendientes registroPendiente : registrosPendientes) {
+            Optional<RegistroActividad> registroActividad = registroPendiente.getRegistrosActividades().stream()
+                    .filter(ra -> ra.getAsistencial() != null && ra.getAsistencial().getId().equals(idAsistencial))
+                    .filter(RegistroActividad::isActivo)
+                    .findFirst();
 
-        return registroPendiente.getRegistrosActividades().stream()
-                .filter(ra -> ra.getAsistencial() != null && ra.getAsistencial().getId().equals(idAsistencial))
-                .filter(RegistroActividad::isActivo)
-                .findFirst()
-                .orElse(null);
+            if (registroActividad.isPresent()) {
+                return registroActividad.get();
+            }
+        }
+
+        return null;
     }
 
     private RegActivRegSalidaDto convertToDto(RegistroActividad registro) {
