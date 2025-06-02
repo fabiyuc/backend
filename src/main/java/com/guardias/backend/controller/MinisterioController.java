@@ -70,10 +70,13 @@ public class MinisterioController {
     @GetMapping("/detailNombreAll/{id}")
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorMinisterioDto> efectorMinisterioDto = ministerioService.findByIdNombre(id);
-        if (efectorMinisterioDto.isEmpty()) {
-            return new ResponseEntity<>(new Mensaje("El Ministerio no existe"), HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(efectorMinisterioDto.get(), HttpStatus.OK);
+        /*
+         * if (efectorMinisterioDto.isEmpty()) {
+         * return new ResponseEntity<>(new Mensaje("El Ministerio no existe"),
+         * HttpStatus.NOT_FOUND);
+         * }
+         */
+        return new ResponseEntity<>(efectorMinisterioDto.orElse(null), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

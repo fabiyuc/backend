@@ -20,6 +20,6 @@ public class HabilitacionesGuardiasDto {
     @NotBlank
     private List<Long> idEfectores;
 
-    private LocationEnum tipoEfectorEx;
+    /* private LocationEnum tipoEfectorEx; */
 
 }

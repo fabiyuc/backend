@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.LocationEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -59,5 +58,5 @@ public class HabilitacionesGuardia {
 
         private List<Efector> efectores = new ArrayList<>();
 
-        private LocationEnum tipoEfectorEx;
+        /* private LocationEnum tipoEfectorEx; */
 }

@@ -95,10 +95,13 @@ public class HospitalController {
     @GetMapping("/detailNombreAll/{id}")
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorHospitalDto> efectorHospitalDto = hospitalService.findByIdNombre(id);
-        if (efectorHospitalDto.isEmpty()) {
-            return new ResponseEntity<>(new Mensaje("El hospital no existe"), HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(efectorHospitalDto.get(), HttpStatus.OK);
+        /*
+         * if (efectorHospitalDto.isEmpty()) {
+         * return new ResponseEntity<>(new Mensaje("El hospital no existe"),
+         * HttpStatus.NOT_FOUND);
+         * }
+         */
+        return new ResponseEntity<>(efectorHospitalDto.orElse(null), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

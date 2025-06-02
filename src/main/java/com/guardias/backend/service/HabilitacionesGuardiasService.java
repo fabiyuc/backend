@@ -19,7 +19,6 @@ import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGuardia;
 import com.guardias.backend.entity.Legajo;
-import com.guardias.backend.enums.LocationEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
@@ -92,36 +91,39 @@ public class HabilitacionesGuardiasService {
 
         // Nueva validación para tipoEfector y idEfectores
         try {
-            if (permisosDto.getTipoEfectorEx() != null) {
-                LocationEnum tipoEfectorEx = LocationEnum.valueOf(permisosDto.getTipoEfectorEx().toString());
+            /*
+             * if (permisosDto.getTipoEfectorEx() != null) {
+             * LocationEnum tipoEfectorEx =
+             * LocationEnum.valueOf(permisosDto.getTipoEfectorEx().toString());
+             */
 
-                if (LocationEnum.CAPS == tipoEfectorEx) {
-                    if (permisosDto.getIdEfectores() == null ||
-                            permisosDto.getIdEfectores().isEmpty()) {
-                        return new ResponseEntity<>(
-                                new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                    boolean isCapsValid = capsService.existsById(permisosDto.getIdEfectores().get(0));
-                    if (!isCapsValid) {
-                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                }
-
-                if (LocationEnum.HOSPITAL == tipoEfectorEx) {
-                    if (permisosDto.getIdEfectores() == null ||
-                            permisosDto.getIdEfectores().isEmpty()) {
-                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                    boolean isHospitalValid = hospitalService.existsById(permisosDto.getIdEfectores().get(0));
-                    if (!isHospitalValid) {
-                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                }
+            /* if (LocationEnum.CAPS == tipoEfectorEx) { */
+            if (permisosDto.getIdEfectores() == null ||
+                    permisosDto.getIdEfectores().isEmpty()) {
+                return new ResponseEntity<>(
+                        new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
+                        HttpStatus.BAD_REQUEST);
             }
+            boolean isCapsValid = capsService.existsById(permisosDto.getIdEfectores().get(0));
+            if (!isCapsValid) {
+                return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            /* } */
+
+            /* if (LocationEnum.HOSPITAL == tipoEfectorEx) { */
+            if (permisosDto.getIdEfectores() == null ||
+                    permisosDto.getIdEfectores().isEmpty()) {
+                return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            boolean isHospitalValid = hospitalService.existsById(permisosDto.getIdEfectores().get(0));
+            if (!isHospitalValid) {
+                return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            /* } */
+            /* } */
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
                     HttpStatus.BAD_REQUEST);
@@ -178,11 +180,15 @@ public class HabilitacionesGuardiasService {
             }
         }
 
-        if (habilitacionesGuardiasDto.getTipoEfectorEx() != null) {
-            habilitacionesGuardias.setTipoEfectorEx(habilitacionesGuardiasDto.getTipoEfectorEx());
-            System.out.println("tipoEfector: " + habilitacionesGuardiasDto.getTipoEfectorEx()); // Verificar el valor
-
-        }
+        /*
+         * if (habilitacionesGuardiasDto.getTipoEfectorEx() != null) {
+         * habilitacionesGuardias.setTipoEfectorEx(habilitacionesGuardiasDto.
+         * getTipoEfectorEx());
+         * System.out.println("tipoEfector: " +
+         * habilitacionesGuardiasDto.getTipoEfectorEx()); // Verificar el valor
+         * 
+         * }
+         */
 
         habilitacionesGuardias.setActivo(habilitacionesGuardiasDto.getActivo());
         return habilitacionesGuardias;

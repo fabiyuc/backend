@@ -75,11 +75,14 @@ public class CapsController {
     @GetMapping("/detailNombreAll/{id}")
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorCapsDto> efectorCapsDto = capsService.findByIdNombre(id);
-        if (efectorCapsDto.isEmpty()) {
-            return new ResponseEntity<>(new Mensaje("El Caps no existe"), HttpStatus.NOT_FOUND);
-        }
+        /*
+         * if (efectorCapsDto.isEmpty()) {
+         * return new ResponseEntity<>(new Mensaje("El Caps no existe"),
+         * HttpStatus.NOT_FOUND);
+         * }
+         */
         // Si se encuentra el objeto, devolvemos una lista con ese único objeto
-        return new ResponseEntity<>(efectorCapsDto.get(), HttpStatus.OK);
+        return new ResponseEntity<>(efectorCapsDto.orElse(null), HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
