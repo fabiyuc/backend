@@ -47,7 +47,7 @@ public class Notificacion {
     @Column(columnDefinition = "VARCHAR(80)")
     private String detalle;
 
-    @Column(columnDefinition = "VARCHAR(50)")
+    @Column(columnDefinition = "VARCHAR(100)")
     private String url;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;

@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,8 +77,10 @@ public class CapsController {
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorCapsDto> efectorCapsDto = capsService.findByIdNombre(id);
         if (efectorCapsDto.isEmpty()) {
-            return new ResponseEntity<>(new Mensaje("Caps no encontrado"), HttpStatus.NOT_FOUND);
+            // Devolvemos un 200 OK con una lista vacía
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
         }
+        // Si se encuentra el objeto, devolvemos una lista con ese único objeto
         return new ResponseEntity<>(efectorCapsDto.get(), HttpStatus.OK);
     }
 

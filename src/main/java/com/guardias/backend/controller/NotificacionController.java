@@ -79,8 +79,11 @@ public class NotificacionController {
         if (notificacionDto.getFechaNotificacion() == null)
             return new ResponseEntity(new Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (notificacionDto.getIdEfectores() == null)
-            return new ResponseEntity(new Mensaje("El efector es obligatorio"), HttpStatus.BAD_REQUEST);
+        /*
+         * if (notificacionDto.getIdEfectores() == null)
+         * return new ResponseEntity(new Mensaje("El efector es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
 
         return new ResponseEntity(new Mensaje("Valido"), HttpStatus.OK);
     }
