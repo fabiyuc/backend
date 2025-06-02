@@ -90,7 +90,7 @@ public class AuthController {
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
         Set<Rol> roles = new HashSet<>();
-        roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());// por defecto todos van a ser USER
+        //roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());// por defecto todos van a ser USER
 
         // Validar y agregar roles enviados
         for (String rolNombre : nuevoUsuario.getRoles()) {
