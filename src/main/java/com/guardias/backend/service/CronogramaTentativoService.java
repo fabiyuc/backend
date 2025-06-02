@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -241,7 +242,7 @@ public class CronogramaTentativoService {
         cronogramaTentativo.setAutorizado(AutorizadoTentativoEnum.CONFIRMADO);
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
-    
+
     public void aceptar(Long id) {
         CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
@@ -306,10 +307,10 @@ public class CronogramaTentativoService {
                 dto.getFechaIngreso(),
                 dto.getHoraIngreso());
 
-        if(cronogramas.isEmpty()) {
+        if (cronogramas.isEmpty()) {
             return new VerificacionTentativoResponseDto(null, false);
         }
-        
+
         return new VerificacionTentativoResponseDto(cronogramas.get(0).getId(), true);
     }
 
@@ -355,4 +356,8 @@ public class CronogramaTentativoService {
                 AutorizadoTentativoEnum.PENDIENTE);
     }
 
+    public boolean existenCronogramasDesdeFecha(LocalDate fechaInicio) {
+        LocalDate finDeMes = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
+        return cronogramaTentativoRepository.existsByFechaIngresoBetweenAndActivoTrue(fechaInicio, finDeMes);
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.EfectorDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
@@ -64,6 +65,29 @@ public class EfectorController {
     @GetMapping("/tipo/{id}")
     public ResponseEntity<?> getEfectorTipoEndpoint(@PathVariable Long id) {
         return getEfectorTipo(id);
+    }
+
+    @GetMapping("/tipoEfector/{id}")
+    public ResponseEntity<?> getEfectorTipoSummaryEndpoint(@PathVariable Long id) {
+        return getEfectorTipoSummary(id);
+    }
+
+    public ResponseEntity<?> getEfectorTipoSummary(Long idEfector) {
+        // Verifica si existe el efector
+        if (!efectorService.existsById(idEfector)) {
+            return new ResponseEntity<>(new Mensaje("No se encontró el efector con el ID proporcionado"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        // Obtiene el efector
+        Efector efector = efectorService.findById(idEfector);
+
+        // Mapea al EfectorSummaryDto
+        EfectorSummaryDto efectorSummaryDto = new EfectorSummaryDto();
+        efectorSummaryDto.setId(efector.getId());
+        efectorSummaryDto.setNombre(efector.getNombre());
+
+        return new ResponseEntity<>(efectorSummaryDto, HttpStatus.OK);
     }
 
     public ResponseEntity<?> validations(EfectorDto efectorDto, Long id) {

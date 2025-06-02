@@ -1,10 +1,12 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -100,8 +102,10 @@ public class CronogramaTentativoController {
     }
 
     @GetMapping("/detailByIdAsistencial/{idAsistencial}")
-    public ResponseEntity<List<CronogramaTentativo>> getByIdAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
-        List<CronogramaTentativo> cronogramasTentativos = cronogramaTentativoService.findByIdAsistencial(idAsistencial).get();
+    public ResponseEntity<List<CronogramaTentativo>> getByIdAsistencial(
+            @PathVariable("idAsistencial") Long idAsistencial) {
+        List<CronogramaTentativo> cronogramasTentativos = cronogramaTentativoService.findByIdAsistencial(idAsistencial)
+                .get();
         return ResponseEntity.ok(cronogramasTentativos);
     }
 
@@ -125,6 +129,13 @@ public class CronogramaTentativoController {
         } else {
             return respuestaValidaciones;
         }
+    }
+
+    @GetMapping("/existenCronogramasDesdeFecha/{fechaInicio}")
+    public ResponseEntity<Boolean> existenCronogramasDesdeFecha(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio) {
+        boolean existen = cronogramaTentativoService.existenCronogramasDesdeFecha(fechaInicio);
+        return ResponseEntity.ok(existen);
     }
 
     // falta el update, donde tiene que hacer igual que en el create de
@@ -185,7 +196,8 @@ public class CronogramaTentativoController {
 
     // busca cronograma tentativo para comparar con registro de actividad
     @PostMapping("/verificarRegistroIngresoEnTentativo")
-    public VerificacionTentativoResponseDto  verificarRegistroIngresoEnTentativo(@RequestBody RegActivRegIngresoDto dto) {
+    public VerificacionTentativoResponseDto verificarRegistroIngresoEnTentativo(
+            @RequestBody RegActivRegIngresoDto dto) {
 
         return cronogramaTentativoService.verificarRegistroIngresoEnTentativo(dto);
     }
