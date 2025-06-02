@@ -58,36 +58,36 @@ public class SumaHorasService {
         sumaHorasRepository.deleteById(id);
     }
 
+    /*Ajusta las horas trabajadas basándose en minutos sobrantes */
     public float redondearHoras(float totalHours, float remainingMinutes) {
 
         float roundedHours;
 
+        // <16 minutos: No se redondea, las horas permanecen iguales
         if (remainingMinutes < 16) {
-            //Menos de 16 minutos: No se redondea, las horas permanecen iguales
             roundedHours = totalHours;
         } else if (remainingMinutes <= 45) {
-            //Entre 16 y 45 minutos: Se redondea a media hora adicional
+            //Entre 16 y 45 minutos: Se suma media hora adicional
             roundedHours = totalHours + 0.5f;
         } else {
-            //Más de 45 minutos: Se redondea a una hora adicional
+            // >45 minutos: suma una hora adicional
             roundedHours = totalHours + 1;
         }
 
         return roundedHours;
     }
 
-    // SOLO CALCULA HORAS no calcula los montos!!!!
-    public SumaHoras calcularHoras(LocalDate fechaIngreso, LocalDate fechaEgreso, LocalTime horaIngreso,
-            LocalTime horaEgreso) {
+    /*Calcula horas LAV(laborables) o SDF(sábados/domingos/feriados) */
+    public SumaHoras calcularHoras(LocalDate fechaIngreso, LocalDate fechaEgreso, LocalTime horaIngreso, LocalTime horaEgreso) {
 
         // obtiene el día de la semana como un número, 6 sabado 7 domingo
         int diaDeLaSemana = fechaIngreso.getDayOfWeek().getValue();
         
-        //combino la fecha y hora para obtener un instante completo en el tiempo (LocalDateTime)
+        /* combina fecha y hora para obtener un instante completo en el tiempo (LocalDateTime)*/
         LocalDateTime dateTimeIngreso = LocalDateTime.of(fechaIngreso, horaIngreso);
         LocalDateTime dateTimeEgreso = LocalDateTime.of(fechaEgreso, horaEgreso);
 
-        //calcula el tiempo transcurrido entre las dos marcas de tiempo
+        /*calcula duración entre las dos marcas de tiempo*/
         Duration duration = Duration.between(dateTimeIngreso, dateTimeEgreso);
 
         //obtengo el total de horas de esa duración
@@ -101,11 +101,12 @@ public class SumaHorasService {
             System.out.println("error!!!!! son pocas horas");
         }
 
-        //ajusta las horas trabajadas basándose en los minutos sobrantes
+        /*Redondea las horas según minutos sobrantes*/
         float roundedHours = redondearHoras(totalHours, remainingMinutes);
 
         SumaHoras totalHoras = new SumaHoras();
 
+        /*Asigna horas a horasLav o horasSdf segun el dia */
         if (feriadoService.existsByFecha(fechaIngreso) || diaDeLaSemana > 5) {
             //Si el día es un sábado, domingo o feriado
             totalHoras.setHorasSdf(roundedHours);
@@ -117,6 +118,7 @@ public class SumaHorasService {
         return totalHoras;
     }
 
+    /*Suma los valores de horasASumar al objeto horas */
     public void sumarHorasMensuales(SumaHoras horas, SumaHoras horasASumar) {
         horas.setHorasLav(horas.getHorasLav() + horasASumar.getHorasLav());
         horas.setHorasSdf(horas.getHorasSdf() + horasASumar.getHorasSdf());

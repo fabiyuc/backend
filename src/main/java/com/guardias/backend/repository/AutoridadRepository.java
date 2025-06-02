@@ -41,4 +41,10 @@ public interface AutoridadRepository extends JpaRepository<Autoridad, Long> {
         AND p.id = :idPersona
       """)
   Optional<Autoridad> findActiveAutoridadLegajoByPersonaId(@Param("idPersona") Long idPersona);
+
+  @Query("SELECT COUNT(a) FROM autoridades a " +
+      "WHERE a.confirmado is NULL " +
+      "AND a.activo = true")
+  Long countPendientes();
+
 }

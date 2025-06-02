@@ -52,7 +52,7 @@ public abstract class ValorGuardiaBase {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "valorguardiabase_hospital", joinColumns = @JoinColumn(name = "id_valorGuardiaBase"), inverseJoinColumns = @JoinColumn(name = "id_hospital"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardiaBase"  })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardiaBase", "caps"  })
     private List<Hospital> hospitales = new ArrayList<>();
 
     private LocalDate fechaInicio;

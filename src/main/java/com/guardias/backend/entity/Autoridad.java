@@ -28,6 +28,7 @@ public class Autoridad {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
         
+        /*a futuro cambiar el booleano confirmado a tipo Enum */
         @Column(columnDefinition = "BIT DEFAULT 1")
         private Boolean confirmado;
 
@@ -35,6 +36,9 @@ public class Autoridad {
         @JoinColumn(name = "id_persona")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "legajos","novedadesPersonales", "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion", "usuario", "registrosMensuales" })
         private Person persona;
+
+        @Column(columnDefinition = "VARCHAR(50)")
+        private String motivo;
 
 
         @Override

@@ -190,18 +190,22 @@ public class RegistrosPendientesService {
         return registroActividad;
     }
 
+    /*Elimina un registro de actividad de la lista de pendientes */
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
+
+        //busca el registro pendiente 
         Long id = registroActividad.getRegistrosPendientes().getId();
         try {
             if (!activo(id))
                 return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+
             RegistrosPendientes registrosPendientes = findById(id).get();
 
+            //remueve el registro de actividad de la lista
             registrosPendientes.getRegistrosActividades().remove(registroActividad);
             save(registrosPendientes);
 
-            // Si el listado de registros de actividad esta vacio, eliminar el registro de
-            // pendientes
+            // Si la lista queda vacia, eliminar el registro pendiente de BD
             if (registrosPendientes.getRegistrosActividades().isEmpty()) {
                 registrosPendientes.setEfector(null);
 
