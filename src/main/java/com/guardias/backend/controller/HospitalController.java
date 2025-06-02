@@ -1,7 +1,6 @@
 package com.guardias.backend.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,7 +96,7 @@ public class HospitalController {
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorHospitalDto> efectorHospitalDto = hospitalService.findByIdNombre(id);
         if (efectorHospitalDto.isEmpty()) {
-            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("El hospital no existe"), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(efectorHospitalDto.get(), HttpStatus.OK);
     }
