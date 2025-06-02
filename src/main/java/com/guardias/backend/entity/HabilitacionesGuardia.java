@@ -54,7 +54,7 @@ public class HabilitacionesGuardia {
                         "admitePasiva",
                         "nivelComplejidad", "caps", "valoresGuardiaBase", "habilitacionesGuardias",
                         "habilitacionesGenerales",
-                        "cronogramasTentativos", "feriados" })
+                        "cronogramasTentativos", "feriados", "notificaciones", "cronogramasDefinitivos"  })
 
         private List<Efector> efectores = new ArrayList<>();
 

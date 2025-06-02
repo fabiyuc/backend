@@ -93,6 +93,8 @@ public class AutoridadController {
         if (autoridadDto.getConfirmado() != null) {
             Autoridad autoridad = autoridadService.findById(id).get();
             autoridad.setConfirmado(autoridadDto.getConfirmado());
+            if (autoridadDto.getMotivo() != null)
+                autoridad.setMotivo(autoridadDto.getMotivo());
             autoridadService.save(autoridad);
 
             return new ResponseEntity(new Mensaje("asistencial modificado correctamente"), HttpStatus.OK);

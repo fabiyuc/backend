@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "hospitales")
@@ -28,12 +29,13 @@ public class Hospital extends Efector {
     private Boolean admitePasiva;
     private Long nivelComplejidad;
 
+    @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera", "domicilio", "telefono", "observacion", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" , "cronogramasDefinitivos" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera", "domicilio", "telefono", "observacion", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" , "cronogramasDefinitivos", "region", "localidad" , "servicios", "notificaciones"})
     private List<Caps> caps = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "hospitales", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "hospitales" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "hospitales", "activo", "tipoGuardia", "nivelComplejidad", "fechaInicio", "fechaFin", "valorGmi", "bonoUti" })
     private List<ValorGuardiaBase> valoresGuardiaBase = new ArrayList<>();
 
 }
