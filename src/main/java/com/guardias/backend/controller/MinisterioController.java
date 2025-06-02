@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.MinisterioDto;
+import com.guardias.backend.dto.efector.EfectorCapsDto;
 import com.guardias.backend.dto.efector.EfectorMinisterioDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Efector;
@@ -70,13 +71,9 @@ public class MinisterioController {
     @GetMapping("/detailNombreAll/{id}")
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorMinisterioDto> efectorMinisterioDto = ministerioService.findByIdNombre(id);
-        /*
-         * if (efectorMinisterioDto.isEmpty()) {
-         * return new ResponseEntity<>(new Mensaje("El Ministerio no existe"),
-         * HttpStatus.NOT_FOUND);
-         * }
-         */
-        return new ResponseEntity<>(efectorMinisterioDto.orElse(null), HttpStatus.OK);
+        return efectorMinisterioDto
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.ok().build()); // Retorna 200 OK con cuerpo vacío
     }
 
     @GetMapping("/detail/{id}")

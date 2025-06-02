@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.efector.EfectorCapsDto;
+import com.guardias.backend.dto.efector.EfectorHospitalDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
@@ -75,14 +76,9 @@ public class CapsController {
     @GetMapping("/detailNombreAll/{id}")
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorCapsDto> efectorCapsDto = capsService.findByIdNombre(id);
-        /*
-         * if (efectorCapsDto.isEmpty()) {
-         * return new ResponseEntity<>(new Mensaje("El Caps no existe"),
-         * HttpStatus.NOT_FOUND);
-         * }
-         */
-        // Si se encuentra el objeto, devolvemos una lista con ese único objeto
-        return new ResponseEntity<>(efectorCapsDto.orElse(null), HttpStatus.OK);
+        return efectorCapsDto
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.ok().build()); // Retorna 200 OK con cuerpo vacío
     }
 
     @GetMapping("/detail/{id}")
