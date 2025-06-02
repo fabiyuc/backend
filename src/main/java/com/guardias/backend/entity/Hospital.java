@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Table(name = "hospitales")
@@ -29,7 +28,7 @@ public class Hospital extends Efector {
     private Boolean admitePasiva;
     private Long nivelComplejidad;
 
-    @ToString.Exclude
+    //@ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cabecera", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cabecera", "domicilio", "telefono", "observacion", "distribucionesHorarias", "legajosUdo", "legajos", "servicios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" , "cronogramasDefinitivos", "region", "localidad" , "servicios", "notificaciones"})
     private List<Caps> caps = new ArrayList<>();
