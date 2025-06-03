@@ -91,7 +91,7 @@ public class ValorGmiController {
 
             /*Genera valores asociados */
             // Llama para crear registros de ValorGuardiaCargoYagrup vinculados al ValorGmi recien creado 
-            valorGuardiaCargoYagrupService.crearValoresGuardiaCargoYagrup();
+            valorGuardiaCargoYagrupService.inicializarValoresGuardia();
 
             return new ResponseEntity(new Mensaje("Valor creado correctamente"), HttpStatus.OK);
         } else {
