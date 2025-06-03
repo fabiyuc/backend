@@ -21,6 +21,8 @@ import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.RegistroActividadService;
 import com.guardias.backend.service.RegistrosPendientesService;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @RestController
 @RequestMapping("/registrosPendientes")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -67,32 +69,34 @@ public class RegistrosPendientesController {
     }
 
     @GetMapping("/detailByEfectorAndFecha/{idEfector}/{mes}/{anio}")
-    public ResponseEntity<List<RegistrosPendientes>> getByEfectorAndFecha(@PathVariable("idEfector") Long idEfector, @PathVariable("mes") int mes, @PathVariable("anio") int anio) {
+    public ResponseEntity<List<RegistrosPendientes>> getByEfectorAndFecha(@PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") int mes, @PathVariable("anio") int anio) {
 
-                List<RegistrosPendientes> registrosPendientes = registrosPendientesService
+        List<RegistrosPendientes> registrosPendientes = registrosPendientesService
                 .findByEfectorAndMonthYear(idEfector, mes, anio);
 
-       // if (!registrosPendientes.isEmpty())
-            return new ResponseEntity<>(registrosPendientes, HttpStatus.OK);
-        //else
-          //  return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
+        // if (!registrosPendientes.isEmpty())
+        return new ResponseEntity<>(registrosPendientes, HttpStatus.OK);
+        // else
+        // return new ResponseEntity(new Mensaje("No se encontraron registros
+        // pendientes"), HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/detailByEfectorAndFechaAndAsistencial/{idEfector}/{mes}/{anio}/{idAsistencial}")
-    public ResponseEntity<RegistrosPendientes> getByEfectorAndFechaAndAsistencial(
+    @GetMapping("/tieneRegistroPendiente/{idEfector}/{mes}/{anio}/{idAsistencial}")
+    public ResponseEntity<Boolean> tieneRegistroPendiente(
             @PathVariable("idEfector") Long idEfector,
             @PathVariable("mes") int mes,
             @PathVariable("anio") int anio,
             @PathVariable("idAsistencial") Long idAsistencial) {
 
-        RegistrosPendientes registrosPendientes = registrosPendientesService
-                .findByEfectorMonthYearAndAsistencial(idEfector, mes, anio, idAsistencial);
-
-        //if (registrosPendientes != null) {
-            return new ResponseEntity(registrosPendientes, HttpStatus.OK);
-        //} else {
-           // return new ResponseEntity(new Mensaje("No se encontraron registros pendientes"), HttpStatus.NOT_FOUND);
-       // }
+        try {
+            boolean tienePendiente = registrosPendientesService.tieneRegistroPendiente(idEfector, mes, anio, idAsistencial);
+            return new ResponseEntity<>(tienePendiente, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(false, HttpStatus.OK); 
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public ResponseEntity<?> deleteRegistroActividad(RegistroActividad registroActividad) {
@@ -120,13 +124,17 @@ public class RegistrosPendientesController {
         }
     }
 
-   /*  @GetMapping("/detailByAsistencial/{dni}")
-    public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
-        if (!asistencialService.existsByDniAndActivoTrue(dni))
-            return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"), HttpStatus.NOT_FOUND);
-        Asistencial asistencial = asistencialService.findByDniAndActivoTrue(dni).get();
-        return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
+    /*
+     * @GetMapping("/detailByAsistencial/{dni}")
+     * public ResponseEntity<Asistencial> getByDni(@PathVariable("dni") int dni) {
+     * if (!asistencialService.existsByDniAndActivoTrue(dni))
+     * return new ResponseEntity(new Mensaje("no existe asistencial con ese dni"),
+     * HttpStatus.NOT_FOUND);
+     * Asistencial asistencial =
+     * asistencialService.findByDniAndActivoTrue(dni).get();
+     * return new ResponseEntity<Asistencial>(asistencial, HttpStatus.OK);
+     * 
+     * }
+     */
 
-    } */
-    
 }

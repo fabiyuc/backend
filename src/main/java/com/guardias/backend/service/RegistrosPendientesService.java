@@ -69,7 +69,7 @@ public class RegistrosPendientesService {
         }
     }
 
-    public RegistrosPendientes findByEfectorMonthYearAndAsistencial(Long idEfector, int mes, int anio,
+    public boolean tieneRegistroPendiente(Long idEfector, int mes, int anio,
             Long idAsistencial) {
 
         if (!efectorService.existsById(idEfector)) {
@@ -80,11 +80,11 @@ public class RegistrosPendientesService {
         }
 
         try {
-            return registrosPendientesRepository.findByEfectorMonthYearAndAsistencial(idEfector, mes, anio,
+            return registrosPendientesRepository.existByEfectorMonthYearAndAsistencial(idEfector, mes, anio,
                     idAsistencial);
         } catch (Exception e) {
             System.err.println("Error en la búsqueda de registros: " + e.getMessage());
-            return null;
+            return false;
         }
     }
 
