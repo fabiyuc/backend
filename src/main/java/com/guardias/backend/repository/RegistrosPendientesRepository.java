@@ -28,8 +28,14 @@ public interface RegistrosPendientesRepository extends JpaRepository<RegistrosPe
         List<RegistrosPendientes> findByEfectorAndMonthYear(@Param("idEfector") Long idEfector, @Param("mes") int mes,
                         @Param("anio") int anio);
 
-        @Query(value = "SELECT rp.* FROM registros_pendientes rp JOIN registros_actividades ra ON rp.id = ra.id_registros_pendientes WHERE rp.id_efector = :idEfector AND MONTH(rp.fecha) = :mes AND YEAR(rp.fecha) = :anio AND ra.id_asistencial = :idAsistencial", nativeQuery = true)
-        RegistrosPendientes findByEfectorMonthYearAndAsistencial(
+        @Query("SELECT CASE WHEN COUNT(rp) > 0 THEN true ELSE false END " +
+       "FROM registrosPendientes rp " +
+       "JOIN rp.registrosActividades ra " +
+       "WHERE rp.efector.id = :idEfector " +
+       "AND FUNCTION('MONTH', rp.fecha) = :mes " +
+       "AND FUNCTION('YEAR', rp.fecha) = :anio " +
+       "AND ra.asistencial.id = :idAsistencial")
+        boolean existByEfectorMonthYearAndAsistencial(
                         @Param("idEfector") Long idEfector,
                         @Param("mes") int mes,
                         @Param("anio") int anio,
