@@ -385,6 +385,14 @@ public class CronogramaTentativoService {
     }
 
     public Optional<List<CronogramaTentativo>> findAnuladosByEfectorId(Long idEfector) {
-        return cronogramaTentativoRepository.findByEfectorIdAndAutorizado(idEfector, AutorizadoTentativoEnum.ANULADO);
+        return cronogramaTentativoRepository.findByEfectorIdAndAnulado(idEfector, AutorizadoTentativoEnum.ANULADO);
+    }
+
+    public Optional<List<CronogramaTentativo>> findAnuladosByEfectorAndAsistencial(LocalDate fechaInicio,
+            Long idAsistencial, Long idEfector) {
+        LocalDate finDeMes = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
+
+        return Optional.of(cronogramaTentativoRepository.findByFechaIngresoBetweenAndAutorizado(
+                fechaInicio, finDeMes, idAsistencial, idEfector, AutorizadoTentativoEnum.ANULADO));
     }
 }

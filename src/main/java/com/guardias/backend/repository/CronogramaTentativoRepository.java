@@ -116,6 +116,10 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
         Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId,
                         @Param("autorizado") AutorizadoTentativoEnum autorizado);
 
+        @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId  AND ct.autorizado = :autorizado")
+        Optional<List<CronogramaTentativo>> findByEfectorIdAndAnulado(@Param("efectorId") Long efectorId,
+                        @Param("autorizado") AutorizadoTentativoEnum autorizado);
+
         @Query("SELECT COUNT(ct) FROM cronogramasTentativos ct " +
                         "WHERE ct.efector.id = :idEfector " +
                         "AND ct.autorizado = :estado " +
@@ -149,4 +153,18 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         @Param("fechaFinalizacion") LocalDate fechaFinalizacion,
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector);
+
+        @Query("""
+                        SELECT ct FROM cronogramasTentativos ct
+                        WHERE ct.fechaIngreso BETWEEN :fechaInicio AND :fechaFinalizacion
+                        AND ct.asistencial.id = :idAsistencial
+                        AND ct.efector.id = :idEfector
+                        AND ct.autorizado = :autorizado
+                        """)
+        List<CronogramaTentativo> findByFechaIngresoBetweenAndAutorizado(
+                        @Param("fechaInicio") LocalDate fechaInicio,
+                        @Param("fechaFinalizacion") LocalDate fechaFinalizacion,
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector,
+                        @Param("autorizado") AutorizadoTentativoEnum autorizado);
 }
