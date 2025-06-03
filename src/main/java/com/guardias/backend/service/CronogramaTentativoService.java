@@ -356,8 +356,31 @@ public class CronogramaTentativoService {
                 AutorizadoTentativoEnum.PENDIENTE);
     }
 
-    public boolean existenCronogramasDesdeFecha(LocalDate fechaInicio) {
+    public boolean existenCronogramasDesdeFecha(LocalDate fechaInicio, Long idAsistencial, Long idEfector) {
         LocalDate finDeMes = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
-        return cronogramaTentativoRepository.existsByFechaIngresoBetweenAndActivoTrue(fechaInicio, finDeMes);
+        return cronogramaTentativoRepository.existsByFechaIngresoBetweenAndActivoTrue(fechaInicio, finDeMes,
+                idAsistencial, idEfector);
+    }
+
+    public boolean updateCronogramasDesdeFecha(LocalDate fechaInicio, Long idAsistencial, Long idEfector) {
+        LocalDate finDeMes = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
+
+        // Buscar cronogramas activos en el rango de fechas
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository
+                .findByFechaIngresoBetweenAndActivoTrue(fechaInicio, finDeMes, idAsistencial, idEfector);
+
+        if (cronogramas.isEmpty()) {
+            return false; // No hay cronogramas para actualizar
+        }
+
+        // Actualizar el estado de cada cronograma
+        for (CronogramaTentativo cronograma : cronogramas) {
+            cronograma.setActivo(false);
+            cronograma.setAutorizado(AutorizadoTentativoEnum.ANULADO);
+        }
+
+        // Guardar los cambios
+        cronogramaTentativoRepository.saveAll(cronogramas);
+        return true; // Se actualizaron cronogramas
     }
 }

@@ -131,11 +131,31 @@ public class CronogramaTentativoController {
         }
     }
 
-    @GetMapping("/existenCronogramasDesdeFecha/{fechaInicio}")
+    @GetMapping("/existenCronogramasDesdeFecha/{fechaInicio}/{idAsistencial}/{idEfector}")
     public ResponseEntity<Boolean> existenCronogramasDesdeFecha(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio) {
-        boolean existen = cronogramaTentativoService.existenCronogramasDesdeFecha(fechaInicio);
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector) {
+        boolean existen = cronogramaTentativoService.existenCronogramasDesdeFecha(fechaInicio, idAsistencial,
+                idEfector);
         return ResponseEntity.ok(existen);
+    }
+
+    @PostMapping("/updateCronogramasDesdeFecha/{fechaInicio}/{idAsistencial}/{idEfector}")
+    public ResponseEntity<?> updateCronogramasDesdeFecha(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector) {
+
+        boolean actualizado = cronogramaTentativoService.updateCronogramasDesdeFecha(fechaInicio, idAsistencial,
+                idEfector);
+
+        if (actualizado) {
+            return new ResponseEntity<>(new Mensaje("Cronogramas actualizados correctamente"), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Mensaje("No se encontraron cronogramas en el rango de fechas"),
+                    HttpStatus.NOT_FOUND);
+        }
     }
 
     // falta el update, donde tiene que hacer igual que en el create de
