@@ -383,4 +383,8 @@ public class CronogramaTentativoService {
         cronogramaTentativoRepository.saveAll(cronogramas);
         return true; // Se actualizaron cronogramas
     }
+
+    public Optional<List<CronogramaTentativo>> findAnuladosByEfectorId(Long idEfector) {
+        return cronogramaTentativoRepository.findByEfectorIdAndAutorizado(idEfector, AutorizadoTentativoEnum.ANULADO);
+    }
 }

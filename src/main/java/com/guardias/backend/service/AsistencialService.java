@@ -440,6 +440,10 @@ public class AsistencialService {
                     .map(tipoGuardia -> tipoGuardia.getNombre().name())
                     .collect(Collectors.toList());
 
+            // Excluir si contiene "CONTRAFACTURA"
+            if (nombresTiposGuardias.contains("CONTRAFACTURA")) {
+                continue;
+            }
             AsistencialEfectorRegistroActividadDto dto = new AsistencialEfectorRegistroActividadDto(
                     asistencial.getId(),
                     asistencial.getNombre(),

@@ -66,6 +66,19 @@ public class CronogramaTentativoController {
         }).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
 
+    @GetMapping("/listAnuladosByEfector/{idEfector}")
+    public ResponseEntity<List<CronogramaTentativo>> listAnuladosByEfector(@PathVariable Long idEfector) {
+        List<CronogramaTentativo> list = cronogramaTentativoService.findAnuladosByEfectorId(idEfector)
+                .orElse(new ArrayList<>());
+
+        if (list.isEmpty()) {
+            return new ResponseEntity(new Mensaje("El efector no tiene cronogramas tentativos anulados"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<List<CronogramaTentativo>>(list, HttpStatus.OK);
+    }
+
     @GetMapping("/detailByEfector/{idEfector}")
     public ResponseEntity<List<CronogramaTentativo>> getByEfector(@PathVariable("idEfector") Long idEfector) {
         List<CronogramaTentativo> cronogramaTentativo = cronogramaTentativoService.findByEfectorId(idEfector)
