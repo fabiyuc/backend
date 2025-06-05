@@ -85,51 +85,23 @@ public class HabilitacionesGuardiasService {
     }
 
     public ResponseEntity<?> validations(HabilitacionesGuardiasDto permisosDto) {
-        if (permisosDto.getIdAsistencial() == null)
-            return new ResponseEntity(new Mensaje("el id del asistencial es obligatorio"),
-                    HttpStatus.BAD_REQUEST);
-
-        // Nueva validación para tipoEfector y idEfectores
-        try {
-            /*
-             * if (permisosDto.getTipoEfectorEx() != null) {
-             * LocationEnum tipoEfectorEx =
-             * LocationEnum.valueOf(permisosDto.getTipoEfectorEx().toString());
-             */
-
-            /* if (LocationEnum.CAPS == tipoEfectorEx) { */
-            if (permisosDto.getIdEfectores() == null ||
-                    permisosDto.getIdEfectores().isEmpty()) {
-                return new ResponseEntity<>(
-                        new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            boolean isCapsValid = capsService.existsById(permisosDto.getIdEfectores().get(0));
-            if (!isCapsValid) {
-                return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            /* } */
-
-            /* if (LocationEnum.HOSPITAL == tipoEfectorEx) { */
-            if (permisosDto.getIdEfectores() == null ||
-                    permisosDto.getIdEfectores().isEmpty()) {
-                return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            boolean isHospitalValid = hospitalService.existsById(permisosDto.getIdEfectores().get(0));
-            if (!isHospitalValid) {
-                return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
-                        HttpStatus.BAD_REQUEST);
-            }
-            /* } */
-            /* } */
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
+        if (permisosDto.getIdAsistencial() == null) {
+            return new ResponseEntity<>(
+                    new Mensaje("El id del asistencial es obligatorio"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+        if (permisosDto.getIdEfectores() == null || permisosDto.getIdEfectores().isEmpty()) {
+            return new ResponseEntity<>(
+                    new Mensaje("El idEfectores es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Aquí ya no se valida si pertenece a CAPS o HOSPITAL
+        return new ResponseEntity<>(
+                new Mensaje("valido"),
+                HttpStatus.OK);
+
     }
 
     public HabilitacionesGuardia createUpdate(HabilitacionesGuardia habilitacionesGuardias,

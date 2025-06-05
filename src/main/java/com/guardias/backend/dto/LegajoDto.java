@@ -75,16 +75,10 @@ public class LegajoDto {
 // "idRevista": 0,
 // "idUdo": 0,
 // "idPersona": 0,
-// "idEfectores": [
-// 0
-// ],
-// "idEspecialidades": [
-// 0
-// ],
+// "idEfectores": [0],
+// "idEspecialidades": [0],
 // "idProfesion": 0,
-// "idTipoGuardias": [
-// 0
-// ],
+// "idTipoGuardias": [0],
 // "idCargo": 0,
 // "idRegion": 0,
 // "nroResolucion": "nroResolucion",
