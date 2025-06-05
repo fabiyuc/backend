@@ -346,6 +346,7 @@ public class CronogramaTentativoService {
         dto.setHoraIngreso(tentativo.getHoraIngreso());
         dto.setHoraEgreso(tentativo.getHoraEgreso());
         dto.setAutorizado(tentativo.getAutorizado());
+        dto.setIdServicio(tentativo.getServicio().getId());
 
         return dto;
     }
