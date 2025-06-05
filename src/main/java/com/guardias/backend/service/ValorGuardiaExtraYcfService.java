@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
 
 import jakarta.transaction.Transactional;
@@ -17,6 +18,8 @@ public class ValorGuardiaExtraYcfService {
     
     @Autowired
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
+    @Autowired
+    HospitalRepository hospitalRepository;
 
     public Optional<List<ValorGuardiaExtrayCF>> findByActivoTrue() {
         return valorGuardiaExtraYcfRepository.findByActivoTrue();
@@ -49,4 +52,23 @@ public class ValorGuardiaExtraYcfService {
     public boolean activo(Long id) {
         return (valorGuardiaExtraYcfRepository.existsById(id) && valorGuardiaExtraYcfRepository.findById(id).get().isActivo());
     }
+
+    public Optional<ValorGuardiaExtrayCF> obtenerValorGuardiaExtraPorHospital(Long idHospital) {
+        // Verificar existencia del hospital
+
+        if (!hospitalRepository.existsById(idHospital))
+            return Optional.empty();
+
+        // 1. Buscar valor específico para el hospital
+        Optional<ValorGuardiaExtrayCF> valorEspecifico = valorGuardiaExtraYcfRepository
+                .findByHospitalesIdAndActivoTrue(idHospital);
+
+        if (valorEspecifico.isPresent()) {
+            return valorEspecifico;
+        }
+
+        // 2. Buscar valor genérico (sin hospitales asignados)
+        return valorGuardiaExtraYcfRepository.findByActivoTrueAndHospitalesIsEmpty();
+    }
+
 }

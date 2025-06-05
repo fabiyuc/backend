@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,10 +105,21 @@ public class DistribucionConsultorioService {
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
-        // Busca una distribución de consultorio válida
-        return distribucionConsultorioRepository.findValidDistribucion(
+        // Buscar todas las distribuciones válidas que cubran la fecha de ingreso
+
+        List<DistribucionConsultorio> distribuciones = distribucionConsultorioRepository
+            .findValidDistribuciones(dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso());
+
+    // Verificar si alguna distribución coincide con los horarios
+    return distribuciones.stream().anyMatch(dist -> {
+        LocalTime horaEgresoCalculada = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+        return dist.getHoraIngreso().equals(dto.getHoraIngreso()) &&
+               horaEgresoCalculada.equals(dto.getHoraEgreso());
+    });
+
+       /*  return distribucionConsultorioRepository.findValidDistribucion(
                 dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),
-                horaIngresoString, horaEgresoString).isPresent();
+                horaIngresoString, horaEgresoString).isPresent(); */
 
     }
 

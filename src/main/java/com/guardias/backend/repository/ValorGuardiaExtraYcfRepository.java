@@ -18,4 +18,10 @@ public interface ValorGuardiaExtraYcfRepository extends JpaRepository<ValorGuard
     boolean existsById(Long id);
 
     List<ValorGuardiaExtrayCF> findByActivo(boolean activo);
+
+    // Busca valores específicos para un hospital
+    Optional<ValorGuardiaExtrayCF> findByHospitalesIdAndActivoTrue(Long hospitalId);
+    
+    // Busca valores genéricos (sin hospitales asignados)
+    Optional<ValorGuardiaExtrayCF> findByActivoTrueAndHospitalesIsEmpty();
 }
