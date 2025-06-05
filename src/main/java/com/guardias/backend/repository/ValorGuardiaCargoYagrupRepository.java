@@ -18,4 +18,10 @@ public interface ValorGuardiaCargoYagrupRepository extends JpaRepository<ValorGu
     boolean existsById(Long id);
 
     List<ValorGuardiaCargoYagrup> findByActivo(boolean activo);
+
+    // Busca valores específicos para un hospital
+    Optional<ValorGuardiaCargoYagrup> findByHospitalesIdAndActivoTrue(Long hospitalId);
+    
+    // Busca valores genéricos (sin hospitales asignados)
+    Optional<ValorGuardiaCargoYagrup> findByActivoTrueAndHospitalesIsEmpty();
 }

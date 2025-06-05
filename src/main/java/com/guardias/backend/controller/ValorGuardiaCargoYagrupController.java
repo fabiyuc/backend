@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.DistribucionGuardia;
+import com.guardias.backend.entity.Hospital;
+import com.guardias.backend.entity.NoAsistencial;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
+import com.guardias.backend.repository.HospitalRepository;
+import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 
 @RestController
@@ -23,6 +29,8 @@ public class ValorGuardiaCargoYagrupController {
 
     @Autowired
     ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
+    @Autowired
+    HospitalRepository hospitalRepository;
 
     @GetMapping("/list")
     public ResponseEntity<List<ValorGuardiaCargoYagrup>> list() {
@@ -45,4 +53,16 @@ public class ValorGuardiaCargoYagrupController {
         ValorGuardiaCargoYagrup valorGuardiaCyA = valorGuardiaCargoYagrupService.findById(id).get();
         return new ResponseEntity<ValorGuardiaCargoYagrup>(valorGuardiaCyA, HttpStatus.OK);
     }
+
+    // Buscar el valor activo para este hospital
+    @GetMapping("/valorByEfector/{idHospital}")
+    public ResponseEntity<ValorGuardiaCargoYagrup> valorByEfector(@PathVariable("idHospital") Long idHospital) {
+        
+        return valorGuardiaCargoYagrupService
+            .obtenerValorGuardiaCargoPorHospital(idHospital)
+            .map(valor -> ResponseEntity.ok(valor))
+            .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+   
 }

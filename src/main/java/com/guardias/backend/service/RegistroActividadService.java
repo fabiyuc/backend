@@ -49,6 +49,8 @@ public class RegistroActividadService {
     @Autowired
     RegistrosPendientesService registrosPendientesService;
     @Autowired
+    ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
+    @Autowired
     ValorGuardiaExtraYcfService valorGuardiaExtraYcfService;
     @Autowired
     HospitalService hospitalService;
@@ -185,6 +187,9 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
+        System.out.println("DEBUG [1] - Horas calculadas (LAV/SDF): " + 
+        horas.getHorasLav() + "/" + horas.getHorasSdf());
+        
         horas.setActivo(true);
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
 
@@ -192,21 +197,28 @@ public class RegistroActividadService {
 
         Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
 
+        if (hospital == null) {
+        throw new RuntimeException("Hospital no encontrado para ID: " + efector.getId());
+    }
+
+        System.out.println("DEBUG 2 - Tipo de guardia: " + tipoGuardia);
+        System.out.println("DEBUG 3 - Hospital ID: " + (hospital != null ? hospital.getId() : "null"));
         /*B. Determinar el tipo de guardia */
         //si es Cargo o Agrupacion
         if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia == TipoGuardiaEnum.AGRUPACION) {
-            System.out.println("es tipo guardia cargo o agrup");
+            System.out.println("DEBUG [4] - es tipo guardia cargo o agrup");
 
+            /* ValorGuardiaCargoYagrup valorGuardiaBase1 = valorGuardiaCargoYagrupService.obtenerValorGuardiaCargoPorHospital(hospital.getId()).get();
+                System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase1);
+                System.out.println("DEBUG 6 - Total LAV/SDF: " + valorGuardiaBase1.getTotalLav() + "/" + valorGuardiaBase1.getTotalSdf());
+ */
             try {
                 // Valor de la guardia segun tipoGuardia y efector
-                /*
-                 * !!!!!!!!!!!! REVISAR SI REALMENTE TOMA POR TIPO DE GUARDIA cuando haga un
-                 * registro de aactividad de tipo extra
-                 */
 
                 /*Obtiene valores de guardia */ 
-                ValorGuardiaCargoYagrup valorGuardiaBase = (ValorGuardiaCargoYagrup) efectorService
-                        .obtenerValorGuardiaActivo(hospital.getId()).get();
+                ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService.obtenerValorGuardiaCargoPorHospital(hospital.getId()).get();
+                System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase);
+                System.out.println("DEBUG 6 - Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/" + valorGuardiaBase.getTotalSdf());
 
                 /*Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
                 /* LAV */
@@ -214,15 +226,20 @@ public class RegistroActividadService {
                         RoundingMode.HALF_UP);
                 BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
                 horas.setMontoLav(totalMontoLav);
+                System.out.println("DEBUG 7 - Valor hora LAV: " + valorHoraLav);
+                System.out.println("DEBUG 8 - Monto LAV calculado: " + totalMontoLav);
 
                 /* SDF */
                 BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
                 BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
                 horas.setMontoSdf(totalMontoSdf);
+                System.out.println("DEBUG 9 - Valor hora SDF: " + valorHoraLav);
+                System.out.println("DEBUG 10 - Monto SDF calculado: " + totalMontoLav);
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
                 horas.setMontoTotal(total);
+                System.out.println("DEBUG [11] - Monto total calculado: " + total);
 
             } catch (Exception e) {
                 System.out.println("Error al buscar ValorGuardiaCargoYagrup: " + e.getMessage());
@@ -251,7 +268,7 @@ public class RegistroActividadService {
                 /* SDF */
                 BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
                         RoundingMode.HALF_UP);
-                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraSdf);
+                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
                 horas.setMontoSdf(totalMontoSdf);
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
@@ -286,7 +303,9 @@ public class RegistroActividadService {
 
         /*C. Cálculo de horas y montos*/
         //
-        SumaHoras horas = calcularHoras(registroActividad); 
+        SumaHoras horas = calcularHoras(registroActividad);
+        System.out.println("DEBUG - Horas calculadas (LAV/SDF): " + horas.getHorasLav() + "/" + horas.getHorasSdf());
+
         //guarda las horas calculadas en BD
         sumaHorasService.save(horas);
         registroActividad.setHorasRealizadas(horas);
@@ -299,7 +318,8 @@ public class RegistroActividadService {
         //si la eliminacion fue exitosa desvincula el reg pendiente
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
             registroActividad.setRegistrosPendientes(null);
-            //Actualización de registro mensual
+            
+            /*Actualización de registro mensual*/
             registroActividad = registroMensualService.setRegistroMensual(registroActividad);
         }
 
