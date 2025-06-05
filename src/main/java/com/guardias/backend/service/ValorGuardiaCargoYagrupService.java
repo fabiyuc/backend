@@ -337,7 +337,7 @@ public class ValorGuardiaCargoYagrupService {
         // Servicios Críticos + SAME
         crearValorCargoYAgrupacion(
             Arrays.asList("SAME"),
-            1,
+            4,
             new BigDecimal("163853.09"), // L-V (Total)
             new BigDecimal("180238.40"), // S-D-F (Total)
             fechaInicio
@@ -345,7 +345,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // Tercer Nivel - Materno, Soria
         crearValorCargoYAgrupacion(
-            Arrays.asList("MATERNO", "SORIA"),
+            Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
             3,
             new BigDecimal("147051.46"), // L-V (Total)
             new BigDecimal("161756.61"), // S-D-F (Total)
@@ -357,13 +357,13 @@ public class ValorGuardiaCargoYagrupService {
             Arrays.asList("JORGE URO"),
             2,
             new BigDecimal("264692.63"), // L-V (Total)
-            new BigDecimal("291163.89"), // S-D-F (Total)
+            new BigDecimal("291161.89"), // S-D-F (Total)
             fechaInicio
         );
 
         // Segundo Nivel - San Roque, Orias, Paterson
         crearValorCargoYAgrupacion(
-            Arrays.asList("SAN ROQUE", "ORIAS", "PATERSON"),
+            Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
             2,
             new BigDecimal("147051.46"), // L-V (Total)
             new BigDecimal("161756.61"), // S-D-F (Total)
@@ -381,7 +381,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // Primer Nivel - Rosario, Aguilar, Yuto, Talar, P.Sola
         crearValorCargoYAgrupacion(
-            Arrays.asList("ROSARIO", "EL AGUILAR", "YUTO", "TALAR", "PALMA SOLA"),
+            Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
             1,
             new BigDecimal("147051.46"), // L-V (Total)
             new BigDecimal("161756.61"), // S-D-F (Total)
@@ -402,7 +402,7 @@ public class ValorGuardiaCargoYagrupService {
         // Servicios Críticos + SAME
         crearValorExtraYCF(
             Arrays.asList("SAME"),
-            1,
+            4,
             new BigDecimal("228139.28"), // L-V (Total)
             new BigDecimal("250953.20"), // S-D-F (Total)
             fechaInicio
@@ -410,7 +410,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // Tercer Nivel - Materno, Soria
         crearValorExtraYCF(
-            Arrays.asList("MATERNO", "SORIA"),
+            Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
             3,
             new BigDecimal("211337.65"), // L-V (Total)
             new BigDecimal("232471.41"), // S-D-F (Total)
@@ -428,7 +428,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // Segundo Nivel - San Roque, Orias, Paterson
         crearValorExtraYCF(
-            Arrays.asList("SAN ROQUE", "ORIAS", "PATERSON"),
+            Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
             2,
             new BigDecimal("211337.65"), // L-V (Total)
             new BigDecimal("232471.41"), // S-D-F (Total)
@@ -446,7 +446,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // Primer Nivel - Rosario, Aguilar, Yuto, Talar, P.Sola
         crearValorExtraYCF(
-            Arrays.asList("ROSARIO", "EL AGUILAR", "YUTO", "TALAR", "PALMA SOLA"),
+            Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
             1,
             new BigDecimal("253605.17"), // L-V (Total)
             new BigDecimal("278965.69"), // S-D-F (Total)
