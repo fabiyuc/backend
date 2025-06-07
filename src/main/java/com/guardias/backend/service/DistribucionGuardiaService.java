@@ -1,6 +1,8 @@
 package com.guardias.backend.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -147,8 +149,7 @@ public class DistribucionGuardiaService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
-        // entenderlo luego como TIME en la comparacion
+        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
@@ -166,17 +167,43 @@ public class DistribucionGuardiaService {
         }
 
         // 2. Verificación de distribución activa parcial (mismo mes y año)
-        boolean existeDistribucionParcial = distribucionGuardiaRepository.existsByPersonaAndEfectorAndTipoInMonth(
+
+        LocalDate fechaIngreso = dto.getFechaIngreso();
+        LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
+
+        boolean existeDistribucionParcial = distribucionGuardiaRepository.existsDistribucionParcialSemanal(
+            dto.getIdAsistencial(),
+            dto.getIdEfector(),
+            dto.getTipoGuardia(),
+            inicioSemana,
+            finSemana,
+            diaTentativo);
+       /*  boolean existeDistribucionParcial = distribucionGuardiaRepository.existsByPersonaAndEfectorAndTipoInMonth(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
                 dto.getTipoGuardia(),
                 dto.getFechaIngreso().getMonthValue(),
-                dto.getFechaIngreso().getYear());
+                dto.getFechaIngreso().getYear()); */
 
         // 3. Determinar si no hay ninguna distribución
         boolean sinDistribucion = !existeDistribucionParcial;
 
         return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
+    }
+
+    public DiasEnum obtenerDiaSemana(LocalDate fecha) {
+    DayOfWeek dayOfWeek = fecha.getDayOfWeek();
+    return switch (dayOfWeek) {
+        case MONDAY -> DiasEnum.LUNES;
+        case TUESDAY -> DiasEnum.MARTES;
+        case WEDNESDAY -> DiasEnum.MIERCOLES;
+        case THURSDAY -> DiasEnum.JUEVES;
+        case FRIDAY -> DiasEnum.VIERNES;
+        case SATURDAY -> DiasEnum.SABADO;
+        case SUNDAY -> DiasEnum.DOMINGO;
+        };
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
