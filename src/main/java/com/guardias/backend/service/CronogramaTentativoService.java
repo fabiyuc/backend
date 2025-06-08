@@ -376,7 +376,7 @@ public class CronogramaTentativoService {
 
         // Actualizar el estado de cada cronograma
         for (CronogramaTentativo cronograma : cronogramas) {
-            cronograma.setActivo(false);
+            //cronograma.setActivo(false);
             cronograma.setAutorizado(AutorizadoTentativoEnum.ANULADO);
         }
 
