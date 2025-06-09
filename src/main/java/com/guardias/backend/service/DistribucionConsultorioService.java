@@ -113,6 +113,7 @@ public class DistribucionConsultorioService {
     // Verificar si alguna distribución coincide con los horarios
     return distribuciones.stream().anyMatch(dist -> {
         LocalTime horaEgresoCalculada = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+        
         return dist.getHoraIngreso().equals(dto.getHoraIngreso()) &&
                horaEgresoCalculada.equals(dto.getHoraEgreso());
     });

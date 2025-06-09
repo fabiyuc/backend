@@ -142,7 +142,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("diaTentativo") DiasEnum diaTentativo);
 
         @Query("""
-                            SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+                            SELECT *
                             FROM distribucionesGuardias d
                             WHERE d.persona.id = :idAsistencial
                             AND d.efector.id = :idEfector
@@ -154,7 +154,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                                 OR (:finSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
                             )
                         """)
-        boolean existsAnyDistribucionInWeek(
+        List<DistribucionGuardia> findDistribucionesInWeek(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("inicioSemana") LocalDate inicioSemana,

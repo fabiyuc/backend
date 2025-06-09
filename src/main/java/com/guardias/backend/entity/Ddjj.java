@@ -45,6 +45,7 @@ public class Ddjj {
     private BigDecimal total;
     private EstadoDdjjEnum estadoDdjj;
 
+    /*9/6/25 dejo ésta relacion pero no la estamos usando */
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valorGmi")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFin", "monto", "tipoGuardia",

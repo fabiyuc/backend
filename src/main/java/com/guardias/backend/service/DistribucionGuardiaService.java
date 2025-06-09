@@ -2,6 +2,7 @@ package com.guardias.backend.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
@@ -210,11 +211,20 @@ public class DistribucionGuardiaService {
         LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-        return distribucionGuardiaRepository.existsAnyDistribucionInWeek(
+         List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository
+            .findDistribucionesInWeek(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
                 inicioSemana,
                 finSemana);
+    
+    // Verificar superposición horaria
+    return distribuciones.stream().anyMatch(dist -> {
+        LocalTime horaEgresoCalculada = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+
+        return dist.getHoraIngreso().equals(dto.getHoraIngreso()) && 
+               horaEgresoCalculada.equals(dist.getHoraIngreso());
+        });
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
