@@ -142,7 +142,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("diaTentativo") DiasEnum diaTentativo);
 
         @Query("""
-                            SELECT *
+                            SELECT d
                             FROM distribucionesGuardias d
                             WHERE d.persona.id = :idAsistencial
                             AND d.efector.id = :idEfector
