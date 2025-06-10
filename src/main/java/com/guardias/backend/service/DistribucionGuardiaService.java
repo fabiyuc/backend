@@ -16,6 +16,7 @@ import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGiraRepository;
@@ -175,10 +176,12 @@ public class DistribucionGuardiaService {
         LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
 
+        TipoGuardiaEnum tipoGuardiaEnum = TipoGuardiaEnum.valueOf(dto.getTipoGuardia());
+
         boolean existeDistribucionParcial = distribucionGuardiaRepository.existsDistribucionParcialSemanal(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
-                dto.getTipoGuardia(),
+                tipoGuardiaEnum,
                 inicioSemana,
                 finSemana,
                 diaTentativo);

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 @Repository
 public interface DistribucionGuardiaRepository extends JpaRepository<DistribucionGuardia, Long> {
@@ -136,7 +137,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
         boolean existsDistribucionParcialSemanal(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
-                        @Param("tipoGuardia") String tipoGuardia,
+                        @Param("tipoGuardia") TipoGuardiaEnum  tipoGuardia,
                         @Param("inicioSemana") LocalDate inicioSemana,
                         @Param("finSemana") LocalDate finSemana,
                         @Param("diaTentativo") DiasEnum diaTentativo);
