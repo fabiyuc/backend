@@ -42,7 +42,7 @@ public class HabilitacionesGuardia {
                         "legajos",
                         "cronogramasTentativos", "habilitacionesGuardias", "habilitacionesGenerales",
                         "novedadesPersonales",
-                        "distribucionesHorarias", "registrosMensuales", "usuarios", "cronogramasDefinitivos" })
+                        "distribucionesHorarias", "registrosMensuales", "usuarios", "cronogramasDefinitivos", "facturas" })
         private Asistencial asistencial;
 
         @ManyToMany(fetch = FetchType.LAZY)

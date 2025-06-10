@@ -22,11 +22,13 @@ import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
 import com.guardias.backend.entity.Asistencial;
+import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.FacturaRepository;
 import com.guardias.backend.repository.LegajoRepository;
 import com.guardias.backend.repository.RegistroActividadRepository;
 
@@ -48,6 +50,8 @@ public class AsistencialService {
     PersonController personController;
     @Autowired
     RegistroActividadRepository registroActividadRepository;
+    @Autowired
+    FacturaRepository facturaRepository;
 
     public Optional<List<Asistencial>> findByActivoTrue() {
         return asistencialRepository.findByActivoTrue();
@@ -117,6 +121,24 @@ public class AsistencialService {
             for (Long id : idsToAdd) {
                 asistencial.getRegistrosActividades().add(registroActividadRepository.findById(id).get());
                 registroActividadRepository.findById(id).get().setAsistencial(asistencial);
+            }
+        }
+
+        if (asistencialDto.getIdFacturas() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (asistencial.getFacturas() != null) {
+                for (Factura factura : asistencial.getFacturas()) {
+                    for (Long id : asistencialDto.getIdFacturas()) {
+                        if (!factura.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            }
+            List<Long> idsToAdd = idList.isEmpty() ? asistencialDto.getIdAutoridades() : idList;
+            for (Long id : idsToAdd) {
+                asistencial.getFacturas().add(facturaRepository.findById(id).get());
+                facturaRepository.findById(id).get().setAsistencial(asistencial);
             }
         }
         asistencial.setActivo(true);

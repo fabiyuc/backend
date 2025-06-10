@@ -71,7 +71,7 @@ public class CronogramaTentativo {
                         "sexo", "telefono", "email", "domicilio", "esAsistencial", "activo", "suplentes", "autoridades",
                         "cronogramasTentativos", "legajos", "novedadesPersonales", "distribucionesHorarias",
                         "registrosMensuales", "usuarios", "habilitacionesGenerales", "habilitacionesGuardias",
-                        "cronogramasDefinitivos" })
+                        "cronogramasDefinitivos", "facturas" })
         private Asistencial asistencial;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

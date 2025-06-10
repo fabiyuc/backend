@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 public class AsistencialDto extends PersonDto {
 
     private List<Long> idLegajos;
-
-    /*
-     * @NotNull
-     * private List<Long> idTiposGuardias;
-     */
     private List<Long> idRegistrosActividades;
+    private List<Long> idFacturas;
 }
