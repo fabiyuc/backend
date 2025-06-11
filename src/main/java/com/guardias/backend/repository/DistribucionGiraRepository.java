@@ -60,24 +60,20 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
                         @Param("mes") int mes,
                         @Param("anio") int anio);
 
+        List<DistribucionGira> findByPersonaIdAndActivoTrue(Long idPersona);
+
+        boolean existsByPersonaIdAndActivoTrue(Long idPersona);
+
         @Query(nativeQuery = true, value = """
                         SELECT *
                         FROM distribuciones_giras d
                         WHERE d.id_persona = :idAsistencial
                         AND d.id_efector = :idEfector
                         AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                        AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
-                        AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
                         AND d.activo = 1
                         """)
-        Optional<DistribucionGira> findValidDistribucion(
+        List<DistribucionGira> findValidDistribuciones(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
-                        @Param("fechaIngreso") LocalDate fechaInicio,
-                        @Param("horaIngreso") String horaIngreso,
-                        @Param("horaEgreso") String horaEgreso);
-
-        List<DistribucionGira> findByPersonaIdAndActivoTrue(Long idPersona);
-
-        boolean existsByPersonaIdAndActivoTrue(Long idPersona);
+                        @Param("fechaIngreso") LocalDate fechaInicio);
 }

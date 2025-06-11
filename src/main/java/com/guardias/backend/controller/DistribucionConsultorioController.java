@@ -252,8 +252,7 @@ public class DistribucionConsultorioController {
         return new ResponseEntity(new Mensaje("distribucion eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    // busca distribucion consultorio para verificar si es igual al tentativo que
-    // recibe
+    // busca distribucion consultorio para verificar si es igual al tentativo que recibe
     @PostMapping("/verificarCronogramaEnDistribucion")
     public boolean verificarCronogramaEnDistribucion(@RequestBody CronogramaTentativoResquestDto dto) {
         return distribucionConsultorioService.validarCronogramaEnDistribucion(dto);

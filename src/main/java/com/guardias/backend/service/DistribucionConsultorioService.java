@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
+import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 
 import jakarta.transaction.Transactional;
@@ -100,28 +102,60 @@ public class DistribucionConsultorioService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
-        // entenderlo luego como TIME en la comparacion
-        String horaIngresoString = dto.getHoraIngreso().toString();
-        String horaEgresoString = dto.getHoraEgreso().toString();
-
         // Buscar todas las distribuciones válidas que cubran la fecha de ingreso
-
         List<DistribucionConsultorio> distribuciones = distribucionConsultorioRepository
-            .findValidDistribuciones(dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso());
+                .findValidDistribuciones(dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso());
 
-    // Verificar si alguna distribución coincide con los horarios
-    return distribuciones.stream().anyMatch(dist -> {
-        LocalTime horaEgresoCalculada = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
-        
-        return dist.getHoraIngreso().equals(dto.getHoraIngreso()) &&
-               horaEgresoCalculada.equals(dto.getHoraEgreso());
-    });
+        if (distribuciones.isEmpty()) {
+            return false;
+        }
+        // Obtener día en formato compatible
+        String diaSolicitado = convertirDia(dto.getFechaIngreso().getDayOfWeek());
 
-       /*  return distribucionConsultorioRepository.findValidDistribucion(
-                dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),
-                horaIngresoString, horaEgresoString).isPresent(); */
+        return distribuciones.stream().anyMatch(dist -> {
 
+            // Comparación robusta de días
+            if (!compararDias(dist.getDia(), diaSolicitado)) {
+                return false;
+            }
+
+            // Cálculo de horarios
+            LocalTime horaFinDist = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+
+            return dto.getHoraIngreso().isBefore(horaFinDist) &&
+                    dto.getHoraEgreso().isAfter(dist.getHoraIngreso());
+        });
     }
 
+    // Métodos auxiliares mejorados
+    private boolean compararDias(DiasEnum diaDist, String diaSolicitado) {
+        // Normalizar strings (eliminar acentos, espacios, etc.)
+        String diaDistStr = normalizeString(diaDist.toString());
+        String diaSolicitadoStr = normalizeString(diaSolicitado);
+
+        return diaDistStr.equalsIgnoreCase(diaSolicitadoStr);
+    }
+
+    private String convertirDia(DayOfWeek dayOfWeek) {
+        // Mapeo completo considerando posibles variaciones
+        return switch (dayOfWeek) {
+            case MONDAY -> "LUNES";
+            case TUESDAY -> "MARTES";
+            case WEDNESDAY -> "MIERCOLES";
+            case THURSDAY -> "JUEVES";
+            case FRIDAY -> "VIERNES";
+            case SATURDAY -> "SABADO";
+            case SUNDAY -> "DOMINGO";
+        };
+    }
+
+    private String normalizeString(String input) {
+        return input.trim()
+                .toUpperCase()
+                .replace("Á", "A")
+                .replace("É", "E")
+                .replace("Í", "I")
+                .replace("Ó", "O")
+                .replace("Ú", "U");
+    }
 }

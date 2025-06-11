@@ -69,22 +69,6 @@ public interface DistribucionConsultorioRepository extends JpaRepository<Distrib
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("fechaIngreso") LocalDate fechaInicio);
-        /* @Query(nativeQuery = true, value = """
-                        SELECT *
-                        FROM distribuciones_consultorios d
-                        WHERE d.id_persona = :idAsistencial
-                        AND d.id_efector = :idEfector
-                        AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                        AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
-                        AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
-                        AND d.activo = 1
-                        """)
-        Optional<DistribucionConsultorio> findValidDistribucion(
-                        @Param("idAsistencial") Long idAsistencial,
-                        @Param("idEfector") Long idEfector,
-                        @Param("fechaIngreso") LocalDate fechaInicio,
-                        @Param("horaIngreso") String horaIngreso,
-                        @Param("horaEgreso") String horaEgreso); */
 
         @Query("SELECT dc FROM distribucionesConsultorios dc WHERE dc.activo = true AND dc.persona.id = :idPersona " +
                         "AND FUNCTION('MONTH', dc.fechaInicio) = :mes " +

@@ -1,6 +1,8 @@
 package com.guardias.backend.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionGira;
+import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.DistribucionGiraRepository;
 
 import jakarta.transaction.Transactional;
@@ -99,16 +102,64 @@ public class DistribucionGiraService {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
-        // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
-        // entenderlo luego como TIME en la comparacion
-        String horaIngresoString = dto.getHoraIngreso().toString();
-        String horaEgresoString = dto.getHoraEgreso().toString();
+        // Buscar todas las distribuciones válidas que cubran la fecha de ingreso
+        List<DistribucionGira> distribuciones = distribucionGiraRepository
+                .findValidDistribuciones(dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso());
 
-        // Busca una distribución de gira válida
-        return distribucionGiraRepository.findValidDistribucion(
-                dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso(),
-                horaIngresoString, horaEgresoString).isPresent();
+        if (distribuciones.isEmpty()) {
+            return false;
+        }
+        // Obtener día en formato compatible
+        String diaSolicitado = convertirDia(dto.getFechaIngreso().getDayOfWeek());
 
+        // Verificar si hay solapamiento con alguna distribución
+        return distribuciones.stream().anyMatch(dist -> {
+
+            // Comparación robusta de días
+            if (!compararDias(dist.getDia(), diaSolicitado)) {
+                return false;
+            }
+
+            LocalTime horaFinDistribucion = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+
+            // Condición de solapamiento:
+            // El horario tentativo NO termina antes del inicio de la distribución Y
+            // NO empieza después del fin de la distribución
+            return dto.getHoraIngreso().isBefore(horaFinDistribucion) &&
+                    dto.getHoraEgreso().isAfter(dist.getHoraIngreso());
+        });
+    }
+
+    // Métodos auxiliares mejorados
+    private boolean compararDias(DiasEnum diaDist, String diaSolicitado) {
+        // Normalizar strings (eliminar acentos, espacios, etc.)
+        String diaDistStr = normalizeString(diaDist.toString());
+        String diaSolicitadoStr = normalizeString(diaSolicitado);
+
+        return diaDistStr.equalsIgnoreCase(diaSolicitadoStr);
+    }
+
+    private String convertirDia(DayOfWeek dayOfWeek) {
+        // Mapeo completo considerando posibles variaciones
+        return switch (dayOfWeek) {
+            case MONDAY -> "LUNES";
+            case TUESDAY -> "MARTES";
+            case WEDNESDAY -> "MIERCOLES";
+            case THURSDAY -> "JUEVES";
+            case FRIDAY -> "VIERNES";
+            case SATURDAY -> "SABADO";
+            case SUNDAY -> "DOMINGO";
+        };
+    }
+
+    private String normalizeString(String input) {
+        return input.trim()
+                .toUpperCase()
+                .replace("Á", "A")
+                .replace("É", "E")
+                .replace("Í", "I")
+                .replace("Ó", "O")
+                .replace("Ú", "U");
     }
 
 }
