@@ -237,6 +237,14 @@ public class DistribucionGuardiaController {
         return ResponseEntity.ok(distribucionGuardiaService.validarCronogramaEnDistribucion(dto));
     }
 
+    // verifica si existe alguna distribucion activa en esa semana 
+    @PostMapping("/validarDistribucionSemanal")
+    public boolean validarDistribucionSemanal(
+            @RequestBody CronogramaTentativoResquestDto dto) {
+
+        return distribucionGuardiaService.tieneDistribucionEnSemana(dto);
+    }
+
     @GetMapping("/esGuardia/{dia}/{fecha}/{idAsistencial}/{idEfector}")
     public boolean esGuardia(@PathVariable("dia") DiasEnum dia, @PathVariable("fecha") LocalDate fecha,
             @PathVariable("idAsistencial") long idAsistencial, @PathVariable("idEfector") long idEfector) {

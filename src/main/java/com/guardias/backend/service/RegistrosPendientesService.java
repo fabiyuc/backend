@@ -133,7 +133,7 @@ public class RegistrosPendientesService {
     private AsistencialSummaryDto convertToDto(Asistencial asistencial) {
         // Obtiene el legajo activo
         Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-                .filter(legajo -> legajo.getFechaFinal() == null)
+                .filter(legajo -> legajo.getFechaFinal() == null && Boolean.FALSE.equals(legajo.getEsAutoridad()))
                 .findFirst();
 
         // Obtiene el nombre de la profesión (o null si no hay legajo activo o
@@ -142,16 +142,25 @@ public class RegistrosPendientesService {
                 .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
                 .orElse(null);
 
+        // Obtiene el idEfector del legajo no autoridad
+        Long idEfector = legajoActivo
+            .map(legajo -> legajo.getEfectores().isEmpty() ? null : legajo.getEfectores().get(0).getId())
+            .orElse(null);
+
+        // Obtiene los tipos de guardia de los registros de actividad
+        List<String> tiposGuardia = asistencial.getRegistrosActividades().stream()
+            .map(ra -> ra.getTipoGuardia().getNombre().name())
+            .distinct()
+            .collect(Collectors.toList());
+
         return new AsistencialSummaryDto(
                 asistencial.getId(),
                 asistencial.getNombre(),
                 asistencial.getApellido(),
                 asistencial.getCuil(),
                 profesion,
-                asistencial.getRegistrosActividades().stream()
-                        .map(ra -> ra.getTipoGuardia().getNombre().name())
-                        .distinct()
-                        .collect(Collectors.toList()));
+                tiposGuardia,
+                idEfector);
     }
 
     public void save(RegistrosPendientes registrosPendientes) {

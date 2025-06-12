@@ -1,7 +1,13 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.TextStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +19,7 @@ import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGiraRepository;
@@ -166,17 +173,89 @@ public class DistribucionGuardiaService {
         }
 
         // 2. Verificación de distribución activa parcial (mismo mes y año)
-        boolean existeDistribucionParcial = distribucionGuardiaRepository.existsByPersonaAndEfectorAndTipoInMonth(
+
+        LocalDate fechaIngreso = dto.getFechaIngreso();
+        LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
+
+        TipoGuardiaEnum tipoGuardiaEnum = TipoGuardiaEnum.valueOf(dto.getTipoGuardia());
+
+        boolean existeDistribucionParcial = distribucionGuardiaRepository.existsDistribucionParcialSemanal(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
-                dto.getTipoGuardia(),
-                dto.getFechaIngreso().getMonthValue(),
-                dto.getFechaIngreso().getYear());
+                tipoGuardiaEnum,
+                inicioSemana,
+                finSemana,
+                diaTentativo);
 
         // 3. Determinar si no hay ninguna distribución
         boolean sinDistribucion = !existeDistribucionParcial;
 
         return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
+    }
+
+    public DiasEnum obtenerDiaSemana(LocalDate fecha) {
+        DayOfWeek dayOfWeek = fecha.getDayOfWeek();
+        return switch (dayOfWeek) {
+            case MONDAY -> DiasEnum.LUNES;
+            case TUESDAY -> DiasEnum.MARTES;
+            case WEDNESDAY -> DiasEnum.MIERCOLES;
+            case THURSDAY -> DiasEnum.JUEVES;
+            case FRIDAY -> DiasEnum.VIERNES;
+            case SATURDAY -> DiasEnum.SABADO;
+            case SUNDAY -> DiasEnum.DOMINGO;
+        };
+    }
+
+    public boolean tieneDistribucionEnSemana(CronogramaTentativoResquestDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("El DTO no puede ser nulo");
+        }
+
+        LocalDate fechaIngreso = dto.getFechaIngreso();
+        LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+         List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository
+            .findDistribucionesInWeek(
+                dto.getIdAsistencial(),
+                dto.getIdEfector(),
+                inicioSemana,
+                finSemana);
+    
+    // Obtener día de la semana como enum
+    DiasEnum diaSolicitado = convertirDia(dto.getFechaIngreso().getDayOfWeek());
+    
+    // Verificar superposición horaria
+    return distribuciones.stream().anyMatch(dist -> {
+
+        // 1. Verificar coincidencia de día (comparación directa de enums)
+        if (dist.getDia() != diaSolicitado) {
+            return false;
+        }
+        // 2. Tratamiento especial para guardias de 24 horas
+        if (dist.getCantidadHoras().compareTo(BigDecimal.valueOf(24)) == 0) {
+            return true;
+        }
+        // 3. Para guardias normales, calcular solapamiento
+        LocalTime horaFinDist = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+        return !dto.getHoraIngreso().isAfter(horaFinDist) && 
+               !dto.getHoraEgreso().isBefore(dist.getHoraIngreso());
+        });
+    }
+
+    // Cambia el método convertirDia para que devuelva DiasEnum
+    private DiasEnum convertirDia(DayOfWeek dayOfWeek) {
+        return switch (dayOfWeek) {
+            case MONDAY -> DiasEnum.LUNES;
+            case TUESDAY -> DiasEnum.MARTES;
+            case WEDNESDAY -> DiasEnum.MIERCOLES;
+            case THURSDAY -> DiasEnum.JUEVES;
+            case FRIDAY -> DiasEnum.VIERNES;
+            case SATURDAY -> DiasEnum.SABADO;
+            case SUNDAY -> DiasEnum.DOMINGO;
+        };
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
+import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 
 @RestController
@@ -23,6 +24,8 @@ public class ValorGuardiaCargoYagrupController {
 
     @Autowired
     ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
+    @Autowired
+    HospitalRepository hospitalRepository;
 
     @GetMapping("/list")
     public ResponseEntity<List<ValorGuardiaCargoYagrup>> list() {
@@ -45,4 +48,16 @@ public class ValorGuardiaCargoYagrupController {
         ValorGuardiaCargoYagrup valorGuardiaCyA = valorGuardiaCargoYagrupService.findById(id).get();
         return new ResponseEntity<ValorGuardiaCargoYagrup>(valorGuardiaCyA, HttpStatus.OK);
     }
+
+    // Buscar el valor activo para este hospital
+    @GetMapping("/valorByEfector/{idHospital}")
+    public ResponseEntity<ValorGuardiaCargoYagrup> valorByEfector(@PathVariable("idHospital") Long idHospital) {
+        
+        return valorGuardiaCargoYagrupService
+            .obtenerValorGuardiaCargoPorHospital(idHospital)
+            .map(valor -> ResponseEntity.ok(valor))
+            .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+   
 }

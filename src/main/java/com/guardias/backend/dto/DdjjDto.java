@@ -27,6 +27,7 @@ public class DdjjDto {
     private BigDecimal total;
     @NotBlank
     private EstadoDdjjEnum estadoDdjj;
+    /* 9/6/25 idValorGmi no la usaremos por ahora */
     private Long idValorGmi;
     private Long idEfector;
     List<Long> idRegistrosMensuales;

@@ -52,8 +52,7 @@ public class RegistroMensual {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "registroMensual", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial", "efector",
             "registrosPendientes", "registroMensual", "servicio", "usuarioIngreso", "usuarioEgreso",
-            "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso", "horaRegistroEgreso",
-            "horasRealizadas" })
+            "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso", "horaRegistroEgreso" })
     private List<RegistroActividad> registroActividad = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

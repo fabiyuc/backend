@@ -42,7 +42,7 @@ public class CronogramaDefinitivo {
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_asistencial")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "dni", "suplentes", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades",
-            "descripcion", "esAsistencial", "registroMensual", "cronogramasDefinitivos" })
+            "descripcion", "esAsistencial", "registroMensual", "cronogramasDefinitivos", "facturas" })
     private Asistencial asistencial; 
 
     @Column(columnDefinition = "BIT DEFAULT 1")

@@ -1,13 +1,20 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.dto.DdjjDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.DdjjRepository;
 
@@ -16,6 +23,7 @@ import com.guardias.backend.repository.DdjjRepository;
 public class DdjjService {
     @Autowired
     DdjjRepository ddjjRepository;
+   
 
     public boolean existsById(Long id) {
         return ddjjRepository.existsById(id);

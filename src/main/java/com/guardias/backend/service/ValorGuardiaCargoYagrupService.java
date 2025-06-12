@@ -2,7 +2,6 @@ package com.guardias.backend.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.entity.Hospital;
-import com.guardias.backend.entity.ValorGmi;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -66,6 +64,26 @@ public class ValorGuardiaCargoYagrupService {
         return (valorGuardiaCargoYagrupRepository.existsById(id)
                 && valorGuardiaCargoYagrupRepository.findById(id).get().isActivo());
     }
+
+    public Optional<ValorGuardiaCargoYagrup> obtenerValorGuardiaCargoPorHospital(Long idHospital) {
+        // Verificar existencia del hospital
+
+        if (!hospitalRepository.existsById(idHospital))
+            return Optional.empty();
+
+        // 1. Buscar valor específico para el hospital
+        Optional<ValorGuardiaCargoYagrup> valorEspecifico = valorGuardiaCargoYagrupRepository
+                .findByHospitalesIdAndActivoTrue(idHospital);
+
+        if (valorEspecifico.isPresent()) {
+            return valorEspecifico;
+        }
+
+        // 2. Buscar valor genérico (sin hospitales asignados)
+        return valorGuardiaCargoYagrupRepository.findByActivoTrueAndHospitalesIsEmpty();
+    }
+
+
 
     /* Crea registros de ValorGuardiaCargoYagrup basados en el ValorGmi activo */
 

@@ -112,7 +112,7 @@ public class DdjjController {
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    private Ddjj createUpdate(Ddjj ddjj, DdjjDto ddjjDto) {
+    public Ddjj createUpdate(Ddjj ddjj, DdjjDto ddjjDto) {
 
         if (ddjjDto.getMes() != null && !ddjjDto.getMes().equals(ddjj.getMes()))
             ddjj.setMes(ddjjDto.getMes());
@@ -125,10 +125,10 @@ public class DdjjController {
             ddjj.setEfector(efectorService.findById(ddjjDto.getIdEfector()));
         }
 
-        if (ddjjDto.getIdValorGmi() != null && (ddjj.getValorGmi() == null
+        /* if (ddjjDto.getIdValorGmi() != null && (ddjj.getValorGmi() == null
                 || !Objects.equals(ddjj.getValorGmi().getId(), ddjjDto.getIdValorGmi()))) {
             ddjj.setValorGmi(valorGmiService.findById(ddjjDto.getIdValorGmi()).get());
-        }
+        } */
 
         if (ddjjDto.getEstadoDdjj() != null && !ddjjDto.getEstadoDdjj().equals(ddjj.getEstadoDdjj()))
             ddjj.setEstadoDdjj(ddjjDto.getEstadoDdjj());
@@ -162,6 +162,7 @@ public class DdjjController {
         ddjj.setActivo(true);
         return ddjj;
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DdjjDto ddjjDto) {

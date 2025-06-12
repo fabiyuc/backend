@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.service.ValorGuardiaExtraYcfService;
 
@@ -45,4 +46,15 @@ public class ValorGuardiaExtraYcfController {
         ValorGuardiaExtrayCF valorGuardiaEyCf = valorGuardiaExtraYcfService.findById(id).get();
         return new ResponseEntity<ValorGuardiaExtrayCF>(valorGuardiaEyCf, HttpStatus.OK);
     }
+
+    // Buscar el valor activo para este hospital
+    @GetMapping("/valorByEfector/{idHospital}")
+    public ResponseEntity<ValorGuardiaExtrayCF> valorByEfector(@PathVariable("idHospital") Long idHospital) {
+        
+        return valorGuardiaExtraYcfService
+            .obtenerValorGuardiaExtraPorHospital(idHospital)
+            .map(valor -> ResponseEntity.ok(valor))
+            .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
 }
