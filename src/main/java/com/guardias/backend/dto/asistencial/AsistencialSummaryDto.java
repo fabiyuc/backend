@@ -17,6 +17,7 @@ public class AsistencialSummaryDto {
     private String cuil;
     private String profesion;
     private List<String> nombresTiposGuardias;
+    private Long idEfector;
     
 
 }

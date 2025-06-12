@@ -227,10 +227,11 @@ public class HabilitacionesGuardiasService {
         List<Asistencial> asistenciales = habilitacionesGuardiasRepository.findByEfectorAndActivoTrueAndTG(idEfector,
                 tipoGuardiaEnum);
         List<AsistencialSummaryDto> dtoList = new ArrayList<>();
+        
         for (Asistencial asistencial : asistenciales) {
             // Obtiene el legajo activo
             Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
-                    .filter(legajo -> legajo.getFechaFinal() == null)
+                    .filter(legajo -> legajo.getFechaFinal() == null && Boolean.FALSE.equals(legajo.getEsAutoridad()))
                     .findFirst();
 
             // Obtiene el nombre de la profesión (o null si no hay legajo activo o
@@ -238,6 +239,11 @@ public class HabilitacionesGuardiasService {
             String profesion = legajoActivo
                     .map(legajo -> legajo.getProfesion() != null ? legajo.getProfesion().getNombre() : null)
                     .orElse(null);
+
+            // Obtiene el idEfector del legajo no autoridad
+            Long idEfectorLegajo = legajoActivo
+                .map(legajo -> legajo.getEfectores().isEmpty() ? null : legajo.getEfectores().get(0).getId())
+                .orElse(null);
 
             // Mapea los nombres de los tipos de guardia
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
@@ -253,7 +259,8 @@ public class HabilitacionesGuardiasService {
                     asistencial.getApellido(),
                     asistencial.getCuil(),
                     profesion,
-                    nombresTiposGuardias);
+                    nombresTiposGuardias,
+                    idEfectorLegajo);
             dtoList.add(dto);
         }
 
