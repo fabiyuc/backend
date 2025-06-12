@@ -1,10 +1,13 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -221,13 +224,38 @@ public class DistribucionGuardiaService {
                 inicioSemana,
                 finSemana);
     
+    // Obtener día de la semana como enum
+    DiasEnum diaSolicitado = convertirDia(dto.getFechaIngreso().getDayOfWeek());
+    
     // Verificar superposición horaria
     return distribuciones.stream().anyMatch(dist -> {
-        LocalTime horaEgresoCalculada = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
 
-        return dist.getHoraIngreso().equals(dto.getHoraIngreso()) && 
-               horaEgresoCalculada.equals(dist.getHoraIngreso());
+        // 1. Verificar coincidencia de día (comparación directa de enums)
+        if (dist.getDia() != diaSolicitado) {
+            return false;
+        }
+        // 2. Tratamiento especial para guardias de 24 horas
+        if (dist.getCantidadHoras().compareTo(BigDecimal.valueOf(24)) == 0) {
+            return true;
+        }
+        // 3. Para guardias normales, calcular solapamiento
+        LocalTime horaFinDist = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+        return !dto.getHoraIngreso().isAfter(horaFinDist) && 
+               !dto.getHoraEgreso().isBefore(dist.getHoraIngreso());
         });
+    }
+
+    // Cambia el método convertirDia para que devuelva DiasEnum
+    private DiasEnum convertirDia(DayOfWeek dayOfWeek) {
+        return switch (dayOfWeek) {
+            case MONDAY -> DiasEnum.LUNES;
+            case TUESDAY -> DiasEnum.MARTES;
+            case WEDNESDAY -> DiasEnum.MIERCOLES;
+            case THURSDAY -> DiasEnum.JUEVES;
+            case FRIDAY -> DiasEnum.VIERNES;
+            case SATURDAY -> DiasEnum.SABADO;
+            case SUNDAY -> DiasEnum.DOMINGO;
+        };
     }
 
     public boolean esGuardia(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
