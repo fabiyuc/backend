@@ -23,7 +23,7 @@ public class LegajoDto {
     private Boolean esAutoridad;
     @NotBlank
     private Boolean esRegional;
-    private boolean activo;
+    private Boolean activo;
     private String matriculaNacional;
     @NotBlank
     private String matriculaProvincial;

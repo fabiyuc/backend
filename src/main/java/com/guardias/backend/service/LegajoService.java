@@ -519,7 +519,8 @@ public class LegajoService {
         }
 
         legajo.setEsAutoridad(legajoDto.getEsAutoridad());
-        legajo.setActivo(true);
+
+        legajo.setActivo(legajoDto.getActivo());
 
         return legajo;
     }
