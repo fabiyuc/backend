@@ -51,8 +51,10 @@ public class CronogramaTentativo {
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean aceptado;
 
-        /******* el nombre del atributo deberia llamarse "estado" en lugar de "autorizado" 
-         * cambio a realizar a futuro, usar EstadoTentativoEnum********/
+        /*******
+         * el nombre del atributo deberia llamarse "estado" en lugar de "autorizado"
+         * cambio a realizar a futuro, usar EstadoTentativoEnum
+         ********/
         @Column(columnDefinition = "VARCHAR(20)")
         @Enumerated(EnumType.STRING)
         private AutorizadoTentativoEnum autorizado;
@@ -90,6 +92,20 @@ public class CronogramaTentativo {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "efector", "cronogramasTentativos", "legajos" })
         private Servicio servicio;
 
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_autoridad")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "asistenciales", "activo",
+                        "registrosActividades",
+                        "descripcion", "cronogramasTentativos", "legajos" })
+        private Autoridad autoridad;
+
         @Column(columnDefinition = "VARCHAR(50)")
         private String observacion;
+
+        @Column(columnDefinition = "VARCHAR(300)")
+        private String motivoAutorizacion;
+
+        @Column(columnDefinition = "VARCHAR(300)")
+        private String motivoPediente;
+
 }

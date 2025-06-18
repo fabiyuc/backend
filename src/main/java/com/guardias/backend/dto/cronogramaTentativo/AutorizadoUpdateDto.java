@@ -14,5 +14,8 @@ public class AutorizadoUpdateDto {
 
     @NotNull
     private AutorizadoTentativoEnum autorizado;
+    private String motivoAutorizacion;
+    private String motivoPediente;
+    private Long idAutoridad;
 
 }

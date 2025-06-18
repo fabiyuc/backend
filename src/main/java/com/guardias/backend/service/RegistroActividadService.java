@@ -161,6 +161,10 @@ public class RegistroActividadService {
                     registroMensualService.findById(registroActividadDto.getIdRegistroMensual()).get());
         }
 
+        if (registroActividad.getMotivoIngreso() != registroActividadDto.getMotivoIngreso() &&
+                registroActividadDto.getMotivoIngreso() != null)
+            registroActividad.setMotivoIngreso(registroActividadDto.getMotivoIngreso());
+
         registroActividad.setUsuarioIngreso(usuarioService.findById(registroActividadDto.getIdUsuarioIngreso()).get());
         registroActividad.setHoraRegistroIngreso(LocalTime.now());
         registroActividad.setFechaRegistroIngreso(LocalDate.now());
@@ -300,6 +304,10 @@ public class RegistroActividadService {
         if (registroActividad.getHoraEgreso() != registroActividadDto.getHoraEgreso() &&
                 registroActividadDto.getHoraEgreso() != null)
             registroActividad.setHoraEgreso(registroActividadDto.getHoraEgreso());
+
+        if (registroActividad.getMotivoEgreso() != registroActividadDto.getMotivoEgreso() &&
+                registroActividadDto.getMotivoEgreso() != null)
+            registroActividad.setMotivoEgreso(registroActividadDto.getMotivoEgreso());
 
         registroActividad.setHoraRegistroEgreso(LocalTime.now());
         registroActividad.setFechaRegistroEgreso(LocalDate.now());

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
+import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
@@ -44,6 +45,8 @@ public class CronogramaTentativoService {
     EfectorService efectorService;
     @Autowired
     AsistencialRepository asistencialRepository;
+    @Autowired
+    AutoridadService autoridadService;
 
     public Optional<List<CronogramaTentativo>> findByActivoTrue() {
         return cronogramaTentativoRepository.findByActivoTrue();
@@ -252,12 +255,28 @@ public class CronogramaTentativoService {
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
 
-    public void autorizarUpdate(Long id, AutorizadoTentativoEnum nuevoEstado) {
+    public void autorizarUpdate(Long id, AutorizadoTentativoEnum nuevoEstado, AutorizadoUpdateDto autorizadoUpdateDto) {
         CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el cronograma tentativo con el ID: " + id));
 
         if (nuevoEstado == null) {
             throw new ValidationException("El estado autorizado no puede ser nulo.");
+        }
+
+        if (cronogramaTentativo.getMotivoAutorizacion() != autorizadoUpdateDto.getMotivoAutorizacion() &&
+                autorizadoUpdateDto.getMotivoAutorizacion() != null)
+            cronogramaTentativo.setMotivoAutorizacion(autorizadoUpdateDto.getMotivoAutorizacion());
+
+        if (cronogramaTentativo.getMotivoPediente() != autorizadoUpdateDto.getMotivoPediente() &&
+                autorizadoUpdateDto.getMotivoPediente() != null)
+            cronogramaTentativo.setMotivoPediente(autorizadoUpdateDto.getMotivoPediente());
+
+        if (cronogramaTentativo.getAutoridad() == null ||
+                (autorizadoUpdateDto.getIdAutoridad() != null &&
+                        !Objects.equals(cronogramaTentativo.getAutoridad().getId(),
+                                autorizadoUpdateDto.getIdAutoridad()))) {
+            cronogramaTentativo
+                    .setAutoridad(autoridadService.findById(autorizadoUpdateDto.getIdAutoridad()).get());
         }
 
         cronogramaTentativo.setAutorizado(nuevoEstado);
@@ -376,7 +395,7 @@ public class CronogramaTentativoService {
 
         // Actualizar el estado de cada cronograma
         for (CronogramaTentativo cronograma : cronogramas) {
-            //cronograma.setActivo(false);
+            // cronograma.setActivo(false);
             cronograma.setAutorizado(AutorizadoTentativoEnum.ANULADO);
         }
 

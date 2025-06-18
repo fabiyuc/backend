@@ -1,5 +1,8 @@
 package com.guardias.backend.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -11,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,19 +31,27 @@ public class Autoridad {
 
         @Column(columnDefinition = "BIT DEFAULT 1")
         private boolean activo;
-        
-        /*a futuro cambiar el booleano confirmado a tipo Enum */
+
+        /* a futuro cambiar el booleano confirmado a tipo Enum */
         @Column(columnDefinition = "BIT DEFAULT 1")
         private Boolean confirmado;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_persona")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "legajos","novedadesPersonales", "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades", "descripcion", "usuario", "registrosMensuales" })
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "legajos", "novedadesPersonales",
+                        "suplentes", "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
+                        "domicilio", "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
+                        "descripcion", "usuario", "registrosMensuales" })
         private Person persona;
+
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "autoridad", cascade = CascadeType.ALL)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridad", "fechaIngreso", "fechaEgreso",
+                        "horaIngreso", "horaEgreso", "activo", "aceptado", "autorizado", "tipoGuardia", "asistencial",
+                        "servicio", "efector", "observacion" })
+        private List<CronogramaTentativo> cronogramasTentativos = new ArrayList<>();
 
         @Column(columnDefinition = "VARCHAR(50)")
         private String motivo;
-
 
         @Override
         public boolean equals(Object obj) {

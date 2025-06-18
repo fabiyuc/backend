@@ -112,7 +112,7 @@ public class CronogramaTentativoController {
     public ResponseEntity<List<CronogramaTentativo>> getByEfectorAndServicio(
             @PathVariable("idEfector") Long idEfector,
             @PathVariable("idServicio") Long idServicio) {
-        
+
         List<CronogramaTentativo> cronogramaTentativo = cronogramaTentativoService
                 .findByEfectorAndServicio(idEfector, idServicio)
                 .orElse(new ArrayList<>());
@@ -236,7 +236,7 @@ public class CronogramaTentativoController {
     public ResponseEntity<?> autorizarUpdate(
             @PathVariable("id") Long id,
             @Valid @RequestBody AutorizadoUpdateDto updateDto) {
-        cronogramaTentativoService.autorizarUpdate(id, updateDto.getAutorizado());
+        cronogramaTentativoService.autorizarUpdate(id, updateDto.getAutorizado(), updateDto);
         return new ResponseEntity<>(new Mensaje("El estado del cronograma tentativo fue actualizado correctamente."),
                 HttpStatus.OK);
     }
