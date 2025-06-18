@@ -40,16 +40,6 @@ public class NovedadPersonal {
     private LocalTime horaFinal;
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
-    //private boolean necesitaReemplazo;
-
-    /*
-     * @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
-     * private boolean actual; // Si la novedad es actual(1) o pasada(0)
-     */
-    /*
-     * @Column(columnDefinition = "VARCHAR(80)")
-     * private TipoNovedadEnum descripcion;
-     */
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
@@ -63,16 +53,6 @@ public class NovedadPersonal {
             "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
             "descripcion", "esAsistencial" })
     private Person persona;
-
-    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_suplente")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "cuil", "legajos",
-            "novedadesPersonales", "suplentes",
-            "distribucionesHorarias", "fechaNacimiento", "sexo", "telefono", "email",
-            "domicilio",
-            "estado", "activo", "autoridades", "tipoGuardia", "registrosActividades",
-            "descripcion", "esAsistencial" })
-    private Person suplente; */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_tipo_licencia")

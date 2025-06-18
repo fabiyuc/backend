@@ -24,6 +24,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.cronogramaTentativo.ValidacionCronogramaResponseDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
+import com.guardias.backend.dto.novedadPersonal.ConsultaLicenciaCompensatorioDto;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
@@ -256,5 +257,16 @@ public class DistribucionGuardiaController {
         boolean existe = distribucionGuardiaService.tieneDistribucionActiva(request);
         return ResponseEntity.ok(existe);
     }
-
+    
+    @PostMapping("/verificarSuperposicionConCargo")
+    public ResponseEntity<Boolean> verificarSuperposicionConCargo(@RequestBody ConsultaLicenciaCompensatorioDto dto) {
+        boolean existeSuperposicion = distribucionGuardiaService.existeSuperposicionConCargo(
+                dto.getIdPersona(),
+                dto.getFechaInicioConsulta(),
+                dto.getFechaFinConsulta(),
+                dto.getHoraInicioConsulta(),
+                dto.getHoraFinConsulta());
+        
+        return ResponseEntity.ok(existeSuperposicion);
+    }
 }

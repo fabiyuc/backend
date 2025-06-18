@@ -217,31 +217,31 @@ public class DistribucionGuardiaService {
         LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-         List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository
-            .findDistribucionesInWeek(
-                dto.getIdAsistencial(),
-                dto.getIdEfector(),
-                inicioSemana,
-                finSemana);
-    
-    // Obtener día de la semana como enum
-    DiasEnum diaSolicitado = convertirDia(dto.getFechaIngreso().getDayOfWeek());
-    
-    // Verificar superposición horaria
-    return distribuciones.stream().anyMatch(dist -> {
+        List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository
+                .findDistribucionesInWeek(
+                        dto.getIdAsistencial(),
+                        dto.getIdEfector(),
+                        inicioSemana,
+                        finSemana);
 
-        // 1. Verificar coincidencia de día (comparación directa de enums)
-        if (dist.getDia() != diaSolicitado) {
-            return false;
-        }
-        // 2. Tratamiento especial para guardias de 24 horas
-        if (dist.getCantidadHoras().compareTo(BigDecimal.valueOf(24)) == 0) {
-            return true;
-        }
-        // 3. Para guardias normales, calcular solapamiento
-        LocalTime horaFinDist = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
-        return !dto.getHoraIngreso().isAfter(horaFinDist) && 
-               !dto.getHoraEgreso().isBefore(dist.getHoraIngreso());
+        // Obtener día de la semana como enum
+        DiasEnum diaSolicitado = convertirDia(dto.getFechaIngreso().getDayOfWeek());
+
+        // Verificar superposición horaria
+        return distribuciones.stream().anyMatch(dist -> {
+
+            // 1. Verificar coincidencia de día (comparación directa de enums)
+            if (dist.getDia() != diaSolicitado) {
+                return false;
+            }
+            // 2. Tratamiento especial para guardias de 24 horas
+            if (dist.getCantidadHoras().compareTo(BigDecimal.valueOf(24)) == 0) {
+                return true;
+            }
+            // 3. Para guardias normales, calcular solapamiento
+            LocalTime horaFinDist = dist.getHoraIngreso().plusHours(dist.getCantidadHoras().longValue());
+            return !dto.getHoraIngreso().isAfter(horaFinDist) &&
+                    !dto.getHoraEgreso().isBefore(dist.getHoraIngreso());
         });
     }
 
@@ -321,6 +321,26 @@ public class DistribucionGuardiaService {
     private boolean esFechaValida(DistribucionHoraria distribucion, int mes, int anio) {
         LocalDate fechaInicio = distribucion.getFechaInicio();
         return fechaInicio.getYear() == anio && fechaInicio.getMonthValue() == mes;
+    }
+
+    public boolean existeSuperposicionConCargo(
+            Long idPersona,
+            LocalDate fechaInicioNovedad,
+            LocalDate fechaFinalNovedad,
+            LocalTime horaInicioNovedad,
+            LocalTime horaFinalNovedad) {
+        // Convertir DayOfWeek a DiasEnum usando el método nuevo
+    DiasEnum diaNovedad = DiasEnum.fromDayOfWeek(fechaInicioNovedad.getDayOfWeek());
+
+        List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository.findSuperposicionesConCargo(
+                idPersona,
+                fechaInicioNovedad,
+                fechaFinalNovedad,
+                diaNovedad, // Pasamos el día de la novedad
+                horaInicioNovedad,
+                horaFinalNovedad);
+
+        return !distribuciones.isEmpty();
     }
 
 }

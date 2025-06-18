@@ -20,20 +20,9 @@ public class NovedadPersonalDto {
     private LocalTime horaFinal;
     private boolean puedeRealizarGuardia;
     private boolean cobraSueldo;
-    //private boolean necesitaReemplazo;
-    /* private boolean actual; // quitar */
     private boolean activo;
-
-    /*
-     * @NotBlank
-     * private TipoNovedadEnum descripcion;
-     */
-
     @NotNull
     private Long idPersona;
-
-    //private Long idSuplente;
-
     @NotNull
     private Long idTipoLicencia;
 }

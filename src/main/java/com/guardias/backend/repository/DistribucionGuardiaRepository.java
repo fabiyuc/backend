@@ -1,6 +1,7 @@
 package com.guardias.backend.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,7 +138,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
         boolean existsDistribucionParcialSemanal(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
-                        @Param("tipoGuardia") TipoGuardiaEnum  tipoGuardia,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
                         @Param("inicioSemana") LocalDate inicioSemana,
                         @Param("finSemana") LocalDate finSemana,
                         @Param("diaTentativo") DiasEnum diaTentativo);
@@ -160,4 +161,33 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("idEfector") Long idEfector,
                         @Param("inicioSemana") LocalDate inicioSemana,
                         @Param("finSemana") LocalDate finSemana);
+
+        @Query(value = """
+                            SELECT dg FROM distribucionesGuardias dg
+                            WHERE
+                                dg.persona.id = :idPersona
+                                AND dg.tipoGuardia = 'CARGO'
+                                AND dg.activo = true
+                                AND (
+                                    (:fechaInicioNovedad BETWEEN dg.fechaInicio AND dg.fechaFinalizacion)
+                                    OR (:fechaFinalNovedad BETWEEN dg.fechaInicio AND dg.fechaFinalizacion)
+                                    OR (dg.fechaInicio <= :fechaFinalNovedad AND dg.fechaFinalizacion >= :fechaInicioNovedad)
+                                )
+                                AND (dg.dia = :diaNovedad)
+                                AND (
+                                    (dg.horaIngreso IS NULL)
+                                    OR (
+                                        CAST(dg.horaIngreso AS string) <= CAST(:horaFinalNovedad AS string)
+                                        AND CAST(FUNCTION('DATEADD', MINUTE, CAST(dg.cantidadHoras * 60 AS integer), dg.horaIngreso) AS string) >= CAST(:horaInicioNovedad AS string)
+                                    )
+                                )
+                        """, nativeQuery = false)
+        List<DistribucionGuardia> findSuperposicionesConCargo(
+                        @Param("idPersona") Long idPersona,
+                        @Param("fechaInicioNovedad") LocalDate fechaInicioNovedad,
+                        @Param("fechaFinalNovedad") LocalDate fechaFinalNovedad,
+                        @Param("diaNovedad") DiasEnum diaNovedad,
+                        @Param("horaInicioNovedad") LocalTime horaInicioNovedad,
+                        @Param("horaFinalNovedad") LocalTime horaFinalNovedad);
+
 }
