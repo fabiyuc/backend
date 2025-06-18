@@ -755,33 +755,17 @@ public class AsistencialService {
     }
 
     public List<AsistencialTiposGuardiasDto> obtenerTiposGuardia(Long idAsistencial) {
-        System.out.println("[DEBUG] Iniciando búsqueda de tipos de guardia para asistencial ID: " + idAsistencial);
 
         // Buscar el asistencial por ID (solo si está activo)
         Asistencial asistencial = asistencialRepository.findByIdAndActivoTrue(idAsistencial)
                 .orElseThrow(() -> {
-                    System.out.println("[ERROR] No se encontró asistencial activo con ID: " + idAsistencial);
                     return new EntityNotFoundException("Asistencial activo no encontrado con ID: " + idAsistencial);
                 });
 
-        System.out.println("[DEBUG] Asistencial encontrado - ID: " + asistencial.getId() +
-                ", Nombre: " + asistencial.getNombre() + " " + asistencial.getApellido());
-
-        System.out.println("[DEBUG] Cantidad total de legajos: " + asistencial.getLegajos().size());
-
         List<AsistencialTiposGuardiasDto> resultado = asistencial.getLegajos().stream()
-                .peek(legajo -> System.out.println("[DEBUG] Procesando legajo ID: " + legajo.getId() +
-                        ", Activo: " + legajo.isActivo() +
-                        ", EsAutoridad: " + legajo.getEsAutoridad() +
-                        ", EsRegional: " + legajo.getEsRegional()))
                 .filter(this::cumpleCriteriosFiltrado)
-                .peek(legajo -> System.out.println("[DEBUG] Legajo cumple filtros - ID: " + legajo.getId()))
                 .flatMap(this::mapearLegajoATiposGuardia)
                 .collect(Collectors.toList());
-
-        System.out.println("[DEBUG] Total de tipos de guardia encontrados: " + resultado.size());
-        resultado.forEach(dto -> System.out.println("[DEBUG] Tipo Guardia encontrado - ID: " + dto.getIdTipoGuardia() +
-                ", Nombre: " + dto.getNombreTipoGuardia()));
 
         return resultado;
     }
@@ -790,26 +774,12 @@ public class AsistencialService {
         boolean cumple = legajo.isActivo()
                 && Boolean.FALSE.equals(legajo.getEsAutoridad())
                 && (legajo.getEsRegional() == null || Boolean.FALSE.equals(legajo.getEsRegional()));
-
-        if (!cumple) {
-            System.out.println("[DEBUG] Legajo ID " + legajo.getId() + " no cumple criterios: " +
-                    "activo=" + legajo.isActivo() +
-                    ", esAutoridad=" + legajo.getEsAutoridad() +
-                    ", esRegional=" + legajo.getEsRegional());
-        }
         return cumple;
     }
 
     private Stream<AsistencialTiposGuardiasDto> mapearLegajoATiposGuardia(Legajo legajo) {
-        System.out.println("[DEBUG] Buscando tipos de guardia para legajo ID: " + legajo.getId());
 
         List<TipoGuardia> tiposGuardia = tipoGuardiaRepository.findActiveByLegajoId(legajo.getId());
-
-        System.out.println(
-                "[DEBUG] Encontrados " + tiposGuardia.size() + " tipos de guardia para legajo ID: " + legajo.getId());
-        tiposGuardia.forEach(
-                tg -> System.out.println("[DEBUG] TipoGuardia - ID: " + tg.getId() + ", Nombre: " + tg.getNombre()));
-
         return tiposGuardia.stream()
                 .map(tg -> new AsistencialTiposGuardiasDto(tg.getId(), tg.getNombre().name()));
     }
