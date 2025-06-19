@@ -1,5 +1,6 @@
 package com.guardias.backend.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -162,32 +163,12 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("inicioSemana") LocalDate inicioSemana,
                         @Param("finSemana") LocalDate finSemana);
 
-        @Query(value = """
-                            SELECT dg FROM distribucionesGuardias dg
-                            WHERE
-                                dg.persona.id = :idPersona
-                                AND dg.tipoGuardia = 'CARGO'
-                                AND dg.activo = true
-                                AND (
-                                    (:fechaInicioNovedad BETWEEN dg.fechaInicio AND dg.fechaFinalizacion)
-                                    OR (:fechaFinalNovedad BETWEEN dg.fechaInicio AND dg.fechaFinalizacion)
-                                    OR (dg.fechaInicio <= :fechaFinalNovedad AND dg.fechaFinalizacion >= :fechaInicioNovedad)
-                                )
-                                AND (dg.dia = :diaNovedad)
-                                AND (
-                                    (dg.horaIngreso IS NULL)
-                                    OR (
-                                        CAST(dg.horaIngreso AS string) <= CAST(:horaFinalNovedad AS string)
-                                        AND CAST(FUNCTION('DATEADD', MINUTE, CAST(dg.cantidadHoras * 60 AS integer), dg.horaIngreso) AS string) >= CAST(:horaInicioNovedad AS string)
-                                    )
-                                )
-                        """, nativeQuery = false)
-        List<DistribucionGuardia> findSuperposicionesConCargo(
-                        @Param("idPersona") Long idPersona,
-                        @Param("fechaInicioNovedad") LocalDate fechaInicioNovedad,
-                        @Param("fechaFinalNovedad") LocalDate fechaFinalNovedad,
-                        @Param("diaNovedad") DiasEnum diaNovedad,
-                        @Param("horaInicioNovedad") LocalTime horaInicioNovedad,
-                        @Param("horaFinalNovedad") LocalTime horaFinalNovedad);
+List<DistribucionGuardia> findByPersonaIdAndTipoGuardiaAndCantidadHorasAndActivoIsTrue(
+            Long personaId,
+            TipoGuardiaEnum tipoGuardia,
+            BigDecimal cantidadHoras
+    );
+
+
 
 }

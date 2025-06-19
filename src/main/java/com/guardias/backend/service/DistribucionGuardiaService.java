@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
@@ -326,21 +327,116 @@ public class DistribucionGuardiaService {
     public boolean existeSuperposicionConCargo(
             Long idPersona,
             LocalDate fechaInicioNovedad,
-            LocalDate fechaFinalNovedad,
+            LocalDate fechaFinNovedad,
             LocalTime horaInicioNovedad,
-            LocalTime horaFinalNovedad) {
-        // Convertir DayOfWeek a DiasEnum usando el método nuevo
-    DiasEnum diaNovedad = DiasEnum.fromDayOfWeek(fechaInicioNovedad.getDayOfWeek());
+            LocalTime horaFinNovedad) {
 
-        List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository.findSuperposicionesConCargo(
-                idPersona,
-                fechaInicioNovedad,
-                fechaFinalNovedad,
-                diaNovedad, // Pasamos el día de la novedad
-                horaInicioNovedad,
-                horaFinalNovedad);
+        System.out.println("\n=== INICIO VALIDACIÓN ===");
+        System.out.println("[Parámetros Novedad] Persona: " + idPersona
+                + " | Fechas: " + fechaInicioNovedad + " a " + fechaFinNovedad
+                + " | Horas: " + horaInicioNovedad + " a " + horaFinNovedad);
 
-        return !distribuciones.isEmpty();
+        // 1. Buscar distribuciones de CARGO de 24h activas para la persona
+        List<DistribucionGuardia> distribuciones = distribucionGuardiaRepository
+                .findByPersonaIdAndTipoGuardiaAndCantidadHorasAndActivoIsTrue(
+                        idPersona,
+                        TipoGuardiaEnum.CARGO,
+                        BigDecimal.valueOf(24.00));
+
+        System.out.println("[Distribuciones de 24h encontradas]: " + distribuciones.size());
+        distribuciones.forEach(d -> System.out.println(
+                "  - ID: " + d.getId() +
+                        " | Día: " + d.getDia() +
+                        " | Fechas: " + d.getFechaInicio() + " a " + d.getFechaFinalizacion() +
+                        " | Horario: " + d.getHoraIngreso() + " por " + d.getCantidadHoras() + "h"));
+
+        // 2. Verificar solapamiento para cada distribución
+        for (DistribucionGuardia distribucion : distribuciones) {
+            System.out.println("\n[Evaluando Distribución] ID: " + distribucion.getId());
+
+            // Verificar que la novedad esté dentro del rango de la guardia considerando las
+            // 24h
+            LocalDate fechaFinEfectivaGuardia = distribucion.getFechaFinalizacion().plusDays(1);
+            if (fechaInicioNovedad.isAfter(fechaFinEfectivaGuardia) ||
+                    fechaFinNovedad.isBefore(distribucion.getFechaInicio())) {
+                System.out.println("  → Novedad fuera del rango efectivo de la guardia");
+                continue;
+            }
+
+            if (haySolapamiento24h(
+                    fechaInicioNovedad, horaInicioNovedad, horaFinNovedad,
+                    distribucion.getDia(),
+                    distribucion.getHoraIngreso(),
+                    distribucion.getFechaInicio(),
+                    distribucion.getFechaFinalizacion())) {
+                System.out.println("=== RESULTADO: HAY SOLAPAMIENTO ===");
+                return true;
+            }
+        }
+
+        System.out.println("=== RESULTADO: NO HAY SOLAPAMIENTO ===");
+        return false;
     }
 
+    private boolean haySolapamiento24h(
+            LocalDate fechaNovedad,
+            LocalTime horaInicioNovedad,
+            LocalTime horaFinNovedad,
+            DiasEnum diaGuardia,
+            LocalTime horaIngresoGuardia,
+            LocalDate fechaInicioGuardia,
+            LocalDate fechaFinalizacionGuardia) {
+
+        System.out.println("\n--- Cálculo para guardia de 24h ---");
+        System.out.println("[Datos Guardia] Día: " + diaGuardia + " | Horario: " + horaIngresoGuardia + " por 24h");
+        System.out.println("[Rango Fechas Guardia] " + fechaInicioGuardia + " a " + fechaFinalizacionGuardia);
+
+        // 1. Verificar si la fecha de novedad está en el último día + 1 de la guardia
+        boolean esDiaSiguienteAlFinal = fechaNovedad.equals(fechaFinalizacionGuardia.plusDays(1));
+
+        // 2. Ajustar la comparación de días para permitir el día siguiente al final
+        DayOfWeek diaNovedad = fechaNovedad.getDayOfWeek();
+        DayOfWeek diaGuardiaConvertido = convertirDiasEnumADayOfWeek(diaGuardia);
+
+        boolean diaValido = (diaNovedad == diaGuardiaConvertido) ||
+                (esDiaSiguienteAlFinal && diaNovedad == diaGuardiaConvertido.plus(1));
+
+        System.out.println("[Comparación días] Novedad: " + diaNovedad +
+                " | Guardia: " + diaGuardiaConvertido +
+                " | Día siguiente válido: " + esDiaSiguienteAlFinal);
+
+        if (!diaValido) {
+            System.out.println("  → No coincide el día de la semana");
+            return false;
+        }
+
+        // 3. Calcular rango de guardia (06:00 a 06:00 del día siguiente)
+        LocalDateTime inicioGuardia = LocalDateTime.of(
+                esDiaSiguienteAlFinal ? fechaFinalizacionGuardia : fechaNovedad,
+                horaIngresoGuardia);
+        LocalDateTime finGuardia = inicioGuardia.plusHours(24);
+        System.out.println("[Rango Guardia Ajustado]: " + inicioGuardia + " a " + finGuardia);
+
+        // Resto de la lógica igual...
+        LocalDateTime inicioNovedad = LocalDateTime.of(fechaNovedad, horaInicioNovedad);
+        LocalDateTime finNovedad = LocalDateTime.of(fechaNovedad, horaFinNovedad);
+        System.out.println("[Rango Novedad]: " + inicioNovedad + " a " + finNovedad);
+
+        boolean solapa = inicioNovedad.isBefore(finGuardia) && finNovedad.isAfter(inicioGuardia);
+        System.out.println("  → Solapamiento: " + solapa);
+
+        return solapa;
+    }
+
+    private DayOfWeek convertirDiasEnumADayOfWeek(DiasEnum dia) {
+        return switch (dia) {
+            case LUNES -> DayOfWeek.MONDAY;
+            case MARTES -> DayOfWeek.TUESDAY;
+            case MIERCOLES -> DayOfWeek.WEDNESDAY;
+            case JUEVES -> DayOfWeek.THURSDAY;
+            case VIERNES -> DayOfWeek.FRIDAY;
+            case SABADO -> DayOfWeek.SATURDAY;
+            case DOMINGO -> DayOfWeek.SUNDAY;
+        };
+    }
 }
