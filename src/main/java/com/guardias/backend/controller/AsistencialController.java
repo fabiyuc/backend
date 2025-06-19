@@ -25,6 +25,7 @@ import com.guardias.backend.dto.asistencial.AsistencialEfectorRegistroActividadD
 import com.guardias.backend.dto.asistencial.AsistencialListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForLegajosDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
+import com.guardias.backend.dto.asistencial.AsistencialTiposGuardiasDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
@@ -362,6 +363,15 @@ public class AsistencialController {
     @GetMapping("/es-cargo-o-agrupacion/{idAsistencial}")
     public boolean esCargoOAgrupacion(@PathVariable Long idAsistencial) {
         return asistencialService.esCargoOAgrupacion(idAsistencial);
+    }
+
+    @GetMapping("/getTiposGuardias/{idAsistencial}")
+    public ResponseEntity<List<AsistencialTiposGuardiasDto>> getTiposGuardias(
+            @PathVariable("idAsistencial") Long idAsistencial) {
+        
+        List<AsistencialTiposGuardiasDto> tiposGuardias = asistencialService.obtenerTiposGuardia(idAsistencial);
+
+        return new ResponseEntity<>(tiposGuardias, HttpStatus.OK);
     }
 
 }
