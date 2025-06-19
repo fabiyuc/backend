@@ -175,6 +175,10 @@ public class EfectorController {
                 && !Objects.equals(efector.getObservacion(), efectorDto.getObservacion())))
             efector.setObservacion(efectorDto.getObservacion());
 
+        if (efector.getUrl() == null || (efectorDto.getUrl() != null
+                && !Objects.equals(efector.getUrl(), efectorDto.getUrl())))
+            efector.setUrl(efectorDto.getUrl());
+
         if (efector.getRegion() == null ||
                 (efectorDto.getIdRegion() != null &&
                         !Objects.equals(efector.getRegion().getId(),

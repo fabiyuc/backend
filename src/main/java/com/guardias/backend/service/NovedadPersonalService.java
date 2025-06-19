@@ -46,6 +46,10 @@ public class NovedadPersonalService {
         return novedadPersonalRepository.findByPersona(idPersona);
     }
 
+    public Optional<List<NovedadPersonal>> findActiveByPersonaAndDate(Long idPersona, int mes, int anio) {
+        return novedadPersonalRepository.findActiveByPersonaAndDate(idPersona, mes, anio);
+    }
+
     public boolean activoByPersona(Long idPersona) {
         return personaService.activoById(idPersona);
     }
@@ -193,9 +197,9 @@ public class NovedadPersonalService {
 
     public boolean tieneLicenciaCompensatorio(ConsultaLicenciaCompensatorioDto consulta) {
 
-        if (consulta.getIdPersona() == null || 
-        consulta.getFechaInicioConsulta() == null || consulta.getHoraInicioConsulta() == null ||
-        consulta.getFechaFinConsulta() == null || consulta.getHoraFinConsulta() == null) {
+        if (consulta.getIdPersona() == null ||
+                consulta.getFechaInicioConsulta() == null || consulta.getHoraInicioConsulta() == null ||
+                consulta.getFechaFinConsulta() == null || consulta.getHoraFinConsulta() == null) {
             throw new IllegalArgumentException("Todos los campos son obligatorios.");
         }
 

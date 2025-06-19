@@ -18,8 +18,15 @@ public interface NovedadPersonalRepository extends JpaRepository<NovedadPersonal
 
        Optional<NovedadPersonal> findById(Long id);
 
-       @Query("SELECT np FROM novedadesPersonales np WHERE np.persona.id = :personaId")
+       @Query("SELECT np FROM novedadesPersonales np WHERE np.persona.id = :personaId ")
        Optional<List<NovedadPersonal>> findByPersona(@Param("personaId") Long personaId);
+
+       @Query("SELECT np FROM novedadesPersonales np WHERE np.persona.id = :personaId AND np.activo = true " +
+                     "AND ((FUNCTION('MONTH', np.fechaInicio) = :mes AND FUNCTION('YEAR', np.fechaInicio) = :anio) " +
+                     "OR (FUNCTION('MONTH', np.fechaFinal) = :mes AND FUNCTION('YEAR', np.fechaFinal) = :anio))")
+       Optional<List<NovedadPersonal>> findActiveByPersonaAndDate(@Param("personaId") Long personaId,
+                     @Param("mes") int mes,
+                     @Param("anio") int anio);
 
        Optional<List<NovedadPersonal>> findByFechaInicio(LocalDate fechaInicio);
 

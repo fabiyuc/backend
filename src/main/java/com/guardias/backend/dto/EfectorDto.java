@@ -28,6 +28,8 @@ public class EfectorDto {
 
     private String observacion;
 
+    private String url;
+
     @NotBlank
     private Long idRegion;
 

@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,26 @@ public class NovedadPersonalController {
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
+    @GetMapping("/detailPersonaAndActivo/{id}/{mes}/{anio}")
+    public ResponseEntity<List<NovedadPersonal>> getByActivePersonaAndDate(
+            @PathVariable("id") Long id,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        if (!novedadPersonalService.activoByPersona(id)) {
+            return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
+        }
+
+        Optional<List<NovedadPersonal>> novedadesList = novedadPersonalService.findActiveByPersonaAndDate(id, mes,
+                anio);
+        if (novedadesList.isEmpty() || novedadesList.get().isEmpty()) {
+            return new ResponseEntity(new Mensaje("No hay novedades para el mes y año indicados"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(novedadesList.get(), HttpStatus.OK);
+    }
+
     @GetMapping("/detailfecha/{fecha}")
     public ResponseEntity<List<NovedadPersonal>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
         if (!novedadPersonalService.existsByFechaInicio(fecha))
@@ -75,7 +96,8 @@ public class NovedadPersonalController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            NovedadPersonal novedadPersonal = novedadPersonalService.createUpdate(new NovedadPersonal(), novedadPersonalDto);
+            NovedadPersonal novedadPersonal = novedadPersonalService.createUpdate(new NovedadPersonal(),
+                    novedadPersonalDto);
             novedadPersonalService.save(novedadPersonal);
             return new ResponseEntity(new Mensaje("Novedad creada correctamente"), HttpStatus.OK);
 
@@ -93,7 +115,8 @@ public class NovedadPersonalController {
         ResponseEntity<?> respuestaValidaciones = novedadPersonalService.validations(novedadPersonalDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            NovedadPersonal novedadPersonal = novedadPersonalService.createUpdate(novedadPersonalService.findById(id).get(),
+            NovedadPersonal novedadPersonal = novedadPersonalService.createUpdate(
+                    novedadPersonalService.findById(id).get(),
                     novedadPersonalDto);
             novedadPersonalService.save(novedadPersonal);
             return new ResponseEntity(new Mensaje("Novedad modificada correctamente"), HttpStatus.OK);
@@ -123,14 +146,15 @@ public class NovedadPersonalController {
     }
 
     @GetMapping("/puedeHacerGuardia/{idPersona}/{fechaConsulta}")
-    public ResponseEntity<Boolean>  puedeHacerGuardia(@PathVariable Long idPersona, @PathVariable LocalDate fechaConsulta) {
+    public ResponseEntity<Boolean> puedeHacerGuardia(@PathVariable Long idPersona,
+            @PathVariable LocalDate fechaConsulta) {
         boolean resultado = novedadPersonalService.puedeHacerGuardia(idPersona, fechaConsulta);
         return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/tieneLicenciaLAO/{idPersona}/{fechaConsulta}")
     public ResponseEntity<Boolean> tieneLicenciaLAO(@PathVariable Long idPersona,
-        @PathVariable LocalDate fechaConsulta) {
+            @PathVariable LocalDate fechaConsulta) {
         boolean resultado = novedadPersonalService.tieneLicenciaLAO(idPersona, fechaConsulta);
         return ResponseEntity.ok(resultado);
     }
@@ -138,7 +162,7 @@ public class NovedadPersonalController {
     @PostMapping("/tieneLicenciaCompensatorio")
     public ResponseEntity<Boolean> tieneLicenciaCompensatorio(
             @RequestBody ConsultaLicenciaCompensatorioDto consulta) {
-        
+
         boolean resultado = novedadPersonalService.tieneLicenciaCompensatorio(consulta);
         return ResponseEntity.ok(resultado);
     }
