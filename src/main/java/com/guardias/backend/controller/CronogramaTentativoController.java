@@ -22,6 +22,7 @@ import com.guardias.backend.dto.CronogramaTentativoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
@@ -285,6 +286,15 @@ public class CronogramaTentativoController {
         Long count = cronogramaTentativoService.countPendientesByEfectorId(idEfector);
 
         return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    @GetMapping("/getServicio/{idTentativo}")
+    public ResponseEntity<CronogramaTentativoServicioDto> getTiposGuardias(
+            @PathVariable("idTentativo") Long idTentativo) {
+
+        CronogramaTentativoServicioDto servicio = cronogramaTentativoService.obtenerServicio(idTentativo);
+        
+        return new ResponseEntity<>(servicio, HttpStatus.OK);
     }
 
 }

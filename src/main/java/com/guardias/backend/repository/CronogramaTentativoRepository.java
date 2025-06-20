@@ -167,4 +167,7 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("autorizado") AutorizadoTentativoEnum autorizado);
+
+
+
 }

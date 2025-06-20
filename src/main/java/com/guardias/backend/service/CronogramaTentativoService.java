@@ -17,9 +17,11 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
 import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
+import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
+import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.repository.AsistencialRepository;
@@ -414,5 +416,23 @@ public class CronogramaTentativoService {
 
         return Optional.of(cronogramaTentativoRepository.findByFechaIngresoBetweenAndAutorizado(
                 fechaInicio, finDeMes, idAsistencial, idEfector, AutorizadoTentativoEnum.ANULADO));
+    }
+
+    public CronogramaTentativoServicioDto obtenerServicio(Long idTentativo) {
+        if (!activo(idTentativo)) {
+            throw new EntityNotFoundException("Cronograma tentativo activo no encontrado con ID: " + idTentativo);
+        }
+
+        CronogramaTentativo cronograma = cronogramaTentativoRepository.findById(idTentativo)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Cronograma tentativo no encontrado con ID: " + idTentativo));
+
+        if (cronograma.getServicio() == null) {
+            throw new IllegalStateException("El cronograma tentativo no tiene un servicio asociado");
+        }
+
+        return new CronogramaTentativoServicioDto(
+                cronograma.getServicio().getId(),
+                cronograma.getServicio().getDescripcion());
     }
 }
