@@ -103,6 +103,7 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         AND ct.fecha_ingreso = :fechaIngreso
                         AND ABS(DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME))) <= 15
                         AND ct.activo = 1
+                        AND ct.autorizado = 'CONFIRMADO'
                         """, nativeQuery = true)
         List<CronogramaTentativo> findCronogramaParaRegistro(
                         @Param("idAsistencial") Long idAsistencial,
