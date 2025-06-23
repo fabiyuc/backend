@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -295,6 +296,17 @@ public class CronogramaTentativoController {
         CronogramaTentativoServicioDto servicio = cronogramaTentativoService.obtenerServicio(idTentativo);
         
         return new ResponseEntity<>(servicio, HttpStatus.OK);
+    }
+
+     @PostMapping("/calcularHoraMaximaSalida")
+    public ResponseEntity<LocalDateTime> calcularHoraMaximaSalida(
+            @RequestBody RegActivRegIngresoDto dto) {
+        LocalDateTime horaMaxima = cronogramaTentativoService.calcularHoraMaximaSalida(dto);
+        if (horaMaxima != null) {
+            return ResponseEntity.ok(horaMaxima);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
