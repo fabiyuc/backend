@@ -144,14 +144,14 @@ public class RegistrosPendientesService {
 
         // Obtiene el idEfector del legajo no autoridad
         Long idEfector = legajoActivo
-            .map(legajo -> legajo.getEfectores().isEmpty() ? null : legajo.getEfectores().get(0).getId())
-            .orElse(null);
+                .map(legajo -> legajo.getEfectores().isEmpty() ? null : legajo.getEfectores().get(0).getId())
+                .orElse(null);
 
         // Obtiene los tipos de guardia de los registros de actividad
         List<String> tiposGuardia = asistencial.getRegistrosActividades().stream()
-            .map(ra -> ra.getTipoGuardia().getNombre().name())
-            .distinct()
-            .collect(Collectors.toList());
+                .map(ra -> ra.getTipoGuardia().getNombre().name())
+                .distinct()
+                .collect(Collectors.toList());
 
         return new AsistencialSummaryDto(
                 asistencial.getId(),
@@ -292,4 +292,12 @@ public class RegistrosPendientesService {
         return dto;
     }
 
+    public List<RegActivRegSalidaDto> listarRegistrosPendientesPorEfector(Long idEfector) {
+        List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository.findByEfectorId(idEfector);
+        return registrosPendientes.stream()
+                .flatMap(rp -> rp.getRegistrosActividades().stream())
+                .filter(RegistroActividad::isActivo)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }

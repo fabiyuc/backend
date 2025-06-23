@@ -77,17 +77,21 @@ public class RegistroActividadController {
         return new ResponseEntity(registroActividad, HttpStatus.OK);
     }
 
-    /* public ResponseEntity<?> validations(RegistroActividadDto registroActividadDto) {
-
-        if (registroActividadDto.getFechaIngreso() == null)
-            return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"), HttpStatus.BAD_REQUEST);
-
-        if (registroActividadDto.getHoraIngreso() == null)
-            return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
-                    HttpStatus.BAD_REQUEST);
-
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    } */
+    /*
+     * public ResponseEntity<?> validations(RegistroActividadDto
+     * registroActividadDto) {
+     * 
+     * if (registroActividadDto.getFechaIngreso() == null)
+     * return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"),
+     * HttpStatus.BAD_REQUEST);
+     * 
+     * if (registroActividadDto.getHoraIngreso() == null)
+     * return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
+     * HttpStatus.BAD_REQUEST);
+     * 
+     * return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+     * }
+     */
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
@@ -165,16 +169,22 @@ public class RegistroActividadController {
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada FISICAMENTEE"), HttpStatus.OK);
     }
 
-    
-
     @GetMapping("/getRegActivPendiente/{idAsistencial}/{idEfector}")
-    public ResponseEntity<RegActivRegSalidaDto> getRegActivPendiente(@PathVariable("idAsistencial") Long idAsistencial, @PathVariable("idEfector") Long idEfector) {
-        
+    public ResponseEntity<RegActivRegSalidaDto> getRegActivPendiente(@PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector) {
+
         RegActivRegSalidaDto dto = registrosPendientesService
-            .obtenerRegistroPendienteDto(idAsistencial, idEfector);
-        
-        return dto != null 
-            ? ResponseEntity.ok(dto)
-            : ResponseEntity.noContent().build();
+                .obtenerRegistroPendienteDto(idAsistencial, idEfector);
+
+        return dto != null
+                ? ResponseEntity.ok(dto)
+                : ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/listRegActivPendienteByEfector/{idEfector}")
+    public ResponseEntity<List<RegActivRegSalidaDto>> listRegActivPendienteByEfector(
+            @PathVariable("idEfector") Long idEfector) {
+        List<RegActivRegSalidaDto> list = registrosPendientesService.listarRegistrosPendientesPorEfector(idEfector);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }
