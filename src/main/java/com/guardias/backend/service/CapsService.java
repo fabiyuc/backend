@@ -85,4 +85,9 @@ public class CapsService {
         }
         return Optional.empty();
     }
+
+    public Optional<String> findCabeceraNameByCapsId(Long id) {
+        return capsRepository.findById(id)
+                .map(caps -> caps.getCabecera() != null ? caps.getCabecera().getNombre() : null);
+    }
 }

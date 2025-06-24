@@ -369,6 +369,9 @@ public class CronogramaTentativoService {
         dto.setHoraEgreso(tentativo.getHoraEgreso());
         dto.setAutorizado(tentativo.getAutorizado());
         dto.setIdServicio(tentativo.getServicio().getId());
+        dto.setMotivoAutorizacion(tentativo.getMotivoAutorizacion());
+        dto.setMotivoPediente(tentativo.getMotivoPediente());
+        dto.setIdAutoridad(tentativo.getAutoridad() != null ? tentativo.getAutoridad().getId() : null);
 
         return dto;
     }
@@ -437,8 +440,8 @@ public class CronogramaTentativoService {
                 cronograma.getServicio().getDescripcion());
     }
 
-    public LocalDateTime  calcularHoraMaximaSalida(RegActivRegIngresoDto dto) {
-        
+    public LocalDateTime calcularHoraMaximaSalida(RegActivRegIngresoDto dto) {
+
         List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
@@ -447,7 +450,7 @@ public class CronogramaTentativoService {
                 dto.getFechaIngreso(),
                 dto.getHoraIngreso());
 
-         System.out.println("Número de cronogramas encontrados: " + cronogramas.size());
+        System.out.println("Número de cronogramas encontrados: " + cronogramas.size());
         if (cronogramas.isEmpty()) {
             System.out.println("No se encontraron cronogramas tentativos");
             return null;
@@ -456,13 +459,12 @@ public class CronogramaTentativoService {
         CronogramaTentativo tentativo = cronogramas.get(0);
 
         System.out.println("Cronograma encontrado - Detalles:");
-    System.out.println("ID: " + tentativo.getId());
-    System.out.println("FechaIngreso: " + tentativo.getFechaIngreso());
-    System.out.println("HoraIngreso: " + tentativo.getHoraIngreso());
-    System.out.println("FechaEgreso: " + tentativo.getFechaEgreso());
-    System.out.println("HoraEgreso: " + tentativo.getHoraEgreso());
-    System.out.println("Autorizado: " + tentativo.getAutorizado());
-
+        System.out.println("ID: " + tentativo.getId());
+        System.out.println("FechaIngreso: " + tentativo.getFechaIngreso());
+        System.out.println("HoraIngreso: " + tentativo.getHoraIngreso());
+        System.out.println("FechaEgreso: " + tentativo.getFechaEgreso());
+        System.out.println("HoraEgreso: " + tentativo.getHoraEgreso());
+        System.out.println("Autorizado: " + tentativo.getAutorizado());
 
         // Calculamos la duración total de la guardia
         LocalDateTime inicioGuardia = LocalDateTime.of(tentativo.getFechaIngreso(), tentativo.getHoraIngreso());
@@ -471,13 +473,13 @@ public class CronogramaTentativoService {
 
         // Calculamos la hora máxima de salida sumando la duración al ingreso recibido
         LocalDateTime resultado = LocalDateTime.of(dto.getFechaIngreso(), dto.getHoraIngreso())
-            .plus(duracionGuardia)
-            .plusMinutes(15);
+                .plus(duracionGuardia)
+                .plusMinutes(15);
 
         System.out.println("Resultado calculado: " + resultado);
-    System.out.println("=== FIN calcularHoraMaximaSalida ===");
+        System.out.println("=== FIN calcularHoraMaximaSalida ===");
 
-    return resultado;
+        return resultado;
     }
-    
+
 }

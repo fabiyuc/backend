@@ -43,4 +43,8 @@ public class CronogramaTentativoDto {
     private Long idEfector;
 
     private String observacion;
+    private String motivoAutorizacion;
+    private String motivoPediente;
+    private Long idAutoridad;
+
 }

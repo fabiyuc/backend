@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.efector.EfectorCapsDto;
-import com.guardias.backend.dto.efector.EfectorHospitalDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
@@ -77,8 +76,8 @@ public class CapsController {
     public ResponseEntity<?> getByIdNombre(@PathVariable Long id) {
         Optional<EfectorCapsDto> efectorCapsDto = capsService.findByIdNombre(id);
         return efectorCapsDto
-            .map(ResponseEntity::ok)
-            .orElseGet(() -> ResponseEntity.ok().build()); // Retorna 200 OK con cuerpo vacío
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.ok().build()); // Retorna 200 OK con cuerpo vacío
     }
 
     @GetMapping("/detail/{id}")
@@ -101,6 +100,14 @@ public class CapsController {
     public ResponseEntity<Boolean> isCaps(@PathVariable("id") Long id) {
         boolean esCaps = capsService.isCaps(id);
         return new ResponseEntity<>(esCaps, HttpStatus.OK);
+    }
+
+    @GetMapping("/getCabecera/{id}")
+    public ResponseEntity<String> getCabeceraNameByCapsId(@PathVariable Long id) {
+        Optional<String> cabeceraName = capsService.findCabeceraNameByCapsId(id);
+        return cabeceraName
+                .map(name -> ResponseEntity.ok(name))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     private Caps createUpdate(Caps caps, CapsDto capsDto) {
