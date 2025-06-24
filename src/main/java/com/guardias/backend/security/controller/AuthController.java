@@ -90,7 +90,8 @@ public class AuthController {
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
         usuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
         Set<Rol> roles = new HashSet<>();
-        //roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());// por defecto todos van a ser USER
+        // roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());// por
+        // defecto todos van a ser USER
 
         // Validar y agregar roles enviados
         for (String rolNombre : nuevoUsuario.getRoles()) {
@@ -286,4 +287,20 @@ public class AuthController {
         return new ResponseEntity<>(new Mensaje("Usuario dado de baja correctamente"), HttpStatus.OK);
     }
 
+    @GetMapping("/detailNombreYApellido/{id}")
+    public ResponseEntity<String> getNombreYApellidoById(@PathVariable("id") Long id) {
+        Optional<Usuario> usuarioOptional = usuarioService.findById(id);
+        if (usuarioOptional.isPresent()) {
+            Usuario usuario = usuarioOptional.get();
+            Person person = usuario.getPerson();
+            if (person != null) {
+                String nombreYApellido = person.getNombre() + " " + person.getApellido();
+                return new ResponseEntity<>(nombreYApellido, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
