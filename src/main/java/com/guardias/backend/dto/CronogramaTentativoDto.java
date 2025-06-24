@@ -44,7 +44,7 @@ public class CronogramaTentativoDto {
 
     private String observacion;
     private String motivoAutorizacion;
-    private String motivoPediente;
+    private String motivoPendiente;
     private Long idAutoridad;
 
 }

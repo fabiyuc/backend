@@ -25,6 +25,6 @@ public class CronogramaTentativoListAtorizadoDto {
     private AutorizadoTentativoEnum autorizado;
     private Long idServicio;
     private String motivoAutorizacion;
-    private String motivoPediente;
+    private String motivoPendiente;
     private Long idAutoridad;
 }

@@ -106,6 +106,6 @@ public class CronogramaTentativo {
         private String motivoAutorizacion;
 
         @Column(columnDefinition = "VARCHAR(300)")
-        private String motivoPediente;
+        private String motivoPendiente;
 
 }
