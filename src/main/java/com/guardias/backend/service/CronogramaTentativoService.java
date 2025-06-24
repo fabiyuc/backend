@@ -270,9 +270,9 @@ public class CronogramaTentativoService {
                 autorizadoUpdateDto.getMotivoAutorizacion() != null)
             cronogramaTentativo.setMotivoAutorizacion(autorizadoUpdateDto.getMotivoAutorizacion());
 
-        if (cronogramaTentativo.getMotivoPediente() != autorizadoUpdateDto.getMotivoPediente() &&
-                autorizadoUpdateDto.getMotivoPediente() != null)
-            cronogramaTentativo.setMotivoPediente(autorizadoUpdateDto.getMotivoPediente());
+        if (cronogramaTentativo.getMotivoPendiente() != autorizadoUpdateDto.getMotivoPendiente() &&
+                autorizadoUpdateDto.getMotivoPendiente() != null)
+            cronogramaTentativo.setMotivoPendiente(autorizadoUpdateDto.getMotivoPendiente());
 
         if (cronogramaTentativo.getAutoridad() == null ||
                 (autorizadoUpdateDto.getIdAutoridad() != null &&
@@ -370,7 +370,7 @@ public class CronogramaTentativoService {
         dto.setAutorizado(tentativo.getAutorizado());
         dto.setIdServicio(tentativo.getServicio().getId());
         dto.setMotivoAutorizacion(tentativo.getMotivoAutorizacion());
-        dto.setMotivoPediente(tentativo.getMotivoPediente());
+        dto.setMotivoPendiente(tentativo.getMotivoPendiente());
         dto.setIdAutoridad(tentativo.getAutoridad() != null ? tentativo.getAutoridad().getId() : null);
 
         return dto;
