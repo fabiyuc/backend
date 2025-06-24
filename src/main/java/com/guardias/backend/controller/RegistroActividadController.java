@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegSalidaDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.security.service.UsuarioService;
@@ -185,6 +186,30 @@ public class RegistroActividadController {
     public ResponseEntity<List<RegActivRegSalidaDto>> listRegActivPendienteByEfector(
             @PathVariable("idEfector") Long idEfector) {
         List<RegActivRegSalidaDto> list = registrosPendientesService.listarRegistrosPendientesPorEfector(idEfector);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listMotivo/{idEfector}/{idServicio}/{mes}/{anio}")
+    public ResponseEntity<List<RegActivMotivoDto>> listMotivo(
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("idServicio") Long idServicio,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        List<RegActivMotivoDto> list = registroActividadService.listarMotivos(idEfector, mes, anio, idServicio);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listMotivoByAsistencial/{idAsistencial}/{idEfector}/{idServicio}/{mes}/{anio}")
+    public ResponseEntity<List<RegActivMotivoDto>> listMotivoByAsistencial(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("idServicio") Long idServicio,
+            @PathVariable("mes") int mes,
+            @PathVariable("anio") int anio) {
+
+        List<RegActivMotivoDto> list = registroActividadService
+                .listarMotivosByAsistencial(idAsistencial, idEfector, mes, anio, idServicio);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }

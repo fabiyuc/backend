@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
@@ -351,6 +353,50 @@ public class RegistroActividadService {
         save(registroActividad);
 
         return new ResponseEntity<>(new Mensaje("Registro de actividad eliminada correctamente"), HttpStatus.OK);
+    }
+
+    public List<RegActivMotivoDto> listarMotivos(Long idEfector, int mes, int anio, Long idServicio) {
+        List<RegistroActividad> registros = registroActividadRepository
+                .findMotivosByEfectorServicioMesAnio(idEfector, mes, anio);
+        return registros.stream()
+                .filter(ra -> ra.getServicio().getId().equals(idServicio) && ra.isActivo())
+                // Filtrar registros donde al menos uno de los motivos tenga datos
+                .filter(ra -> ra.getMotivoIngreso() != null || ra.getMotivoEgreso() != null)
+                .map(ra -> new RegActivMotivoDto(
+                        ra.getId(),
+                        ra.getAsistencial().getId(),
+                        ra.getFechaIngreso(),
+                        ra.getFechaEgreso(),
+                        ra.getHoraIngreso(),
+                        ra.getHoraEgreso(),
+                        ra.getUsuarioIngreso() != null ? ra.getUsuarioIngreso().getId() : null,
+                        ra.getUsuarioEgreso() != null ? ra.getUsuarioEgreso().getId() : null,
+                        ra.getMotivoIngreso(),
+                        ra.getMotivoEgreso()))
+                .collect(Collectors.toList());
+    }
+
+    public List<RegActivMotivoDto> listarMotivosByAsistencial(Long idAsistencial, Long idEfector, int mes, int anio,
+            Long idServicio) {
+        List<RegistroActividad> registros = registroActividadRepository
+                .findMotivosByEfectorServicioMesAnio(idEfector, mes, anio);
+        return registros.stream()
+                .filter(ra -> ra.getAsistencial().getId().equals(idAsistencial)
+                        && ra.getServicio().getId().equals(idServicio) && ra.isActivo())
+                // Filtrar registros donde al menos uno de los motivos tenga datos
+                .filter(ra -> ra.getMotivoIngreso() != null || ra.getMotivoEgreso() != null)
+                .map(ra -> new RegActivMotivoDto(
+                        ra.getId(),
+                        ra.getAsistencial().getId(),
+                        ra.getFechaIngreso(),
+                        ra.getFechaEgreso(),
+                        ra.getHoraIngreso(),
+                        ra.getHoraEgreso(),
+                        ra.getUsuarioIngreso() != null ? ra.getUsuarioIngreso().getId() : null,
+                        ra.getUsuarioEgreso() != null ? ra.getUsuarioEgreso().getId() : null,
+                        ra.getMotivoIngreso(),
+                        ra.getMotivoEgreso()))
+                .collect(Collectors.toList());
     }
 
 }
