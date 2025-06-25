@@ -107,7 +107,7 @@ public class RegistroActividad {
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_cronograma_definitivo")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-                        "registroActividad", "efector", "ddjj", "sumaHoras", "asistencial" })
+                        "registroActividad", "efector", "ddjj", "totalHoras", "asistencial" })
         private CronogramaDefinitivo cronogramaDefinitivo;
 
         @Temporal(TemporalType.DATE)

@@ -20,10 +20,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.CronogramaDefinitivoService;
-import com.guardias.backend.service.EfectorService;
-import com.guardias.backend.service.RegistroActividadService;
 
 @RestController
 @RequestMapping("/cronogramaDefinitivo")
@@ -32,14 +29,7 @@ public class CronogramaDefinitivoController {
     
     @Autowired
     CronogramaDefinitivoService cronogramaDefinitivoService;
-    @Autowired
-    EfectorService efectorService;
-    @Autowired
-    RegistroActividadService registroActividadService;
-    @Autowired
-    AsistencialService asistencialService;
-    
-
+   
     @GetMapping("/list")
     public ResponseEntity<List<CronogramaDefinitivo>> list() {
         List<CronogramaDefinitivo> list = cronogramaDefinitivoService.findByActivoTrue().get();

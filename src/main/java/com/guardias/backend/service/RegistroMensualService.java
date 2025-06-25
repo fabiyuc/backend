@@ -18,6 +18,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.repository.RegistroMensualRepository;
 
 @Service
@@ -27,7 +28,7 @@ public class RegistroMensualService {
     @Autowired
     RegistroMensualRepository registroMensualRepository;
     @Autowired
-    DdjjService ddjjService;
+    DdjjRepository ddjjRepository;
     @Autowired
     AsistencialService asistencialService;
     @Autowired
@@ -240,7 +241,7 @@ public class RegistroMensualService {
 
         if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
                 || !Objects.equals(registroMensual.getDdjj().getId(), registroMensualDto.getIdDdjj()))) {
-            registroMensual.setDdjj(ddjjService.findById(registroMensualDto.getIdDdjj()).get());
+            registroMensual.setDdjj(ddjjRepository.findById(registroMensualDto.getIdDdjj()).get());
         }
 
         registroMensual.setActivo(true);

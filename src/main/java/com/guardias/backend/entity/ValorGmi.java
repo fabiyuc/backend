@@ -44,7 +44,7 @@ public class ValorGmi {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
-            "total", "estadoDdjj", "valorGmi" })
+            "total", "estadoDdjj", "valorGmi",  })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL )

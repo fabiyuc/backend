@@ -31,4 +31,7 @@ public class DdjjDto {
     private Long idValorGmi;
     private Long idEfector;
     List<Long> idRegistrosMensuales;
+
+    private String idDirector;
+    private String idDirectorDPH;
 }
