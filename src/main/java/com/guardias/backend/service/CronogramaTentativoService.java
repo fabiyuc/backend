@@ -166,6 +166,21 @@ public class CronogramaTentativoService {
                 cronogramaTentativoDto.getObservacion() != null)
             cronogramaTentativo.setObservacion(cronogramaTentativoDto.getObservacion());
 
+        if (cronogramaTentativo.getMotivoAutorizacion() != cronogramaTentativoDto.getMotivoAutorizacion() &&
+                cronogramaTentativoDto.getMotivoAutorizacion() != null)
+            cronogramaTentativo.setMotivoAutorizacion(cronogramaTentativoDto.getMotivoAutorizacion());
+
+        if (cronogramaTentativo.getMotivoPendiente() != cronogramaTentativoDto.getMotivoPendiente() &&
+                cronogramaTentativoDto.getMotivoPendiente() != null)
+            cronogramaTentativo.setMotivoPendiente(cronogramaTentativoDto.getMotivoPendiente());
+
+        if (cronogramaTentativo.getAutoridad() == null ||
+                (cronogramaTentativoDto.getIdAutoridad() != null &&
+                        !Objects.equals(cronogramaTentativo.getAutoridad().getId(),
+                                cronogramaTentativoDto.getIdAutoridad()))) {
+            cronogramaTentativo
+                    .setAutoridad(autoridadService.findById(cronogramaTentativoDto.getIdAutoridad()).get());
+        }
         cronogramaTentativo.setAceptado(cronogramaTentativoDto.isAceptado());
         cronogramaTentativo.setAutorizado(cronogramaTentativoDto.getAutorizado());
         cronogramaTentativo.setActivo(true);
