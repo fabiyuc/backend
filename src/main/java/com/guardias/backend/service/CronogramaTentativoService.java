@@ -23,10 +23,14 @@ import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioD
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
+import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.repository.AsistencialRepository;
+import com.guardias.backend.repository.AutoridadRepository;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
+import com.guardias.backend.security.entity.Usuario;
+import com.guardias.backend.security.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -50,6 +54,10 @@ public class CronogramaTentativoService {
     AsistencialRepository asistencialRepository;
     @Autowired
     AutoridadService autoridadService;
+    @Autowired
+    UsuarioRepository usuarioRepository;
+    @Autowired
+    AutoridadRepository autoridadRepository;
 
     public Optional<List<CronogramaTentativo>> findByActivoTrue() {
         return cronogramaTentativoRepository.findByActivoTrue();
@@ -497,4 +505,27 @@ public class CronogramaTentativoService {
         return resultado;
     }
 
+    public Long getIdAutoridadByIdUsuario(Long idUsuario) {
+        // Buscar el usuario por id
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con id: " + idUsuario));
+
+        // Obtener el id de la persona asociada al usuario
+        Long personId = usuario.getPerson() != null ? usuario.getPerson().getId() : null;
+        if (personId == null) {
+            throw new EntityNotFoundException("El usuario no tiene una persona asociada");
+        }
+
+        // Buscar la autoridad activa y confirmada por persona
+        Autoridad autoridad = autoridadRepository.findByPersonaId(personId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No se encontró autoridad activa para la persona con id: " + personId))
+                .stream()
+                .filter(a -> Boolean.TRUE.equals(a.isActivo()) && Boolean.TRUE.equals(a.getConfirmado()))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No se encontró autoridad activa y confirmada para la persona con id: " + personId));
+
+        return autoridad.getId();
+    }
 }

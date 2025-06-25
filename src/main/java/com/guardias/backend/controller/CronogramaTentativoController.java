@@ -31,6 +31,7 @@ import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.service.CronogramaTentativoService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 
@@ -294,11 +295,11 @@ public class CronogramaTentativoController {
             @PathVariable("idTentativo") Long idTentativo) {
 
         CronogramaTentativoServicioDto servicio = cronogramaTentativoService.obtenerServicio(idTentativo);
-        
+
         return new ResponseEntity<>(servicio, HttpStatus.OK);
     }
 
-     @PostMapping("/calcularHoraMaximaSalida")
+    @PostMapping("/calcularHoraMaximaSalida")
     public ResponseEntity<LocalDateTime> calcularHoraMaximaSalida(
             @RequestBody RegActivRegIngresoDto dto) {
         LocalDateTime horaMaxima = cronogramaTentativoService.calcularHoraMaximaSalida(dto);
@@ -306,6 +307,16 @@ public class CronogramaTentativoController {
             return ResponseEntity.ok(horaMaxima);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/getIdAutoridadByIdUsuario/{idUsuario}")
+    public ResponseEntity<Long> getIdAutoridadByIdUsuario(@PathVariable Long idUsuario) {
+        try {
+            Long idAutoridad = cronogramaTentativoService.getIdAutoridadByIdUsuario(idUsuario);
+            return ResponseEntity.ok(idAutoridad);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
