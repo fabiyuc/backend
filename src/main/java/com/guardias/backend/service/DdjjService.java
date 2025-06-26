@@ -15,16 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
-import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.RegistroMensual;
-import com.guardias.backend.enums.AutorizadoTentativoEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.repository.UsuarioRepository;
-import com.guardias.backend.security.service.UsuarioService;
 
 import jakarta.validation.ValidationException;
 
@@ -37,8 +34,6 @@ public class DdjjService {
     EfectorService efectorService;
     @Autowired
     RegistroMensualService registroMensualService;
-    @Autowired
-    UsuarioService usuarioService;
     @Autowired
     CronogramaTentativoRepository cronogramaTentativoRepository;
     @Autowired
@@ -167,8 +162,8 @@ public class DdjjService {
             }
         }
 
-        ddjj.setDirector(usuarioService.findById(ddjjDto.getIdDirector()).get());
-        ddjj.setDirectorDPH(usuarioService.findById(ddjjDto.getIdDirectorDPH()).get());
+        ddjj.setDirector(usuarioRepository.findById(ddjjDto.getIdDirector()).get());
+        ddjj.setDirectorDPH(usuarioRepository.findById(ddjjDto.getIdDirectorDPH()).get());
 
         if (ddjjDto.getEstadoDdjjDirector() != null
                 && !ddjjDto.getEstadoDdjjDirector().equals(ddjj.getEstadoDdjjDirector()))
