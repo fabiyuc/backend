@@ -182,13 +182,17 @@ public class CronogramaTentativoService {
                 cronogramaTentativoDto.getMotivoPendiente() != null)
             cronogramaTentativo.setMotivoPendiente(cronogramaTentativoDto.getMotivoPendiente());
 
-        if (cronogramaTentativo.getAutoridad() == null ||
-                (cronogramaTentativoDto.getIdAutoridad() != null &&
-                        !Objects.equals(cronogramaTentativo.getAutoridad().getId(),
-                                cronogramaTentativoDto.getIdAutoridad()))) {
-            cronogramaTentativo
-                    .setAutoridad(autoridadService.findById(cronogramaTentativoDto.getIdAutoridad()).get());
+        if (cronogramaTentativoDto.getIdAutoridad() != null) {
+            if (cronogramaTentativo.getAutoridad() == null ||
+                    !Objects.equals(cronogramaTentativo.getAutoridad().getId(),
+                            cronogramaTentativoDto.getIdAutoridad())) {
+                cronogramaTentativo
+                        .setAutoridad(autoridadService.findById(cronogramaTentativoDto.getIdAutoridad()).orElse(null));
+            }
+        } else {
+            cronogramaTentativo.setAutoridad(null);
         }
+
         cronogramaTentativo.setAceptado(cronogramaTentativoDto.isAceptado());
         cronogramaTentativo.setAutorizado(cronogramaTentativoDto.getAutorizado());
         cronogramaTentativo.setActivo(true);
