@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
+import com.guardias.backend.dto.registroActividad.RegActivNombresDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegSalidaDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
@@ -292,12 +293,21 @@ public class RegistrosPendientesService {
         return dto;
     }
 
-    public List<RegActivRegSalidaDto> listarRegistrosPendientesPorEfector(Long idEfector) {
+    public List<RegActivNombresDto> listarRegistrosPendientesPorEfector(Long idEfector) {
         List<RegistrosPendientes> registrosPendientes = registrosPendientesRepository.findByEfectorId(idEfector);
         return registrosPendientes.stream()
                 .flatMap(rp -> rp.getRegistrosActividades().stream())
-                .filter(RegistroActividad::isActivo)
-                .map(this::convertToDto)
+                .map(ra -> new RegActivNombresDto(
+                        ra.getId(),
+                        ra.getFechaIngreso(),
+                        ra.getHoraIngreso() != null ? ra.getHoraIngreso().toString() : null,
+                        ra.getTipoGuardia() != null ? ra.getTipoGuardia().getNombre() : null,
+                        ra.getAsistencial() != null
+                                ? ra.getAsistencial().getNombre() + " " + ra.getAsistencial().getApellido()
+                                : null,
+                        ra.getServicio() != null ? ra.getServicio().getDescripcion() : null,
+                        ra.getEfector() != null ? ra.getEfector().getId() : null,
+                        ra.getUsuarioIngreso() != null ? ra.getUsuarioIngreso().getId() : null))
                 .collect(Collectors.toList());
     }
 }
