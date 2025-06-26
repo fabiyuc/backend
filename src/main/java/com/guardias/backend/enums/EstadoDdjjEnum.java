@@ -1,8 +1,7 @@
 package com.guardias.backend.enums;
 
 public enum EstadoDdjjEnum {
-    ACTIVO,
-    DPH,
+    PENDIENTE,
     REECHAZADO,
     APROBADO
 }

@@ -23,15 +23,29 @@ public class DdjjDto {
     private int anio;
     @Min(value = 1)
     private boolean activo;
-    private BigDecimal subtotal;
-    private BigDecimal total;
     @NotBlank
-    private EstadoDdjjEnum estadoDdjj;
+    private BigDecimal subtotal;
+    @NotBlank
+    private BigDecimal total;
     /* 9/6/25 idValorGmi no la usaremos por ahora */
     private Long idValorGmi;
+
+    @NotBlank
     private Long idEfector;
+    @NotBlank
     List<Long> idRegistrosMensuales;
 
-    private String idDirector;
-    private String idDirectorDPH;
+    private Long idDirector;
+    private Long idDirectorDPH;
+
+    @NotBlank
+    private EstadoDdjjEnum estadoDdjjDirector;
+    private EstadoDdjjEnum estadoDdjjDirectorDPH;
+
+    private Boolean enPosesionDirector;
+    private Boolean enPosesionDirectorDPH;
+
+    private String motivoDirector;
+    private String motivoDirectorDPH;
+
 }
