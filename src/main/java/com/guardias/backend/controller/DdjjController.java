@@ -19,10 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.ValorGmiService;
+
+import jakarta.validation.ValidationException;
 
 @Controller
 @RequestMapping("/ddjj")
@@ -30,10 +33,9 @@ import com.guardias.backend.service.ValorGmiService;
 public class DdjjController {
     @Autowired
     DdjjService ddjjService;
-    
+
     @Autowired
     ValorGmiService valorGmiService;
-    
 
     @GetMapping("/list")
     public ResponseEntity<List<Ddjj>> list() {
@@ -140,4 +142,24 @@ public class DdjjController {
         ddjjService.deleteById(id);
         return new ResponseEntity(new Mensaje("Declaracion Jurada eliminada FISICAMENTE"), HttpStatus.OK);
     }
+
+    @PutMapping("/cambiarEstado")
+    public ResponseEntity<?> cambiarEstado(@RequestBody EstadoDdjjDto estadoDdjjDto) {
+
+        try {
+            boolean resultado = ddjjService.cambiarEstado(estadoDdjjDto);
+            if (resultado) {
+                return new ResponseEntity<>(new Mensaje("Se cambió el estado de la Ddjj correctamente."),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new Mensaje("No se pudo cambiar el estado de la Ddjj."),
+                        HttpStatus.BAD_REQUEST);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.NOT_FOUND);
+        } catch (ValidationException e) {
+            return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

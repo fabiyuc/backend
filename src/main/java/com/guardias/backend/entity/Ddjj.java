@@ -44,7 +44,6 @@ public class Ddjj {
     private BigDecimal subtotal;
     @Column(precision = 20, scale = 2)
     private BigDecimal total;
-    private EstadoDdjjEnum estadoDdjj;
 
     /*9/6/25 dejo ésta relacion pero no la estamos usando */
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -76,6 +75,17 @@ public class Ddjj {
     @JoinColumn(name = "directorDPH")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial" })
     Usuario directorDPH;
+
+    private EstadoDdjjEnum estadoDdjjDirector;
+    private EstadoDdjjEnum estadoDdjjDirectorDPH;
+
+    private Boolean enPosesionDirector;
+    private Boolean enPosesionDirectorDPH;
+
+    @Column(columnDefinition = "VARCHAR(300)")
+    private String motivoDirector;
+    @Column(columnDefinition = "VARCHAR(300)")
+    private String motivoDirectorDPH;
 
     @Override
     public boolean equals(Object obj) {

@@ -15,6 +15,8 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
     List<Ddjj> findByActivoTrue();
 
     Optional<Ddjj> findById(Long id);
+    
+    Optional<Ddjj> findByIdAndActivoTrue(Long id);
 
     boolean existsById(Long id);
 
