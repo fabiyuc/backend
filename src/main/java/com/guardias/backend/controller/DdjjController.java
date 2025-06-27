@@ -1,8 +1,6 @@
 package com.guardias.backend.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -94,15 +92,24 @@ public class DdjjController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DdjjDto ddjjDto) {
-        ResponseEntity<?> respuestaValidaciones = ddjjService.validations(ddjjDto);
+        try {
+            // 1. Validación general
+            ddjjService.validations(ddjjDto);
 
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            // 2. Creación
+            Ddjj nuevaDdjj = ddjjService.createUpdate(new Ddjj(), ddjjDto);
 
-            Ddjj ddjj = ddjjService.createUpdate(new Ddjj(), ddjjDto);
-            ddjjService.save(ddjj);
-            return new ResponseEntity(new Mensaje("Declaracion Jurada creada correctamente"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
+            // 3. Respuesta exactamente como la necesitas
+            return new ResponseEntity<>(new Mensaje("DDJJ creada correctamente"), HttpStatus.OK);
+
+        } catch (IllegalArgumentException e) {
+            // Respuesta de error con tu estilo
+            return new ResponseEntity<>(new Mensaje("error"), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // Error interno genérico
+            return new ResponseEntity<>(
+                    new Mensaje("Error interno al procesar la solicitud"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
