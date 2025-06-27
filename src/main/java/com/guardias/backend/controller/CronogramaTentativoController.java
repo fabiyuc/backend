@@ -320,4 +320,15 @@ public class CronogramaTentativoController {
         }
     }
 
+    @PostMapping("/calcularHoraMaximaIngreso")
+    public ResponseEntity<LocalDateTime> calcularHoraMaximaEntrada(
+            @RequestBody RegActivRegIngresoDto dto) {
+        LocalDateTime horaMaxima = cronogramaTentativoService.calcularHoraMaximaIngreso(dto);
+        if (horaMaxima != null) {
+            return ResponseEntity.ok(horaMaxima);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

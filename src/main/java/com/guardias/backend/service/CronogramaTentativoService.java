@@ -532,4 +532,38 @@ public class CronogramaTentativoService {
 
         return autoridad.getId();
     }
+
+    public LocalDateTime calcularHoraMaximaIngreso(RegActivRegIngresoDto dto) {
+
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
+                dto.getIdAsistencial(),
+                dto.getIdEfector(),
+                dto.getIdTipoGuardia(),
+                dto.getIdServicio(),
+                dto.getFechaIngreso(),
+                dto.getHoraIngreso());
+
+        System.out.println("Número de cronogramas encontrados: " + cronogramas.size());
+        if (cronogramas.isEmpty()) {
+            System.out.println("No se encontraron cronogramas tentativos");
+            return null;
+        }
+
+        CronogramaTentativo tentativo = cronogramas.get(0);
+
+        System.out.println("Cronograma encontrado - Detalles:");
+        System.out.println("ID: " + tentativo.getId());
+        System.out.println("FechaIngreso: " + tentativo.getFechaIngreso());
+        System.out.println("HoraIngreso: " + tentativo.getHoraIngreso());
+
+        // Tomamos la hora de inicio del cronograma y le sumamos 1 hora
+        LocalDateTime horaMaximaEntrada = LocalDateTime.of(tentativo.getFechaIngreso(), tentativo.getHoraIngreso())
+            .plusHours(1);
+
+        System.out.println("hora maxima de entrada calculada: " + horaMaximaEntrada);
+        System.out.println("=== FIN calcularHoraMaximaIngreso ===");
+
+        return horaMaximaEntrada;
+    }
+
 }
