@@ -18,7 +18,6 @@ import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
@@ -134,10 +133,10 @@ public class DdjjService {
         // ===== 2. MAPEO DE CAMPOS BÁSICOS =====
         mapBasicFields(ddjj, ddjjDto);
 
-        // ===== 4. MANEJO DE DIRECTORES =====
+        // ===== 3. MANEJO DE DIRECTORES =====
         processDirectores(ddjj, ddjjDto);
 
-        // ===== 3. CARGA EFICIENTE DE REGISTROS MENSUALES =====
+        // ===== 4. CARGA EFICIENTE DE REGISTROS MENSUALES =====
         processRegistrosMensuales(ddjj, ddjjDto);
 
         // ===== 5. GUARDADO FINAL =====
@@ -151,7 +150,7 @@ public class DdjjService {
             throw new IllegalArgumentException("La lista de registros mensuales no puede estar vacía");
         }
 
-        // Consulta optimizada: verifica existencia en una sola query
+        // erifica existencia en una sola query
         List<Long> idsExistentes = registroMensualRepository.findExistingIds(idsRegistros);
 
         if (idsExistentes.size() != idsRegistros.size()) {
