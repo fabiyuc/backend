@@ -63,17 +63,18 @@ public class Ddjj {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras" })
+            "registroActividad", "efector", "ddjj", "sumaHoras" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "director")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password",  "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" })
     Usuario director;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "directorDPH")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email", "password", "registrosIngresos", "registrosEgresos", 
+    "person", "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" })
     Usuario directorDPH;
 
     private EstadoDdjjEnum estadoDdjjDirector;

@@ -43,7 +43,7 @@ public class RegistroMensual {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "dni", "suplentes", "fechaNacimiento", "sexo",
             "telefono", "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades", "descripcion",
             "esAsistencial", "registroMensual", "distribucionesHorarias", "registrosMensuales", "usuarios",
-            "habilitacionesGenerales" })
+            "habilitacionesGenerales", "legajos" })
     private Person asistencial; // para que sea mas facil la busqueda por persona
 
     @Column(columnDefinition = "BIT DEFAULT 1")
