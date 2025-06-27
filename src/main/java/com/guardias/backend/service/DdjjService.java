@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -132,11 +134,11 @@ public class DdjjService {
         // ===== 2. MAPEO DE CAMPOS BÁSICOS =====
         mapBasicFields(ddjj, ddjjDto);
 
-        // ===== 3. CARGA EFICIENTE DE REGISTROS MENSUALES =====
-        processRegistrosMensuales(ddjj, ddjjDto);
-
         // ===== 4. MANEJO DE DIRECTORES =====
         processDirectores(ddjj, ddjjDto);
+
+        // ===== 3. CARGA EFICIENTE DE REGISTROS MENSUALES =====
+        processRegistrosMensuales(ddjj, ddjjDto);
 
         // ===== 5. GUARDADO FINAL =====
         return ddjjRepository.save(ddjj);
@@ -173,7 +175,8 @@ public class DdjjService {
         if (ddjjDto.getTotal() != ddjj.getTotal())
             ddjj.setTotal(ddjjDto.getTotal());
 
-        if (ddjjDto.getIdEfector() != null && (ddjj.getEfector() == null || !Objects.equals(ddjj.getEfector().getId(), ddjjDto.getIdEfector()))){
+        if (ddjjDto.getIdEfector() != null
+                && (ddjj.getEfector() == null || !Objects.equals(ddjj.getEfector().getId(), ddjjDto.getIdEfector()))) {
             ddjj.setEfector(efectorService.findById(ddjjDto.getIdEfector()));
         }
 
@@ -214,10 +217,12 @@ public class DdjjService {
             }
         }
 
-        if (ddjjDto.getEstadoDdjjDirector() != null && !ddjjDto.getEstadoDdjjDirector().equals(ddjj.getEstadoDdjjDirector()))
+        if (ddjjDto.getEstadoDdjjDirector() != null
+                && !ddjjDto.getEstadoDdjjDirector().equals(ddjj.getEstadoDdjjDirector()))
             ddjj.setEstadoDdjjDirector(ddjjDto.getEstadoDdjjDirector());
 
-        if (ddjjDto.getEstadoDdjjDirectorDPH() != null && !ddjjDto.getEstadoDdjjDirectorDPH().equals(ddjj.getEstadoDdjjDirectorDPH()))
+        if (ddjjDto.getEstadoDdjjDirectorDPH() != null
+                && !ddjjDto.getEstadoDdjjDirectorDPH().equals(ddjj.getEstadoDdjjDirectorDPH()))
             ddjj.setEstadoDdjjDirectorDPH(ddjjDto.getEstadoDdjjDirectorDPH());
 
         ddjj.setEnPosesionDirector(ddjjDto.getEnPosesionDirector());
@@ -230,21 +235,39 @@ public class DdjjService {
     }
 
     private void processRegistrosMensuales(Ddjj ddjj, DdjjDto ddjjDto) {
-        // Carga batch de todos los registros (1 sola consulta SQL)
+        // 1. Carga batch de registros (1 query)
         List<RegistroMensual> registros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // Limpieza segura de relaciones existentes
-        if (ddjj.getRegistrosMensuales() != null) {
-            ddjj.getRegistrosMensuales().forEach(rm -> rm.setDdjj(null));
-            ddjj.getRegistrosMensuales().clear();
-        } else {
+        // 2. Caso CREACIÓN (inicialización simple)
+        if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
+            registros.forEach(rm -> {
+                rm.setDdjj(ddjj);
+                ddjj.getRegistrosMensuales().add(rm);
+            });
+            return;
         }
+        // 3. Caso EDICIÓN
+        Set<Long> nuevosIds = registros.stream()
+            .map(RegistroMensual::getId)
+            .collect(Collectors.toSet());
+    
+        // a) Elimina solo los registros que ya no están en la nueva lista
+        ddjj.getRegistrosMensuales().removeIf(rm -> {
+            if (!nuevosIds.contains(rm.getId())) {
+                rm.setDdjj(null); // Rompe relación
+                return true;
+            }
+            return false;
+        });
 
-        // Establecimiento de nuevas relaciones
+        // b) Agrega solo los registros nuevos (no existentes)
         registros.forEach(rm -> {
-            rm.setDdjj(ddjj);
-            ddjj.getRegistrosMensuales().add(rm);
+        if (ddjj.getRegistrosMensuales().stream()
+            .noneMatch(existente -> existente.getId().equals(rm.getId()))) {
+                rm.setDdjj(ddjj);
+                ddjj.getRegistrosMensuales().add(rm);
+            }
         });
     }
 

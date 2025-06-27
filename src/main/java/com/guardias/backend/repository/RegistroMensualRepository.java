@@ -47,6 +47,6 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("idEfector") Long idEfector,
                         @Param("idServicio") Long idServicio);
 
-        @Query("SELECT r.id FROM RegistroMensual r WHERE r.id IN :ids")
+        @Query("SELECT r.id FROM registrosMensuales r WHERE r.id IN :ids")
         List<Long> findExistingIds(@Param("ids") List<Long> ids);
 }
