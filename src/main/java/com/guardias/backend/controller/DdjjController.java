@@ -169,4 +169,45 @@ public class DdjjController {
         }
     }
 
+    @GetMapping("/listByEfectorAndEstadoPendiente/{idEfector}")
+    public ResponseEntity<?> listByEfectorAndEstadoPendiente(@PathVariable("idEfector") Long idEfector) {
+        List<Ddjj> ddjjs = ddjjService.findByEfectorAndEstadoPendiente(idEfector);
+        if (ddjjs.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se encontraron DDJJ pendientes para el efector"),
+                    HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfectorAndEstadoPendienteDph/{idEfector}")
+    public ResponseEntity<?> listByEfectorAndEstadoPendienteDph(@PathVariable("idEfector") Long idEfector) {
+        List<Ddjj> ddjjs = ddjjService.findByEfectorAndEstadoPendienteDph(idEfector);
+        if (ddjjs.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se encontraron DDJJ pendientes para el efector"),
+                    HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfectorAndEstadoAprobado/{idDirector}/{idEfector}")
+    public ResponseEntity<?> listByEfectorAndEstadoAprobado(@PathVariable("idDirector") Long idDirector,
+            @PathVariable("idEfector") Long idEfector) {
+        List<Ddjj> ddjjs = ddjjService.findByEfectorAndEstadoAprobado(idDirector, idEfector);
+        if (ddjjs.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se encontraron DDJJ aprobadas para el efector"),
+                    HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByEfectorAndEstadoAprobadoDph/{idEfector}")
+    public ResponseEntity<?> listByEfectorAndEstadoAprobadoDph(@PathVariable("idEfector") Long idEfector) {
+        List<Ddjj> ddjjs = ddjjService.findByEfectorAndEstadoAprobadoDph(idEfector);
+        if (ddjjs.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se encontraron DDJJ aprobadas para el efector"),
+                    HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+    }
+
 }

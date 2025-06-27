@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 
 @Repository
@@ -15,7 +16,7 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
     List<Ddjj> findByActivoTrue();
 
     Optional<Ddjj> findById(Long id);
-    
+
     Optional<Ddjj> findByIdAndActivoTrue(Long id);
 
     boolean existsById(Long id);
@@ -29,5 +30,16 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
     List<Ddjj> findByAnioAndMes(int anio, MesesEnum mes);
 
     List<Ddjj> findByEfectorIdAndMesAndAnio(Long efectorId, MesesEnum mes, int anio);
+
+    List<Ddjj> findByEfectorIdAndEstadoDdjjDirectorDPHAndActivoTrue(Long idEfector,
+            EstadoDdjjEnum estadoDdjjDirectorDPH);
+
+    List<Ddjj> findByEfectorIdAndEstadoDdjjDirectorAndActivoTrue(Long idEfector,
+            EstadoDdjjEnum estadoDdjjDirector);
+
+    List<Ddjj> findByEfectorIdAndDirectorIdAndEstadoDdjjDirectorAndActivoTrue(
+            Long idEfector,
+            Long idDirector,
+            EstadoDdjjEnum estadoDdjjDirector);
 
 }

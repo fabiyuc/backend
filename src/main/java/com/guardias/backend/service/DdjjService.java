@@ -19,6 +19,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DdjjRepository;
@@ -248,9 +249,9 @@ public class DdjjService {
         }
         // 3. Caso EDICIÓN
         Set<Long> nuevosIds = registros.stream()
-            .map(RegistroMensual::getId)
-            .collect(Collectors.toSet());
-    
+                .map(RegistroMensual::getId)
+                .collect(Collectors.toSet());
+
         // a) Elimina solo los registros que ya no están en la nueva lista
         ddjj.getRegistrosMensuales().removeIf(rm -> {
             if (!nuevosIds.contains(rm.getId())) {
@@ -262,8 +263,8 @@ public class DdjjService {
 
         // b) Agrega solo los registros nuevos (no existentes)
         registros.forEach(rm -> {
-        if (ddjj.getRegistrosMensuales().stream()
-            .noneMatch(existente -> existente.getId().equals(rm.getId()))) {
+            if (ddjj.getRegistrosMensuales().stream()
+                    .noneMatch(existente -> existente.getId().equals(rm.getId()))) {
                 rm.setDdjj(ddjj);
                 ddjj.getRegistrosMensuales().add(rm);
             }
@@ -346,6 +347,25 @@ public class DdjjService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public List<Ddjj> findByEfectorAndEstadoPendienteDph(Long idEfector) {
+        return ddjjRepository.findByEfectorIdAndEstadoDdjjDirectorDPHAndActivoTrue(idEfector, EstadoDdjjEnum.PENDIENTE);
+    }
+
+    public List<Ddjj> findByEfectorAndEstadoPendiente(Long idEfector) {
+        return ddjjRepository.findByEfectorIdAndEstadoDdjjDirectorAndActivoTrue(idEfector, EstadoDdjjEnum.PENDIENTE);
+    }
+
+    public List<Ddjj> findByEfectorAndEstadoAprobado(Long idDirector, Long idEfector) {
+        return ddjjRepository.findByEfectorIdAndDirectorIdAndEstadoDdjjDirectorAndActivoTrue(
+                idEfector,
+                idDirector,
+                EstadoDdjjEnum.APROBADO);
+    }
+
+    public List<Ddjj> findByEfectorAndEstadoAprobadoDph(Long idEfector) {
+        return ddjjRepository.findByEfectorIdAndEstadoDdjjDirectorDPHAndActivoTrue(idEfector, EstadoDdjjEnum.APROBADO);
     }
 
 }
