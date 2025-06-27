@@ -286,10 +286,10 @@ public class DdjjService {
 
     public boolean cambiarEstado(EstadoDdjjDto estadoDdjjDto) {
         // Busca la DDJJ por ID y que esté activa
-        Optional<Ddjj> ddjjOptional = ddjjRepository.findByIdAndActivoTrue(estadoDdjjDto.getIdDddjj());
+        Optional<Ddjj> ddjjOptional = ddjjRepository.findByIdAndActivoTrue(estadoDdjjDto.getIdDdjj());
 
         if (!ddjjOptional.isPresent()) {
-            throw new IllegalArgumentException("No se encontró la DDJJ con ID: " + estadoDdjjDto.getIdDddjj());
+            throw new IllegalArgumentException("No se encontró la DDJJ con ID: " + estadoDdjjDto.getIdDdjj());
         }
 
         Ddjj ddjj = ddjjOptional.get();

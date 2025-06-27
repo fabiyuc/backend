@@ -11,13 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EstadoDdjjDto {
 
-    private Long idDddjj;
+    private Long idDdjj;
+
     private Long idDirector;
     private Long idDirectorDPH;
+
     private EstadoDdjjEnum estadoDdjjDirector;
     private EstadoDdjjEnum estadoDdjjDirectorDPH;
+
     private Boolean enPosesionDirector;
     private Boolean enPosesionDirectorDPH;
+    
     private String motivoDirector;
     private String motivoDirectorDPH;
 }
