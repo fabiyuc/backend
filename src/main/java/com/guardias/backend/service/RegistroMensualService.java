@@ -49,10 +49,12 @@ public class RegistroMensualService {
         List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
 
         return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
-                                    || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                            .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                                    (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
+                                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION))
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -67,9 +69,11 @@ public class RegistroMensualService {
         List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
 
         return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                            .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -84,10 +88,11 @@ public class RegistroMensualService {
         List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
 
         return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.getTipoGuardia()
-                                    .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                            .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -112,10 +117,12 @@ public class RegistroMensualService {
 
         // Filtro adicional para dejar solo las actividades de tipo CARGO o AGRUPACION
         return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
-                                    || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                            .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                                    (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
+                                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION))
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -134,9 +141,11 @@ public class RegistroMensualService {
 
         // Filtro adicional para dejar solo las actividades de tipo EXTRA
         return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                            .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -155,10 +164,11 @@ public class RegistroMensualService {
 
         // Filtro adicional para dejar solo las actividades de tipo CONTRAFACTURA
         return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.getTipoGuardia()
-                                    .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                            .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -248,18 +258,18 @@ public class RegistroMensualService {
         return registroMensual;
     }
 
-    /*Crea un nuevo RegistroMensual con valores iniciales (horas/montos en 0) */
+    /* Crea un nuevo RegistroMensual con valores iniciales (horas/montos en 0) */
     public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
 
-        /*Inicializa un nuevo RegistroMensual con mes/año, asistencial,efector */
+        /* Inicializa un nuevo RegistroMensual con mes/año, asistencial,efector */
         RegistroMensual registroMensual = new RegistroMensual();
         registroMensual.setMes(mesEnum);
         registroMensual.setAnio(anio);
         registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
         registroMensual.setEfector(efectorService.findById(idEfector));
         registroMensual.setActivo(true);
-        
-        //Creo SumaHoras vacio 
+
+        // Creo SumaHoras vacio
         SumaHoras horas = new SumaHoras();
         horas.setHorasLav(0L);
         horas.setHorasSdf(0L);
@@ -274,7 +284,10 @@ public class RegistroMensualService {
         }
     }
 
-    /*Busca o crea un registro mensual para el asistencial/efector/mes/año y acumula horas/montos*/
+    /*
+     * Busca o crea un registro mensual para el asistencial/efector/mes/año y
+     * acumula horas/montos
+     */
     public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
         Long idAsistencial = registroActividad.getAsistencial().getId();
@@ -286,11 +299,12 @@ public class RegistroMensualService {
         RegistroMensual registroMensual = new RegistroMensual();
 
         try {
-            /*Busca el registro mensual existente */
-            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
+            /* Busca el registro mensual existente */
+            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
+                    .get();
             System.out.println("##### id del registro mensual encontrado: " + registroMensual.getId());
         } catch (Exception exception) {
-            /*Si no existe, crea uno nuevo */
+            /* Si no existe, crea uno nuevo */
             System.out.println("id no encontrado registroMensualService Ln215 - " + exception.getMessage());
             registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
         }
@@ -309,15 +323,18 @@ public class RegistroMensualService {
             registroMensual.setTotalHoras(horas);
         }
 
-        /*Acumula horas LAV/SDF y montos de un registros de actividad al total mensual */
+        /*
+         * Acumula horas LAV/SDF y montos de un registros de actividad al total mensual
+         */
         sumaHorasService.sumarHorasMensuales(horas, registroActividad.getHorasRealizadas());
 
         sumaHorasService.save(horas);
 
-        // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(), registroActividad);
+        // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
+        // registroActividad);
         // luego vemos el json //JsonFile jsonFile = new JsonFile();
         try {
-            /*Vincular registro de actividad al mensual */
+            /* Vincular registro de actividad al mensual */
             registroActividad.setRegistroMensual(findById(id).get());
             /*
              * luego vemos el json // if (registroMensual.getJsonFile() != null) {

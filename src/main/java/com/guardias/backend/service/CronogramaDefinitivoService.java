@@ -22,10 +22,10 @@ import com.guardias.backend.repository.CronogramaDefinitivoRepository;
 @Service
 @Transactional
 public class CronogramaDefinitivoService {
-    
+
     @Autowired
     CronogramaDefinitivoRepository cronogramaDefinitivoRepository;
-    
+
     @Autowired
     AsistencialService asistencialService;
     @Autowired
@@ -41,12 +41,14 @@ public class CronogramaDefinitivoService {
 
     public List<CronogramaDefinitivo> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
             Long idEfector) {
-        List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoRepository.findByAnioMesEfector(anio, mes, idEfector);
+        List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoRepository.findByAnioMesEfector(anio,
+                mes, idEfector);
 
         for (CronogramaDefinitivo cronogramaDefinitivo : cronogramasDefinitivos) {
             List<RegistroActividad> actividadesFiltradas = cronogramaDefinitivo.getRegistroActividad().stream()
-                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
-                            || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                    .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
+                            (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION))
                     .collect(Collectors.toList());
             cronogramaDefinitivo.setRegistroActividad(actividadesFiltradas);
         }
@@ -56,25 +58,29 @@ public class CronogramaDefinitivoService {
 
     public List<CronogramaDefinitivo> findByAnioMesEfectorAndTipoGuardiaExtra(int anio, MesesEnum mes,
             Long idEfector) {
-        List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoRepository.findByAnioMesEfector(anio, mes, idEfector);
+        List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoRepository.findByAnioMesEfector(anio,
+                mes, idEfector);
 
         for (CronogramaDefinitivo cronogramaDefinitivo : cronogramasDefinitivos) {
             List<RegistroActividad> actividadesFiltradas = cronogramaDefinitivo.getRegistroActividad().stream()
-                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                    .filter(actividad -> actividad.isActivo() &&
+                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
                     .collect(Collectors.toList());
             cronogramaDefinitivo.setRegistroActividad(actividadesFiltradas);
         }
 
         return cronogramasDefinitivos;
     }
-    
+
     public List<CronogramaDefinitivo> findByAnioMesEfectorAndTipoGuardiaCF(int anio, MesesEnum mes,
             Long idEfector) {
-        List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoRepository.findByAnioMesEfector(anio, mes, idEfector);
+        List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoRepository.findByAnioMesEfector(anio,
+                mes, idEfector);
 
         for (CronogramaDefinitivo cronogramaDefinitivo : cronogramasDefinitivos) {
             List<RegistroActividad> actividadesFiltradas = cronogramaDefinitivo.getRegistroActividad().stream()
-                    .filter(actividad -> actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                    .filter(actividad -> actividad.isActivo() &&
+                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
                     .collect(Collectors.toList());
             cronogramaDefinitivo.setRegistroActividad(actividadesFiltradas);
         }
@@ -82,8 +88,10 @@ public class CronogramaDefinitivoService {
         return cronogramasDefinitivos;
     }
 
-    public Optional<CronogramaDefinitivo> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId, MesesEnum mes, int anio) {
-        return cronogramaDefinitivoRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId, mes, anio);
+    public Optional<CronogramaDefinitivo> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId,
+            Long efectorId, MesesEnum mes, int anio) {
+        return cronogramaDefinitivoRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId,
+                mes, anio);
     }
 
     // public Optional<Long> idByIdAsistencialAndMes(Long idAsistencial, Long
@@ -109,7 +117,8 @@ public class CronogramaDefinitivoService {
     }
 
     public boolean activo(Long id) {
-        return (cronogramaDefinitivoRepository.existsById(id) && cronogramaDefinitivoRepository.findById(id).get().isActivo());
+        return (cronogramaDefinitivoRepository.existsById(id)
+                && cronogramaDefinitivoRepository.findById(id).get().isActivo());
     }
 
     public void save(CronogramaDefinitivo cronogramaDefinitivo) {
@@ -137,7 +146,8 @@ public class CronogramaDefinitivoService {
     public CronogramaDefinitivo createUpdate(CronogramaDefinitivo cronogramaDefinitivo,
             CronogramaDefinitivoDto cronogramaDefinitivoDto) {
 
-        if (cronogramaDefinitivoDto.getMes() != null && !cronogramaDefinitivoDto.getMes().equals(cronogramaDefinitivo.getMes()))
+        if (cronogramaDefinitivoDto.getMes() != null
+                && !cronogramaDefinitivoDto.getMes().equals(cronogramaDefinitivo.getMes()))
             cronogramaDefinitivo.setMes(cronogramaDefinitivoDto.getMes());
 
         if (cronogramaDefinitivoDto.getAnio() != cronogramaDefinitivo.getAnio())
@@ -147,12 +157,16 @@ public class CronogramaDefinitivoService {
         // registroMensual.getIdAsistencial())
         // registroMensual.setIdAsistencial(registroMensualDto.getIdAsistencial());
 
-        if (cronogramaDefinitivoDto.getIdAsistencial() != null && (cronogramaDefinitivo.getAsistencial() == null || !Objects.equals(cronogramaDefinitivo.getAsistencial().getId(), cronogramaDefinitivoDto.getIdAsistencial()))) {
-            cronogramaDefinitivo.setAsistencial(asistencialService.findById(cronogramaDefinitivoDto.getIdAsistencial()).get());
+        if (cronogramaDefinitivoDto.getIdAsistencial() != null && (cronogramaDefinitivo.getAsistencial() == null
+                || !Objects.equals(cronogramaDefinitivo.getAsistencial().getId(),
+                        cronogramaDefinitivoDto.getIdAsistencial()))) {
+            cronogramaDefinitivo
+                    .setAsistencial(asistencialService.findById(cronogramaDefinitivoDto.getIdAsistencial()).get());
         }
 
         if (cronogramaDefinitivoDto.getIdEfector() != null && (cronogramaDefinitivo.getEfector() == null
-                || !Objects.equals(cronogramaDefinitivo.getEfector().getId(), cronogramaDefinitivoDto.getIdEfector()))) {
+                || !Objects.equals(cronogramaDefinitivo.getEfector().getId(),
+                        cronogramaDefinitivoDto.getIdEfector()))) {
             cronogramaDefinitivo.setEfector(efectorService.findById(cronogramaDefinitivoDto.getIdEfector()));
         }
 
@@ -160,7 +174,8 @@ public class CronogramaDefinitivoService {
         return cronogramaDefinitivo;
     }
 
-     public CronogramaDefinitivo createCronogramaDefinitivo(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+    public CronogramaDefinitivo createCronogramaDefinitivo(Long idAsistencial, Long idEfector, MesesEnum mesEnum,
+            int anio) {
 
         CronogramaDefinitivo cronogramaDefinitivo = new CronogramaDefinitivo();
         cronogramaDefinitivo.setMes(mesEnum);
@@ -173,7 +188,8 @@ public class CronogramaDefinitivoService {
             save(cronogramaDefinitivo);
             return cronogramaDefinitivo;
         } catch (Exception e) {
-            System.out.println("error al crear el cronograma definitivo-  registroMensualService Ln196 -- " + e.getMessage());
+            System.out.println(
+                    "error al crear el cronograma definitivo-  registroMensualService Ln196 -- " + e.getMessage());
             return null;
         }
     }
@@ -189,7 +205,8 @@ public class CronogramaDefinitivoService {
         CronogramaDefinitivo cronogramaDefinitivo = new CronogramaDefinitivo();
 
         try {
-            cronogramaDefinitivo = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio).get();
+            cronogramaDefinitivo = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
+                    .get();
             System.out.println("##### id del cronograma definitivo encontrado: " + cronogramaDefinitivo.getId());
         } catch (Exception exception) {
             System.out.println("id no encontrado cronogramaDefinitivoService Ln215 - " + exception.getMessage());
@@ -198,20 +215,24 @@ public class CronogramaDefinitivoService {
         id = cronogramaDefinitivo.getId();
         System.out.println("##### id del cronograma definitivo fuera del try: " + cronogramaDefinitivo.getId());
 
-        
         // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
         // registroActividad);
-        //luego vemos el json //JsonFile jsonFile = new JsonFile();
+        // luego vemos el json //JsonFile jsonFile = new JsonFile();
         try {
             registroActividad.setCronogramaDefinitivo(findById(id).get());
-            /*luego vemos el json // if (registroMensual.getJsonFile() != null) {
-                jsonFile = registroMensual.getJsonFile();
-            } */
+            /*
+             * luego vemos el json // if (registroMensual.getJsonFile() != null) {
+             * jsonFile = registroMensual.getJsonFile();
+             * }
+             */
         } catch (Exception e) {
-            System.out.println("error: idCronogramaDefinitivo nulo  cronogramaDefinitivoService Ln247 -- " + e.getMessage());
+            System.out.println(
+                    "error: idCronogramaDefinitivo nulo  cronogramaDefinitivoService Ln247 -- " + e.getMessage());
         }
         // jsonFileService.save(jsonFile);
-        //luego vemos el json //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile, registroActividad));
+        // luego vemos el json
+        // //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile,
+        // registroActividad));
 
         return registroActividad;
     }
