@@ -94,7 +94,7 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
 
     Optional<List<CronogramaTentativo>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector);
 
-    @Query(value = """
+    /* @Query(value = """
             SELECT ct.* FROM cronogramas_tentativos ct
             WHERE ct.id_asistencial = :idAsistencial
             AND ct.id_efector = :idEfector
@@ -102,6 +102,16 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
             AND ct.id_servicio = :idServicio
             AND ct.fecha_ingreso = :fechaIngreso
             AND ABS(DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME))) <= 15
+            AND ct.activo = 1
+            AND ct.autorizado = 'CONFIRMADO'
+            """, nativeQuery = true) */
+    @Query(value = """
+            SELECT ct.* FROM cronogramas_tentativos ct
+            WHERE ct.id_asistencial = :idAsistencial
+            AND ct.id_efector = :idEfector
+            AND ct.id_tipo_guardia = :idTipoGuardia
+            AND ct.id_servicio = :idServicio
+            AND ct.fecha_ingreso = :fechaIngreso
             AND ct.activo = 1
             AND ct.autorizado = 'CONFIRMADO'
             """, nativeQuery = true)
