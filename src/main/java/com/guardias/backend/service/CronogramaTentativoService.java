@@ -348,13 +348,12 @@ public class CronogramaTentativoService {
     }
 
     public VerificacionTentativoResponseDto verificarRegistroIngresoEnTentativo(RegActivRegIngresoDto dto) {
-        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistroSinHora(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
                 dto.getIdTipoGuardia(),
                 dto.getIdServicio(),
-                dto.getFechaIngreso(),
-                dto.getHoraIngreso());
+                dto.getFechaIngreso());
 
         if (cronogramas.isEmpty()) {
             return new VerificacionTentativoResponseDto(null, false);

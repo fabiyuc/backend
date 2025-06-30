@@ -94,17 +94,6 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
 
     Optional<List<CronogramaTentativo>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector);
 
-    /* @Query(value = """
-            SELECT ct.* FROM cronogramas_tentativos ct
-            WHERE ct.id_asistencial = :idAsistencial
-            AND ct.id_efector = :idEfector
-            AND ct.id_tipo_guardia = :idTipoGuardia
-            AND ct.id_servicio = :idServicio
-            AND ct.fecha_ingreso = :fechaIngreso
-            AND ABS(DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME))) <= 15
-            AND ct.activo = 1
-            AND ct.autorizado = 'CONFIRMADO'
-            """, nativeQuery = true) */
     @Query(value = """
             SELECT ct.* FROM cronogramas_tentativos ct
             WHERE ct.id_asistencial = :idAsistencial
@@ -123,6 +112,23 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
             @Param("idServicio") Long idServicio,
             @Param("fechaIngreso") LocalDate fechaIngreso,
             @Param("horaIngreso") LocalTime horaIngreso);
+   
+            @Query(value = """
+            SELECT ct.* FROM cronogramas_tentativos ct
+            WHERE ct.id_asistencial = :idAsistencial
+            AND ct.id_efector = :idEfector
+            AND ct.id_tipo_guardia = :idTipoGuardia
+            AND ct.id_servicio = :idServicio
+            AND ct.fecha_ingreso = :fechaIngreso
+            AND ct.activo = 1
+            AND ct.autorizado = 'CONFIRMADO'
+            """, nativeQuery = true)
+    List<CronogramaTentativo> findCronogramaParaRegistroSinHora(
+            @Param("idAsistencial") Long idAsistencial,
+            @Param("idEfector") Long idEfector,
+            @Param("idTipoGuardia") Long idTipoGuardia,
+            @Param("idServicio") Long idServicio,
+            @Param("fechaIngreso") LocalDate fechaIngreso);
 
     @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
     Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId,
