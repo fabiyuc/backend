@@ -190,13 +190,14 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
             @Param("idEfector") Long idEfector,
             @Param("autorizado") AutorizadoTentativoEnum autorizado);
 
-@Query("SELECT cronogramasTentativos(ct.servicio.id, ct.tipoGuardia.id) " +
-           "FROM CronogramaTentativo ct " +
-           "WHERE ct.asistencial.id = :idAsistencial " +
-           "AND ct.efector.id = :idEfector " +
-           "AND ct.fechaIngreso = :fechaIngreso " +
-           "AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso " + 
-           "AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 60" )
+@Query(value = """
+        SELECT ct.* FROM cronogramas_tentativos ct
+        WHERE ct.id_asistencial = :idAsistencial
+        AND ct.id_efector = :idEfector
+        AND ct.fecha_ingreso = :fechaIngreso
+        AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso
+        AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 60
+        """, nativeQuery = true)
     Optional<CronogramaTentativo> obtenerIdsCronograma(
             @Param("idAsistencial") Long idAsistencial,
             @Param("idEfector") Long idEfector,

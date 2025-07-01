@@ -560,7 +560,7 @@ public class CronogramaTentativoService {
 
         // Tomamos la hora de inicio del cronograma y le sumamos 1 hora
         LocalDateTime horaMaximaEntrada = LocalDateTime.of(tentativo.getFechaIngreso(), tentativo.getHoraIngreso())
-            .plusHours(1);
+                .plusHours(1);
 
         System.out.println("hora maxima de entrada calculada: " + horaMaximaEntrada);
         System.out.println("=== FIN calcularHoraMaximaIngreso ===");
@@ -569,15 +569,22 @@ public class CronogramaTentativoService {
     }
 
     public TentativoIdsResponseDto obtenerIdsCronograma(TentativoSearchRequestDto request) {
-        CronogramaTentativo cronograma = cronogramaTentativoRepository.obtenerIdsCronograma(
+        Optional<CronogramaTentativo> cronogramaOpt = cronogramaTentativoRepository.obtenerIdsCronograma(
                 request.getIdAsistencial(),
                 request.getIdEfector(),
                 request.getFechaIngreso(),
-                request.getHoraIngreso()
-        ).get();
+                request.getHoraIngreso());
 
-        TentativoIdsResponseDto respuesta = new TentativoIdsResponseDto( cronograma.getServicio().getId(), cronograma.getTipoGuardia().getId());
-        return respuesta;
+        if (cronogramaOpt.isPresent()) {
+            CronogramaTentativo cronograma = cronogramaOpt.get();
+            Long idServicio = cronograma.getServicio().getId();
+            Long idTipoGuardia = cronograma.getTipoGuardia().getId();
+
+            return new TentativoIdsResponseDto(idServicio, idTipoGuardia);
+        }
+
+        // Si no se encuentra el cronograma, devolvemos un DTO con ambos IDs null
+        return new TentativoIdsResponseDto(null, null);
     }
 
 }
