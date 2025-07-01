@@ -348,7 +348,7 @@ public class CronogramaTentativoService {
     }
 
     public VerificacionTentativoResponseDto verificarRegistroIngresoEnTentativo(RegActivRegIngresoDto dto) {
-        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistro(
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findCronogramaParaRegistroConRetraso(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
                 dto.getIdTipoGuardia(),
