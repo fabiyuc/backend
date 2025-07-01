@@ -21,6 +21,8 @@ import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
+import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.Autoridad;
@@ -564,6 +566,18 @@ public class CronogramaTentativoService {
         System.out.println("=== FIN calcularHoraMaximaIngreso ===");
 
         return horaMaximaEntrada;
+    }
+
+    public TentativoIdsResponseDto obtenerIdsCronograma(TentativoSearchRequestDto request) {
+        CronogramaTentativo cronograma = cronogramaTentativoRepository.obtenerIdsCronograma(
+                request.getIdAsistencial(),
+                request.getIdEfector(),
+                request.getFechaIngreso(),
+                request.getHoraIngreso()
+        ).get();
+
+        TentativoIdsResponseDto respuesta = new TentativoIdsResponseDto( cronograma.getServicio().getId(), cronograma.getTipoGuardia().getId());
+        return respuesta;
     }
 
 }

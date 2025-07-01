@@ -25,6 +25,8 @@ import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
+import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.CronogramaTentativo;
@@ -329,6 +331,14 @@ public class CronogramaTentativoController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/getServicioAndTipoGuardia")
+    public ResponseEntity<TentativoIdsResponseDto> getServicioAndTipoGuardia(
+            @RequestBody TentativoSearchRequestDto request) {
+        
+        TentativoIdsResponseDto response = cronogramaTentativoService.obtenerIdsCronograma(request);
+        return ResponseEntity.ok(response);
     }
 
 }

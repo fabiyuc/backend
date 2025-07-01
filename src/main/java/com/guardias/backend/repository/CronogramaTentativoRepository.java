@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
 import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
 
@@ -189,4 +190,16 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
             @Param("idEfector") Long idEfector,
             @Param("autorizado") AutorizadoTentativoEnum autorizado);
 
+@Query("SELECT cronogramasTentativos(ct.servicio.id, ct.tipoGuardia.id) " +
+           "FROM CronogramaTentativo ct " +
+           "WHERE ct.asistencial.id = :idAsistencial " +
+           "AND ct.efector.id = :idEfector " +
+           "AND ct.fechaIngreso = :fechaIngreso " +
+           "AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso " + 
+           "AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 60" )
+    Optional<CronogramaTentativo> obtenerIdsCronograma(
+            @Param("idAsistencial") Long idAsistencial,
+            @Param("idEfector") Long idEfector,
+            @Param("fechaIngreso") LocalDate fechaIngreso,
+            @Param("horaIngreso") LocalTime horaIngreso);
 }
