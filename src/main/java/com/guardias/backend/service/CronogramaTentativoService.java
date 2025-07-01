@@ -21,6 +21,8 @@ import com.guardias.backend.dto.cronogramaTentativo.AutorizadoUpdateDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoListAtorizadoDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
+import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
+import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.Autoridad;
@@ -558,12 +560,31 @@ public class CronogramaTentativoService {
 
         // Tomamos la hora de inicio del cronograma y le sumamos 1 hora
         LocalDateTime horaMaximaEntrada = LocalDateTime.of(tentativo.getFechaIngreso(), tentativo.getHoraIngreso())
-            .plusHours(1);
+                .plusHours(1);
 
         System.out.println("hora maxima de entrada calculada: " + horaMaximaEntrada);
         System.out.println("=== FIN calcularHoraMaximaIngreso ===");
 
         return horaMaximaEntrada;
+    }
+
+    public TentativoIdsResponseDto obtenerIdsCronograma(TentativoSearchRequestDto request) {
+        Optional<CronogramaTentativo> cronogramaOpt = cronogramaTentativoRepository.obtenerIdsCronograma(
+                request.getIdAsistencial(),
+                request.getIdEfector(),
+                request.getFechaIngreso(),
+                request.getHoraIngreso());
+
+        if (cronogramaOpt.isPresent()) {
+            CronogramaTentativo cronograma = cronogramaOpt.get();
+            Long idServicio = cronograma.getServicio().getId();
+            Long idTipoGuardia = cronograma.getTipoGuardia().getId();
+
+            return new TentativoIdsResponseDto(idServicio, idTipoGuardia);
+        }
+
+        // Si no se encuentra el cronograma, devolvemos un DTO con ambos IDs null
+        return new TentativoIdsResponseDto(null, null);
     }
 
 }
