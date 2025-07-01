@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.legajo.LegajoActualDto;
 import com.guardias.backend.dto.legajo.LegajoBajaDto;
 import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.Efector;
@@ -645,5 +646,14 @@ public class LegajoService {
 
     public boolean tieneLegajoActivo(Long personaId) {
         return legajoRepository.existsByPersonaIdAndActivoTrue(personaId);
+    }
+
+    public List<LegajoActualDto> getLegajosByAsistencial(Long idPerson) {
+        List<Legajo> legajos = legajoRepository.findLegajosByPersonaId(idPerson);
+
+        return legajos.stream().map(legajo -> new LegajoActualDto(
+                legajo.getRevista().getAdicional().getNombre(),
+                legajo.getRevista().getCategoria().getNombre(),
+                legajo.getRevista().getTipoRevista().getNombre())).toList();
     }
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Legajo;
@@ -26,4 +28,10 @@ public interface LegajoRepository extends JpaRepository<Legajo, Long> {
     List<Legajo> findByActivo(boolean activo);
 
     boolean existsByPersonaIdAndActivoTrue(Long personaId);
+
+    @Query("SELECT l FROM legajos l " +
+            "WHERE l.persona.id = :id " +
+            "AND l.activo = true " +
+            "AND l.esAutoridad = false")
+    List<Legajo> findLegajosByPersonaId(@Param("id") Long id);
 }

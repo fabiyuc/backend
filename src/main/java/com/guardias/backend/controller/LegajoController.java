@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.LegajoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.legajo.LegajoActualDto;
 import com.guardias.backend.dto.legajo.LegajoBajaDto;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.LegajoService;
@@ -55,7 +56,7 @@ public class LegajoController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody LegajoDto legajoDto) {
-        ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto,0L);
+        ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto, 0L);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Legajo legajo = legajoService.createUpdate(new Legajo(), legajoDto);
             legajoService.save(legajo);
@@ -116,6 +117,12 @@ public class LegajoController {
     public ResponseEntity<Boolean> tieneTipoGuardiaPermitido(@PathVariable Long idPersona) {
         boolean tipoGuardiaValido = legajoService.tieneTipoGuardiaPermitido(idPersona);
         return new ResponseEntity<>(tipoGuardiaValido, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByAsistencial/{idAsistencial}")
+    public ResponseEntity<List<LegajoActualDto>> listByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
+        List<LegajoActualDto> legajos = legajoService.getLegajosByAsistencial(idAsistencial);
+        return new ResponseEntity<>(legajos, HttpStatus.OK);
     }
 
 }
