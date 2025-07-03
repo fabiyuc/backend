@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,25 +61,21 @@ public class NovedadPersonalController {
         return new ResponseEntity(novedadesList, HttpStatus.OK);
     }
 
-    @GetMapping("/detailPersonaAndActivo/{id}/{mes}/{anio}")
-    public ResponseEntity<List<NovedadPersonal>> getByActivePersonaAndDate(
-            @PathVariable("id") Long id,
-            @PathVariable("mes") int mes,
-            @PathVariable("anio") int anio) {
+@GetMapping("/detailPersonaAndActivo/{id}/{mes}/{anio}")
+public ResponseEntity<?> getByActivePersonaAndDate(
+        @PathVariable("id") Long id,
+        @PathVariable("mes") int mes,
+        @PathVariable("anio") int anio) {
 
-        if (!novedadPersonalService.activoByPersona(id)) {
-            return new ResponseEntity(new Mensaje("Novedad no encontrada"), HttpStatus.NOT_FOUND);
-        }
-
-        Optional<List<NovedadPersonal>> novedadesList = novedadPersonalService.findActiveByPersonaAndDate(id, mes,
-                anio);
-        if (novedadesList.isEmpty() || novedadesList.get().isEmpty()) {
-            return new ResponseEntity(new Mensaje("No hay novedades para el mes y año indicados"),
-                    HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(novedadesList.get(), HttpStatus.OK);
+    if (!novedadPersonalService.activoByPersona(id)) {
+        return new ResponseEntity<>(new Mensaje("Asistencial no activo o no encontrado"), HttpStatus.NOT_FOUND);
     }
+
+    Optional<List<NovedadPersonal>> novedadesList = novedadPersonalService.findActiveByPersonaAndDate(id, mes, anio);
+
+    // Siempre retornar 200, incluso si está vacío
+    return new ResponseEntity<>(novedadesList.orElse(Collections.emptyList()), HttpStatus.OK);
+}
 
     @GetMapping("/detailfecha/{fecha}")
     public ResponseEntity<List<NovedadPersonal>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
