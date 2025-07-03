@@ -196,7 +196,7 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
         AND ct.id_efector = :idEfector
         AND ct.fecha_ingreso = :fechaIngreso
         AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso
-        AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 60
+        AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 120
         """, nativeQuery = true)
     Optional<CronogramaTentativo> obtenerIdsCronograma(
             @Param("idAsistencial") Long idAsistencial,
