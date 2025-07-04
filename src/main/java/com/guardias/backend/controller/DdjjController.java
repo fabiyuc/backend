@@ -224,7 +224,7 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listDdjjcargoyagrup/{anio}/{mes}/{idEfector}")
+    @GetMapping("/listDdjjCargoyAgrup/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrup(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -241,7 +241,7 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listDdjjcargoyagrup/{anio}/{mes}/{idEfector}/{idServicio}")
+    @GetMapping("/listDdjjCargoyaAgrupServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrupAndServicio(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -259,4 +259,73 @@ public class DdjjController {
         }
     }
 
+    @GetMapping("/listDdjjExtra/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<Ddjj>> listDdjjExtra(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<Ddjj> ddjjs = ddjjService
+                    .findDdjjExtra(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/listDdjjExtraServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    public ResponseEntity<List<Ddjj>> listDdjjExtraAndServicio(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<Ddjj> ddjjs = ddjjService
+                    .findDdjjExtraServicio(anio, mesEnum, idEfector, idServicio);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/listDdjjCf/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<Ddjj>> listDdjjCf(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<Ddjj> ddjjs = ddjjService
+                    .findDdjjCf(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/listDdjjCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    public ResponseEntity<List<Ddjj>> listDdjjCfAndServicio(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<Ddjj> ddjjs = ddjjService
+                    .findDdjjCfServicio(anio, mesEnum, idEfector, idServicio);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
 }
