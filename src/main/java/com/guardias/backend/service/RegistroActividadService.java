@@ -2,7 +2,9 @@ package com.guardias.backend.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -298,7 +300,17 @@ public class RegistroActividadService {
         /* A. obtengo el registro de actividad */
         RegistroActividad registroActividad = findById(id).get();
 
-        /* B. actualizo los datos de salida al registro de actividad */
+        /* B. Calcular duración exacta */
+        Duration duracionExacta = Duration.between(
+                LocalDateTime.of(registroActividad.getFechaIngreso(), registroActividad.getHoraIngreso()),
+                LocalDateTime.of(registroActividadDto.getFechaEgreso(), registroActividadDto.getHoraEgreso()));
+        long horasTotales = duracionExacta.toHours();
+
+        /* c. Asignar valor a esGuardiaCorta */
+        boolean esGuardiaCorta = horasTotales < 4;
+        registroActividad.setEsGuardiaIncompleta(esGuardiaCorta ? true : null);
+
+        /* D. actualizo los datos de salida al registro de actividad */
         if (registroActividad.getFechaEgreso() != registroActividadDto.getFechaEgreso() &&
                 registroActividadDto.getFechaEgreso() != null)
             registroActividad.setFechaEgreso(registroActividadDto.getFechaEgreso());
@@ -316,26 +328,32 @@ public class RegistroActividadService {
         registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
-        /* C. Cálculo de horas y montos */
-        //
-        SumaHoras horas = calcularHoras(registroActividad);
-        System.out.println("DEBUG - Horas calculadas (LAV/SDF): " + horas.getHorasLav() + "/" + horas.getHorasSdf());
+        ResponseEntity<?> respuestaDeletePendiente = null;
+        if (!esGuardiaCorta) {
+            /* E. Cálculo de horas y montos */
+            SumaHoras horas = calcularHoras(registroActividad);
+            System.out
+                    .println("DEBUG - Horas calculadas (LAV/SDF): " + horas.getHorasLav() + "/" + horas.getHorasSdf());
 
-        // guarda las horas calculadas en BD
-        sumaHorasService.save(horas);
-        registroActividad.setHorasRealizadas(horas);
+            // guarda las horas calculadas en BD
+            sumaHorasService.save(horas);
+            registroActividad.setHorasRealizadas(horas);
 
-        /* D. Gestión de registros pendientes */
-        // elimina el registro de la lista de pendientes
-        ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
-                .deleteRegistroActividad(registroActividad);
+            /* F. Gestión de registros pendientes */
+            // elimina el registro de la lista de pendientes
+            respuestaDeletePendiente = registrosPendientesService
+                    .deleteRegistroActividad(registroActividad);
 
-        // si la eliminacion fue exitosa desvincula el reg pendiente
-        if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
-            registroActividad.setRegistrosPendientes(null);
+            // si la eliminacion fue exitosa desvincula el reg pendiente
+            if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
+                registroActividad.setRegistrosPendientes(null);
 
-            /* Actualización de registro mensual */
-            registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+                /* Actualización de registro mensual */
+                registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+            }
+        } else {
+            // Guardia incompleta: limpia las horas realizadas y no suma al registro mensual
+            registroActividad.setHorasRealizadas(null);
         }
 
         save(registroActividad);

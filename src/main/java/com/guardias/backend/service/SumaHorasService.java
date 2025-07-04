@@ -61,7 +61,12 @@ public class SumaHorasService {
     /*Ajusta las horas trabajadas basándose en minutos sobrantes */
     public float redondearHoras(float totalHours, float remainingMinutes) {
 
-        float roundedHours;
+        if (remainingMinutes <= 30) {
+           return (float) Math.floor(totalHours); // Redondear hacia abajo
+        } else {
+            return (float) Math.ceil(totalHours); // Redondear hacia arriba
+        }
+        /* float roundedHours;
 
         // <16 minutos: No se redondea, las horas permanecen iguales
         if (remainingMinutes < 16) {
@@ -74,7 +79,7 @@ public class SumaHorasService {
             roundedHours = totalHours + 1;
         }
 
-        return roundedHours;
+        return roundedHours; */
     }
 
     /*Calcula horas LAV(laborables) o SDF(sábados/domingos/feriados) */
