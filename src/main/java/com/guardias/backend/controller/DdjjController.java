@@ -241,4 +241,22 @@ public class DdjjController {
         }
     }
 
+    @GetMapping("/listDdjjcargoyagrup/{anio}/{mes}/{idEfector}/{idServicio}")
+    public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrupAndServicio(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<Ddjj> ddjjs = ddjjService
+                    .findDdjjCargoyAgrupServicio(anio, mesEnum, idEfector, idServicio);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

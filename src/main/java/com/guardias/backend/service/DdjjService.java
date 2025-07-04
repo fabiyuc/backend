@@ -20,12 +20,14 @@ import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.repository.RegistroMensualRepository;
+import com.guardias.backend.repository.TipoGuardiaRepository;
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.repository.UsuarioRepository;
 
@@ -46,6 +48,8 @@ public class DdjjService {
     UsuarioRepository usuarioRepository;
     @Autowired
     RegistroMensualRepository registroMensualRepository;
+    @Autowired
+    TipoGuardiaRepository tipoGuardiaRepository;
 
     public boolean existsById(Long id) {
         return ddjjRepository.existsById(id);
@@ -371,7 +375,24 @@ public class DdjjService {
     }
 
     public boolean existsByAnioMesEfectorAndTipoGuardia(int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
-        return ddjjRepository.existsByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, idTipoGuardia);
+        // Obtenemos el tipo de guardia por ID
+        Optional<TipoGuardia> tipoGuardiaOptional = tipoGuardiaRepository.findById(idTipoGuardia);
+
+        if (tipoGuardiaOptional.isPresent()) {
+            TipoGuardiaEnum tipo = tipoGuardiaOptional.get().getNombre();
+
+            if (tipo == TipoGuardiaEnum.CARGO || tipo == TipoGuardiaEnum.AGRUPACION) {
+                // Si es CARGO o AGRUPACION, buscar cualquier ddjj activa con registros activos
+                // de tipo CARGO o AGRUPACION
+                return ddjjRepository.existsDdjjConTipoGuardiaCargoOAgrupacion(anio, mes, idEfector);
+            } else {
+                // Para cualquier otro tipo de guardia, se usa la lógica original
+                return ddjjRepository.existsByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, idTipoGuardia);
+            }
+        }
+
+        // Si el tipo de guardia no existe, devolvemos false
+        return false;
     }
 
     public List<Ddjj> findDdjjCargoyAgrup(int anio, MesesEnum mes, Long idEfector) {
@@ -389,6 +410,37 @@ public class DdjjService {
                                                 (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
                                                         actividad.getTipoGuardia()
                                                                 .getNombre() == TipoGuardiaEnum.AGRUPACION))
+                                        .collect(Collectors.toList());
+                                registroMensual.setRegistroActividad(actividadesFiltradas);
+                                return registroMensual;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                                                                                // actividades
+                            .collect(Collectors.toList());
+                    ddjj.setRegistrosMensuales(registrosFiltrados);
+                    return ddjj;
+                })
+                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
+                .collect(Collectors.toList());
+    }
+
+    public List<Ddjj> findDdjjCargoyAgrupServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnio(idEfector, mes, anio);
+
+        return ddjjs.stream()
+                .filter(Ddjj::isActivo) // Filtrar ddjj activas
+                .map(ddjj -> {
+                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo() &&
+                                                (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
+                                                        actividad.getTipoGuardia()
+                                                                .getNombre() == TipoGuardiaEnum.AGRUPACION)
+                                                &&
+                                                actividad.getServicio().getId().equals(idServicio))
                                         .collect(Collectors.toList());
                                 registroMensual.setRegistroActividad(actividadesFiltradas);
                                 return registroMensual;
