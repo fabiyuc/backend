@@ -132,6 +132,8 @@ public class RegistroActividad {
         @Column(columnDefinition = "VARCHAR(300)")
         private String motivoEgreso;
 
+        @Column(columnDefinition = "BIT DEFAULT 1")
+        private Boolean esGuardiaIncompleta;
         /*
          * @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade =
          * CascadeType.REMOVE)

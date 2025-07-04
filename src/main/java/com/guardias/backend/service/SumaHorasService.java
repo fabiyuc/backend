@@ -61,7 +61,7 @@ public class SumaHorasService {
     /*Ajusta las horas trabajadas basándose en minutos sobrantes */
     public float redondearHoras(float totalHours, float remainingMinutes) {
 
-        if (remainingMinutes < 30) {
+        if (remainingMinutes <= 30) {
            return (float) Math.floor(totalHours); // Redondear hacia abajo
         } else {
             return (float) Math.ceil(totalHours); // Redondear hacia arriba
