@@ -57,6 +57,8 @@ public class LegajoDto {
 
     private LocationEnum tipoEfector;
 
+    private LocationEnum tipoEfectorCargo;
+
     private LocationEnum tipoUdo;
 
 }

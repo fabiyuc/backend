@@ -368,4 +368,8 @@ public class DdjjService {
         return ddjjRepository.findByEfectorIdAndEstadoDdjjDirectorDPHAndActivoTrue(idEfector, EstadoDdjjEnum.APROBADO);
     }
 
+    public boolean existsByAnioAndMesAndEfector(int anio, MesesEnum mes, Long idEfector) {
+        return ddjjRepository.existsByAnioAndMesAndEfector_Id(anio, mes, idEfector);
+    }
+
 }

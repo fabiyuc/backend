@@ -13,33 +13,35 @@ import com.guardias.backend.enums.MesesEnum;
 @Repository
 public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
 
-    List<Ddjj> findByActivoTrue();
+        List<Ddjj> findByActivoTrue();
 
-    Optional<Ddjj> findById(Long id);
+        Optional<Ddjj> findById(Long id);
 
-    Optional<Ddjj> findByIdAndActivoTrue(Long id);
+        Optional<Ddjj> findByIdAndActivoTrue(Long id);
 
-    boolean existsById(Long id);
+        boolean existsById(Long id);
 
-    boolean existsByAnioAndMes(int anio, MesesEnum mes);
+        boolean existsByAnioAndMes(int anio, MesesEnum mes);
 
-    boolean existsByAnio(int anio);
+        boolean existsByAnio(int anio);
 
-    List<Ddjj> findByAnio(int anio);
+        List<Ddjj> findByAnio(int anio);
 
-    List<Ddjj> findByAnioAndMes(int anio, MesesEnum mes);
+        List<Ddjj> findByAnioAndMes(int anio, MesesEnum mes);
 
-    List<Ddjj> findByEfectorIdAndMesAndAnio(Long efectorId, MesesEnum mes, int anio);
+        List<Ddjj> findByEfectorIdAndMesAndAnio(Long efectorId, MesesEnum mes, int anio);
 
-    List<Ddjj> findByEfectorIdAndEstadoDdjjDirectorDPHAndActivoTrue(Long idEfector,
-            EstadoDdjjEnum estadoDdjjDirectorDPH);
+        List<Ddjj> findByEfectorIdAndEstadoDdjjDirectorDPHAndActivoTrue(Long idEfector,
+                        EstadoDdjjEnum estadoDdjjDirectorDPH);
 
-    List<Ddjj> findByEfectorIdAndEstadoDdjjDirectorAndActivoTrue(Long idEfector,
-            EstadoDdjjEnum estadoDdjjDirector);
+        List<Ddjj> findByEfectorIdAndEstadoDdjjDirectorAndActivoTrue(Long idEfector,
+                        EstadoDdjjEnum estadoDdjjDirector);
 
-    List<Ddjj> findByEfectorIdAndDirectorIdAndEstadoDdjjDirectorAndActivoTrue(
-            Long idEfector,
-            Long idDirector,
-            EstadoDdjjEnum estadoDdjjDirector);
+        List<Ddjj> findByEfectorIdAndDirectorIdAndEstadoDdjjDirectorAndActivoTrue(
+                        Long idEfector,
+                        Long idDirector,
+                        EstadoDdjjEnum estadoDdjjDirector);
+
+        boolean existsByAnioAndMesAndEfector_Id(int anio, MesesEnum mes, Long efectorId);
 
 }

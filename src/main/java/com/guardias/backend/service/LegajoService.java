@@ -203,6 +203,53 @@ public class LegajoService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        // Nueva validación para tipoEfectorCargo y idEfectores
+        try {
+            if (legajoDto.getTipoEfectorCargo() != null) {
+                LocationEnum tipoEfectorCargo = LocationEnum.valueOf(legajoDto.getTipoEfectorCargo().toString());
+
+                if (LocationEnum.MINISTERIO == tipoEfectorCargo) {
+                    if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(
+                                new Mensaje("El idEfectores es obligatorio para el tipo Ministerio"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isMinisterioValid = ministerioService.existsById(legajoDto.getIdEfectores().get(0));
+                    if (!isMinisterioValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un Ministerio válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.CAPS == tipoEfectorCargo) {
+                    if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isCapsValid = capsService.existsById(legajoDto.getIdEfectores().get(0));
+                    if (!isCapsValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+
+                if (LocationEnum.HOSPITAL == tipoEfectorCargo) {
+                    if (legajoDto.getIdEfectores() == null || legajoDto.getIdEfectores().isEmpty()) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                    boolean isHospitalValid = hospitalService.existsById(legajoDto.getIdEfectores().get(0));
+                    if (!isHospitalValid) {
+                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
+                                HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new Mensaje("El tipoEfectorCargo no es válido"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         boolean esAsistencial = personService.activoById(legajoDto.getIdPersona())
                 && asistencialService.existsById(legajoDto.getIdPersona());
 
@@ -513,6 +560,10 @@ public class LegajoService {
 
         if (legajoDto.getTipoEfector() != null) {
             legajo.setTipoEfector(legajoDto.getTipoEfector());
+        }
+
+        if (legajoDto.getTipoEfectorCargo() != null) {
+            legajo.setTipoEfectorCargo(legajoDto.getTipoEfectorCargo());
         }
 
         if (legajoDto.getTipoUdo() != null) {

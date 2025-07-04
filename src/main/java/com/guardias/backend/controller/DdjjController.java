@@ -210,4 +210,17 @@ public class DdjjController {
         return new ResponseEntity<>(ddjjs, HttpStatus.OK);
     }
 
+    @GetMapping("/existsDdjj/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<Boolean> existsDdjj(@PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            boolean exists = ddjjService.existsByAnioAndMesAndEfector(anio, mesEnum, idEfector);
+            return ResponseEntity.ok(exists);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+
 }

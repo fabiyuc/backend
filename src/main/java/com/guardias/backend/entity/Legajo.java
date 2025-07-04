@@ -81,6 +81,8 @@ public class Legajo {
   /* @Enumerated(EnumType.STRING) */
   /* @Column(columnDefinition = "VARCHAR(15)") */
   private LocationEnum tipoEfector;
+
+  private LocationEnum tipoEfectorCargo;
   /*
    * @Enumerated(EnumType.STRING)
    */
