@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Ddjj;
@@ -42,6 +44,27 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         Long idDirector,
                         EstadoDdjjEnum estadoDdjjDirector);
 
-        boolean existsByAnioAndMesAndEfector_Id(int anio, MesesEnum mes, Long efectorId);
+        @Query("SELECT COUNT(d) > 0 FROM Ddjjs d " +
+                        "JOIN d.registrosMensuales rm " +
+                        "LEFT JOIN rm.registroActividad ra " +
+                        "WHERE d.anio = :anio " +
+                        "AND d.mes = :mes " +
+                        "AND d.efector.id = :idEfector " +
+                        "AND d.activo = true " +
+                        "AND ra.activo = true " +
+                        "AND ra.tipoGuardia.id = :idTipoGuardia")
+        boolean existsByAnioMesEfectorAndTipoGuardia(@Param("anio") int anio,
+                        @Param("mes") MesesEnum mes,
+                        @Param("idEfector") Long idEfector,
+                        @Param("idTipoGuardia") Long idTipoGuardia);
+
+        @Query("SELECT DISTINCT d FROM Ddjjs d " +
+                        "JOIN d.registrosMensuales rm " +
+                        "LEFT JOIN rm.registroActividad ra " +
+                        "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
+                        "AND (ra IS NULL OR ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
+        List<Ddjj> findByAnioMesEfector(@Param("anio") int anio,
+                        @Param("mes") MesesEnum mes,
+                        @Param("idEfector") Long idEfector);
 
 }

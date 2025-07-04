@@ -210,16 +210,34 @@ public class DdjjController {
         return new ResponseEntity<>(ddjjs, HttpStatus.OK);
     }
 
-    @GetMapping("/existsDdjj/{anio}/{mes}/{idEfector}")
+    @GetMapping("/existsDdjj/{anio}/{mes}/{idEfector}/{idtipoGuardia}")
     public ResponseEntity<Boolean> existsDdjj(@PathVariable int anio,
             @PathVariable String mes,
-            @PathVariable Long idEfector) {
+            @PathVariable Long idEfector,
+            @PathVariable Long idtipoGuardia) {
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
-            boolean exists = ddjjService.existsByAnioAndMesAndEfector(anio, mesEnum, idEfector);
+            boolean exists = ddjjService.existsByAnioMesEfectorAndTipoGuardia(anio, mesEnum, idEfector, idtipoGuardia);
             return ResponseEntity.ok(exists);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(false);
+        }
+    }
+
+    @GetMapping("/listDdjjcargoyagrup/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrup(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<Ddjj> ddjjs = ddjjService
+                    .findDdjjCargoyAgrup(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
+                    HttpStatus.NOT_FOUND);
         }
     }
 
