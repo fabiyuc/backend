@@ -63,7 +63,7 @@ public class Ddjj {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "registroActividad", "efector", "ddjj", "sumaHoras" })
+            "efector", "ddjj", "sumaHoras" })
     List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
