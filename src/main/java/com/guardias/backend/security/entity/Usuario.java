@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroActividad;
 
@@ -71,8 +72,14 @@ public class Usuario {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "directorDPH", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH" })
+            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH",  })
     private List<Ddjj> ddjjsDirectorDPH = new ArrayList<>();
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
+            "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
+            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH", "usuario" })
+    private List<ObservacionDdjj> observacionesDdjj = new ArrayList<>();
 
     @Override
     public boolean equals(Object obj) {

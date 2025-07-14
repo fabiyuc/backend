@@ -91,6 +91,11 @@ public class Ddjj {
     @Column(columnDefinition = "VARCHAR(300)")
     private String motivoDirectorDPH;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
+            "efector", "ddjj", "sumaHoras", "ddjj" })
+    List<ObservacionDdjj> observacionesDdjj = new ArrayList<>();
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

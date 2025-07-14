@@ -18,6 +18,7 @@ import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.TipoGuardia;
@@ -26,6 +27,7 @@ import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DdjjRepository;
+import com.guardias.backend.repository.ObservacionDdjjRepository;
 import com.guardias.backend.repository.RegistroMensualRepository;
 import com.guardias.backend.repository.TipoGuardiaRepository;
 import com.guardias.backend.security.entity.Usuario;
@@ -50,6 +52,8 @@ public class DdjjService {
     RegistroMensualRepository registroMensualRepository;
     @Autowired
     TipoGuardiaRepository tipoGuardiaRepository;
+    @Autowired
+    ObservacionDdjjRepository observacionDdjjRepository;
 
     public boolean existsById(Long id) {
         return ddjjRepository.existsById(id);
@@ -218,6 +222,43 @@ public class DdjjService {
                         RegistroMensual rm = rmOpt.get();
                         rm.setDdjj(ddjj); // Establece la relación inversa
                         ddjj.getRegistrosMensuales().add(rm);
+                    }
+                }
+            }
+        }
+        
+        if (ddjjDto.getIdObservacionesDdjj() != null) {
+            // 1. Primero guarda la DDJJ si es nueva (sin los registros)
+            if (ddjj.getId() == null) {
+                ddjj = ddjjRepository.save(ddjj);
+            }
+
+            // 2. Manejo de registros existentes (para actualización)
+            if (ddjj.getObservacionesDdjj() != null) {
+                // Rompe la relación con registros que ya no están en la lista nueva
+                List<ObservacionDdjj> toRemove = new ArrayList<>();
+                for (ObservacionDdjj od : ddjj.getObservacionesDdjj()) {
+                    if (!ddjjDto.getIdObservacionesDdjj().contains(od.getId())) {
+                        od.setDdjj(null);
+                        toRemove.add(od);
+                    }
+                }
+                ddjj.getObservacionesDdjj().removeAll(toRemove);
+            } else {
+                ddjj.setObservacionesDdjj(new ArrayList<>());
+            }
+
+            // 3. Agrega las nuevas observaciones
+            for (Long id : ddjjDto.getIdObservacionesDdjj()) {
+                boolean exists = ddjj.getObservacionesDdjj().stream()
+                        .anyMatch(od -> od.getId().equals(id));
+
+                if (!exists) {
+                    Optional<ObservacionDdjj> odOpt = observacionDdjjRepository.findById(id);
+                    if (odOpt.isPresent()) {
+                        ObservacionDdjj od = odOpt.get();
+                        od.setDdjj(ddjj); // Establece la relación inversa
+                        ddjj.getObservacionesDdjj().add(od);
                     }
                 }
             }

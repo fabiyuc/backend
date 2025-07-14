@@ -48,4 +48,5 @@ public class DdjjDto {
     private String motivoDirector;
     private String motivoDirectorDPH;
 
+    List<Long> idObservacionesDdjj;
 }
