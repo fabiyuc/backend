@@ -16,7 +16,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGenerales;
 import com.guardias.backend.entity.Region;
-import com.guardias.backend.enums.LocationEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.CapsRepository;
 import com.guardias.backend.repository.HabilitacionesGeneralesRepository;
@@ -82,49 +81,59 @@ public class HabilitacionesGeneralesService {
         return habilitacionesGeneralesRepository.findByPersonaId(idPersona);
     }
 
+    public Optional<HabilitacionesGenerales> findByPersonaAndActivoTrue(Long idPersona) {
+        return habilitacionesGeneralesRepository.findByPersonaIdAndActivoTrue(idPersona);
+    }
+
     public ResponseEntity<?> validations(HabilitacionesGeneralesDto habilitacionesGeneralesDto) {
         if (habilitacionesGeneralesDto.getIdPersona() == null)
             return new ResponseEntity(new Mensaje("el id de la persona es obligatorio"),
                     HttpStatus.BAD_REQUEST);
 
-        // Nueva validación para tipoEfector y idEfectores
-        try {
-            if (habilitacionesGeneralesDto.getTipoEfectorEx() != null) {
-                LocationEnum tipoEfectorEx = LocationEnum
-                        .valueOf(habilitacionesGeneralesDto.getTipoEfectorEx().toString());
-
-                if (LocationEnum.CAPS == tipoEfectorEx) {
-                    if (habilitacionesGeneralesDto.getIdEfectores() == null ||
-                            habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
-                        return new ResponseEntity<>(
-                                new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                    boolean isCapsValid = capsService.existsById(habilitacionesGeneralesDto.getIdEfectores().get(0));
-                    if (!isCapsValid) {
-                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un CAPS válido"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                }
-
-                if (LocationEnum.HOSPITAL == tipoEfectorEx) {
-                    if (habilitacionesGeneralesDto.getIdEfectores() == null ||
-                            habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
-                        return new ResponseEntity<>(new Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                    boolean isHospitalValid = hospitalService
-                            .existsById(habilitacionesGeneralesDto.getIdEfectores().get(0));
-                    if (!isHospitalValid) {
-                        return new ResponseEntity<>(new Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
-                                HttpStatus.BAD_REQUEST);
-                    }
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
-                    HttpStatus.BAD_REQUEST);
-        }
+        /*
+         * // Nueva validación para tipoEfector y idEfectores
+         * try {
+         * if (habilitacionesGeneralesDto.getTipoEfectorEx() != null) {
+         * LocationEnum tipoEfectorEx = LocationEnum
+         * .valueOf(habilitacionesGeneralesDto.getTipoEfectorEx().toString());
+         * 
+         * if (LocationEnum.CAPS == tipoEfectorEx) {
+         * if (habilitacionesGeneralesDto.getIdEfectores() == null ||
+         * habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
+         * return new ResponseEntity<>(
+         * new Mensaje("El idEfectores es obligatorio para el tipo CAPS"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * boolean isCapsValid =
+         * capsService.existsById(habilitacionesGeneralesDto.getIdEfectores().get(0));
+         * if (!isCapsValid) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores no corresponde a un CAPS válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * }
+         * 
+         * if (LocationEnum.HOSPITAL == tipoEfectorEx) {
+         * if (habilitacionesGeneralesDto.getIdEfectores() == null ||
+         * habilitacionesGeneralesDto.getIdEfectores().isEmpty()) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores es obligatorio para el tipo HOSPITAL"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * boolean isHospitalValid = hospitalService
+         * .existsById(habilitacionesGeneralesDto.getIdEfectores().get(0));
+         * if (!isHospitalValid) {
+         * return new ResponseEntity<>(new
+         * Mensaje("El idEfectores no corresponde a un HOSPITAL válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         * }
+         * }
+         * } catch (IllegalArgumentException e) {
+         * return new ResponseEntity<>(new Mensaje("El tipoEfector no es válido"),
+         * HttpStatus.BAD_REQUEST);
+         * }
+         */
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -174,14 +183,19 @@ public class HabilitacionesGeneralesService {
                 }
             }
         }
+        /*
+         * if (habilitacionesGeneralesDto.getTipoEfectorEx() != null) {
+         * habilitacionesGenerales.setTipoEfectorEx(habilitacionesGeneralesDto.
+         * getTipoEfectorEx());
+         * System.out.println("tipoEfector: " +
+         * habilitacionesGeneralesDto.getTipoEfectorEx()); // Verificar el valor
+         * 
+         * }
+         */
 
-        if (habilitacionesGeneralesDto.getTipoEfectorEx() != null) {
-            habilitacionesGenerales.setTipoEfectorEx(habilitacionesGeneralesDto.getTipoEfectorEx());
-            System.out.println("tipoEfector: " + habilitacionesGeneralesDto.getTipoEfectorEx()); // Verificar el valor
-
-        }
-
-        habilitacionesGenerales.setActivo(true);
+        // Manejar el caso cuando activo es null, por defecto establecer como true
+        Boolean activo = habilitacionesGeneralesDto.getActivo();
+        habilitacionesGenerales.setActivo(activo != null ? activo : true);
         return habilitacionesGenerales;
     }
 
@@ -242,7 +256,7 @@ public class HabilitacionesGeneralesService {
 
     public HabilitacionesGenerales addHabilitaciones(Long idPersona, Long idRegion) {
 
-        HabilitacionesGenerales habilitacionExistente = findByPersona(idPersona).orElse(null);
+        HabilitacionesGenerales habilitacionExistente = findByPersonaAndActivoTrue(idPersona).orElse(null);
         Region region = regionService.findById(idRegion).get();
 
         if (habilitacionExistente == null) {

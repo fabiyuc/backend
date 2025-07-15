@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.HabilitacionesGeneralesDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.HabilitacionesGenerales;
 import com.guardias.backend.service.HabilitacionesGeneralesService;
 import com.guardias.backend.service.PersonService;
@@ -67,13 +68,31 @@ public class HabilitacionesGeneralesController {
         return new ResponseEntity<HabilitacionesGenerales>(habilitacionesGeneral, HttpStatus.OK);
     }
 
+    /*
+     * @GetMapping("/detailAsistencial/{idPersona}")
+     * public ResponseEntity<HabilitacionesGenerales>
+     * getByAsistencial(@PathVariable("idPersona") Long idPersona) {
+     * if (!habilitacionesGeneralesService.activoByPersona(idPersona))
+     * return new ResponseEntity(new
+     * Mensaje("no existe la habilitacion general de este asistencial"),
+     * HttpStatus.NOT_FOUND);
+     * HabilitacionesGenerales habilitacionesGenerales =
+     * habilitacionesGeneralesService.findByPersona(idPersona).get();
+     * return new ResponseEntity<HabilitacionesGenerales>(habilitacionesGenerales,
+     * HttpStatus.OK);
+     * }
+     */
+
     @GetMapping("/detailAsistencial/{idPersona}")
-    public ResponseEntity<HabilitacionesGenerales> getByAsistencial(@PathVariable("idPersona") Long idPersona) {
-        if (!habilitacionesGeneralesService.activoByPersona(idPersona))
-            return new ResponseEntity(new Mensaje("no existe la habilitacion general de este asistencial"),
+    public ResponseEntity<?> getByAsistencial(@PathVariable("idPersona") Long idPersona) {
+        Optional<HabilitacionesGenerales> habilitacionActiva = habilitacionesGeneralesService
+                .findByPersonaAndActivoTrue(idPersona);
+
+        if (habilitacionActiva.isEmpty()) {
+            return new ResponseEntity(new Mensaje("No existe la habilitacion general con ese id"),
                     HttpStatus.NOT_FOUND);
-        HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.findByPersona(idPersona).get();
-        return new ResponseEntity<HabilitacionesGenerales>(habilitacionesGenerales, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(habilitacionActiva.get(), HttpStatus.OK);
     }
 
     @PostMapping("/create")
@@ -144,12 +163,13 @@ public class HabilitacionesGeneralesController {
 
         if (respuestaValidacion.getStatusCode() == HttpStatus.OK) {
 
-            HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService.addHabilitaciones(idPersona, idRegion);
+            HabilitacionesGenerales habilitacionesGenerales = habilitacionesGeneralesService
+                    .addHabilitaciones(idPersona, idRegion);
 
             habilitacionesGeneralesService.save(habilitacionesGenerales);
 
-            return new ResponseEntity(new Mensaje("Habilitacion general actualizada"), HttpStatus.OK); 
-        } else{
+            return new ResponseEntity(new Mensaje("Habilitacion general actualizada"), HttpStatus.OK);
+        } else {
             return respuestaValidacion;
         }
 

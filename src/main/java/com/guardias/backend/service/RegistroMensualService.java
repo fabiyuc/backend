@@ -115,14 +115,18 @@ public class RegistroMensualService {
         List<RegistroMensual> registrosMensuales = registroMensualRepository
                 .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
 
-        // Filtro adicional para dejar solo las actividades de tipo CARGO o AGRUPACION
+        // Filtro adicional para dejar solo las actividades de tipo CARGO o AGRUPACION Y
+        // del servicio específico
         return registrosMensuales.stream()
                 .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
                             .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
                                     (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
-                                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION))
+                                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                                    &&
+                                    actividad.getServicio().getId().equals(idServicio)) // Filtrar por servicio
+                                                                                        // específico
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -139,13 +143,16 @@ public class RegistroMensualService {
         List<RegistroMensual> registrosMensuales = registroMensualRepository
                 .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
 
-        // Filtro adicional para dejar solo las actividades de tipo EXTRA
+        // Filtro adicional para dejar solo las actividades de tipo EXTRA Y del servicio
+        // específico
         return registrosMensuales.stream()
                 .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
                             .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
-                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA &&
+                                    actividad.getServicio().getId().equals(idServicio)) // Filtrar por servicio
+                                                                                        // específico
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
@@ -162,13 +169,16 @@ public class RegistroMensualService {
         List<RegistroMensual> registrosMensuales = registroMensualRepository
                 .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
 
-        // Filtro adicional para dejar solo las actividades de tipo CONTRAFACTURA
+        // Filtro adicional para dejar solo las actividades de tipo CONTRAFACTURA Y del
+        // servicio específico
         return registrosMensuales.stream()
                 .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
                             .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
-                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA &&
+                                    actividad.getServicio().getId().equals(idServicio)) // Filtrar por servicio
+                                                                                        // específico
                             .collect(Collectors.toList());
                     registroMensual.setRegistroActividad(actividadesFiltradas);
                     return registroMensual;
