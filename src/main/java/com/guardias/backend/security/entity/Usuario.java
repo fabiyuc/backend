@@ -78,7 +78,7 @@ public class Usuario {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH", "usuario" })
+            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH", "ddjj","usuario" })
     private List<ObservacionDdjj> observacionesDdjj = new ArrayList<>();
 
     @Override

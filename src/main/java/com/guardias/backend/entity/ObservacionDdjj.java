@@ -42,6 +42,6 @@ public class ObservacionDdjj {
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_ddjj")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
-            "total", "estadoDdjj", "valorGmi", "registrosMensuales", "observacionesDdjj" })
+            "total", "estadoDdjj", "valorGmi", "registrosMensuales", "director", "directorDPH", "observacionesDdjj" })
     private Ddjj ddjj;
 }

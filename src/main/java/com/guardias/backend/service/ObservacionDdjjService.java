@@ -72,7 +72,7 @@ public class ObservacionDdjjService {
         if (observacionDdjj.getDdjj() == null || !Objects.equals(observacionDdjj.getDdjj().getId(), observacionDdjjDto.getIdDdjj()))
             observacionDdjj.setDdjj(ddjjService.findById(observacionDdjjDto.getIdDdjj()).get());
 
-        observacionDdjj.setActivo(observacionDdjjDto.getActivo());
+        observacionDdjj.setActivo(true);
 
         return observacionDdjj;
     }
