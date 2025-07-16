@@ -32,6 +32,9 @@ public class ObservacionDdjj {
     @Column(columnDefinition = "VARCHAR(300)")
     private String motivo;
 
+    @Column(columnDefinition = "BIT DEFAULT 1")
+    private Boolean tipoDph;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "usuario")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",

@@ -48,6 +48,10 @@ public class ObservacionDdjjService {
         if (observacionDdjjDto.getMotivo() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el motivo"),
                     HttpStatus.BAD_REQUEST);
+        
+        if (observacionDdjjDto.getTipoDph() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar si es de tipo DPH"),
+                    HttpStatus.BAD_REQUEST);
 
         if (observacionDdjjDto.getIdUsuario() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el id del usuario"),
@@ -65,6 +69,9 @@ public class ObservacionDdjjService {
 
         if (observacionDdjj.getMotivo() != observacionDdjjDto.getMotivo())
             observacionDdjj.setMotivo(observacionDdjjDto.getMotivo());
+        
+        if (observacionDdjj.getTipoDph() != observacionDdjjDto.getTipoDph())
+            observacionDdjj.setTipoDph(observacionDdjjDto.getTipoDph());
 
         if (observacionDdjj.getUsuario() == null || !Objects.equals(observacionDdjj.getUsuario().getId(), observacionDdjjDto.getIdUsuario()))
             observacionDdjj.setUsuario(usuarioService.findById(observacionDdjjDto.getIdUsuario()).get());
