@@ -38,12 +38,12 @@ public class ObservacionDdjj {
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "usuario")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
-            "password", "registrosIngresos", "registrosEgresos",
-            "person", "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" , "observacionesDdjj"})
-    Usuario usuario;
+            "password", "registrosIngresos", "registrosEgresos", "person",
+            "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" , "observacionesDdjj"})
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_ddjj")
+    @JoinColumn(name = "ddjj")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi", "registrosMensuales", "director", "directorDPH", "observacionesDdjj" })
     private Ddjj ddjj;
