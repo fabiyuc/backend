@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ObservacionDdjjDto;
+import com.guardias.backend.dto.ObservacionDdjj.ObservacionDdjjUltimoDto;
 import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.service.ObservacionDdjjService;
 
 @Controller
 @RequestMapping("/observacionDdjj")
+@CrossOrigin(origins = "http://localhost:4200") 
 public class ObservacionDdjjController {
     
     @Autowired
@@ -93,6 +96,25 @@ public class ObservacionDdjjController {
             return new ResponseEntity(new Mensaje("no existe la observacion de ddjj"), HttpStatus.NOT_FOUND);
         observacionDdjjService.deleteById(id);
         return new ResponseEntity(new Mensaje("Observacion eliminada FISICAMENTE"), HttpStatus.OK);
+    }
+
+    @GetMapping("/ultimaPorDdjj/{idDdjj}/{tipoDph}")
+    public ResponseEntity<ObservacionDdjjUltimoDto> getUltimaObservacionByDdjjAndTipoDph(
+            @PathVariable("idDdjj") Long idDdjj,
+            @PathVariable("tipoDph") Boolean tipoDph) {
+        
+        System.out.println("=== INICIO LLAMADA AL CONTROLLER ===");
+        System.out.println("ID DDJJ recibido: " + idDdjj);
+        System.out.println("Tipo DPH recibido: " + tipoDph);
+        ObservacionDdjjUltimoDto observacion = observacionDdjjService
+            .getUltimaObservacionByDdjjAndTipoDph(idDdjj, tipoDph);
+        
+        if (observacion == null) {
+            System.out.println("=== FIN CONTROLLER: No se encontraron resultados ===");
+            return ResponseEntity.notFound().build();
+        }
+        System.out.println("=== FIN CONTROLLER: Resultado encontrado ===");
+        return ResponseEntity.ok(observacion);
     }
 
 

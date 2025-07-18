@@ -16,6 +16,9 @@ public class ObservacionDdjjDto {
     @NotBlank
     private String motivo;
 
+    @NotBlank
+    private Boolean tipoDph;
+
     @NotNull
     private Long idUsuario;
 
