@@ -63,6 +63,14 @@ public class ObservacionDdjjService {
         if (observacionDdjjDto.getIdDdjj() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el id de la ddjj"),
                     HttpStatus.BAD_REQUEST);
+        
+        if (observacionDdjjDto.getFechaCreacion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la fecha de creacion"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (observacionDdjjDto.getHoraCreacion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la hora de creacion"),
+                    HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
 
@@ -84,6 +92,11 @@ public class ObservacionDdjjService {
                 || !Objects.equals(observacionDdjj.getDdjj().getId(), observacionDdjjDto.getIdDdjj()))
             observacionDdjj.setDdjj(ddjjService.findById(observacionDdjjDto.getIdDdjj()).get());
 
+        if (observacionDdjj.getFechaCreacion() != observacionDdjjDto.getFechaCreacion())
+            observacionDdjj.setFechaCreacion(observacionDdjjDto.getFechaCreacion());
+        
+        if (observacionDdjj.getHoraCreacion() != observacionDdjjDto.getHoraCreacion())
+            observacionDdjj.setHoraCreacion(observacionDdjjDto.getHoraCreacion());
         observacionDdjj.setActivo(true);
 
         return observacionDdjj;
@@ -142,7 +155,9 @@ public class ObservacionDdjjService {
                 observacion.getId(),
                 observacion.getMotivo(),
                 nombre,
-                apellido);
+                apellido,
+                observacion.getFechaCreacion(),
+                observacion.getHoraCreacion());
 
         return dto;
     }
