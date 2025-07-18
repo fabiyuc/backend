@@ -259,37 +259,40 @@ public class HabilitacionesGeneralesService {
         HabilitacionesGenerales habilitacionExistente = findByPersonaAndActivoTrue(idPersona).orElse(null);
         Region region = regionService.findById(idRegion).get();
 
-        if (habilitacionExistente == null) {
-
-            List<Long> idsEfectores = region.getEfectores().stream()
+        // Verificar si ya tiene habilitación para la misma región
+        if (habilitacionExistente != null) {
+            List<Long> efectoresActuales = habilitacionExistente.getEfectores().stream()
                     .map(Efector::getId)
                     .collect(Collectors.toList());
 
-            HabilitacionesGeneralesDto habilitacionDto = new HabilitacionesGeneralesDto();
-            habilitacionDto.setIdPersona(idPersona);
-            habilitacionDto.setIdEfectores(idsEfectores);
+            List<Long> efectoresRegion = region.getEfectores().stream()
+                    .map(Efector::getId)
+                    .collect(Collectors.toList());
 
-            HabilitacionesGenerales habilitacionesGenerales = createUpdate(new HabilitacionesGenerales(),
-                    habilitacionDto);
-
-            return habilitacionesGenerales;
-
-        } else {
-            for (Efector efectorDeRegion : region.getEfectores()) {
-                boolean found = false;
-                for (Efector efectorExistente : habilitacionExistente.getEfectores()) {
-                    if (efectorExistente.equals(efectorDeRegion)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    habilitacionExistente.getEfectores().add(efectorDeRegion);
-                    efectorDeRegion.getHabilitacionesGenerales().add(habilitacionExistente);
-                }
+            // Si tiene exactamente los mismos efectores, no hacer nada
+            if (efectoresActuales.containsAll(efectoresRegion) &&
+                    efectoresRegion.containsAll(efectoresActuales)) {
+                return habilitacionExistente; // Retornar la existente sin cambios
             }
+
+            // Si son diferentes, deshabilitar la existente
+            habilitacionExistente.setActivo(false);
+            save(habilitacionExistente);
         }
-        return habilitacionExistente;
+
+        // Crear nueva habilitación con todos los efectores de la región
+        List<Long> idsEfectores = region.getEfectores().stream()
+                .map(Efector::getId)
+                .collect(Collectors.toList());
+
+        HabilitacionesGeneralesDto habilitacionDto = new HabilitacionesGeneralesDto();
+        habilitacionDto.setIdPersona(idPersona);
+        habilitacionDto.setIdEfectores(idsEfectores);
+        habilitacionDto.setActivo(true); // Establecer explícitamente como activa
+
+        HabilitacionesGenerales nuevaHabilitacion = createUpdate(new HabilitacionesGenerales(), habilitacionDto);
+
+        return nuevaHabilitacion;
     }
 
 }
