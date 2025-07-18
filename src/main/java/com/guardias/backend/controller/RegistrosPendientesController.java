@@ -9,12 +9,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.RegistroActividadDto;
-import com.guardias.backend.entity.Asistencial;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistrosPendientes;
 import com.guardias.backend.service.EfectorService;

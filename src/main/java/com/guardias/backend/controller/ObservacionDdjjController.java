@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ObservacionDdjjDto;
@@ -21,11 +21,11 @@ import com.guardias.backend.dto.ObservacionDdjj.ObservacionDdjjUltimoDto;
 import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.service.ObservacionDdjjService;
 
-@Controller
+@RestController
 @RequestMapping("/observacionDdjj")
-@CrossOrigin(origins = "http://localhost:4200") 
+@CrossOrigin(origins = "http://localhost:4200")
 public class ObservacionDdjjController {
-    
+
     @Autowired
     ObservacionDdjjService observacionDdjjService;
 
@@ -54,7 +54,8 @@ public class ObservacionDdjjController {
     public ResponseEntity<?> create(@RequestBody ObservacionDdjjDto observacionDdjjDto) {
         ResponseEntity<?> respuestaValidaciones = observacionDdjjService.validations(observacionDdjjDto, 0L);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            ObservacionDdjj observacionDdjj = observacionDdjjService.createUpdate(new ObservacionDdjj(), observacionDdjjDto);
+            ObservacionDdjj observacionDdjj = observacionDdjjService.createUpdate(new ObservacionDdjj(),
+                    observacionDdjjDto);
             observacionDdjjService.save(observacionDdjj);
 
             return new ResponseEntity(new Mensaje("Observacion de ddjj creada"), HttpStatus.OK);
@@ -70,7 +71,8 @@ public class ObservacionDdjjController {
 
         ResponseEntity<?> respuestaValidaciones = observacionDdjjService.validations(observacionDdjjDto, id);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            ObservacionDdjj observacionDdjj = observacionDdjjService.createUpdate(observacionDdjjService.findById(id).get(), observacionDdjjDto);
+            ObservacionDdjj observacionDdjj = observacionDdjjService
+                    .createUpdate(observacionDdjjService.findById(id).get(), observacionDdjjDto);
             observacionDdjjService.save(observacionDdjj);
 
             return new ResponseEntity(new Mensaje("Observacion de ddjj modificada"), HttpStatus.OK);
@@ -102,13 +104,13 @@ public class ObservacionDdjjController {
     public ResponseEntity<ObservacionDdjjUltimoDto> getUltimaObservacionByDdjjAndTipoDph(
             @PathVariable("idDdjj") Long idDdjj,
             @PathVariable("tipoDph") Boolean tipoDph) {
-        
+
         System.out.println("=== INICIO LLAMADA AL CONTROLLER ===");
         System.out.println("ID DDJJ recibido: " + idDdjj);
         System.out.println("Tipo DPH recibido: " + tipoDph);
         ObservacionDdjjUltimoDto observacion = observacionDdjjService
-            .getUltimaObservacionByDdjjAndTipoDph(idDdjj, tipoDph);
-        
+                .getUltimaObservacionByDdjjAndTipoDph(idDdjj, tipoDph);
+
         if (observacion == null) {
             System.out.println("=== FIN CONTROLLER: No se encontraron resultados ===");
             return ResponseEntity.notFound().build();
@@ -117,5 +119,19 @@ public class ObservacionDdjjController {
         return ResponseEntity.ok(observacion);
     }
 
+    @GetMapping("/todasActivasPorDdjj/{idDdjj}/{tipoDph}")
+    public ResponseEntity<List<ObservacionDdjjUltimoDto>> getAllObservacionesActivasByDdjjAndTipoDph(
+            @PathVariable("idDdjj") Long idDdjj,
+            @PathVariable("tipoDph") Boolean tipoDph) {
+
+        List<ObservacionDdjjUltimoDto> observaciones = observacionDdjjService
+                .getAllObservacionesActivasByDdjjAndTipoDph(idDdjj, tipoDph);
+
+        if (observaciones.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(observaciones);
+    }
 
 }

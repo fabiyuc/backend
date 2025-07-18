@@ -1,8 +1,10 @@
 package com.guardias.backend.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -100,7 +102,7 @@ public class ObservacionDdjjService {
     }
 
     public ObservacionDdjjUltimoDto getUltimaObservacionByDdjjAndTipoDph(Long idDdjj, Boolean tipoDph) {
-        
+
         List<ObservacionDdjj> observaciones = observacionDdjjRepository
                 .findUltimaObservacion(idDdjj, tipoDph);
 
@@ -145,4 +147,20 @@ public class ObservacionDdjjService {
         return dto;
     }
 
+    public List<ObservacionDdjjUltimoDto> getAllObservacionesActivasByDdjjAndTipoDph(Long idDdjj, Boolean tipoDph) {
+
+        List<ObservacionDdjj> observaciones = observacionDdjjRepository
+                .findAllObservacionesActivas(idDdjj, tipoDph);
+
+        System.out.println("Cantidad total de observaciones activas encontradas: " + observaciones.size());
+
+        if (observaciones.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Convertimos todas las observaciones a DTO
+        return observaciones.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }

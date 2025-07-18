@@ -19,12 +19,10 @@ public interface ObservacionDdjjRepository extends JpaRepository<ObservacionDdjj
     @Param("idDdjj") Long idDdjj, 
     @Param("tipoDph") Boolean tipoDph);
 
-   /*  @Query("SELECT o FROM observacionesDdjj o " +
-           "WHERE o.ddjj.id = :idDdjj " +
-           "AND o.tipoDph = :tipoDph " +
-           "AND o.activo = true" +
-           "ORDER BY o.id DESC")
-    List<ObservacionDdjj> findByDdjjIdAndTipoDphAndActivo(
-        @Param("idDdjj") Long idDdjj, 
-        @Param("tipoDph") Boolean tipoDph); */
+   @Query("SELECT o FROM observacionesDdjj o JOIN FETCH o.usuario u JOIN FETCH u.person " +
+       "WHERE o.ddjj.id = :idDdjj AND o.tipoDph = :tipoDph AND o.activo = true " +
+       "ORDER BY o.id DESC")
+    List<ObservacionDdjj> findAllObservacionesActivas(
+    @Param("idDdjj") Long idDdjj, 
+    @Param("tipoDph") Boolean tipoDph);
 }
