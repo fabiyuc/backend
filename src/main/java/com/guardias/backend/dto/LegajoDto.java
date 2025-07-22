@@ -24,6 +24,7 @@ public class LegajoDto {
     @NotBlank
     private Boolean esRegional;
     private Boolean activo;
+    private String url;
     private String matriculaNacional;
     @NotBlank
     private String matriculaProvincial;

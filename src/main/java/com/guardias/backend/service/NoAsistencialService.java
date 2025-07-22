@@ -266,4 +266,26 @@ public class NoAsistencialService {
         return EfectorList;
     }
 
+    public List<NoAsistencialListDto> getNoAsistencialSummaryList() {
+        List<NoAsistencial> noAsistenciales = noAsistencialRepository.findByActivoTrue().orElse(new ArrayList<>());
+        List<NoAsistencialListDto> noAsistencialListDtos = new ArrayList<>();
+
+        for (NoAsistencial noAsistencial : noAsistenciales) {
+
+            NoAsistencialListDto dto = new NoAsistencialListDto(
+                    noAsistencial.getId(),
+                    noAsistencial.getNombre(),
+                    noAsistencial.getApellido(),
+                    noAsistencial.getDni(),
+                    noAsistencial.getCuil(),
+                    noAsistencial.getFechaNacimiento(),
+                    noAsistencial.getSexo(),
+                    noAsistencial.getTelefono(),
+                    noAsistencial.getEmail(),
+                    noAsistencial.getDomicilio(),
+                    noAsistencial.isEsAsistencial());
+            noAsistencialListDtos.add(dto);
+        }
+        return noAsistencialListDtos;
+    }
 }

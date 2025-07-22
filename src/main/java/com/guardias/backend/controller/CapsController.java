@@ -1,11 +1,17 @@
 package com.guardias.backend.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.guardias.backend.dto.CapsDto;
 import com.guardias.backend.dto.Mensaje;
@@ -32,6 +40,9 @@ import com.guardias.backend.service.HospitalService;
 @RequestMapping("/caps")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CapsController {
+
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     @Autowired
     HospitalService hospitalService;
@@ -183,4 +194,371 @@ public class CapsController {
         return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
+    @PostMapping("/uploadImage/{id}")
+    public ResponseEntity<?> uploadImage(@PathVariable("id") Long id,
+            @RequestParam("image") MultipartFile file) {
+
+        // Validar que el caps existe
+        if (!capsService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("Caps no encontrado"), HttpStatus.NOT_FOUND);
+        }
+
+        // Validar que se envió un archivo
+        if (file.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se seleccionó ningún archivo"), HttpStatus.BAD_REQUEST);
+        }
+
+        // Validar tipo de archivo (solo imágenes)
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            return new ResponseEntity<>(new Mensaje("El archivo debe ser una imagen"), HttpStatus.BAD_REQUEST);
+        }
+
+        // Validar tamaño del archivo (máximo 5MB)
+        if (file.getSize() > 5 * 1024 * 1024) {
+            return new ResponseEntity<>(new Mensaje("El archivo no puede ser mayor a 5MB"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            // 🔥 OBTENER EL CAPS PARA USAR SU NOMBRE
+            Caps caps = capsService.findById(id).get();
+
+            // 🔥 CREAR NOMBRE DE CARPETA SEGURO
+            String capsFolderName = caps.getNombre()
+                    .replaceAll("[^a-zA-Z0-9\\s]", "")
+                    .replaceAll("\\s+", "_")
+                    .toLowerCase()
+                    .trim()
+                    + "_" + id;
+
+            // 🔥 CREAR DIRECTORIOS
+            Path capsDir = Paths.get(uploadDir, "caps");
+            Path capsFolder = capsDir.resolve(capsFolderName);
+
+            if (!Files.exists(capsDir)) {
+                Files.createDirectories(capsDir);
+            }
+
+            if (!Files.exists(capsFolder)) {
+                Files.createDirectories(capsFolder);
+            }
+
+            // 🔥 CALCULAR HASH MD5 DEL ARCHIVO PARA DETECTAR DUPLICADOS
+            String fileHash = capsService.calculateMD5(file.getInputStream());
+            System.out.println("🔍 Hash del archivo: " + fileHash);
+
+            // 🔥 VERIFICAR SI YA EXISTE UN ARCHIVO CON EL MISMO HASH
+            if (Files.exists(capsFolder)) {
+                try (var stream = Files.list(capsFolder)) {
+                    Optional<Path> duplicateFile = stream
+                            .filter(Files::isRegularFile)
+                            .filter(path -> {
+                                try {
+                                    String existingHash = capsService.calculateMD5(Files.newInputStream(path));
+                                    return existingHash.equals(fileHash);
+                                } catch (Exception e) {
+                                    return false;
+                                }
+                            })
+                            .findFirst();
+
+                    if (duplicateFile.isPresent()) {
+                        String existingFileName = duplicateFile.get().getFileName().toString();
+                        String existingUrl = "/uploads/caps/" + capsFolderName + "/" + existingFileName;
+
+                        System.out.println("⚠️ Archivo duplicado detectado: " + existingFileName);
+
+                        return new ResponseEntity<>(new Object() {
+                            public final String mensaje = "Esta imagen ya existe en el CAPS";
+                            public final String url = existingUrl;
+                            public final String filename = existingFileName;
+                            public final String folderName = capsFolderName;
+                            public final boolean isDuplicate = true;
+                            public final String existingFile = existingFileName;
+                        }, HttpStatus.OK);
+                    }
+                }
+            }
+
+            // 🔥 VERIFICAR TAMBIÉN POR NOMBRE DE ARCHIVO ORIGINAL
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+
+            // 🔥 BUSCAR SI YA EXISTE UN ARCHIVO CON EL MISMO NOMBRE ORIGINAL
+            if (Files.exists(capsFolder)) {
+                String cleanOriginalName = originalFilename != null
+                        ? originalFilename.replaceAll("[^a-zA-Z0-9.]", "_").toLowerCase()
+                        : "imagen";
+
+                Path possibleExistingFile = capsFolder.resolve("sello_" + cleanOriginalName);
+                if (Files.exists(possibleExistingFile)) {
+                    String existingUrl = "/uploads/caps/" + capsFolderName + "/"
+                            + possibleExistingFile.getFileName().toString();
+
+                    System.out
+                            .println("⚠️ Archivo con nombre similar ya existe: " + possibleExistingFile.getFileName());
+
+                    return new ResponseEntity<>(new Object() {
+                        public final String mensaje = "Ya existe una imagen con nombre similar. ¿Desea reemplazarla?";
+                        public final String url = existingUrl;
+                        public final String filename = possibleExistingFile.getFileName().toString();
+                        public final String folderName = capsFolderName;
+                        public final boolean isDuplicateName = true;
+                        public final String existingFile = possibleExistingFile.getFileName().toString();
+                        public final String originalName = originalFilename;
+                    }, HttpStatus.CONFLICT); // 409 Conflict para indicar duplicado
+                }
+            }
+
+            // 🔥 SI NO HAY DUPLICADOS, PROCEDER CON LA SUBIDA
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String cleanCapsName = caps.getNombre()
+                    .replaceAll("[^a-zA-Z0-9\\s]", "")
+                    .replaceAll("\\s+", "_")
+                    .toLowerCase()
+                    .trim();
+
+            String uniqueFilename = "sello_" + cleanCapsName + "_" + timestamp + extension;
+
+            // 🔥 GUARDAR ARCHIVO
+            Path filePath = capsFolder.resolve(uniqueFilename);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("💾 Archivo guardado en: " + filePath.toString());
+
+            // 🔥 ACTUALIZAR URL EN BD
+            String imageUrl = "/uploads/caps/" + capsFolderName + "/" + uniqueFilename;
+            caps.setUrl(imageUrl);
+            capsService.save(caps);
+
+            System.out.println("✅ URL guardada en BD: " + imageUrl);
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "Imagen subida exitosamente";
+                public final String url = imageUrl;
+                public final String filename = uniqueFilename;
+                public final String folderName = capsFolderName;
+                public final String fullPath = filePath.toString();
+                public final boolean isDuplicate = false;
+                public final String hash = fileHash;
+            }, HttpStatus.OK);
+
+        } catch (IOException e) {
+            System.err.println("❌ Error de IO: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al guardar el archivo: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            System.err.println("❌ Error general: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error inesperado: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/checkDuplicate/{id}")
+    public ResponseEntity<?> checkImageDuplicate(@PathVariable("id") Long id,
+            @RequestParam("image") MultipartFile file) {
+
+        // Validar que el caps existe
+        if (!capsService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("Caps no encontrado"), HttpStatus.NOT_FOUND);
+        }
+
+        // Validar que se envió un archivo
+        if (file.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se seleccionó ningún archivo"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            // 🔥 OBTENER EL CAPS PARA USAR SU NOMBRE
+            Caps caps = capsService.findById(id).get();
+
+            // 🔥 CREAR NOMBRE DE CARPETA SEGURO
+            String capsFolderName = caps.getNombre()
+                    .replaceAll("[^a-zA-Z0-9\\s]", "")
+                    .replaceAll("\\s+", "_")
+                    .toLowerCase()
+                    .trim()
+                    + "_" + id;
+
+            Path capsDir = Paths.get(uploadDir, "caps", capsFolderName);
+
+            // 🔥 SOLO VERIFICAR, NO CREAR DIRECTORIOS NI SUBIR
+            if (!Files.exists(capsDir)) {
+                // Si no existe la carpeta, no hay duplicados
+                return new ResponseEntity<>(new Object() {
+                    public final boolean isDuplicate = false;
+                    public final String message = "No hay duplicados";
+                }, HttpStatus.OK);
+            }
+
+            // 🔥 CALCULAR HASH MD5 DEL ARCHIVO PARA DETECTAR DUPLICADOS
+            String fileHash = capsService.calculateMD5(file.getInputStream());
+            System.out.println("🔍 Verificando hash del archivo: " + fileHash);
+
+            // 🔥 VERIFICAR SI YA EXISTE UN ARCHIVO CON EL MISMO HASH
+            try (var stream = Files.list(capsDir)) {
+                Optional<Path> duplicateFile = stream
+                        .filter(Files::isRegularFile)
+                        .filter(path -> {
+                            try {
+                                String existingHash = capsService.calculateMD5(Files.newInputStream(path));
+                                return existingHash.equals(fileHash);
+                            } catch (Exception e) {
+                                return false;
+                            }
+                        })
+                        .findFirst();
+
+                if (duplicateFile.isPresent()) {
+                    String existingFileName = duplicateFile.get().getFileName().toString();
+                    String existingUrl = "/uploads/caps/" + capsFolderName + "/" + existingFileName;
+
+                    System.out.println("⚠️ Duplicado detectado en verificación: " + existingFileName);
+
+                    return new ResponseEntity<>(new Object() {
+                        public final String mensaje = "Esta imagen ya existe en el caps";
+                        public final String url = existingUrl;
+                        public final String filename = existingFileName;
+                        public final String folderName = capsFolderName;
+                        public final boolean isDuplicate = true;
+                        public final String existingFile = existingFileName;
+                    }, HttpStatus.OK);
+                }
+            }
+
+            // 🔥 NO HAY DUPLICADOS
+            return new ResponseEntity<>(new Object() {
+                public final boolean isDuplicate = false;
+                public final String message = "Imagen nueva, se puede subir";
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al verificar duplicado: " + e.getMessage());
+            return new ResponseEntity<>(new Mensaje("Error al verificar duplicado: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/deleteImage/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable("id") Long id) {
+
+        if (!capsService.activo(id)) {
+            return new ResponseEntity<>(new Mensaje("Caps no encontrado"), HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            Caps caps = capsService.findById(id).get();
+
+            if (caps.getUrl() != null && !caps.getUrl().isEmpty()) {
+                String urlPath = caps.getUrl();
+                if (urlPath.startsWith("/uploads/caps/")) {
+                    // 🔥 EXTRAER EL PATH DESDE uploads/
+                    String filePath = urlPath.substring("/uploads/".length());
+                    Path file = Paths.get(uploadDir, filePath);
+
+                    if (Files.exists(file)) {
+                        Files.deleteIfExists(file);
+                        System.out.println("🗑️ Archivo eliminado: " + file.toString());
+                    }
+
+                    // 🔥 INTENTAR ELIMINAR LA CARPETA SI ESTÁ VACÍA
+                    Path capsDir = file.getParent();
+                    if (capsDir != null && Files.exists(capsDir)) {
+                        try (var stream = Files.list(capsDir)) {
+                            if (stream.findAny().isEmpty()) {
+                                Files.deleteIfExists(capsDir);
+                                System.out.println("📁 Carpeta eliminada: " + capsDir.toString());
+                            }
+                        } catch (Exception e) {
+                            System.err.println("No se pudo eliminar la carpeta: " + e.getMessage());
+                        }
+                    }
+                }
+
+                // 🔥 LIMPIAR URL EN LA BASE DE DATOS
+                caps.setUrl(null);
+                capsService.save(caps);
+
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "Imagen eliminada exitosamente";
+                }, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new Mensaje("El caps no tiene imagen"), HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al eliminar imagen: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al eliminar la imagen: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/listImages/{id}")
+    public ResponseEntity<?> listImages(@PathVariable("id") Long id) {
+        try {
+            if (!capsService.activo(id)) {
+                return new ResponseEntity<>(new Mensaje("Caps no encontrado"), HttpStatus.NOT_FOUND);
+            }
+
+            Caps caps = capsService.findById(id).get();
+
+            String capsFolderName = caps.getNombre()
+                    .replaceAll("[^a-zA-Z0-9\\s]", "")
+                    .replaceAll("\\s+", "_")
+                    .toLowerCase()
+                    .trim()
+                    + "_" + id;
+
+            Path capsDir = Paths.get(uploadDir, "caps", capsFolderName);
+
+            if (!Files.exists(capsDir)) {
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "No hay imágenes para este caps";
+                    public final String[] imagenes = new String[0];
+                }, HttpStatus.OK);
+            }
+
+            // 🔥 LISTAR TODAS LAS IMÁGENES EN LA CARPETA
+            List<String> imageFiles = new ArrayList<>();
+            try (var stream = Files.list(capsDir)) {
+                stream.filter(Files::isRegularFile)
+                        .filter(path -> {
+                            String fileName = path.getFileName().toString().toLowerCase();
+                            return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") ||
+                                    fileName.endsWith(".png") || fileName.endsWith(".gif") ||
+                                    fileName.endsWith(".bmp");
+                        })
+                        .sorted((a, b) -> {
+                            // Ordenar por fecha de modificación (más reciente primero)
+                            try {
+                                return Files.getLastModifiedTime(b).compareTo(Files.getLastModifiedTime(a));
+                            } catch (IOException e) {
+                                return 0;
+                            }
+                        })
+                        .forEach(path -> {
+                            String imageUrl = "/uploads/caps/" + capsFolderName + "/"
+                                    + path.getFileName().toString();
+                            imageFiles.add(imageUrl);
+                        });
+            }
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "Imágenes encontradas: " + imageFiles.size();
+                public final String capsName = caps.getNombre();
+                public final String[] imagenes = imageFiles.toArray(new String[0]);
+                public final String currentImage = caps.getUrl();
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al listar imágenes: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

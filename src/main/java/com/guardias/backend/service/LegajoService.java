@@ -1,5 +1,7 @@
 package com.guardias.backend.service;
 
+import java.io.InputStream;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -574,6 +576,10 @@ public class LegajoService {
 
         legajo.setActivo(legajoDto.getActivo());
 
+        if (legajo.getUrl() == null || (legajoDto.getUrl() != null
+                && !Objects.equals(legajo.getUrl(), legajoDto.getUrl())))
+            legajo.setUrl(legajoDto.getUrl());
+
         return legajo;
     }
 
@@ -707,4 +713,23 @@ public class LegajoService {
                 legajo.getRevista().getCategoria().getNombre(),
                 legajo.getRevista().getTipoRevista().getNombre())).toList();
     }
+
+    public String calculateMD5(InputStream inputStream) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            md.update(buffer, 0, bytesRead);
+        }
+
+        byte[] hashBytes = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashBytes) {
+            sb.append(String.format("%02x", b));
+        }
+
+        return sb.toString();
+    }
+
 }

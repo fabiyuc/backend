@@ -1,5 +1,7 @@
 package com.guardias.backend.service;
 
+import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -124,6 +126,24 @@ public class HospitalService {
                     hospital.get().getNivelComplejidad()));
         }
         return Optional.empty();
+    }
+
+    public String calculateMD5(InputStream inputStream) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            md.update(buffer, 0, bytesRead);
+        }
+
+        byte[] hashBytes = md.digest();
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashBytes) {
+            sb.append(String.format("%02x", b));
+        }
+
+        return sb.toString();
     }
 
 }
