@@ -1,8 +1,10 @@
 package com.guardias.backend.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,6 +63,14 @@ public class ObservacionDdjjService {
         if (observacionDdjjDto.getIdDdjj() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el id de la ddjj"),
                     HttpStatus.BAD_REQUEST);
+        
+        if (observacionDdjjDto.getFechaCreacion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la fecha de creacion"),
+                    HttpStatus.BAD_REQUEST);
+
+        if (observacionDdjjDto.getHoraCreacion() == null)
+            return new ResponseEntity<Mensaje>(new Mensaje("indicar la hora de creacion"),
+                    HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
 
@@ -82,6 +92,11 @@ public class ObservacionDdjjService {
                 || !Objects.equals(observacionDdjj.getDdjj().getId(), observacionDdjjDto.getIdDdjj()))
             observacionDdjj.setDdjj(ddjjService.findById(observacionDdjjDto.getIdDdjj()).get());
 
+        if (observacionDdjj.getFechaCreacion() != observacionDdjjDto.getFechaCreacion())
+            observacionDdjj.setFechaCreacion(observacionDdjjDto.getFechaCreacion());
+        
+        if (observacionDdjj.getHoraCreacion() != observacionDdjjDto.getHoraCreacion())
+            observacionDdjj.setHoraCreacion(observacionDdjjDto.getHoraCreacion());
         observacionDdjj.setActivo(true);
 
         return observacionDdjj;
@@ -100,7 +115,7 @@ public class ObservacionDdjjService {
     }
 
     public ObservacionDdjjUltimoDto getUltimaObservacionByDdjjAndTipoDph(Long idDdjj, Boolean tipoDph) {
-        
+
         List<ObservacionDdjj> observaciones = observacionDdjjRepository
                 .findUltimaObservacion(idDdjj, tipoDph);
 
@@ -140,9 +155,27 @@ public class ObservacionDdjjService {
                 observacion.getId(),
                 observacion.getMotivo(),
                 nombre,
-                apellido);
+                apellido,
+                observacion.getFechaCreacion(),
+                observacion.getHoraCreacion());
 
         return dto;
     }
 
+    public List<ObservacionDdjjUltimoDto> getAllObservacionesActivasByDdjjAndTipoDph(Long idDdjj, Boolean tipoDph) {
+
+        List<ObservacionDdjj> observaciones = observacionDdjjRepository
+                .findAllObservacionesActivas(idDdjj, tipoDph);
+
+        System.out.println("Cantidad total de observaciones activas encontradas: " + observaciones.size());
+
+        if (observaciones.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Convertimos todas las observaciones a DTO
+        return observaciones.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 }

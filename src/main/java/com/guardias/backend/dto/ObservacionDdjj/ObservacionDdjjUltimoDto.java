@@ -1,5 +1,8 @@
 package com.guardias.backend.dto.ObservacionDdjj;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +16,7 @@ public class ObservacionDdjjUltimoDto {
     private String motivo;
     private String nombreUsuario;
     private String apellidoUsuario;
+    private LocalDate fechaCreacion;
+    private LocalTime horaCreacion;
 
 }

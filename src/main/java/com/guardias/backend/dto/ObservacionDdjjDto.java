@@ -1,5 +1,8 @@
 package com.guardias.backend.dto;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,5 +27,11 @@ public class ObservacionDdjjDto {
 
     @NotNull
     private Long idDdjj;
+
+    @NotBlank
+    private LocalDate fechaCreacion;
+
+    @NotBlank
+    private LocalTime horaCreacion;
 
 }
