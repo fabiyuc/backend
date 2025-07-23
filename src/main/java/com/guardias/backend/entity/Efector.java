@@ -84,7 +84,7 @@ public abstract class Efector {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosActividades", "efectores",
-            "distribucionesGuardias", "distribucionesConsultorios" })
+            "distribucionesGuardias", "distribucionesConsultorios", "cronogramasTentativos" })
     private List<Servicio> servicios = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "efectores", cascade = CascadeType.ALL)
