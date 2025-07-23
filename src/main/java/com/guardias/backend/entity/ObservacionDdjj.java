@@ -44,7 +44,7 @@ public class ObservacionDdjj {
     @JoinColumn(name = "usuario")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
             "password", "registrosIngresos", "registrosEgresos", "person",
-            "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" , "observacionesDdjj"})
+            "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" , "observacionesDdjj", "roles"})
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

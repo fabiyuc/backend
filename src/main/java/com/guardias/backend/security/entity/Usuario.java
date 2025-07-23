@@ -66,13 +66,13 @@ public class Usuario {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "director", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH" })
+            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH", "valorGmi" , "registrosMensuales", "observacionesDdjj"})
     private List<Ddjj> ddjjsDirector = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "directorDPH", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "activo", "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia", "asistencial",
-            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH",  })
+            "servicio", "efector", "registroMensual", "registrosPendientes", "director", "directorDPH","valorGmi" , "registrosMensuales", "observacionesDdjj" })
     private List<Ddjj> ddjjsDirectorDPH = new ArrayList<>();
     
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario", cascade = CascadeType.ALL)

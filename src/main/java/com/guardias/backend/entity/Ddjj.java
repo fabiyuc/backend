@@ -70,14 +70,14 @@ public class Ddjj {
     @JoinColumn(name = "director")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
             "password", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial",
-            "ddjjsDirector", "ddjjsDirectorDPH" })
+            "ddjjsDirector", "ddjjsDirectorDPH" , "roles", "observacionesDdjj"})
     Usuario director;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "directorDPH")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
             "password", "registrosIngresos", "registrosEgresos",
-            "person", "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" })
+            "person", "asistencial", "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH" , "roles", "observacionesDdjj"})
     Usuario directorDPH;
 
     private EstadoDdjjEnum estadoDdjjDirector;
