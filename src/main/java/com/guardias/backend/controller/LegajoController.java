@@ -75,7 +75,7 @@ public class LegajoController {
             Legajo legajo = legajoService.createUpdate(new Legajo(), legajoDto);
             legajoService.save(legajo);
 
-            return new ResponseEntity(new Mensaje("Legajo creado"), HttpStatus.OK);
+            return new ResponseEntity<>(legajo, HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }

@@ -47,7 +47,6 @@ public abstract class Efector {
 
     private String observacion;
 
-    @Column(columnDefinition = "VARCHAR(100)")
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)

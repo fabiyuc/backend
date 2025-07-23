@@ -153,7 +153,7 @@ public class CapsController {
             Caps caps = createUpdate(new Caps(), capsDto);
             caps.setActivo(true);
             capsService.save(caps);
-            return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
+            return new ResponseEntity<>(caps, HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }

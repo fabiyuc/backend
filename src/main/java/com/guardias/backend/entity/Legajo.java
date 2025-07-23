@@ -40,8 +40,7 @@ public class Legajo {
   @Column(columnDefinition = "BIT DEFAULT 1")
   private boolean activo;
 
-  @Column(columnDefinition = "VARCHAR(100)")
-    private String url;
+  private String url;
 
   @Column(columnDefinition = "VARCHAR(10)")
   private String matriculaNacional;
