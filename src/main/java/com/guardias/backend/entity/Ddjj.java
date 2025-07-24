@@ -96,6 +96,11 @@ public class Ddjj {
             "efector", "ddjj", "sumaHoras", "ddjj" })
     List<ObservacionDdjj> observacionesDdjj = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+        @JoinColumn(name = "id_tipo_guardia")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","asistenciales", "legajos", "activo", "registrosActividades", "cronogramasTentativos", "descripcion", "ddjjs" })
+        private TipoGuardia tipoGuardia;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
