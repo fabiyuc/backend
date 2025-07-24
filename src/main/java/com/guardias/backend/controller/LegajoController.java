@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +56,7 @@ public class LegajoController {
     @GetMapping("/listAll")
     public ResponseEntity<List<Legajo>> listAll() {
         List<Legajo> list = legajoService.findAll();
-        return new ResponseEntity(list, HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
@@ -84,14 +84,14 @@ public class LegajoController {
     @PutMapping(("/update/{id}"))
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody LegajoDto legajoDto) {
         if (!legajoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
 
         ResponseEntity<?> respuestaValidaciones = legajoService.validations(legajoDto, id);
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Legajo legajo = legajoService.createUpdate(legajoService.findById(id).get(), legajoDto);
             legajoService.save(legajo);
 
-            return new ResponseEntity(new Mensaje("Legajo modificado"), HttpStatus.OK);
+            return new ResponseEntity<>(new Mensaje("Legajo modificado"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -122,9 +122,9 @@ public class LegajoController {
     public ResponseEntity<?> fisicDelete(@PathVariable("id") Long id) {
 
         if (!legajoService.existsById(id))
-            return new ResponseEntity(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new Mensaje("no existe el legajo"), HttpStatus.NOT_FOUND);
         legajoService.deleteById(id);
-        return new ResponseEntity(new Mensaje("legajo eliminado FISICAMENTE"), HttpStatus.OK);
+        return new ResponseEntity<>(new Mensaje("legajo eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
     @GetMapping("/tieneTipoGuardiaPermitido/{idPersona}")
@@ -165,11 +165,82 @@ public class LegajoController {
         }
 
         try {
-            // 🔥 OBTENER EL LEGAJO PARA USAR INFORMACIÓN DE LA PERSONA
             Legajo legajo = legajoService.findById(id).get();
-            String personaName = legajo.getPersona().getNombre() + "_" + legajo.getPersona().getApellido();
+            String apellido = legajo.getPersona().getApellido();
+            String nombre = legajo.getPersona().getNombre();
+            int dni = legajo.getPersona().getDni();
 
-            // 🔥 CREAR NOMBRE DE CARPETA SEGURO
+            String mainFolderName = (apellido + "_" + nombre + "_" + dni)
+                    .replaceAll("[^a-zA-Z0-9\\s]", "")
+                    .replaceAll("\\s+", "_")
+                    .toLowerCase()
+                    .trim();
+
+            // 🔥 CALCULAR HASH MD5 DEL ARCHIVO PARA VERIFICACIÓN GLOBAL
+            String fileHash = legajoService.calculateMD5(file.getInputStream());
+            System.out.println("🔍 Hash del archivo a subir: " + fileHash);
+
+            // 🔥 1. VERIFICAR SI EL LEGAJO YA TIENE ESTA IMAGEN (MISMA URL)
+            if (legajo.getUrl() != null && !legajo.getUrl().isEmpty()) {
+                String existingImagePath = uploadDir + legajo.getUrl().replace("/uploads/", "");
+                Path existingFile = Paths.get(existingImagePath);
+
+                if (Files.exists(existingFile)) {
+                    try {
+                        String existingHash = legajoService.calculateMD5(Files.newInputStream(existingFile));
+                        if (existingHash.equals(fileHash)) {
+                            System.out.println("✅ La imagen es idéntica a la actual del legajo");
+
+                            final String currentFilename = existingFile.getFileName().toString();
+                            final String currentFolderName = existingFile.getParent().getFileName().toString();
+                            final String currentUrl = legajo.getUrl();
+
+                            return new ResponseEntity<>(new Object() {
+                                public final String mensaje = "La imagen ya está asociada a este legajo";
+                                public final String url = currentUrl;
+                                public final String filename = currentFilename;
+                                public final String folderName = currentFolderName;
+                                public final boolean isDuplicate = true;
+                                public final boolean isSameImage = true;
+                                public final String existingFile = currentFilename;
+                            }, HttpStatus.OK);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("⚠️ Error al verificar imagen actual: " + e.getMessage());
+                    }
+                }
+            }
+
+            // 🔥 2. BUSCAR IMAGEN EXISTENTE EN TODAS LAS CARPETAS DE LA PERSONA
+            Path mainDir = Paths.get(uploadDir, "legajos", mainFolderName);
+            String existingImageUrl = findExistingImageByHash(mainDir, fileHash, mainFolderName);
+
+            if (existingImageUrl != null) {
+                System.out.println("🔍 Imagen encontrada en carpeta existente: " + existingImageUrl);
+
+                // 🔥 ACTUALIZAR URL EN BD SIN DUPLICAR ARCHIVO
+                legajo.setUrl(existingImageUrl);
+                legajoService.save(legajo);
+
+                System.out.println("✅ URL reutilizada y actualizada en BD: " + existingImageUrl);
+
+                final String reusedFilename = Paths.get(existingImageUrl).getFileName().toString();
+                final String reusedUrl = existingImageUrl;
+                final String reusedHash = fileHash;
+
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "Imagen reutilizada de carpeta existente";
+                    public final String url = reusedUrl;
+                    public final String filename = reusedFilename;
+                    public final String folderName = "reutilizada";
+                    public final boolean isDuplicate = true;
+                    public final boolean isReused = true;
+                    public final String hash = reusedHash;
+                }, HttpStatus.OK);
+            }
+
+            // 🔥 3. SI NO EXISTE, CREAR NUEVA CARPETA Y SUBIR IMAGEN
+            String personaName = nombre + "_" + apellido;
             String legajoFolderName = personaName
                     .replaceAll("[^a-zA-Z0-9\\s]", "")
                     .replaceAll("\\s+", "_")
@@ -177,63 +248,27 @@ public class LegajoController {
                     .trim()
                     + "_legajo_" + id;
 
-            // 🔥 CREAR DIRECTORIOS
             Path legajosDir = Paths.get(uploadDir, "legajos");
-            Path legajoDir = legajosDir.resolve(legajoFolderName);
+            Path legajoDir = mainDir.resolve(legajoFolderName);
 
+            // Crear directorios necesarios
             if (!Files.exists(legajosDir)) {
                 Files.createDirectories(legajosDir);
             }
-
+            if (!Files.exists(mainDir)) {
+                Files.createDirectories(mainDir);
+            }
             if (!Files.exists(legajoDir)) {
                 Files.createDirectories(legajoDir);
             }
 
-            // 🔥 CALCULAR HASH MD5 DEL ARCHIVO PARA DETECTAR DUPLICADOS
-            String fileHash = legajoService.calculateMD5(file.getInputStream());
-            System.out.println("🔍 Hash del archivo: " + fileHash);
-
-            // 🔥 VERIFICAR SI YA EXISTE UN ARCHIVO CON EL MISMO HASH
-            if (Files.exists(legajoDir)) {
-                try (var stream = Files.list(legajoDir)) {
-                    Optional<Path> duplicateFile = stream
-                            .filter(Files::isRegularFile)
-                            .filter(path -> {
-                                try {
-                                    String existingHash = legajoService.calculateMD5(Files.newInputStream(path));
-                                    return existingHash.equals(fileHash);
-                                } catch (Exception e) {
-                                    return false;
-                                }
-                            })
-                            .findFirst();
-
-                    if (duplicateFile.isPresent()) {
-                        String existingFileName = duplicateFile.get().getFileName().toString();
-                        String existingUrl = "/uploads/legajos/" + legajoFolderName + "/" + existingFileName;
-
-                        System.out.println("⚠️ Archivo duplicado detectado: " + existingFileName);
-
-                        return new ResponseEntity<>(new Object() {
-                            public final String mensaje = "Esta imagen ya existe en el legajo";
-                            public final String url = existingUrl;
-                            public final String filename = existingFileName;
-                            public final String folderName = legajoFolderName;
-                            public final boolean isDuplicate = true;
-                            public final String existingFile = existingFileName;
-                        }, HttpStatus.OK);
-                    }
-                }
-            }
-
-            // 🔥 OBTENER INFORMACIÓN DEL ARCHIVO ORIGINAL
+            // 🔥 CREAR NOMBRE ÚNICO PARA EL ARCHIVO
             String originalFilename = file.getOriginalFilename();
-            String extension = ".png"; // extensión por defecto
+            String extension = ".png";
             if (originalFilename != null && originalFilename.contains(".")) {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
 
-            // 🔥 SI NO HAY DUPLICADOS, PROCEDER CON LA SUBIDA
             String timestamp = String.valueOf(System.currentTimeMillis());
             String cleanPersonaName = personaName
                     .replaceAll("[^a-zA-Z0-9\\s]", "")
@@ -243,27 +278,34 @@ public class LegajoController {
 
             String uniqueFilename = "sello_" + cleanPersonaName + "_" + timestamp + extension;
 
-            // 🔥 GUARDAR ARCHIVO
+            // 🔥 GUARDAR ARCHIVO NUEVO
             Path filePath = legajoDir.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            System.out.println("💾 Archivo guardado en: " + filePath.toString());
+            System.out.println("💾 Nuevo archivo guardado en: " + filePath.toString());
 
             // 🔥 ACTUALIZAR URL EN BD
-            String imageUrl = "/uploads/legajos/" + legajoFolderName + "/" + uniqueFilename;
+            String imageUrl = "/uploads/legajos/" + mainFolderName + "/" + legajoFolderName + "/" + uniqueFilename;
             legajo.setUrl(imageUrl);
             legajoService.save(legajo);
 
-            System.out.println("✅ URL guardada en BD: " + imageUrl);
+            System.out.println("✅ Nueva URL guardada en BD: " + imageUrl);
+
+            final String finalImageUrl = imageUrl;
+            final String finalUniqueFilename = uniqueFilename;
+            final String finalLegajoFolderName = legajoFolderName;
+            final String finalFilePath = filePath.toString();
+            final String finalFileHash = fileHash;
 
             return new ResponseEntity<>(new Object() {
                 public final String mensaje = "Imagen subida exitosamente";
-                public final String url = imageUrl;
-                public final String filename = uniqueFilename;
-                public final String folderName = legajoFolderName;
-                public final String fullPath = filePath.toString();
+                public final String url = finalImageUrl;
+                public final String filename = finalUniqueFilename;
+                public final String folderName = finalLegajoFolderName;
+                public final String fullPath = finalFilePath;
                 public final boolean isDuplicate = false;
-                public final String hash = fileHash;
+                public final boolean isNew = true;
+                public final String hash = finalFileHash;
             }, HttpStatus.OK);
 
         } catch (IOException e) {
@@ -292,57 +334,72 @@ public class LegajoController {
         }
 
         try {
-
             Legajo legajo = legajoService.findById(id).get();
+            String apellido = legajo.getPersona().getApellido();
+            String nombre = legajo.getPersona().getNombre();
+            int dni = legajo.getPersona().getDni();
 
-            String personFolderName = legajo.getPersona().getNombre()
+            String mainFolderName = (apellido + "_" + nombre + "_" + dni)
                     .replaceAll("[^a-zA-Z0-9\\s]", "")
                     .replaceAll("\\s+", "_")
                     .toLowerCase()
-                    .trim()
-                    + "_" + id;
+                    .trim();
 
-            Path legajoDir = Paths.get(uploadDir, "legajos", personFolderName);
-
-            if (!Files.exists(legajoDir)) {
-                return new ResponseEntity<>(new Object() {
-                    public final boolean isDuplicate = false;
-                    public final String message = "No hay duplicados";
-                }, HttpStatus.OK);
-            }
-
+            // 🔥 CALCULAR HASH DEL ARCHIVO
             String fileHash = legajoService.calculateMD5(file.getInputStream());
-            System.out.println("🔍 Hash del archivo: " + fileHash);
-            try (var stream = Files.list(legajoDir)) {
-                Optional<Path> duplicateFile = stream
-                        .filter(Files::isRegularFile)
-                        .filter(path -> {
-                            try {
-                                String existingHash = legajoService.calculateMD5(Files.newInputStream(path));
-                                return existingHash.equals(fileHash);
-                            } catch (Exception e) {
-                                return false;
-                            }
-                        })
-                        .findFirst();
+            System.out.println("🔍 Hash del archivo para verificación: " + fileHash);
 
-                if (duplicateFile.isPresent()) {
-                    String existingFileName = duplicateFile.get().getFileName().toString();
-                    String existingUrl = "/uploads/legajos/" + personFolderName + "/" + existingFileName;
+            // 🔥 1. VERIFICAR SI ES LA IMAGEN ACTUAL DEL LEGAJO
+            if (legajo.getUrl() != null && !legajo.getUrl().isEmpty()) {
+                String existingImagePath = uploadDir + legajo.getUrl().replace("/uploads/", "");
+                Path existingFile = Paths.get(existingImagePath);
 
-                    System.out.println("⚠️ Archivo duplicado detectado: " + existingFileName);
+                if (Files.exists(existingFile)) {
+                    try {
+                        String existingHash = legajoService.calculateMD5(Files.newInputStream(existingFile));
+                        if (existingHash.equals(fileHash)) {
+                            final String currentFilename = existingFile.getFileName().toString();
+                            final String currentFolderName = existingFile.getParent().getFileName().toString();
+                            final String currentUrl = legajo.getUrl();
 
-                    return new ResponseEntity<>(new Object() {
-                        public final String mensaje = "Esta imagen ya existe en el hospital";
-                        public final String url = existingUrl;
-                        public final String filename = existingFileName;
-                        public final String folderName = personFolderName;
-                        public final boolean isDuplicate = true;
-                        public final String existingFile = existingFileName;
-                    }, HttpStatus.OK);
+                            return new ResponseEntity<>(new Object() {
+                                public final String mensaje = "Esta imagen ya está asociada a este legajo";
+                                public final String url = currentUrl;
+                                public final String filename = currentFilename;
+                                public final String folderName = currentFolderName;
+                                public final boolean isDuplicate = true;
+                                public final boolean isSameImage = true;
+                                public final String existingFile = currentFilename;
+                            }, HttpStatus.OK);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("⚠️ Error al verificar imagen actual: " + e.getMessage());
+                    }
                 }
             }
 
+            // 🔥 2. BUSCAR EN TODAS LAS CARPETAS DE LA PERSONA
+            Path mainDir = Paths.get(uploadDir, "legajos", mainFolderName);
+            String existingImageUrl = findExistingImageByHash(mainDir, fileHash, mainFolderName);
+
+            if (existingImageUrl != null) {
+                Path existingPath = Paths.get(uploadDir + existingImageUrl.replace("/uploads/", ""));
+                final String duplicateFolderName = existingPath.getParent().getFileName().toString();
+                final String duplicateFileName = existingPath.getFileName().toString();
+                final String duplicateUrl = existingImageUrl;
+
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "Esta imagen ya existe en otra carpeta de legajo";
+                    public final String url = duplicateUrl;
+                    public final String filename = duplicateFileName;
+                    public final String folderName = duplicateFolderName;
+                    public final boolean isDuplicate = true;
+                    public final boolean isInOtherFolder = true;
+                    public final String existingFile = duplicateFileName;
+                }, HttpStatus.OK);
+            }
+
+            // 🔥 3. NO HAY DUPLICADOS
             return new ResponseEntity<>(new Object() {
                 public final boolean isDuplicate = false;
                 public final String message = "Imagen nueva, se puede subir";
@@ -419,7 +476,18 @@ public class LegajoController {
 
             Legajo legajo = legajoService.findById(id).get();
             String personaName = legajo.getPersona().getNombre() + "_" + legajo.getPersona().getApellido();
+            String apellido = legajo.getPersona().getApellido();
+            String nombre = legajo.getPersona().getNombre();
+            int dni = legajo.getPersona().getDni();
 
+            // 🔥 CREAR NOMBRE DE CARPETA PRINCIPAL (apellido_nombre_dni)
+            final String mainFolderName = (apellido + "_" + nombre + "_" + dni)
+                    .replaceAll("[^a-zA-Z0-9\\s]", "")
+                    .replaceAll("\\s+", "_")
+                    .toLowerCase()
+                    .trim();
+
+            // 🔥 CREAR NOMBRE DE SUBCARPETA (apellido_nombre_legajo_id)
             String legajoFolderName = personaName
                     .replaceAll("[^a-zA-Z0-9\\s]", "")
                     .replaceAll("\\s+", "_")
@@ -427,7 +495,7 @@ public class LegajoController {
                     .trim()
                     + "_legajo_" + id;
 
-            Path legajoDir = Paths.get(uploadDir, "legajos", legajoFolderName);
+            Path legajoDir = Paths.get(uploadDir, "legajos", mainFolderName, legajoFolderName);
 
             if (!Files.exists(legajoDir)) {
                 return new ResponseEntity<>(new Object() {
@@ -455,7 +523,7 @@ public class LegajoController {
                             }
                         })
                         .forEach(path -> {
-                            String imageUrl = "/uploads/legajos/" + legajoFolderName + "/"
+                            String imageUrl = "/uploads/legajos/" + mainFolderName + "/" + legajoFolderName + "/"
                                     + path.getFileName().toString();
                             imageFiles.add(imageUrl);
                         });
@@ -472,6 +540,56 @@ public class LegajoController {
         } catch (Exception e) {
             return new ResponseEntity<>(new Mensaje("Error al listar imágenes: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 🔥 MÉTODO AUXILIAR PARA BUSCAR IMAGEN EXISTENTE POR HASH
+    private String findExistingImageByHash(Path mainDir, String targetHash, String mainFolderName) {
+        if (!Files.exists(mainDir)) {
+            return null;
+        }
+
+        try (var legajoDirStream = Files.list(mainDir)) {
+            return legajoDirStream
+                    .filter(Files::isDirectory)
+                    .filter(dir -> dir.getFileName().toString().contains("_legajo_"))
+                    .map(legajoDir -> {
+                        try (var fileStream = Files.list(legajoDir)) {
+                            return fileStream
+                                    .filter(Files::isRegularFile)
+                                    .filter(file -> {
+                                        String fileName = file.getFileName().toString().toLowerCase();
+                                        return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") ||
+                                                fileName.endsWith(".png") || fileName.endsWith(".gif") ||
+                                                fileName.endsWith(".bmp");
+                                    })
+                                    .filter(file -> {
+                                        try {
+                                            String existingHash = legajoService
+                                                    .calculateMD5(Files.newInputStream(file));
+                                            return existingHash.equals(targetHash);
+                                        } catch (Exception e) {
+                                            return false;
+                                        }
+                                    })
+                                    .map(file -> {
+                                        String legajoFolderName = legajoDir.getFileName().toString();
+                                        String fileName = file.getFileName().toString();
+                                        return "/uploads/legajos/" + mainFolderName + "/" + legajoFolderName + "/"
+                                                + fileName;
+                                    })
+                                    .findFirst()
+                                    .orElse(null);
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(null);
+        } catch (IOException e) {
+            System.err.println("❌ Error al buscar imagen existente: " + e.getMessage());
+            return null;
         }
     }
 
