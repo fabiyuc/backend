@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,12 @@ import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.security.entity.Usuario;
+import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.DdjjService;
+import com.guardias.backend.service.LegajoService;
 import com.guardias.backend.service.ValorGmiService;
 
 import jakarta.validation.ValidationException;
@@ -34,6 +39,12 @@ public class DdjjController {
 
     @Autowired
     ValorGmiService valorGmiService;
+
+    @Autowired
+    UsuarioService usuarioService;
+
+    @Autowired
+    LegajoService legajoService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Ddjj>> list() {
@@ -326,6 +337,85 @@ public class DdjjController {
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/getAutoridadImageUrl/{idUsuario}")
+    public ResponseEntity<?> getAutoridadImageUrl(@PathVariable("idUsuario") Long idUsuario) {
+        try {
+            // Verificar que el usuario existe y está activo
+            Optional<Usuario> usuarioOpt = usuarioService.findById(idUsuario);
+            if (usuarioOpt.isEmpty() || !usuarioOpt.get().getActivo()) {
+                return new ResponseEntity<>(new Mensaje("Usuario no encontrado o inactivo"), HttpStatus.NOT_FOUND);
+            }
+
+            Usuario usuario = usuarioOpt.get();
+
+            // Verificar que el usuario tiene una persona asociada
+            if (usuario.getPerson() == null) {
+                return new ResponseEntity<>(new Mensaje("El usuario no tiene una persona asociada"),
+                        HttpStatus.NOT_FOUND);
+            }
+
+            Long idPersona = usuario.getPerson().getId();
+
+            // Buscar el legajo activo de autoridad para esa persona
+            Optional<Legajo> legajoAutoridadOpt = legajoService.findLegajoAutoridadByPersonaId(idPersona);
+
+            if (legajoAutoridadOpt.isEmpty()) {
+                return new ResponseEntity<>(new Mensaje("No se encontró legajo de autoridad activo para esta persona"),
+                        HttpStatus.NOT_FOUND);
+            }
+
+            Legajo legajoAutoridad = legajoAutoridadOpt.get();
+
+            // Verificar si tiene URL de imagen
+            if (legajoAutoridad.getUrl() == null || legajoAutoridad.getUrl().isEmpty()) {
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "La autoridad no tiene imagen asociada";
+                    public final String url = null;
+                    public final boolean hasImage = false;
+                    public final Long legajoId = legajoAutoridad.getId();
+                    public final String personaName = legajoAutoridad.getPersona().getNombre() + " "
+                            + legajoAutoridad.getPersona().getApellido();
+                    public final String cargo = legajoAutoridad.getCargo() != null
+                            ? legajoAutoridad.getCargo().getDescripcion()
+                            : null;
+                    public final Long usuarioId = idUsuario;
+                    public final String nombreUsuario = usuario.getNombreUsuario();
+                }, HttpStatus.OK);
+            }
+
+            // Retornar la información completa
+            final String imageUrl = legajoAutoridad.getUrl();
+            final Long legajoId = legajoAutoridad.getId();
+            final String personaName = legajoAutoridad.getPersona().getNombre() + " "
+                    + legajoAutoridad.getPersona().getApellido();
+            final String cargoDesc = legajoAutoridad.getCargo() != null ? legajoAutoridad.getCargo().getDescripcion()
+                    : null;
+            final Boolean esRegionalValue = legajoAutoridad.getEsRegional();
+            final String regionName = legajoAutoridad.getRegion() != null ? legajoAutoridad.getRegion().getNombre()
+                    : null;
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "URL de imagen de autoridad encontrada";
+                public final String url = imageUrl;
+                public final boolean hasImage = true;
+                public final Long legajoId = legajoAutoridad.getId();
+                public final String personaName = legajoAutoridad.getPersona().getNombre() + " "
+                        + legajoAutoridad.getPersona().getApellido();
+                public final String cargo = cargoDesc;
+                public final Boolean esRegional = esRegionalValue;
+                public final String region = regionName;
+                public final Long usuarioId = idUsuario;
+                public final String nombreUsuario = usuario.getNombreUsuario();
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener URL de imagen de autoridad: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener la URL de imagen: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

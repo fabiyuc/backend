@@ -31,6 +31,7 @@ import com.guardias.backend.dto.legajo.LegajoActualDto;
 import com.guardias.backend.dto.legajo.LegajoBajaDto;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.service.LegajoService;
+import com.guardias.backend.service.PersonService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -46,6 +47,9 @@ public class LegajoController {
 
     @Autowired
     LegajoService legajoService;
+
+    @Autowired
+    PersonService personService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Legajo>> list() {

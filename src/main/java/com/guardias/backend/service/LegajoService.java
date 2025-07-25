@@ -99,6 +99,10 @@ public class LegajoService {
         legajoRepository.deleteById(id);
     }
 
+    public Optional<Legajo> findLegajoAutoridadByPersonaId(Long personaId) {
+        return legajoRepository.findLegajoAutoridadByPersonaId(personaId);
+    }
+
     public ResponseEntity<?> validations(LegajoDto legajoDto, Long id) {
         if (legajoDto.getFechaInicio() == null)
             return new ResponseEntity(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);

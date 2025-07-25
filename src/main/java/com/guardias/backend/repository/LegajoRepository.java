@@ -34,4 +34,10 @@ public interface LegajoRepository extends JpaRepository<Legajo, Long> {
             "AND l.activo = true " +
             "AND l.esAutoridad = false")
     List<Legajo> findLegajosByPersonaId(@Param("id") Long id);
+
+    @Query("SELECT l FROM legajos l " +
+            "WHERE l.persona.id = :id " +
+            "AND l.activo = true " +
+            "AND l.esAutoridad = true")
+    Optional<Legajo> findLegajoAutoridadByPersonaId(@Param("id") Long id);
 }
