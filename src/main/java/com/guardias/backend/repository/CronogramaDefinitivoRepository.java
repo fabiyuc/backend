@@ -20,8 +20,6 @@ public interface CronogramaDefinitivoRepository extends JpaRepository <Cronogram
         List<CronogramaDefinitivo> findByAnioMesEfector(@Param("anio") int anio,
                         @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
 
-        Optional<CronogramaDefinitivo> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId, MesesEnum mes, int anio);
-
         Optional<List<CronogramaDefinitivo>> findByActivoTrue();
 
         boolean existsByAnioAndMes(int anio, MesesEnum mes);

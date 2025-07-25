@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.CronogramaDefinitivo;
-import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.CronogramaDefinitivoService;
 
@@ -42,60 +41,6 @@ public class CronogramaDefinitivoController {
         return new ResponseEntity<List<CronogramaDefinitivo>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listAMEcargoyagrup/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<CronogramaDefinitivo>> listByYearMonthEfectorAndTipoGuardiaCargoReagrupacion(
-            @PathVariable("anio") int anio,
-            @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector) {
-
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-        try {
-            List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoService
-                    .findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<List<CronogramaDefinitivo>>(cronogramasDefinitivos, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Cronogramas definitivos de Cargo y reagrupacion no encontrados"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/listAMEextra/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<CronogramaDefinitivo>> listByYearMonthEfectorAndTipoGuardiaExtra(
-            @PathVariable("anio") int anio,
-            @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector) {
-
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-        try {
-            List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoService
-                    .findByAnioMesEfectorAndTipoGuardiaExtra(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<List<CronogramaDefinitivo>>(cronogramasDefinitivos, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Cronogramas definitivos extra no encontrados"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/listAMEcf/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<CronogramaDefinitivo>> listByYearMonthEfectorAndTipoGuardiaCF(
-            @PathVariable("anio") int anio,
-            @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector) {
-
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-        try {
-            List<CronogramaDefinitivo> cronogramasDefinitivos = cronogramaDefinitivoService
-                    .findByAnioMesEfectorAndTipoGuardiaCF(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<List<CronogramaDefinitivo>>(cronogramasDefinitivos, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Cronogramas definitivos extra no encontrados"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @GetMapping("/detail/{id}")
     public ResponseEntity<List<CronogramaDefinitivo>> getById(@PathVariable("id") Long id) {
         if (!cronogramaDefinitivoService.activo(id))
@@ -103,42 +48,6 @@ public class CronogramaDefinitivoController {
             CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.findById(id).get();
         return new ResponseEntity(cronogramaDefinitivo, HttpStatus.OK);
     }
-
-    @GetMapping("/listMes/{idAsistencial}/{idEfector}/{mes}/{anio}")
-    public ResponseEntity<List<RegistroActividad>> getByMes(@PathVariable("idAsistencial") Long idAsistencial,
-            @PathVariable("idEfector") Long idEfector,
-            @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
-
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-        try {
-            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
-                    .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
-            List<RegistroActividad> list = cronogramaDefinitivo.getRegistroActividad();
-            return new ResponseEntity<List<RegistroActividad>>(list, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    // @GetMapping("/detailId/{idAsistencial}/{idEfector}/{mes}/{anio}")
-    // public ResponseEntity<Long>
-    // idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
-    // @PathVariable("idEfector") Long idEfector,
-    // @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
-    // MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-    // try {
-    // Long idRegistroMensual = registroMensualService
-    // .idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
-    // .get();
-    // return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
-    // } catch (Exception e) {
-    // return new ResponseEntity(new Mensaje("Registro no encontrado"),
-    // HttpStatus.BAD_REQUEST);
-    // }
-    // }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
@@ -173,33 +82,6 @@ public class CronogramaDefinitivoController {
         }
     }
 
-    /* public void setRegistroMensual(RegistroActividad registroActividad) {
-
-        Long idAsistencial = registroActividad.getAsistencial().getId();
-        Long idEfector = registroActividad.getEfector().getId();
-        int mes = registroActividad.getFechaIngreso().getMonth().getValue();
-        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
-        int anio = registroActividad.getFechaIngreso().getYear();
-        Long id;
-
-        try {
-            RegistroMensual registroMensual = registroMensualService
-                    .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
-            id = registroMensual.getId();
-        } catch (Exception exception) {
-            System.out.println("id no encontrado");
-            id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
-        }
-
-        try {
-            registroActividad.setRegistroMensual(registroMensualService.findById(id).get());
-            registroActividadService.save(registroActividad);
-        } catch (Exception e) {
-            System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
-        }
-    }
- */
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!cronogramaDefinitivoService.activo(id))

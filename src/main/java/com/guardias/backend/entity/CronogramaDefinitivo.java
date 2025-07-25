@@ -39,19 +39,8 @@ public class CronogramaDefinitivo {
 
     private int anio;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_asistencial")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",  "dni", "suplentes", "fechaNacimiento", "sexo", "telefono", "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades",
-            "descripcion", "esAsistencial", "registroMensual", "cronogramasDefinitivos", "facturas", "cronogramasTentativos", "habilitacionesGuardias", "facturas"})
-    private Asistencial asistencial; 
-
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cronogramaDefinitivo", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "activo",  "asistencial", "efector", "registrosPendientes", "cronogramaDefinitivo", "servicio", "registroMensual", "usuarioIngreso", "usuarioEgreso", "horasRealizadas" })
-    private List<RegistroActividad> registroActividad = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")
@@ -61,13 +50,13 @@ public class CronogramaDefinitivo {
             "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "servicios", "cronogramasDefinitivos" })
     private Efector efector;
 
-   /*  @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_ddjj")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi" })
-    private Ddjj ddjj; */
+    private Ddjj ddjj;
 
-    /* @OneToOne(mappedBy = "registroMensual") */
+    
     @OneToOne
     @JoinColumn(name = "total_horas_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registroMensual" })
