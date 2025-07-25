@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.ddjj.AutoridadImagenDto;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.Legajo;
@@ -343,8 +344,17 @@ public class DdjjController {
     @GetMapping("/getAutoridadImageUrl/{idUsuario}")
     public ResponseEntity<?> getAutoridadImageUrl(@PathVariable("idUsuario") Long idUsuario) {
         try {
+            System.out.println("🔍 Buscando usuario con ID: " + idUsuario);
+
             // Verificar que el usuario existe y está activo
             Optional<Usuario> usuarioOpt = usuarioService.findById(idUsuario);
+
+            System.out.println("📋 Usuario encontrado: " + usuarioOpt.isPresent());
+            if (usuarioOpt.isPresent()) {
+                System.out.println("✅ Usuario activo: " + usuarioOpt.get().getActivo());
+                System.out.println("👤 Nombre usuario: " + usuarioOpt.get().getNombreUsuario());
+            }
+
             if (usuarioOpt.isEmpty() || !usuarioOpt.get().getActivo()) {
                 return new ResponseEntity<>(new Mensaje("Usuario no encontrado o inactivo"), HttpStatus.NOT_FOUND);
             }
@@ -371,45 +381,16 @@ public class DdjjController {
 
             // Verificar si tiene URL de imagen
             if (legajoAutoridad.getUrl() == null || legajoAutoridad.getUrl().isEmpty()) {
-                return new ResponseEntity<>(new Object() {
-                    public final String mensaje = "La autoridad no tiene imagen asociada";
-                    public final String url = null;
-                    public final boolean hasImage = false;
-                    public final Long legajoId = legajoAutoridad.getId();
-                    public final String personaName = legajoAutoridad.getPersona().getNombre() + " "
-                            + legajoAutoridad.getPersona().getApellido();
-                    public final String cargo = legajoAutoridad.getCargo() != null
-                            ? legajoAutoridad.getCargo().getDescripcion()
-                            : null;
-                    public final Long usuarioId = idUsuario;
-                    public final String nombreUsuario = usuario.getNombreUsuario();
-                }, HttpStatus.OK);
+                return new ResponseEntity<>(new Mensaje("La autoridad no tiene imagen asociada"), HttpStatus.NOT_FOUND);
             }
 
-            // Retornar la información completa
-            final String imageUrl = legajoAutoridad.getUrl();
-            final Long legajoId = legajoAutoridad.getId();
-            final String personaName = legajoAutoridad.getPersona().getNombre() + " "
-                    + legajoAutoridad.getPersona().getApellido();
-            final String cargoDesc = legajoAutoridad.getCargo() != null ? legajoAutoridad.getCargo().getDescripcion()
-                    : null;
-            final Boolean esRegionalValue = legajoAutoridad.getEsRegional();
-            final String regionName = legajoAutoridad.getRegion() != null ? legajoAutoridad.getRegion().getNombre()
-                    : null;
+            // Crear y retornar el DTO con la información básica requerida
+            AutoridadImagenDto autoridadImagenDto = new AutoridadImagenDto(
+                    legajoAutoridad.getUrl(),
+                    legajoAutoridad.getPersona().getNombre() + " " + legajoAutoridad.getPersona().getApellido(),
+                    legajoAutoridad.getCargo() != null ? legajoAutoridad.getCargo().getDescripcion() : null);
 
-            return new ResponseEntity<>(new Object() {
-                public final String mensaje = "URL de imagen de autoridad encontrada";
-                public final String url = imageUrl;
-                public final boolean hasImage = true;
-                public final Long legajoId = legajoAutoridad.getId();
-                public final String personaName = legajoAutoridad.getPersona().getNombre() + " "
-                        + legajoAutoridad.getPersona().getApellido();
-                public final String cargo = cargoDesc;
-                public final Boolean esRegional = esRegionalValue;
-                public final String region = regionName;
-                public final Long usuarioId = idUsuario;
-                public final String nombreUsuario = usuario.getNombreUsuario();
-            }, HttpStatus.OK);
+            return new ResponseEntity<>(autoridadImagenDto, HttpStatus.OK);
 
         } catch (Exception e) {
             System.err.println("❌ Error al obtener URL de imagen de autoridad: " + e.getMessage());
