@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
@@ -400,4 +401,13 @@ public class DdjjController {
         }
     }
 
+    @GetMapping("/existCompleteSet/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<Boolean> checkCompleteDdjjSet(
+            @PathVariable int anio,
+            @PathVariable MesesEnum mes,
+            @PathVariable Long idEfector) {
+        
+        boolean existsCompleteSet = ddjjService.existsCompleteSetOfDdjj(mes, anio, idEfector);
+        return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
+    }
 }
