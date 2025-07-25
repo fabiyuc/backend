@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 @Repository
 public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
@@ -91,4 +92,17 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("idEfector") Long idEfector,
                         @Param("idServicio") Long idServicio);
 
+        @Query("SELECT COUNT(d) FROM Ddjjs d WHERE " +
+       "d.activo = true AND " +
+       "d.mes = :mes AND " +
+       "d.anio = :anio AND " +
+       "d.efector.id = :idEfector AND " +
+       "d.tipoGuardia.nombre = :tipoGuardia AND " +
+       "d.estadoDdjjDirector = :estado")
+        Long countActiveByMesAnioEfectorAndTipoGuardia(
+                @Param("mes") MesesEnum mes,
+                @Param("anio") int anio,
+                @Param("idEfector") Long idEfector,
+                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                @Param("estado") EstadoDdjjEnum estado);
 }

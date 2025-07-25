@@ -614,4 +614,21 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
+
+    public boolean existsCompleteSetOfDdjj(MesesEnum mes, int anio, Long idEfector) {
+        
+        EstadoDdjjEnum estadoRequerido = EstadoDdjjEnum.APROBADO;
+        
+        // Verifico si existen las 3 ddjj requeridas
+        boolean hasCargo = ddjjRepository.countActiveByMesAnioEfectorAndTipoGuardia(
+                mes, anio, idEfector, TipoGuardiaEnum.CARGO, estadoRequerido) > 0;
+        
+        boolean hasExtra = ddjjRepository.countActiveByMesAnioEfectorAndTipoGuardia(
+                mes, anio, idEfector, TipoGuardiaEnum.EXTRA, estadoRequerido) > 0;
+        
+        boolean hasContrafactura = ddjjRepository.countActiveByMesAnioEfectorAndTipoGuardia(
+                mes, anio, idEfector, TipoGuardiaEnum.CONTRAFACTURA, estadoRequerido) > 0;
+        
+        return hasCargo && hasExtra && hasContrafactura;
+    }
 }
