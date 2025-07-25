@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionOtra;
 
 @Repository
@@ -69,7 +68,7 @@ public interface DistribucionOtraRepository extends JpaRepository<DistribucionOt
                         AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
                         AND d.activo = 1
                         """)
-        List<DistribucionConsultorio> findValidDistribuciones(
+        List<DistribucionOtra> findValidDistribuciones(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("fechaIngreso") LocalDate fechaInicio);

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
-import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionOtra;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.DistribucionOtraRepository;
@@ -109,10 +108,10 @@ public class DistribucionOtraService {
         }
 
         // Buscar todas las distribuciones válidas que cubran la fecha de ingreso
-        List<DistribucionConsultorio> distribuciones = distribucionOtraRepository
+        List<DistribucionOtra> distribuciones = distribucionOtraRepository
                 .findValidDistribuciones(dto.getIdAsistencial(), dto.getIdEfector(), dto.getFechaIngreso());
 
-         if (distribuciones.isEmpty()) {
+        if (distribuciones.isEmpty()) {
             return false;
         }
         // Obtener día en formato compatible
@@ -131,7 +130,7 @@ public class DistribucionOtraService {
             // NO empieza después del fin de la distribución
             return dto.getHoraIngreso().isBefore(horaFinDistribucion) &&
                     dto.getHoraEgreso().isAfter(dist.getHoraIngreso());
-        
+
         });
     }
 
