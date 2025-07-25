@@ -54,6 +54,8 @@ public class DdjjService {
     TipoGuardiaRepository tipoGuardiaRepository;
     @Autowired
     ObservacionDdjjRepository observacionDdjjRepository;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     public boolean existsById(Long id) {
         return ddjjRepository.existsById(id);
@@ -132,6 +134,10 @@ public class DdjjService {
         if (!efectorService.activoById(ddjjDto.getIdEfector())) {
             throw new IllegalArgumentException("El efector no existe");
         }
+
+        if (ddjjDto.getIdTipoGuardia() == null)
+            return new ResponseEntity(new Mensaje("es obligatorio indicar el tipo de guardia"),
+                    HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -277,6 +283,14 @@ public class DdjjService {
 
         ddjj.setMotivoDirector(ddjjDto.getMotivoDirector());
         ddjj.setMotivoDirectorDPH(ddjjDto.getMotivoDirectorDPH());
+
+        if (ddjj.getTipoGuardia() == null ||
+                (ddjjDto.getIdTipoGuardia() != null &&
+                        !Objects.equals(ddjj.getTipoGuardia().getId(),
+                                ddjjDto.getIdTipoGuardia()))) {
+            ddjj
+                    .setTipoGuardia(tipoGuardiaService.findById(ddjjDto.getIdTipoGuardia()).get());
+        }
 
         ddjj.setActivo(true);
     }

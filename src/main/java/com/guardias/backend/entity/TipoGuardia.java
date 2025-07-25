@@ -62,6 +62,10 @@ public class TipoGuardia {
             "aceptado", "observacion" })
     private List<CronogramaTentativo> cronogramasTentativos = new ArrayList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoGuardia", cascade = CascadeType.PERSIST)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "registrosMensuales", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia" })
+    private List<Ddjj> ddjjs = new ArrayList<>();
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

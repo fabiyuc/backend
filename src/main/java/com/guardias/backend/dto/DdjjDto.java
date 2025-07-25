@@ -49,4 +49,7 @@ public class DdjjDto {
     private String motivoDirectorDPH;
 
     List<Long> idObservacionesDdjj;
+    
+    @NotBlank
+    private Long idTipoGuardia;
 }
