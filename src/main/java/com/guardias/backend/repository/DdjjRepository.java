@@ -93,14 +93,16 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("idServicio") Long idServicio);
 
         @Query("SELECT COUNT(d) FROM Ddjjs d WHERE " +
-           "d.activo = true AND " +
-           "d.mes = :mes AND " +
-           "d.anio = :anio AND " +
-           "d.efector.id = :idEfector AND " +
-           "d.tipoGuardia.nombre = :tipoGuardia")
-    Long countActiveByMesAnioEfectorAndTipoGuardia(
-            @Param("mes") MesesEnum mes,
-            @Param("anio") int anio,
-            @Param("idEfector") Long idEfector,
-            @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia);
+       "d.activo = true AND " +
+       "d.mes = :mes AND " +
+       "d.anio = :anio AND " +
+       "d.efector.id = :idEfector AND " +
+       "d.tipoGuardia.nombre = :tipoGuardia AND " +
+       "d.estadoDdjjDirector = :estado")
+        Long countActiveByMesAnioEfectorAndTipoGuardia(
+                @Param("mes") MesesEnum mes,
+                @Param("anio") int anio,
+                @Param("idEfector") Long idEfector,
+                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                @Param("estado") EstadoDdjjEnum estado);
 }
