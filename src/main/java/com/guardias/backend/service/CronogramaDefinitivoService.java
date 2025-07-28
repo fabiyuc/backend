@@ -48,10 +48,6 @@ public class CronogramaDefinitivoService {
         return cronogramaDefinitivoRepository.existsByAnioAndMes(anio, mes);
     }
 
-    public boolean existsByAsistencialId(Long idAsistencial) {
-        return cronogramaDefinitivoRepository.existsByAsistencialId(idAsistencial);
-    }
-
     public boolean existsById(Long id) {
         return cronogramaDefinitivoRepository.existsById(id);
     }
