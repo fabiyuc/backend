@@ -356,8 +356,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             Arrays.asList("SAME"),
             4,
-            new BigDecimal("163853.09"), // L-V (Total)
-            new BigDecimal("180238.40"), // S-D-F (Total)
+            new BigDecimal("166794.12"), // L-V (Total)
+            new BigDecimal("183473.53"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -365,8 +365,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
             3,
-            new BigDecimal("147051.46"), // L-V (Total)
-            new BigDecimal("161756.61"), // S-D-F (Total)
+            new BigDecimal("149992.49"), // L-V (Total)
+            new BigDecimal("164991.74"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -374,8 +374,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             Arrays.asList("JORGE URO"),
             2,
-            new BigDecimal("264692.63"), // L-V (Total)
-            new BigDecimal("291161.89"), // S-D-F (Total)
+            new BigDecimal("269986.48"), // L-V (Total)
+            new BigDecimal("296985.13"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -383,8 +383,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
             2,
-            new BigDecimal("147051.46"), // L-V (Total)
-            new BigDecimal("161756.61"), // S-D-F (Total)
+            new BigDecimal("149992.49"), // L-V (Total)
+            new BigDecimal("164991.74"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -392,8 +392,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             Arrays.asList("SUSQUES"),
             1,
-            new BigDecimal("294102.92"), // L-V (Total)
-            new BigDecimal("323513.21"), // S-D-F (Total)
+            new BigDecimal("299984.98"), // L-V (Total)
+            new BigDecimal("329983.48"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -401,8 +401,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
             1,
-            new BigDecimal("147051.46"), // L-V (Total)
-            new BigDecimal("161756.61"), // S-D-F (Total)
+            new BigDecimal("149992.49"), // L-V (Total)
+            new BigDecimal("164991.74"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -410,8 +410,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorCargoYAgrupacion(
             null,
             1,
-            new BigDecimal("147051.46"), // L-V (Total)
-            new BigDecimal("161756.61"), // S-D-F (Total)
+            new BigDecimal("149992.49"), // L-V (Total)
+            new BigDecimal("164991.74"), // S-D-F (Total)
             fechaInicio
         );
     }
@@ -430,8 +430,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorExtraYCF(
             Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
             3,
-            new BigDecimal("211337.65"), // L-V (Total)
-            new BigDecimal("232471.41"), // S-D-F (Total)
+            new BigDecimal("232366.03"), // L-V (Total)
+            new BigDecimal("255602.63"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -439,8 +439,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorExtraYCF(
             Arrays.asList("JORGE URO"),
             2,
-            new BigDecimal("274738.94"), // L-V (Total)
-            new BigDecimal("302212.83"), // S-D-F (Total)
+            new BigDecimal("280233.71"), // L-V (Total)
+            new BigDecimal("308257.09"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -448,8 +448,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorExtraYCF(
             Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
             2,
-            new BigDecimal("211337.65"), // L-V (Total)
-            new BigDecimal("232471.41"), // S-D-F (Total)
+            new BigDecimal("215564.40"), // L-V (Total)
+            new BigDecimal("237120.84"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -457,8 +457,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorExtraYCF(
             Arrays.asList("SUSQUES"),
             1,
-            new BigDecimal("295872.70"), // L-V (Total)
-            new BigDecimal("325459.97"), // S-D-F (Total)
+            new BigDecimal("301790.16"), // L-V (Total)
+            new BigDecimal("331969.17"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -466,8 +466,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorExtraYCF(
             Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
             1,
-            new BigDecimal("253605.17"), // L-V (Total)
-            new BigDecimal("278965.69"), // S-D-F (Total)
+            new BigDecimal("258677.28"), // L-V (Total)
+            new BigDecimal("284545.01"), // S-D-F (Total)
             fechaInicio
         );
 
@@ -475,8 +475,8 @@ public class ValorGuardiaCargoYagrupService {
         crearValorExtraYCF(
             null,
             1,
-            new BigDecimal("211337.65"), // L-V (Total)
-            new BigDecimal("232471.41"), // S-D-F (Total)
+            new BigDecimal("215564.40"), // L-V (Total)
+            new BigDecimal("237120.84"), // S-D-F (Total)
             fechaInicio
         );
     }
