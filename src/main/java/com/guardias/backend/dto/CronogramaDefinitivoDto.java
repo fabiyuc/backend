@@ -19,13 +19,11 @@ public class CronogramaDefinitivoDto {
     private MesesEnum mes;
     @Min(value = 1991)
     private int anio;
-    @Min(value = 1)
-    private Long idAsistencial;
 
     private boolean activo;
 
-    private List<Long> idRegistroActividad;
-
     private Long idEfector;
+
+    private List<Long> idDdjjs;
     
 }

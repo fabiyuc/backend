@@ -97,9 +97,14 @@ public class Ddjj {
     List<ObservacionDdjj> observacionesDdjj = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-        @JoinColumn(name = "id_tipo_guardia")
-        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","asistenciales", "legajos", "activo", "registrosActividades", "cronogramasTentativos", "descripcion", "ddjjs" })
-        private TipoGuardia tipoGuardia;
+    @JoinColumn(name = "id_tipo_guardia")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","asistenciales", "legajos", "activo", "registrosActividades", "cronogramasTentativos", "descripcion", "ddjjs" })
+    private TipoGuardia tipoGuardia;
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "id_cronograma_definitivo")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" , "ddjjs"})
+    private CronogramaDefinitivo cronogramaDefinitivo;
 
     @Override
     public boolean equals(Object obj) {
