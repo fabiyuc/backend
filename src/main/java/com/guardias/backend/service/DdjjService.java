@@ -56,6 +56,9 @@ public class DdjjService {
     ObservacionDdjjRepository observacionDdjjRepository;
     @Autowired
     TipoGuardiaService tipoGuardiaService;
+    @Autowired
+    CronogramaDefinitivoService cronogramaDefinitivoService;
+
 
     public boolean existsById(Long id) {
         return ddjjRepository.existsById(id);
@@ -290,6 +293,14 @@ public class DdjjService {
                                 ddjjDto.getIdTipoGuardia()))) {
             ddjj
                     .setTipoGuardia(tipoGuardiaService.findById(ddjjDto.getIdTipoGuardia()).get());
+        }
+
+        if (ddjj.getCronogramaDefinitivo() == null ||
+                (ddjjDto.getIdCronogramaDefinitivo() != null &&
+                        !Objects.equals(ddjj.getCronogramaDefinitivo().getId(),
+                                ddjjDto.getIdCronogramaDefinitivo()))) {
+            ddjj
+                    .setCronogramaDefinitivo(cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo()).get());
         }
 
         ddjj.setActivo(true);

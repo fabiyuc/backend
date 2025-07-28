@@ -24,6 +24,6 @@ public class CronogramaDefinitivoDto {
 
     private Long idEfector;
 
-    ddjj
+    private List<Long> idDdjjs;
     
 }
