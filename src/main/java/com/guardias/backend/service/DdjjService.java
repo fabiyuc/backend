@@ -58,7 +58,8 @@ public class DdjjService {
     TipoGuardiaService tipoGuardiaService;
     @Autowired
     CronogramaDefinitivoService cronogramaDefinitivoService;
-
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     public boolean existsById(Long id) {
         return ddjjRepository.existsById(id);
@@ -235,7 +236,7 @@ public class DdjjService {
                 }
             }
         }
-        
+
         if (ddjjDto.getIdObservacionesDdjj() != null) {
             // 1. Primero guarda la DDJJ si es nueva (sin los registros)
             if (ddjj.getId() == null) {
@@ -300,7 +301,8 @@ public class DdjjService {
                         !Objects.equals(ddjj.getCronogramaDefinitivo().getId(),
                                 ddjjDto.getIdCronogramaDefinitivo()))) {
             ddjj
-                    .setCronogramaDefinitivo(cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo()).get());
+                    .setCronogramaDefinitivo(
+                            cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo()).get());
         }
 
         ddjj.setActivo(true);
@@ -627,19 +629,38 @@ public class DdjjService {
     }
 
     public boolean existsCompleteSetOfDdjj(MesesEnum mes, int anio, Long idEfector) {
-        
+
         EstadoDdjjEnum estadoRequerido = EstadoDdjjEnum.APROBADO;
-        
+
         // Verifico si existen las 3 ddjj requeridas
         boolean hasCargo = ddjjRepository.countActiveByMesAnioEfectorAndTipoGuardia(
                 mes, anio, idEfector, TipoGuardiaEnum.CARGO, estadoRequerido) > 0;
-        
+
         boolean hasExtra = ddjjRepository.countActiveByMesAnioEfectorAndTipoGuardia(
                 mes, anio, idEfector, TipoGuardiaEnum.EXTRA, estadoRequerido) > 0;
-        
+
         boolean hasContrafactura = ddjjRepository.countActiveByMesAnioEfectorAndTipoGuardia(
                 mes, anio, idEfector, TipoGuardiaEnum.CONTRAFACTURA, estadoRequerido) > 0;
-        
+
         return hasCargo && hasExtra && hasContrafactura;
+    }
+
+    public boolean puedeGenerarCronogramaDefinitivo(Long idEfector, MesesEnum mes, int anio) {
+
+        // 2. Obtener todas las DDJJ del efector para ese período
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorAndMesAndAnio(idEfector, mes, anio);
+
+        if (ddjjs.isEmpty()) {
+            return false; // No hay DDJJ creadas (pero podría no ser obligatorio)
+        }
+
+        // 3. Verificar aprobación de todas las DDJJ existentes
+        for (Ddjj ddjj : ddjjs) {
+            if (ddjj.getEstadoDdjjDirector() != EstadoDdjjEnum.APROBADO) {
+                return false; // Hay al menos una DDJJ no aprobada
+            }
+        }
+
+        return true; // Cumple todas las condiciones
     }
 }

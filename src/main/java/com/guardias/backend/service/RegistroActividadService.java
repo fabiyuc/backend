@@ -25,7 +25,10 @@ import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.enums.EstadoDdjjEnum;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
@@ -58,6 +61,8 @@ public class RegistroActividadService {
     ValorGuardiaExtraYcfService valorGuardiaExtraYcfService;
     @Autowired
     HospitalService hospitalService;
+    @Autowired
+    DdjjRepository ddjjRepository;
 
     public Optional<List<RegistroActividad>> findByActivoTrue() {
         return registroActividadRepository.findByActivoTrue();
@@ -415,6 +420,75 @@ public class RegistroActividadService {
                         ra.getMotivoIngreso(),
                         ra.getMotivoEgreso()))
                 .collect(Collectors.toList());
+    }
+
+    public boolean validarPrecondicionesCronograma(Long idEfector, int mes, int anio) {
+        System.out.println("[SERVICE] Iniciando validación para efector: " + idEfector);
+
+        // 1. Verifica existencia de registros por cada tipo de guardia
+        System.out.println("[SERVICE] Verificando registros de actividad...");
+        boolean tieneCargo = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.CARGO);
+        System.out.println(" - CARGO: " + tieneCargo);
+
+        boolean tieneAgrupacion = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.AGRUPACION);
+        System.out.println(" - AGRUPACION: " + tieneAgrupacion);
+
+        boolean tieneExtra = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.EXTRA);
+        System.out.println(" - EXTRA: " + tieneExtra);
+
+        boolean tieneContrafactura = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
+        System.out.println(" - CONTRAFACTURA: " + tieneContrafactura);
+
+        // 2. Para cada tipo con registros, verificar DDJJ aprobada
+        System.out.println("[SERVICE] Verificando DDJJ aprobadas...");
+
+        if ((tieneCargo || tieneAgrupacion)) {
+            boolean ddjjCargoAprobada = ddjjAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.CARGO);
+            System.out.println(" - DDJJ CARGO/AGRUPACION aprobada: " + ddjjCargoAprobada);
+            if (!ddjjCargoAprobada) {
+                System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para CARGO/AGRUPACION");
+                return false;
+            }
+        }
+
+        if (tieneExtra) {
+            boolean ddjjExtraAprobada = ddjjAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.EXTRA);
+            System.out.println(" - DDJJ EXTRA aprobada: " + ddjjExtraAprobada);
+            if (!ddjjExtraAprobada) {
+                System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para EXTRA");
+                return false;
+            }
+        }
+
+        if (tieneContrafactura) {
+            boolean ddjjContrafacturaAprobada = ddjjAprobadaExistente(idEfector, mes, anio,
+                    TipoGuardiaEnum.CONTRAFACTURA);
+            System.out.println(" - DDJJ CONTRAFACTURA aprobada: " + ddjjContrafacturaAprobada);
+            if (!ddjjContrafacturaAprobada) {
+                System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para CONTRAFACTURA");
+                return false;
+            }
+        }
+
+        System.out.println("[SERVICE] Todas las validaciones fueron exitosas");
+        return true;
+    }
+
+    private boolean ddjjAprobadaExistente(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo) {
+
+        // Convertir int a MesesEnum
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+        System.out.println("[SERVICE] Buscando DDJJ para tipo: " + tipo +
+                ", mes: " + mesEnum + ", efector: " + idEfector);
+        boolean exists = ddjjRepository.existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                idEfector, mesEnum, anio, tipo, EstadoDdjjEnum.APROBADO);
+
+        System.out.println(" - Resultado búsqueda DDJJ: " + exists);
+        return exists;
     }
 
 }

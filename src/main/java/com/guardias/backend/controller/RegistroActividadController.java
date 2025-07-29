@@ -213,4 +213,15 @@ public class RegistroActividadController {
                 .listarMotivosByAsistencial(idAsistencial, idEfector, mes, anio, idServicio);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+   @GetMapping("/validar-precondiciones-cronograma/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<Boolean> checkCompleteDdjjSet(
+        @PathVariable Long idEfector,
+        @PathVariable int mes,
+        @PathVariable int anio ) {
+        
+        boolean existsCompleteSet = registroActividadService.validarPrecondicionesCronograma(idEfector,mes, anio );
+        return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
+    }
+
 }

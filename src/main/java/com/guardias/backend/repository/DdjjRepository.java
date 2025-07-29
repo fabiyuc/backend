@@ -93,16 +93,36 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("idServicio") Long idServicio);
 
         @Query("SELECT COUNT(d) FROM Ddjjs d WHERE " +
-       "d.activo = true AND " +
-       "d.mes = :mes AND " +
-       "d.anio = :anio AND " +
-       "d.efector.id = :idEfector AND " +
-       "d.tipoGuardia.nombre = :tipoGuardia AND " +
-       "d.estadoDdjjDirector = :estado")
+                        "d.activo = true AND " +
+                        "d.mes = :mes AND " +
+                        "d.anio = :anio AND " +
+                        "d.efector.id = :idEfector AND " +
+                        "d.tipoGuardia.nombre = :tipoGuardia AND " +
+                        "d.estadoDdjjDirector = :estado")
         Long countActiveByMesAnioEfectorAndTipoGuardia(
-                @Param("mes") MesesEnum mes,
-                @Param("anio") int anio,
-                @Param("idEfector") Long idEfector,
-                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
-                @Param("estado") EstadoDdjjEnum estado);
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("idEfector") Long idEfector,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                        @Param("estado") EstadoDdjjEnum estado);
+
+        @Query("SELECT DISTINCT d FROM Ddjjs d " +
+                        "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
+                        "AND d.activo = true ")
+        List<Ddjj> findByEfectorAndMesAndAnio(@Param("idEfector") Long idEfector,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio);
+
+        @Query("SELECT COUNT(d) > 0 FROM Ddjjs d WHERE " +
+                        "d.efector.id = :idEfector AND " +
+                        "d.mes = :mes AND " +
+                        "d.anio = :anio AND " +
+                        "d.tipoGuardia.nombre = :tipoGuardia AND " +
+                        "d.estadoDdjjDirector = :estado")
+        boolean existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                        @Param("idEfector") Long idEfector,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                         @Param("estado") EstadoDdjjEnum estado);
 }
