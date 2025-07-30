@@ -296,13 +296,15 @@ public class DdjjService {
                     .setTipoGuardia(tipoGuardiaService.findById(ddjjDto.getIdTipoGuardia()).get());
         }
 
-        if (ddjj.getCronogramaDefinitivo() == null ||
-                (ddjjDto.getIdCronogramaDefinitivo() != null &&
-                        !Objects.equals(ddjj.getCronogramaDefinitivo().getId(),
-                                ddjjDto.getIdCronogramaDefinitivo()))) {
-            ddjj
-                    .setCronogramaDefinitivo(
-                            cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo()).get());
+        if (ddjjDto.getIdCronogramaDefinitivo() != null) {
+            if (ddjj.getCronogramaDefinitivo() == null ||
+                    !Objects.equals(ddjj.getCronogramaDefinitivo().getId(), ddjjDto.getIdCronogramaDefinitivo())) {
+                ddjj.setCronogramaDefinitivo(
+                        cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo())
+                                .orElse(null)); 
+            }
+        } else {
+            ddjj.setCronogramaDefinitivo(null); // O mantener el existente si lo hay
         }
 
         ddjj.setActivo(true);
