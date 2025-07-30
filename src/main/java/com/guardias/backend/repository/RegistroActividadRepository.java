@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 @Repository
 public interface RegistroActividadRepository extends JpaRepository<RegistroActividad, Long> {
@@ -29,4 +30,20 @@ public interface RegistroActividadRepository extends JpaRepository<RegistroActiv
     List<RegistroActividad> findMotivosByEfectorServicioMesAnio(@Param("idEfector") Long idEfector,
             @Param("mes") int mes,
             @Param("anio") int anio);
+
+
+        @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+           "FROM registrosActividades r " +
+           "WHERE r.efector.id = :idEfector " +
+            "AND MONTH(m.fechaIngreso) = :mes " +
+            "AND YEAR(m.fechaIngreso) = :anio " +
+           "AND r.activo = true " +
+           "AND r.tipoGuardia.nombre = :tipoGuardia")
+        boolean existsByEfectorAndMesAndAnioAndTipoGuardia(
+        @Param("idEfector") Long idEfector,
+        @Param("mes") int mes,
+        @Param("anio") int anio,
+        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia
+    );
+
 }
