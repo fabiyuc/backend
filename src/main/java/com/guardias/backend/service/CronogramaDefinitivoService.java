@@ -31,6 +31,8 @@ public class CronogramaDefinitivoService {
     EfectorService efectorService;
     @Autowired
     DdjjRepository ddjjRepository;
+    @Autowired
+    RegistroActividadService registroActividadService;
 
     public Optional<List<CronogramaDefinitivo>> findByActivoTrue() {
         return cronogramaDefinitivoRepository.findByActivoTrue();
@@ -75,6 +77,11 @@ public class CronogramaDefinitivoService {
 
         if (cronogramaDefinitivoDto.getIdDdjjs() == null)
             return new ResponseEntity(new Mensaje("la lista de ddjj no debe ser nula"), HttpStatus.BAD_REQUEST);
+        
+        boolean apto = registroActividadService.validarPrecondicionesCronograma(cronogramaDefinitivoDto.getIdEfector(), cronogramaDefinitivoDto.getMes().getNumeroMes(), cronogramaDefinitivoDto.getAnio());
+            if (apto != true){
+                 return new ResponseEntity(new Mensaje("no cumple con las validaciones de la ddjj con estadoDirector aprobadas"), HttpStatus.BAD_REQUEST);
+            }
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }

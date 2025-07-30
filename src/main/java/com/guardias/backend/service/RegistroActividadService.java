@@ -447,7 +447,7 @@ public class RegistroActividadService {
         System.out.println("[SERVICE] Verificando DDJJ aprobadas...");
 
         if ((tieneCargo || tieneAgrupacion)) {
-            boolean ddjjCargoAprobada = ddjjAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.CARGO);
+            boolean ddjjCargoAprobada = ddjjPreAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.CARGO);
             System.out.println(" - DDJJ CARGO/AGRUPACION aprobada: " + ddjjCargoAprobada);
             if (!ddjjCargoAprobada) {
                 System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para CARGO/AGRUPACION");
@@ -456,7 +456,7 @@ public class RegistroActividadService {
         }
 
         if (tieneExtra) {
-            boolean ddjjExtraAprobada = ddjjAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.EXTRA);
+            boolean ddjjExtraAprobada = ddjjPreAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.EXTRA);
             System.out.println(" - DDJJ EXTRA aprobada: " + ddjjExtraAprobada);
             if (!ddjjExtraAprobada) {
                 System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para EXTRA");
@@ -465,7 +465,7 @@ public class RegistroActividadService {
         }
 
         if (tieneContrafactura) {
-            boolean ddjjContrafacturaAprobada = ddjjAprobadaExistente(idEfector, mes, anio,
+            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistente(idEfector, mes, anio,
                     TipoGuardiaEnum.CONTRAFACTURA);
             System.out.println(" - DDJJ CONTRAFACTURA aprobada: " + ddjjContrafacturaAprobada);
             if (!ddjjContrafacturaAprobada) {
@@ -478,7 +478,7 @@ public class RegistroActividadService {
         return true;
     }
 
-    private boolean ddjjAprobadaExistente(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo) {
+    private boolean ddjjPreAprobadaExistente(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo) {
 
         // Convertir int a MesesEnum
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
@@ -490,5 +490,7 @@ public class RegistroActividadService {
         System.out.println(" - Resultado búsqueda DDJJ: " + exists);
         return exists;
     }
+
+   
 
 }

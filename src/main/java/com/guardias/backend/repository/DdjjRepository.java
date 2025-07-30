@@ -118,11 +118,11 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         "d.mes = :mes AND " +
                         "d.anio = :anio AND " +
                         "d.tipoGuardia.nombre = :tipoGuardia AND " +
-                        "d.estadoDdjjDirector = :estado")
+                        "d.estadoDdjjDirector = :estadoDirector ")
         boolean existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
                         @Param("idEfector") Long idEfector,
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio,
                         @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
-                         @Param("estado") EstadoDdjjEnum estado);
+                        @Param("estadoDirector") EstadoDdjjEnum estadoDirector);
 }
