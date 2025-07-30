@@ -16,8 +16,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,9 +50,10 @@ public class CronogramaDefinitivo {
             "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "servicios", "cronogramasDefinitivos" })
     private Efector efector;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cronogramaDefinitivo", cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "cronogramaDefinitivo_ddjj", joinColumns = @JoinColumn(name = "id_cronogramaDefinitivo"), inverseJoinColumns = @JoinColumn(name = "id_ddjj"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "registrosMensuales", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramaDefinitivo" })
-    List<Ddjj> ddjjs = new ArrayList<>();
+    private List<Ddjj> ddjjs = new ArrayList<>();
 
 
     @Override

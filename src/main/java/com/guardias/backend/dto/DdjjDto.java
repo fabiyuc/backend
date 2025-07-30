@@ -53,6 +53,6 @@ public class DdjjDto {
     @NotBlank
     private Long idTipoGuardia;
 
-    private Long idCronogramaDefinitivo;
+    private List<Long> idCronogramasDefinitivos;
 }
 

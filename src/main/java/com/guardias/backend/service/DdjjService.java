@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.guardias.backend.dto.DdjjDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
+import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.entity.RegistroActividad;
@@ -296,7 +297,29 @@ public class DdjjService {
                     .setTipoGuardia(tipoGuardiaService.findById(ddjjDto.getIdTipoGuardia()).get());
         }
 
-        if (ddjjDto.getIdCronogramaDefinitivo() != null) {
+        if (ddjjDto.getIdCronogramasDefinitivos() != null) {
+            List<Long> idList = new ArrayList<Long>();
+            if (ddjj.getCronogramasDefinitivos() != null) {
+                for (CronogramaDefinitivo cronograma : ddjj.getCronogramasDefinitivos()) {
+                    for (Long id : ddjjDto.getIdCronogramasDefinitivos()) {
+                        if (!cronograma.getId().equals(id)) {
+                            idList.add(id);
+                        }
+                    }
+                }
+            } else {
+                ddjj.setCronogramasDefinitivos(new ArrayList<CronogramaDefinitivo>());
+            }
+
+            List<Long> idsToAdd = idList.isEmpty() ? ddjjDto.getIdCronogramasDefinitivos() : idList;
+
+            for (Long id : idsToAdd) {
+                ddjj.getCronogramasDefinitivos().add(cronogramaDefinitivoService.findById(id).get());
+                cronogramaDefinitivoService.findById(id).get().getDdjjs().add(ddjj);
+            }
+        }
+
+        /* if (ddjjDto.getIdCronogramaDefinitivo() != null) {
             if (ddjj.getCronogramaDefinitivo() == null ||
                     !Objects.equals(ddjj.getCronogramaDefinitivo().getId(), ddjjDto.getIdCronogramaDefinitivo())) {
                 ddjj.setCronogramaDefinitivo(
@@ -306,7 +329,7 @@ public class DdjjService {
         } else {
             ddjj.setCronogramaDefinitivo(null); // O mantener el existente si lo hay
         }
-
+ */
         ddjj.setActivo(true);
     }
 
