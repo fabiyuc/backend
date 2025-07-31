@@ -196,7 +196,7 @@ public class RegistroActividadService {
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        System.out.println("DEBUG [1] - Horas calculadas (LAV/SDF): " +
+        System.out.println("DEBUG [1] - Hoooras calculadas (LAV/SDF): " +
                 horas.getHorasLav() + "/" + horas.getHorasSdf());
 
         horas.setActivo(true);
@@ -224,7 +224,7 @@ public class RegistroActividadService {
                 ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService
                         .obtenerValorGuardiaCargoPorHospital(hospital.getId()).get();
                 System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase);
-                System.out.println("DEBUG 6 - Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/"
+                System.out.println("DEBUG 6a - Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/"
                         + valorGuardiaBase.getTotalSdf());
 
                 /* Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
@@ -241,8 +241,8 @@ public class RegistroActividadService {
                         RoundingMode.HALF_UP);
                 BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
                 horas.setMontoSdf(totalMontoSdf);
-                System.out.println("DEBUG 9 - Valor hora SDF: " + valorHoraLav);
-                System.out.println("DEBUG 10 - Monto SDF calculado: " + totalMontoLav);
+                System.out.println("DEBUG 9 - Valor hora SDF: " + valorHoraSdf);
+                System.out.println("DEBUG 10 - Monto SDF calculado: " + totalMontoSdf);
 
                 BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
                 horas.setMontoTotal(total);
@@ -254,13 +254,13 @@ public class RegistroActividadService {
         } else {
             if (tipoGuardia == TipoGuardiaEnum.EXTRA || tipoGuardia == TipoGuardiaEnum.CONTRAFACTURA) {
                 /* Si es Extra o CF */
-                System.out.println("es tipo guardia extra o cf");
+                System.out.println("DEBUG - es tipo guardia extra o cf");
                 /* Obtiene valores de guardia */
-                ValorGuardiaExtrayCF valorGuardiaBase1 = valorGuardiaExtraYcfService
+                /* ValorGuardiaExtrayCF valorGuardiaBase1 = valorGuardiaExtraYcfService
                         .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
                 System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase1);
-                System.out.println("DEBUG 6 - Total LAV/SDF: " + valorGuardiaBase1.getTotalLav() + "/"
-                        + valorGuardiaBase1.getTotalSdf());
+                System.out.println("DEBUG 6b - Total LAV/SDF: " + valorGuardiaBase1.getTotalLav() + "/"
+                        + valorGuardiaBase1.getTotalSdf()); */
 
                 try {
 
@@ -268,28 +268,32 @@ public class RegistroActividadService {
                     ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService
                             .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
 
-                    System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase);
-                    System.out.println("DEBUG 6 - Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/"
+                    System.out.println("DEBUG 5 CF- ValorGuardiaBase obtenido: " + valorGuardiaBase);
+                    System.out.println("DEBUG 6c CF- Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/"
                             + valorGuardiaBase.getTotalSdf());
                     /* Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
                     /* LAV */
                     BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
                             RoundingMode.HALF_UP);
-                    System.out.println("DEBUG 6.1 - valor de la hora LAV: " + valorHoraLav);
+                    System.out.println("DEBUG 6.1 CF - valor de la hora LAV: " + valorHoraLav);
                     BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
 
                     horas.setMontoLav(totalMontoLav);
+                    System.out.println("DEBUG 7 CF - Valor hora LAV: " + valorHoraLav);
+                    System.out.println("DEBUG 8 CF - Monto LAV calculado: " + totalMontoLav);
 
                     /* SDF */
                     BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
                             RoundingMode.HALF_UP);
                     BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
                     horas.setMontoSdf(totalMontoSdf);
+                    System.out.println("DEBUG 9 CF- Valor hora SDF: " + valorHoraSdf);
+                    System.out.println("DEBUG 10 CF - Monto SDF calculado: " + totalMontoSdf);
 
-                    System.out.println("DEBUG 6.2 - valor de la hora SDF: " + valorHoraSdf);
-
+                    
                     BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
                     horas.setMontoTotal(total);
+                    System.out.println("DEBUG 11 CF - Monto total calculado: " + total);
 
                 } catch (Exception e) {
                     System.out.println("Error al buscar ValorGuardiaExtraYcf: " + e.getMessage());

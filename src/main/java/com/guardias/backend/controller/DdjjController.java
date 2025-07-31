@@ -112,17 +112,14 @@ public class DdjjController {
             // 2. Creación
             Ddjj nuevaDdjj = ddjjService.createUpdate(new Ddjj(), ddjjDto);
 
-            // 3. Respuesta exactamente como la necesitas
+            // 3. Respuesta con exito
             return new ResponseEntity<>(new Mensaje("DDJJ creada correctamente"), HttpStatus.OK);
 
-        } catch (IllegalArgumentException e) {
-            // Respuesta de error con tu estilo
-            return new ResponseEntity<>(new Mensaje("error"), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // Error interno genérico
-            return new ResponseEntity<>(
-                    new Mensaje("Error interno al procesar la solicitud"),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        e.printStackTrace(); // Esto imprimirá el error en la consola
+        return new ResponseEntity<>(
+            new Mensaje("Error interno: " + e.getClass().getSimpleName() + ": " + e.getMessage()), 
+            HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

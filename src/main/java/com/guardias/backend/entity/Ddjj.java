@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -101,10 +102,9 @@ public class Ddjj {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","asistenciales", "legajos", "activo", "registrosActividades", "cronogramasTentativos", "descripcion", "ddjjs" })
     private TipoGuardia tipoGuardia;
     
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "id_cronograma_definitivo")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "ddjjs", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" , "ddjjs"})
-    private CronogramaDefinitivo cronogramaDefinitivo;
+    private List<CronogramaDefinitivo> cronogramasDefinitivos = new ArrayList<CronogramaDefinitivo>();
 
     @Override
     public boolean equals(Object obj) {

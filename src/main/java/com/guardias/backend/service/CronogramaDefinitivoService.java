@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,7 +101,20 @@ public class CronogramaDefinitivoService {
             cronogramaDefinitivo.setEfector(efectorService.findById(cronogramaDefinitivoDto.getIdEfector()));
         }
 
+        // Validar si idDdjjs no es null
         if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
+            // Si no es null, procesar las ddjj
+            for (Long idDdjj : cronogramaDefinitivoDto.getIdDdjjs()) {
+                // Lógica para procesar cada idDdjj
+                Ddjj ddjj = ddjjRepository.findById(idDdjj).orElse(null);
+                if (ddjj != null && !cronogramaDefinitivo.getDdjjs().contains(ddjj)) {
+                    cronogramaDefinitivo.getDdjjs().add(ddjj);
+                    ddjj.getCronogramasDefinitivos().add(cronogramaDefinitivo);
+                }
+            }
+        }
+
+        /* if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (cronogramaDefinitivo.getDdjjs() != null) {
                 for (Ddjj ddjj : cronogramaDefinitivo.getDdjjs()) {
@@ -118,7 +130,7 @@ public class CronogramaDefinitivoService {
                 cronogramaDefinitivo.getDdjjs().add(ddjjRepository.findById(id).get());
                 ddjjRepository.findById(id).get().setCronogramaDefinitivo(cronogramaDefinitivo);
             }
-        }
+        } */
 
         cronogramaDefinitivo.setActivo(true);
         return cronogramaDefinitivo;
