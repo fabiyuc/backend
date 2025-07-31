@@ -300,68 +300,57 @@ public class RegistroMensualService {
      */
     public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
-        Long idAsistencial = registroActividad.getAsistencial().getId();
-        Long idEfector = registroActividad.getEfector().getId();
-        int mes = registroActividad.getFechaIngreso().getMonth().getValue();
-        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
-        int anio = registroActividad.getFechaIngreso().getYear();
-        Long id;
-        RegistroMensual registroMensual = new RegistroMensual();
+         // 1. Identificación del registro
+    Long idAsistencial = registroActividad.getAsistencial().getId();
+    Long idEfector = registroActividad.getEfector().getId();
+    MesesEnum mesEnum = MesesEnum.fromNumeroMes(registroActividad.getFechaIngreso().getMonthValue());
+    int anio = registroActividad.getFechaIngreso().getYear();
 
-        try {
-            /* Busca el registro mensual existente */
-            registroMensual = findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector, mesEnum, anio)
-                    .get();
-            System.out.println("##### id del registro mensual encontrado: " + registroMensual.getId());
-        } catch (Exception exception) {
-            /* Si no existe, crea uno nuevo */
-            System.out.println("id no encontrado registroMensualService Ln215 - " + exception.getMessage());
-            registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
-        }
-        id = registroMensual.getId();
-        System.out.println("##### id del registro mensual fuera del try: " + registroMensual.getId());
+    // 2. Búsqueda del registro mensual existente
+    Optional<RegistroMensual> registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
+        idAsistencial, idEfector, mesEnum, anio);
 
-        // sumo las horas y los montos
-        System.out.println("... CREANDO UN NUEVO SUMAHORAS.... : ");
+    RegistroMensual registroMensual;
 
-        System.out.println("... id sumahoras del reg mensual.... : " + registroMensual.getTotalHoras().getId());
-
-        SumaHoras horas = registroMensual.getTotalHoras();
-
-        if (horas == null) {
-            horas = new SumaHoras();
-            registroMensual.setTotalHoras(horas);
-        }
-
-        /*
-         * Acumula horas LAV/SDF y montos de un registros de actividad al total mensual
-         */
-        sumaHorasService.sumarHorasMensuales(horas, registroActividad.getHorasRealizadas());
-
-        sumaHorasService.save(horas);
-
-        // JsonFile jsonFile = addRegistroActividadToJsonFile(new JsonFile(),
-        // registroActividad);
-        // luego vemos el json //JsonFile jsonFile = new JsonFile();
-        try {
-            /* Vincular registro de actividad al mensual */
-            registroActividad.setRegistroMensual(findById(id).get());
-            /*
-             * luego vemos el json // if (registroMensual.getJsonFile() != null) {
-             * jsonFile = registroMensual.getJsonFile();
-             * }
-             */
-        } catch (Exception e) {
-            System.out.println("error: idRegistroMensual nulo  registroMensualService Ln247 -- " + e.getMessage());
-        }
-        // jsonFileService.save(jsonFile);
-        // luego vemos el json
-        // //registroMensual.setJsonFile(addRegistroActividadToJsonFile(jsonFile,
-        // registroActividad));
-
-        return registroActividad;
+    if (registroExistente.isPresent()) {
+        registroMensual = registroExistente.get();
+        System.out.println("##### ID Registro Mensual existente: " + registroMensual.getId());
+    } else {
+        // Creación de nuevo registro con sumaHoras integrado
+        System.out.println("DEBUG - Creando nuevo registro mensual");
+        registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+        
+        // Crear y asignar SumaHoras
+        SumaHoras nuevasHoras = new SumaHoras();
+        nuevasHoras.setActivo(true);
+        sumaHorasService.save(nuevasHoras); // Persistir primero
+        
+        registroMensual.setTotalHoras(nuevasHoras);
+        save(registroMensual); // Persistir el registro mensual
+        
+        System.out.println("##### Nuevo ID Registro Mensual: " + registroMensual.getId() + 
+                         " | ID SumaHoras: " + nuevasHoras.getId());
     }
 
+    // 3. Acumular horas al registro mensual
+    if (!Boolean.TRUE.equals(registroActividad.getEsGuardiaIncompleta())) {
+        SumaHoras horasMensuales = registroMensual.getTotalHoras();
+        SumaHoras horasGuardia = registroActividad.getHorasRealizadas();
+        
+        System.out.println("DEBUG - Antes de acumular: SDF=" + horasMensuales.getHorasSdf() + 
+                         " | LAV=" + horasMensuales.getHorasLav());
+        
+        sumaHorasService.sumarHorasMensuales(horasMensuales, horasGuardia);
+        sumaHorasService.save(horasMensuales);
+        
+        System.out.println("DEBUG - Después de acumular: SDF=" + horasMensuales.getHorasSdf() + 
+                         " | LAV=" + horasMensuales.getHorasLav());
+    }
+
+    // 4. Vincular registro de actividad al mensual (sin modificar sus horas)
+    registroActividad.setRegistroMensual(registroMensual);
+    return registroActividad;
+}
     
 
 }
