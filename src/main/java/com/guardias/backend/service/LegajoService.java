@@ -712,10 +712,27 @@ public class LegajoService {
     public List<LegajoActualDto> getLegajosByAsistencial(Long idPerson) {
         List<Legajo> legajos = legajoRepository.findLegajosByPersonaId(idPerson);
 
-        return legajos.stream().map(legajo -> new LegajoActualDto(
-                legajo.getRevista().getAdicional().getNombre(),
-                legajo.getRevista().getCategoria().getNombre(),
-                legajo.getRevista().getTipoRevista().getNombre())).toList();
+        return legajos.stream()
+                .map(legajo -> {
+                    if (legajo.getRevista() == null) {
+                        return new LegajoActualDto("Sin revista", "Sin revista", "Sin revista");
+                    }
+
+                    String nombreAdicional = legajo.getRevista().getAdicional() != null
+                            ? legajo.getRevista().getAdicional().getNombre()
+                            : "Sin adicional";
+
+                    String nombreCategoria = legajo.getRevista().getCategoria() != null
+                            ? legajo.getRevista().getCategoria().getNombre()
+                            : "Sin categoría";
+
+                    String nombreTipoRevista = legajo.getRevista().getTipoRevista() != null
+                            ? legajo.getRevista().getTipoRevista().getNombre()
+                            : "Sin tipo de revista";
+
+                    return new LegajoActualDto(nombreAdicional, nombreCategoria, nombreTipoRevista);
+                })
+                .toList();
     }
 
     public String calculateMD5(InputStream inputStream) throws Exception {
