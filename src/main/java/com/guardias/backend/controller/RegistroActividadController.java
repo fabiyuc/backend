@@ -214,14 +214,24 @@ public class RegistroActividadController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-   @GetMapping("/validar-precondiciones-cronograma/{idEfector}/{mes}/{anio}")
+    @GetMapping("/validar-precondiciones-cronograma/{idEfector}/{mes}/{anio}")
     public ResponseEntity<Boolean> checkCompleteDdjjSet(
-        @PathVariable Long idEfector,
-        @PathVariable int mes,
-        @PathVariable int anio ) {
-        
-        boolean existsCompleteSet = registroActividadService.validarPrecondicionesCronograma(idEfector,mes, anio );
+            @PathVariable Long idEfector,
+            @PathVariable int mes,
+            @PathVariable int anio) {
+
+        boolean existsCompleteSet = registroActividadService.validarPrecondicionesCronograma(idEfector, mes, anio);
         return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
+    }
+
+    @GetMapping("/obtener-ddjj-aprobadas/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<Long>> obtenerDdjjAprobadas(
+            @PathVariable Long idEfector,
+            @PathVariable int mes,
+            @PathVariable int anio) {
+
+        List<Long> ddjjAprobadas = registroActividadService.obtenerIdsDdjjAprobadas(idEfector, mes, anio);
+        return new ResponseEntity<>(ddjjAprobadas, HttpStatus.OK);
     }
 
 }

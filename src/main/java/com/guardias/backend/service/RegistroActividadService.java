@@ -6,7 +6,10 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -256,11 +259,15 @@ public class RegistroActividadService {
                 /* Si es Extra o CF */
                 System.out.println("DEBUG - es tipo guardia extra o cf");
                 /* Obtiene valores de guardia */
-                /* ValorGuardiaExtrayCF valorGuardiaBase1 = valorGuardiaExtraYcfService
-                        .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
-                System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase1);
-                System.out.println("DEBUG 6b - Total LAV/SDF: " + valorGuardiaBase1.getTotalLav() + "/"
-                        + valorGuardiaBase1.getTotalSdf()); */
+                /*
+                 * ValorGuardiaExtrayCF valorGuardiaBase1 = valorGuardiaExtraYcfService
+                 * .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
+                 * System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " +
+                 * valorGuardiaBase1);
+                 * System.out.println("DEBUG 6b - Total LAV/SDF: " +
+                 * valorGuardiaBase1.getTotalLav() + "/"
+                 * + valorGuardiaBase1.getTotalSdf());
+                 */
 
                 try {
 
@@ -290,7 +297,6 @@ public class RegistroActividadService {
                     System.out.println("DEBUG 9 CF- Valor hora SDF: " + valorHoraSdf);
                     System.out.println("DEBUG 10 CF - Monto SDF calculado: " + totalMontoSdf);
 
-                    
                     BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
                     horas.setMontoTotal(total);
                     System.out.println("DEBUG 11 CF - Monto total calculado: " + total);
@@ -495,6 +501,46 @@ public class RegistroActividadService {
         return exists;
     }
 
-   
+    public List<Long> obtenerIdsDdjjAprobadas(Long idEfector, int mes, int anio) {
+        List<Long> idsDdjjAprobadas = new ArrayList<>();
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
 
+        // 1. Verificar registros de actividad
+        boolean tieneCargo = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.CARGO);
+        boolean tieneAgrupacion = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.AGRUPACION);
+        boolean tieneExtra = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.EXTRA);
+        boolean tieneContrafactura = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+                idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
+
+        // 2. Buscar DDJJ aprobadas (todas deben existir)
+        try {
+            if (tieneCargo || tieneAgrupacion) {
+                Long idCargo = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                        idEfector, mesEnum, anio, TipoGuardiaEnum.CARGO, EstadoDdjjEnum.APROBADO)
+                        .orElseThrow(() -> new NoSuchElementException("Falta DDJJ CARGO aprobada"));
+                idsDdjjAprobadas.add(idCargo);
+            }
+
+            if (tieneExtra) {
+                Long idExtra = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                        idEfector, mesEnum, anio, TipoGuardiaEnum.EXTRA, EstadoDdjjEnum.APROBADO)
+                        .orElseThrow(() -> new NoSuchElementException("Falta DDJJ EXTRA aprobada"));
+                idsDdjjAprobadas.add(idExtra);
+            }
+
+            if (tieneContrafactura) {
+                Long idContrafactura = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                        idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO)
+                        .orElseThrow(() -> new NoSuchElementException("Falta DDJJ CONTRAFACTURA aprobada"));
+                idsDdjjAprobadas.add(idContrafactura);
+            }
+
+            return idsDdjjAprobadas;
+        } catch (NoSuchElementException e) {
+            return Collections.emptyList(); // Si falta alguna, devuelve lista vacía
+        }
+    }
 }

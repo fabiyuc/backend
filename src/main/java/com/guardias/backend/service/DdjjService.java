@@ -319,17 +319,19 @@ public class DdjjService {
             }
         }
 
-        /* if (ddjjDto.getIdCronogramaDefinitivo() != null) {
-            if (ddjj.getCronogramaDefinitivo() == null ||
-                    !Objects.equals(ddjj.getCronogramaDefinitivo().getId(), ddjjDto.getIdCronogramaDefinitivo())) {
-                ddjj.setCronogramaDefinitivo(
-                        cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo())
-                                .orElse(null)); 
-            }
-        } else {
-            ddjj.setCronogramaDefinitivo(null); // O mantener el existente si lo hay
-        }
- */
+        /*
+         * if (ddjjDto.getIdCronogramaDefinitivo() != null) {
+         * if (ddjj.getCronogramaDefinitivo() == null ||
+         * !Objects.equals(ddjj.getCronogramaDefinitivo().getId(),
+         * ddjjDto.getIdCronogramaDefinitivo())) {
+         * ddjj.setCronogramaDefinitivo(
+         * cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo())
+         * .orElse(null));
+         * }
+         * } else {
+         * ddjj.setCronogramaDefinitivo(null); // O mantener el existente si lo hay
+         * }
+         */
         ddjj.setActivo(true);
     }
 
@@ -688,4 +690,40 @@ public class DdjjService {
 
         return true; // Cumple todas las condiciones
     }
+
+    public int actualizarDdjjAPendiente(Long idEfector, int mes, int anio) {
+        // 1. Primero obtenemos los IDs de las DDJJ que cumplen los requisitos
+        List<Long> idsDdjjValidas = registroActividadService.obtenerIdsDdjjAprobadas(idEfector, mes, anio);
+
+        // 2. Si no hay DDJJ válidas, retornamos 0
+        if (idsDdjjValidas.isEmpty()) {
+            return 0;
+        }
+
+        // 3. Actualizamos el estado de las DDJJ encontradas
+        return ddjjRepository.updateEstadoDdjjDirectorDPHByIds(
+                idsDdjjValidas,
+                EstadoDdjjEnum.PENDIENTE);
+    }
+
+    public void actualizarEstadoAPendiente(List<Long> idsDdjj) {
+    if (idsDdjj == null || idsDdjj.isEmpty()) {
+        throw new IllegalArgumentException("La lista de IDs de DDJJ no puede estar vacía");
+    }
+
+    // Verificar que todas las DDJJ existen
+    List<Ddjj> ddjjs = ddjjRepository.findAllById(idsDdjj);
+    if (ddjjs.size() != idsDdjj.size()) {
+        throw new IllegalArgumentException("Algunas DDJJ no existen");
+    }
+
+    // Actualizar estado
+    ddjjs.forEach(ddjj -> {
+        ddjj.setEstadoDdjjDirectorDPH(EstadoDdjjEnum.PENDIENTE);
+        // Opcional: Registrar quién hizo el cambio
+        // ddjj.setUltimaActualizacion(LocalDateTime.now());
+    });
+
+    ddjjRepository.saveAll(ddjjs);
+}
 }

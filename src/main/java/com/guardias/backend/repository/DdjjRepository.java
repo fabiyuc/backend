@@ -125,4 +125,17 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("anio") int anio,
                         @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
                         @Param("estadoDirector") EstadoDdjjEnum estadoDirector);
+
+        @Query("SELECT d.id FROM Ddjjs d WHERE d.efector.id = :efectorId AND d.mes = :mes AND d.anio = :anio AND d.tipoGuardia.nombre = :tipoGuardia AND d.estadoDdjjDirector = :estado")
+        Optional<Long> findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                        @Param("estado") EstadoDdjjEnum estado);
+
+        @Query("UPDATE Ddjjs d SET d.estadoDdjjDirectorDPH = :nuevoEstado WHERE d.id IN :ids")
+        int updateEstadoDdjjDirectorDPHByIds(
+                        @Param("ids") List<Long> ids,
+                        @Param("nuevoEstado") EstadoDdjjEnum nuevoEstado);
 }

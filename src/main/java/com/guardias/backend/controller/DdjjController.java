@@ -116,10 +116,10 @@ public class DdjjController {
             return new ResponseEntity<>(new Mensaje("DDJJ creada correctamente"), HttpStatus.OK);
 
         } catch (Exception e) {
-        e.printStackTrace(); // Esto imprimirá el error en la consola
-        return new ResponseEntity<>(
-            new Mensaje("Error interno: " + e.getClass().getSimpleName() + ": " + e.getMessage()), 
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace(); // Esto imprimirá el error en la consola
+            return new ResponseEntity<>(
+                    new Mensaje("Error interno: " + e.getClass().getSimpleName() + ": " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -178,6 +178,26 @@ public class DdjjController {
             return new ResponseEntity<>(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PutMapping("/actualizar-estado-pendienteDPH")
+public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
+    @RequestBody List<Long> idsDdjj) {
+    
+    try {
+        ddjjService.actualizarEstadoAPendiente(idsDdjj);
+        return new ResponseEntity<>(
+            new Mensaje(idsDdjj.size() + " DDJJ actualizadas a estado PENDIENTE"), 
+            HttpStatus.OK);
+    } catch (IllegalArgumentException e) {
+        return new ResponseEntity<>(
+            new Mensaje(e.getMessage()), 
+            HttpStatus.NOT_FOUND);
+    } catch (Exception e) {
+        return new ResponseEntity<>(
+            new Mensaje("Error al actualizar estados: " + e.getMessage()), 
+            HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 
     @GetMapping("/listByEfectorAndEstadoPendiente/{idEfector}")
     public ResponseEntity<?> listByEfectorAndEstadoPendiente(@PathVariable("idEfector") Long idEfector) {
@@ -403,7 +423,7 @@ public class DdjjController {
             @PathVariable int anio,
             @PathVariable MesesEnum mes,
             @PathVariable Long idEfector) {
-        
+
         boolean existsCompleteSet = ddjjService.existsCompleteSetOfDdjj(mes, anio, idEfector);
         return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
     }
