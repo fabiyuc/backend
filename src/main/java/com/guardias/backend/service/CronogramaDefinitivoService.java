@@ -45,6 +45,11 @@ public class CronogramaDefinitivoService {
         return cronogramaDefinitivoRepository.findById(id);
     }
 
+    public List<CronogramaDefinitivo> findByAnioAndMesAndIdEfectorAndActivoTrue(int anio, MesesEnum mes,
+            Long idEfector) {
+        return cronogramaDefinitivoRepository.findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
+    }
+
     boolean existsByAnioAndMes(int anio, MesesEnum mes) {
         return cronogramaDefinitivoRepository.existsByAnioAndMes(anio, mes);
     }
@@ -76,11 +81,14 @@ public class CronogramaDefinitivoService {
 
         if (cronogramaDefinitivoDto.getIdDdjjs() == null)
             return new ResponseEntity(new Mensaje("la lista de ddjj no debe ser nula"), HttpStatus.BAD_REQUEST);
-        
-        boolean apto = registroActividadService.validarPrecondicionesCronograma(cronogramaDefinitivoDto.getIdEfector(), cronogramaDefinitivoDto.getMes().getNumeroMes(), cronogramaDefinitivoDto.getAnio());
-            if (apto != true){
-                 return new ResponseEntity(new Mensaje("no cumple con las validaciones de la ddjj con estadoDirector aprobadas"), HttpStatus.BAD_REQUEST);
-            }
+
+        boolean apto = registroActividadService.validarPrecondicionesCronograma(cronogramaDefinitivoDto.getIdEfector(),
+                cronogramaDefinitivoDto.getMes().getNumeroMes(), cronogramaDefinitivoDto.getAnio());
+        if (apto != true) {
+            return new ResponseEntity(
+                    new Mensaje("no cumple con las validaciones de la ddjj con estadoDirector aprobadas"),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
@@ -114,23 +122,27 @@ public class CronogramaDefinitivoService {
             }
         }
 
-        /* if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
-            List<Long> idList = new ArrayList<Long>();
-            if (cronogramaDefinitivo.getDdjjs() != null) {
-                for (Ddjj ddjj : cronogramaDefinitivo.getDdjjs()) {
-                    for (Long id : cronogramaDefinitivoDto.getIdDdjjs()) {
-                        if (!cronogramaDefinitivo.getId().equals(id)) {
-                            idList.add(id);
-                        }
-                    }
-                }
-            }
-            List<Long> idsToAdd = idList.isEmpty() ? cronogramaDefinitivoDto.getIdDdjjs() : idList;
-            for (Long id : idsToAdd) {
-                cronogramaDefinitivo.getDdjjs().add(ddjjRepository.findById(id).get());
-                ddjjRepository.findById(id).get().setCronogramaDefinitivo(cronogramaDefinitivo);
-            }
-        } */
+        /*
+         * if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
+         * List<Long> idList = new ArrayList<Long>();
+         * if (cronogramaDefinitivo.getDdjjs() != null) {
+         * for (Ddjj ddjj : cronogramaDefinitivo.getDdjjs()) {
+         * for (Long id : cronogramaDefinitivoDto.getIdDdjjs()) {
+         * if (!cronogramaDefinitivo.getId().equals(id)) {
+         * idList.add(id);
+         * }
+         * }
+         * }
+         * }
+         * List<Long> idsToAdd = idList.isEmpty() ? cronogramaDefinitivoDto.getIdDdjjs()
+         * : idList;
+         * for (Long id : idsToAdd) {
+         * cronogramaDefinitivo.getDdjjs().add(ddjjRepository.findById(id).get());
+         * ddjjRepository.findById(id).get().setCronogramaDefinitivo(
+         * cronogramaDefinitivo);
+         * }
+         * }
+         */
 
         cronogramaDefinitivo.setActivo(true);
         return cronogramaDefinitivo;

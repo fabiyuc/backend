@@ -18,16 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.CronogramaDefinitivo;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.CronogramaDefinitivoService;
 
 @RestController
 @RequestMapping("/cronogramaDefinitivo")
 @CrossOrigin(origins = "http://localhost:4200")
 public class CronogramaDefinitivoController {
-    
+
     @Autowired
     CronogramaDefinitivoService cronogramaDefinitivoService;
-   
+
     @GetMapping("/list")
     public ResponseEntity<List<CronogramaDefinitivo>> list() {
         List<CronogramaDefinitivo> list = cronogramaDefinitivoService.findByActivoTrue().get();
@@ -44,7 +45,7 @@ public class CronogramaDefinitivoController {
     public ResponseEntity<List<CronogramaDefinitivo>> getById(@PathVariable("id") Long id) {
         if (!cronogramaDefinitivoService.activo(id))
             return new ResponseEntity(new Mensaje("El cronograma definitivo no existe"), HttpStatus.NOT_FOUND);
-            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.findById(id).get();
+        CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.findById(id).get();
         return new ResponseEntity(cronogramaDefinitivo, HttpStatus.OK);
     }
 
@@ -54,7 +55,8 @@ public class CronogramaDefinitivoController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.createUpdate(new CronogramaDefinitivo(), cronogramaDefinitivoDto);
+            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
+                    .createUpdate(new CronogramaDefinitivo(), cronogramaDefinitivoDto);
             cronogramaDefinitivoService.save(cronogramaDefinitivo);
             return new ResponseEntity(new Mensaje("Cronograma definitivo creado"), HttpStatus.OK);
         } else {
@@ -72,7 +74,8 @@ public class CronogramaDefinitivoController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.createUpdate(cronogramaDefinitivoService.findById(id).get(),
+            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.createUpdate(
+                    cronogramaDefinitivoService.findById(id).get(),
                     cronogramaDefinitivoDto);
             cronogramaDefinitivoService.save(cronogramaDefinitivo);
             return new ResponseEntity(new Mensaje("Cronograma definitivo modificado"), HttpStatus.OK);
@@ -86,7 +89,7 @@ public class CronogramaDefinitivoController {
         if (!cronogramaDefinitivoService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.findById(id).get();
+        CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService.findById(id).get();
         cronogramaDefinitivo.setActivo(false);
         cronogramaDefinitivoService.save(cronogramaDefinitivo);
         return new ResponseEntity<>(new Mensaje("Cronograma definitivo eliminado correctamente"), HttpStatus.OK);
@@ -98,5 +101,21 @@ public class CronogramaDefinitivoController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         cronogramaDefinitivoService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("cronograma definitivo eliminado FISICAMENTEE"), HttpStatus.OK);
+    }
+
+    @GetMapping("/listCronogramaByAnioMesEfector/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<CronogramaDefinitivo>> listCronograma(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoService
+                    .findByAnioAndMesAndIdEfectorAndActivoTrue(anio, mesEnum, idEfector);
+            return new ResponseEntity<>(cronogramas, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 }
