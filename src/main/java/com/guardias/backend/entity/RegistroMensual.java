@@ -62,13 +62,13 @@ public class RegistroMensual {
             "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
             "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
             "registroMensual", "ddjjs", "registrosPendientes", "servicios", "habilitacionesGuardias",
-            "habilitacionesGenerales", "cronogramasTentativos", "feriados" })
+            "habilitacionesGenerales", "cronogramasTentativos", "feriados", "cronogramasDefinitivos" })
     private Efector efector;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_ddjj")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
-            "total", "estadoDdjj", "valorGmi", "registrosMensuales" })
+            "total", "estadoDdjj", "valorGmi", "registrosMensuales", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramasDefinitivos" })
     private Ddjj ddjj;
 
     /* @OneToOne(mappedBy = "registroMensual") */
