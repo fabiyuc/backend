@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
@@ -304,4 +305,27 @@ public class RegistroMensualController {
         registroMensualService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Registro mensual eliminado FISICAMENTEE"), HttpStatus.OK);
     }
+
+    @GetMapping("/listCargoyagrupAndServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCargoReagrupacionAndServicio(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findByTipoGuardiaCargoReagrupacionAndServicio(anio, mesEnum, idEfector,
+                            idServicio);
+
+            return new ResponseEntity<>(registros, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(
+                    new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

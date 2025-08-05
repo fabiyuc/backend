@@ -13,6 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroMensualDto;
+import com.guardias.backend.dto.adicional.AdicionalListDto;
+import com.guardias.backend.dto.asistencial.AsistencialListForRmensualDto;
+import com.guardias.backend.dto.categoria.CategoriaListDto;
+import com.guardias.backend.dto.legajo.LegajoListDto;
+import com.guardias.backend.dto.novedadPersonal.NovedadPersonalListDto;
+import com.guardias.backend.dto.registroActividad.RegActivListDto;
+import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
+import com.guardias.backend.dto.revista.RevistaListDto;
+import com.guardias.backend.dto.sumaHoras.SumaHorasListDto;
+import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
+import com.guardias.backend.dto.tipoLicencia.TipoLicenciaListDto;
+import com.guardias.backend.dto.tipoRevista.TipoRevistaListDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
@@ -300,57 +312,159 @@ public class RegistroMensualService {
      */
     public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
-         // 1. Identificación del registro
-    Long idAsistencial = registroActividad.getAsistencial().getId();
-    Long idEfector = registroActividad.getEfector().getId();
-    MesesEnum mesEnum = MesesEnum.fromNumeroMes(registroActividad.getFechaIngreso().getMonthValue());
-    int anio = registroActividad.getFechaIngreso().getYear();
+        // 1. Identificación del registro
+        Long idAsistencial = registroActividad.getAsistencial().getId();
+        Long idEfector = registroActividad.getEfector().getId();
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(registroActividad.getFechaIngreso().getMonthValue());
+        int anio = registroActividad.getFechaIngreso().getYear();
 
-    // 2. Búsqueda del registro mensual existente
-    Optional<RegistroMensual> registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
-        idAsistencial, idEfector, mesEnum, anio);
+        // 2. Búsqueda del registro mensual existente
+        Optional<RegistroMensual> registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
+                idAsistencial, idEfector, mesEnum, anio);
 
-    RegistroMensual registroMensual;
+        RegistroMensual registroMensual;
 
-    if (registroExistente.isPresent()) {
-        registroMensual = registroExistente.get();
-        System.out.println("##### ID Registro Mensual existente: " + registroMensual.getId());
-    } else {
-        // Creación de nuevo registro con sumaHoras integrado
-        System.out.println("DEBUG - Creando nuevo registro mensual");
-        registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
-        
-        // Crear y asignar SumaHoras
-        SumaHoras nuevasHoras = new SumaHoras();
-        nuevasHoras.setActivo(true);
-        sumaHorasService.save(nuevasHoras); // Persistir primero
-        
-        registroMensual.setTotalHoras(nuevasHoras);
-        save(registroMensual); // Persistir el registro mensual
-        
-        System.out.println("##### Nuevo ID Registro Mensual: " + registroMensual.getId() + 
-                         " | ID SumaHoras: " + nuevasHoras.getId());
+        if (registroExistente.isPresent()) {
+            registroMensual = registroExistente.get();
+            System.out.println("##### ID Registro Mensual existente: " + registroMensual.getId());
+        } else {
+            // Creación de nuevo registro con sumaHoras integrado
+            System.out.println("DEBUG - Creando nuevo registro mensual");
+            registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+
+            // Crear y asignar SumaHoras
+            SumaHoras nuevasHoras = new SumaHoras();
+            nuevasHoras.setActivo(true);
+            sumaHorasService.save(nuevasHoras); // Persistir primero
+
+            registroMensual.setTotalHoras(nuevasHoras);
+            save(registroMensual); // Persistir el registro mensual
+
+            System.out.println("##### Nuevo ID Registro Mensual: " + registroMensual.getId() +
+                    " | ID SumaHoras: " + nuevasHoras.getId());
+        }
+
+        // 3. Acumular horas al registro mensual
+        if (!Boolean.TRUE.equals(registroActividad.getEsGuardiaIncompleta())) {
+            SumaHoras horasMensuales = registroMensual.getTotalHoras();
+            SumaHoras horasGuardia = registroActividad.getHorasRealizadas();
+
+            System.out.println("DEBUG - Antes de acumular: SDF=" + horasMensuales.getHorasSdf() +
+                    " | LAV=" + horasMensuales.getHorasLav());
+
+            sumaHorasService.sumarHorasMensuales(horasMensuales, horasGuardia);
+            sumaHorasService.save(horasMensuales);
+
+            System.out.println("DEBUG - Después de acumular: SDF=" + horasMensuales.getHorasSdf() +
+                    " | LAV=" + horasMensuales.getHorasLav());
+        }
+
+        // 4. Vincular registro de actividad al mensual (sin modificar sus horas)
+        registroActividad.setRegistroMensual(registroMensual);
+        return registroActividad;
     }
 
-    // 3. Acumular horas al registro mensual
-    if (!Boolean.TRUE.equals(registroActividad.getEsGuardiaIncompleta())) {
-        SumaHoras horasMensuales = registroMensual.getTotalHoras();
-        SumaHoras horasGuardia = registroActividad.getHorasRealizadas();
-        
-        System.out.println("DEBUG - Antes de acumular: SDF=" + horasMensuales.getHorasSdf() + 
-                         " | LAV=" + horasMensuales.getHorasLav());
-        
-        sumaHorasService.sumarHorasMensuales(horasMensuales, horasGuardia);
-        sumaHorasService.save(horasMensuales);
-        
-        System.out.println("DEBUG - Después de acumular: SDF=" + horasMensuales.getHorasSdf() + 
-                         " | LAV=" + horasMensuales.getHorasLav());
+    public List<RegistroMensualListDto> findByTipoGuardiaCargoReagrupacionAndServicio(
+            int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+
+        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}" + anio + mes + idEfector + idServicio);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+
+        System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
+        return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
+                .map(rm -> {
+                    // Filtrar actividades (CARGO/AGRUPACION + servicio)
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                            .filter(actividad -> actividad.isActivo()
+                                    && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                                            || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                                    && actividad.getServicio().getId().equals(idServicio))
+                            .collect(Collectors.toList());
+
+                    // Convertir a DTO
+                    return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                })
+                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                .collect(Collectors.toList());
     }
 
-    // 4. Vincular registro de actividad al mensual (sin modificar sus horas)
-    registroActividad.setRegistroMensual(registroMensual);
-    return registroActividad;
-}
-    
+    private RegistroMensualListDto convertirARegistroMensualCompletoDTO(
+            RegistroMensual rm, List<RegistroActividad> actividadesFiltradas) {
 
+        RegistroMensualListDto dto = new RegistroMensualListDto();
+        dto.setId(rm.getId());
+        dto.setMes(rm.getMes());
+        dto.setAnio(rm.getAnio());
+
+        // Asistencial
+        if (rm.getAsistencial() != null) {
+            AsistencialListForRmensualDto asistencialDTO = new AsistencialListForRmensualDto();
+            asistencialDTO.setApellido(rm.getAsistencial().getApellido());
+            asistencialDTO.setNombre(rm.getAsistencial().getNombre());
+            asistencialDTO.setCuil(rm.getAsistencial().getCuil());
+
+            // Legajos
+            asistencialDTO.setLegajos(rm.getAsistencial().getLegajos().stream()
+                    .map(legajo -> {
+                        LegajoListDto legajoDTO = new LegajoListDto();
+                        if (legajo.getRevista() != null) {
+                            RevistaListDto revistaDTO = new RevistaListDto();
+                            revistaDTO.setTipoRevista(
+                                    new TipoRevistaListDto(legajo.getRevista().getTipoRevista().getNombre()));
+                            revistaDTO.setCategoria(new CategoriaListDto(legajo.getRevista().getCategoria().getNombre()));
+                            revistaDTO.setAdicional(new AdicionalListDto(legajo.getRevista().getAdicional().getNombre()));
+                            legajoDTO.setRevista(revistaDTO);
+                        }
+                        return legajoDTO;
+                    })
+                    .collect(Collectors.toList()));
+
+            // Novedades
+            asistencialDTO.setNovedadesPersonales(rm.getAsistencial().getNovedadesPersonales().stream()
+                    .map(novedad -> new NovedadPersonalListDto(
+                            novedad.getId(),
+                            novedad.getFechaInicio(),
+                            novedad.getFechaFinal(),
+                            novedad.getHoraInicio(),
+                            novedad.getHoraFinal(),
+                            new TipoLicenciaListDto(novedad.getTipoLicencia().getId(),
+                                    novedad.getTipoLicencia().getNombre())))
+                    .collect(Collectors.toList()));
+
+            dto.setAsistencial(asistencialDTO);
+        }
+
+        // RegistroActividad (ya filtradas)
+        dto.setRegistroActividad(actividadesFiltradas.stream()
+                .map(actividad -> new RegActivListDto(
+                        actividad.getId(),
+                        actividad.getFechaIngreso(),
+                        actividad.getFechaEgreso(),
+                        actividad.getHoraIngreso(),
+                        actividad.getHoraEgreso(),
+                        new TipoGuardiaListDto(actividad.getTipoGuardia().getId(), actividad.getTipoGuardia().getNombre().name()),
+                        actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
+                                actividad.getHorasRealizadas().getId(),
+                                actividad.getHorasRealizadas().getHorasLav(),
+                                actividad.getHorasRealizadas().getHorasSdf(),
+                                actividad.getHorasRealizadas().getMontoLav(),
+                                actividad.getHorasRealizadas().getMontoSdf(),
+                                actividad.getHorasRealizadas().getMontoTotal()) : null))
+                .collect(Collectors.toList()));
+
+        // TotalHoras
+        if (rm.getTotalHoras() != null) {
+            dto.setTotalHoras(new SumaHorasListDto(
+                    rm.getTotalHoras().getId(),
+                    rm.getTotalHoras().getHorasLav(),
+                    rm.getTotalHoras().getHorasSdf(),
+                    rm.getTotalHoras().getMontoLav(),
+                    rm.getTotalHoras().getMontoSdf(),
+                    rm.getTotalHoras().getMontoTotal()));
+        }
+
+        return dto;
+    }
 }
