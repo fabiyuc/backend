@@ -58,8 +58,10 @@ public class RegistroMensualService {
 
     public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacion(int anio, MesesEnum mes,
             Long idEfector) {
+
         List<RegistroMensual> registrosMensuales = registroMensualRepository.findByAnioMesEfector(anio, mes, idEfector);
 
+        // Filtro adicional para dejar solo las actividades de tipo CARGO o AGRUPACION
         return registrosMensuales.stream()
                 .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
@@ -123,7 +125,6 @@ public class RegistroMensualService {
     public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacionAndServicio(
             int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
-        // Utilizamos directamente la consulta personalizada del repositorio
         List<RegistroMensual> registrosMensuales = registroMensualRepository
                 .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
 
@@ -156,13 +157,14 @@ public class RegistroMensualService {
                 .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
 
         // Filtro adicional para dejar solo las actividades de tipo EXTRA Y del servicio
-        // específico
+        // específico Y del servicio específico
         return registrosMensuales.stream()
                 .filter(RegistroMensual::isActivo)
                 .map(registroMensual -> {
                     List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad().stream()
                             .filter(actividad -> actividad.isActivo() && // Filtrar actividades activas
-                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA &&
+                                    actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA
+                                    &&
                                     actividad.getServicio().getId().equals(idServicio)) // Filtrar por servicio
                                                                                         // específico
                             .collect(Collectors.toList());
@@ -367,7 +369,8 @@ public class RegistroMensualService {
     public List<RegistroMensualListDto> findByTipoGuardiaCargoReagrupacionAndServicio(
             int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
-        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}" + anio + mes + idEfector + idServicio);
+        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}" + anio + mes
+                + idEfector + idServicio);
         List<RegistroMensual> registrosMensuales = registroMensualRepository
                 .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
 
@@ -381,6 +384,153 @@ public class RegistroMensualService {
                                     && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
                                             || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
                                     && actividad.getServicio().getId().equals(idServicio))
+                            .collect(Collectors.toList());
+
+                    // Convertir a DTO
+                    return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                })
+                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                .collect(Collectors.toList());
+    }
+
+    public List<RegistroMensualListDto> findByTipoGuardiaCargoReagrupacion(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        System.out.println("Parámetros recibidos - anio: " + anio + ", mes: " + mes + ", idEfector: " + idEfector);
+
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfector(anio, mes, idEfector);
+
+        System.out.println("Registros mensuales encontrados: " + registrosMensuales.size());
+
+        return registrosMensuales.stream()
+                .filter(rm -> {
+                    System.out.println("Registro ID: " + rm.getId() + ", activo: " + rm.isActivo());
+                    return rm.isActivo();
+                })
+                .map(rm -> {
+                    System.out.println("Procesando registro ID: " + rm.getId());
+
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                            .filter(actividad -> {
+                                boolean cumpleCondicion = actividad.isActivo()
+                                        && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                                                || actividad.getTipoGuardia()
+                                                        .getNombre() == TipoGuardiaEnum.AGRUPACION);
+                                System.out.println("Actividad ID: " + actividad.getId() +
+                                        ", tipo: " + actividad.getTipoGuardia().getNombre() +
+                                        ", activa: " + actividad.isActivo() +
+                                        ", cumple: " + cumpleCondicion);
+                                return cumpleCondicion;
+                            })
+                            .collect(Collectors.toList());
+
+                    System.out.println("Actividades filtradas: " + actividadesFiltradas.size());
+
+                    RegistroMensualListDto dto = convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+
+                    System.out.println("DTO creado con actividades: " + dto.getRegistroActividad().size());
+
+                    return dto;
+                })
+                .filter(dto -> {
+                    System.out.println("Filtrando DTO con actividades: " + dto.getRegistroActividad().size());
+                    return !dto.getRegistroActividad().isEmpty();
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<RegistroMensualListDto> findByTipoGuardiaExtraAndServicio(
+            int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+
+        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}" + anio + mes
+                + idEfector + idServicio);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+
+        System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
+        return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
+                .map(rm -> {
+                    // Filtrar actividades (EXTRA + servicio)
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                            .filter(actividad -> actividad.isActivo()
+                                    && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                                    && actividad.getServicio().getId().equals(idServicio))
+                            .collect(Collectors.toList());
+
+                    // Convertir a DTO
+                    return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                })
+                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                .collect(Collectors.toList());
+    }
+
+    public List<RegistroMensualListDto> findByTipoGuardiaExtra(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}" + anio + mes + idEfector);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfector(anio, mes, idEfector);
+
+        System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
+        return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
+                .map(rm -> {
+                    // Filtrar actividades (EXTRA + servicio)
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                            .filter(actividad -> actividad.isActivo()
+                                    && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
+                            .collect(Collectors.toList());
+
+                    // Convertir a DTO
+                    return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                })
+                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                .collect(Collectors.toList());
+    }
+
+    public List<RegistroMensualListDto> findByTipoGuardiaCfAndServicio(
+            int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+
+        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}" + anio + mes
+                + idEfector + idServicio);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+
+        System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
+        return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
+                .map(rm -> {
+                    // Filtrar actividades (CF + servicio)
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                            .filter(actividad -> actividad.isActivo()
+                                    && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                    && actividad.getServicio().getId().equals(idServicio))
+                            .collect(Collectors.toList());
+
+                    // Convertir a DTO
+                    return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                })
+                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                .collect(Collectors.toList());
+    }
+
+    public List<RegistroMensualListDto> findByTipoGuardiaCf(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}" + anio + mes + idEfector);
+        List<RegistroMensual> registrosMensuales = registroMensualRepository
+                .findByAnioMesEfector(anio, mes, idEfector);
+
+        System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
+        return registrosMensuales.stream()
+                .filter(RegistroMensual::isActivo)
+                .map(rm -> {
+                    // Filtrar actividades (CF + servicio)
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                            .filter(actividad -> actividad.isActivo()
+                                    && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
                             .collect(Collectors.toList());
 
                     // Convertir a DTO
@@ -411,10 +561,25 @@ public class RegistroMensualService {
                         LegajoListDto legajoDTO = new LegajoListDto();
                         if (legajo.getRevista() != null) {
                             RevistaListDto revistaDTO = new RevistaListDto();
-                            revistaDTO.setTipoRevista(
-                                    new TipoRevistaListDto(legajo.getRevista().getTipoRevista().getNombre()));
-                            revistaDTO.setCategoria(new CategoriaListDto(legajo.getRevista().getCategoria().getNombre()));
-                            revistaDTO.setAdicional(new AdicionalListDto(legajo.getRevista().getAdicional().getNombre()));
+
+                            // Manejo seguro de TipoRevista
+                            if (legajo.getRevista().getTipoRevista() != null) {
+                                revistaDTO.setTipoRevista(
+                                        new TipoRevistaListDto(legajo.getRevista().getTipoRevista().getNombre()));
+                            }
+
+                            // Manejo seguro de Categoria
+                            if (legajo.getRevista().getCategoria() != null) {
+                                revistaDTO.setCategoria(
+                                        new CategoriaListDto(legajo.getRevista().getCategoria().getNombre()));
+                            }
+
+                            // Manejo seguro de Adicional (¡esta era la línea que fallaba!)
+                            if (legajo.getRevista().getAdicional() != null) {
+                                revistaDTO.setAdicional(
+                                        new AdicionalListDto(legajo.getRevista().getAdicional().getNombre()));
+                            }
+
                             legajoDTO.setRevista(revistaDTO);
                         }
                         return legajoDTO;
@@ -444,7 +609,8 @@ public class RegistroMensualService {
                         actividad.getFechaEgreso(),
                         actividad.getHoraIngreso(),
                         actividad.getHoraEgreso(),
-                        new TipoGuardiaListDto(actividad.getTipoGuardia().getId(), actividad.getTipoGuardia().getNombre().name()),
+                        new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
+                                actividad.getTipoGuardia().getNombre().name()),
                         actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
                                 actividad.getHorasRealizadas().getId(),
                                 actividad.getHorasRealizadas().getHorasLav(),
@@ -467,4 +633,5 @@ public class RegistroMensualService {
 
         return dto;
     }
+
 }

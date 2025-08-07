@@ -59,7 +59,7 @@ public class Ddjj {
             "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo",
             "legajos", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades",
             "registroMensual", "ddjjs", "registrosPendientes", "servicios", "habilitacionesGuardias",
-            "habilitacionesGenerales", "cronogramasTentativos", "feriados" })
+            "habilitacionesGenerales", "cronogramasTentativos", "feriados", "cronogramasDefinitivos" })
     private Efector efector;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)

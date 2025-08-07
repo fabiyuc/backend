@@ -47,12 +47,12 @@ public class CronogramaDefinitivo {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
             "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias",
             "legajosUdo", "legajos", "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera",
-            "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "servicios", "cronogramasDefinitivos" })
+            "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "servicios", "cronogramasDefinitivos", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" })
     private Efector efector;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cronogramaDefinitivo_ddjj", joinColumns = @JoinColumn(name = "id_cronogramaDefinitivo"), inverseJoinColumns = @JoinColumn(name = "id_ddjj"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "registrosMensuales", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramaDefinitivo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "registrosMensuales", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
 

@@ -17,13 +17,11 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         Optional<RegistroMensual> findById(Long id);
 
         @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector")
-        List<RegistroMensual> findByAnioMesEfector(@Param("anio") int anio,
-                        @Param("mes") MesesEnum mes, @Param("idEfector") Long idEfector);
+        List<RegistroMensual> findByAnioMesEfector(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes, 
+                @Param("idEfector") Long idEfector);
 
-        /*
-         * List<RegistroMensual> findByAnioAndMesAndEfectorIdAndTipoGuardia(int anio,
-         * MesesEnum mes, Long idEfector);
-         */
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
                         MesesEnum mes, int anio);
 
@@ -42,10 +40,11 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra "
                         + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector "
                         + "AND ra.servicio.id = :idServicio")
-        List<RegistroMensual> findByAnioMesEfectorAndServicio(@Param("anio") int anio,
-                        @Param("mes") MesesEnum mes,
-                        @Param("idEfector") Long idEfector,
-                        @Param("idServicio") Long idServicio);
+        List<RegistroMensual> findByAnioMesEfectorAndServicio(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes,
+                @Param("idEfector") Long idEfector,
+                @Param("idServicio") Long idServicio);
 
         @Query("SELECT r.id FROM registrosMensuales r WHERE r.id IN :ids")
         List<Long> findExistingIds(@Param("ids") List<Long> ids);

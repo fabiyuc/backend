@@ -106,7 +106,7 @@ public abstract class Efector {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaIngreso", "fechaEgreso", "horaIngreso",
             "horaEgreso", "tipoGuardia", "asistencial", "servicio", "efector", "registrosPendientes", "registroMensual",
             "usuarioIngreso", "usuarioEgreso", "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso",
-            "horaRegistroEgreso", "horasRealizadas", "cronogramaDefinitivo" })
+            "horaRegistroEgreso", "horasRealizadas", "cronogramaDefinitivo" , "activo" , "mes" , "anio" , "subtotal" , "total" , "valorGmi" , "registrosMensuales" , "director" , "directorDPH" , "estadoDdjjDirector" , "estadoDdjjDirectorDPH" , "enPosesionDirector" , "enPosesionDirectorDPH" , "motivoDirector" , "motivoDirectorDPH" , "observacionesDdjj" , "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
@@ -134,7 +134,7 @@ public abstract class Efector {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "mes", "fechaEgreso", "anio",
-            "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras", "totalHoras" })
+            "registroActividad", "asistencial", "efector", "ddjjs", "sumaHoras", "totalHoras" })
     private List<CronogramaDefinitivo> cronogramasDefinitivos = new ArrayList<>();
 
     @Override

@@ -133,7 +133,7 @@ public class RegistroMensualController {
             return new ResponseEntity<>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(
-                    new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
+                    new Mensaje("Registros mensuales de extra no encontrados"),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -173,7 +173,7 @@ public class RegistroMensualController {
             return new ResponseEntity<>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(
-                    new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
+                    new Mensaje("Registros mensuales de Cf no encontrados"),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -203,24 +203,6 @@ public class RegistroMensualController {
             return new ResponseEntity(new Mensaje("Registro no encontrado"), HttpStatus.BAD_REQUEST);
         }
     }
-
-    // @GetMapping("/detailId/{idAsistencial}/{idEfector}/{mes}/{anio}")
-    // public ResponseEntity<Long>
-    // idByIdAsistencialAndMes(@PathVariable("idAsistencial") Long idAsistencial,
-    // @PathVariable("idEfector") Long idEfector,
-    // @PathVariable("mes") String mes, @PathVariable("anio") int anio) {
-    // MesesEnum mesEnum = MesesEnum.valueOf(mes);
-
-    // try {
-    // Long idRegistroMensual = registroMensualService
-    // .idByIdAsistencialAndMes(idAsistencial, idEfector, mesEnum, anio)
-    // .get();
-    // return new ResponseEntity<Long>(idRegistroMensual, HttpStatus.OK);
-    // } catch (Exception e) {
-    // return new ResponseEntity(new Mensaje("Registro no encontrado"),
-    // HttpStatus.BAD_REQUEST);
-    // }
-    // }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroMensualDto registroMensualDto) {
@@ -257,36 +239,6 @@ public class RegistroMensualController {
         }
     }
 
-    /*
-     * public void setRegistroMensual(RegistroActividad registroActividad) {
-     * 
-     * Long idAsistencial = registroActividad.getAsistencial().getId();
-     * Long idEfector = registroActividad.getEfector().getId();
-     * int mes = registroActividad.getFechaIngreso().getMonth().getValue();
-     * MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
-     * int anio = registroActividad.getFechaIngreso().getYear();
-     * Long id;
-     * 
-     * try {
-     * RegistroMensual registroMensual = registroMensualService
-     * .findByAsistencialIdAndEfectorIdAndMesAndAnio(idAsistencial, idEfector,
-     * mesEnum, anio)
-     * .get();
-     * id = registroMensual.getId();
-     * } catch (Exception exception) {
-     * System.out.println("id no encontrado");
-     * id = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
-     * }
-     * 
-     * try {
-     * registroActividad.setRegistroMensual(registroMensualService.findById(id).get(
-     * ));
-     * registroActividadService.save(registroActividad);
-     * } catch (Exception e) {
-     * System.out.println("error: idRegistroMensual nulo -- " + e.getMessage());
-     * }
-     * }
-     */
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!registroMensualService.activo(id))
@@ -324,6 +276,111 @@ public class RegistroMensualController {
         } catch (Exception e) {
             return new ResponseEntity(
                     new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listCargoyagrup/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCargoReagrupacion(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findByTipoGuardiaCargoReagrupacion(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<>(registros, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(
+                    new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listExtraAndServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaExtraAndServicio(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findByTipoGuardiaExtraAndServicio(anio, mesEnum, idEfector,
+                            idServicio);
+
+            return new ResponseEntity<>(registros, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(
+                    new Mensaje("Registros mensuales de extra no encontrados"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listExtra/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaExtra(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findByTipoGuardiaExtra(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<>(registros, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(
+                    new Mensaje("Registros mensuales de extra no encontrados"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listCfAndServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCfAndServicio(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("idServicio") Long idServicio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findByTipoGuardiaCfAndServicio(anio, mesEnum, idEfector,
+                            idServicio);
+
+            return new ResponseEntity<>(registros, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(
+                    new Mensaje("Registros mensuales de CF no encontrados"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/listCf/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCf(
+            @PathVariable("anio") int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idEfector") Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findByTipoGuardiaCf(anio, mesEnum, idEfector);
+
+            return new ResponseEntity<>(registros, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(
+                    new Mensaje("Registros mensuales de CF no encontrados"),
                     HttpStatus.BAD_REQUEST);
         }
     }
