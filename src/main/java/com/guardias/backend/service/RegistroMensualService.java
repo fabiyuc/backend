@@ -631,6 +631,10 @@ public class RegistroMensualService {
                     rm.getTotalHoras().getMontoTotal()));
         }
 
+        if (rm.getDdjj() != null){
+                dto.setIdDdjj(rm.getDdjj().getId());
+        }
+
         return dto;
     }
 
