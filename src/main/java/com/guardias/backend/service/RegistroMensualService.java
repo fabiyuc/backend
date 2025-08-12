@@ -540,7 +540,7 @@ public class RegistroMensualService {
                 .collect(Collectors.toList());
     }
 
-    private RegistroMensualListDto convertirARegistroMensualCompletoDTO(
+    public RegistroMensualListDto convertirARegistroMensualCompletoDTO(
             RegistroMensual rm, List<RegistroActividad> actividadesFiltradas) {
 
         RegistroMensualListDto dto = new RegistroMensualListDto();
