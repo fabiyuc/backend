@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaDefinitivo.CronogramaDefinitivoListDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.service.CronogramaDefinitivoService;
@@ -118,4 +119,23 @@ public class CronogramaDefinitivoController {
         }
 
     }
+
+    @GetMapping("/listCronogramaByAnioMesEfectorGuardia/{anio}/{mes}/{idEfector}/{idTipoGuardia}")
+    public ResponseEntity<List<CronogramaDefinitivoListDto>> listByAnioMesEfectorAndTipoGuardia(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector,
+            @PathVariable Long idTipoGuardia) {
+        
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        try {
+            List<CronogramaDefinitivoListDto> cronogramas = cronogramaDefinitivoService
+                    .findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(anio, mesEnum, idEfector, idTipoGuardia);
+            return new ResponseEntity<>(cronogramas, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 }

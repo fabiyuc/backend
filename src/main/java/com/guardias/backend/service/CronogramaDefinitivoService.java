@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.cronogramaDefinitivo.CronogramaDefinitivoListDto;
+import com.guardias.backend.dto.ddjj.DdjjListDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.enums.MesesEnum;
@@ -32,6 +35,8 @@ public class CronogramaDefinitivoService {
     DdjjRepository ddjjRepository;
     @Autowired
     RegistroActividadService registroActividadService;
+    @Autowired
+    RegistroMensualService registroMensualService;
 
     public Optional<List<CronogramaDefinitivo>> findByActivoTrue() {
         return cronogramaDefinitivoRepository.findByActivoTrue();
@@ -48,6 +53,44 @@ public class CronogramaDefinitivoService {
     public List<CronogramaDefinitivo> findByAnioAndMesAndIdEfectorAndActivoTrue(int anio, MesesEnum mes,
             Long idEfector) {
         return cronogramaDefinitivoRepository.findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
+    }
+
+    public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
+            int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
+
+        List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
+                .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
+
+        return cronogramas.stream()
+                .map(cronograma -> {
+                    // Filtramos DDJJs por tipoGuardia (si se especifica)
+                    List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
+                            .filter(ddjj -> idTipoGuardia == null ||
+                                    (ddjj.getTipoGuardia() != null &&
+                                            ddjj.getTipoGuardia().getId().equals(idTipoGuardia)))
+                            .map(ddjj -> new DdjjListDto(
+                                    ddjj.getId(),
+                                    ddjj.getMes(),
+                                    ddjj.getAnio(),
+                                    registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(), idTipoGuardia),
+                                    ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
+                                    ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
+                                    ddjj.getEstadoDdjjDirector(),
+                                    ddjj.getEstadoDdjjDirectorDPH(),
+                                    ddjj.getEnPosesionDirector(),
+                                    ddjj.getEnPosesionDirectorDPH(),
+                                    ddjj.getMotivoDirector(),
+                                    ddjj.getMotivoDirectorDPH(),
+                                    ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null))
+                            .collect(Collectors.toList());
+
+                    return new CronogramaDefinitivoListDto(
+                            cronograma.getId(),
+                            cronograma.getMes(),
+                            cronograma.getAnio(),
+                            ddjjsFiltradas);
+                })
+                .collect(Collectors.toList());
     }
 
     boolean existsByAnioAndMes(int anio, MesesEnum mes) {
