@@ -24,35 +24,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-/*
- * TODO debe ser reemplazado por las clases Articulo e Inciso
- */
 public class TipoLicencia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(columnDefinition = "VARCHAR(40)")
     private String nombre;
-    /*
-     * @Column(columnDefinition = "VARCHAR(10)")
-     * private String ley;
-     * 
-     * @Column(columnDefinition = "VARCHAR(10)")
-     * private String articulo;
-     * 
-     * @Column(columnDefinition = "VARCHAR(10)")
-     * private String inciso;
-     */
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
-    /*
-     * @Temporal(TemporalType.DATE)
-     * private LocalDate fechaInicio;
-     * 
-     * @Temporal(TemporalType.DATE)
-     * private LocalDate fechaFin;
-     */
-
+    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tipoLicencia", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "estado",
             "fechaAlta", "fechaBaja", "fechaModificacion", "motivoModificacion", "activo",

@@ -1,5 +1,8 @@
 package com.guardias.backend.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -16,8 +19,10 @@ import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaDefinitivo.CronogramaDefinitivoListDto;
 import com.guardias.backend.dto.ddjj.DdjjListDto;
+import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.CronogramaDefinitivoRepository;
 import com.guardias.backend.repository.DdjjRepository;
@@ -58,45 +63,7 @@ public class CronogramaDefinitivoService {
         return cronogramaDefinitivoRepository.findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
     }
 
-    public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
-            int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
-
-        List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
-                .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
-
-        return cronogramas.stream()
-                .map(cronograma -> {
-                    // Filtramos DDJJs por tipoGuardia (si se especifica)
-                    List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
-                            .filter(ddjj -> idTipoGuardia == null ||
-                                    (ddjj.getTipoGuardia() != null &&
-                                            ddjj.getTipoGuardia().getId().equals(idTipoGuardia)))
-                            .map(ddjj -> new DdjjListDto(
-                                    ddjj.getId(),
-                                    ddjj.getMes(),
-                                    ddjj.getAnio(),
-                                    registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(), idTipoGuardia),
-                                    ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
-                                    ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
-                                    ddjj.getEstadoDdjjDirector(),
-                                    ddjj.getEstadoDdjjDirectorDPH(),
-                                    ddjj.getEnPosesionDirector(),
-                                    ddjj.getEnPosesionDirectorDPH(),
-                                    ddjj.getMotivoDirector(),
-                                    ddjj.getMotivoDirectorDPH(),
-                                    ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null))
-                            .collect(Collectors.toList());
-
-                    return new CronogramaDefinitivoListDto(
-                            cronograma.getId(),
-                            cronograma.getMes(),
-                            cronograma.getAnio(),
-                            ddjjsFiltradas);
-                })
-                .collect(Collectors.toList());
-    }
-
-    boolean existsByAnioAndMes(int anio, MesesEnum mes) {
+    public boolean existsByAnioAndMes(int anio, MesesEnum mes) {
         return cronogramaDefinitivoRepository.existsByAnioAndMes(anio, mes);
     }
 
@@ -168,28 +135,6 @@ public class CronogramaDefinitivoService {
             }
         }
 
-        /*
-         * if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
-         * List<Long> idList = new ArrayList<Long>();
-         * if (cronogramaDefinitivo.getDdjjs() != null) {
-         * for (Ddjj ddjj : cronogramaDefinitivo.getDdjjs()) {
-         * for (Long id : cronogramaDefinitivoDto.getIdDdjjs()) {
-         * if (!cronogramaDefinitivo.getId().equals(id)) {
-         * idList.add(id);
-         * }
-         * }
-         * }
-         * }
-         * List<Long> idsToAdd = idList.isEmpty() ? cronogramaDefinitivoDto.getIdDdjjs()
-         * : idList;
-         * for (Long id : idsToAdd) {
-         * cronogramaDefinitivo.getDdjjs().add(ddjjRepository.findById(id).get());
-         * ddjjRepository.findById(id).get().setCronogramaDefinitivo(
-         * cronogramaDefinitivo);
-         * }
-         * }
-         */
-
         cronogramaDefinitivo.setActivo(true);
         return cronogramaDefinitivo;
     }
@@ -213,15 +158,113 @@ public class CronogramaDefinitivoService {
         }
     }
 
-    public List<Long> getTiposGuardia(Long idCronograma) {
-    return cronogramaDefinitivoRepository.findByIdAndActivoTrue(idCronograma)
-        .map(cronograma -> cronograma.getDdjjs().stream()
-            .filter(ddjj -> ddjj.getTipoGuardia() != null)
-            .map(ddjj -> ddjj.getTipoGuardia().getId())
-            .distinct()
-            .collect(Collectors.toList()))
-        .orElse(Collections.emptyList()); // Devuelve lista vacía si no existe
+    public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
+            int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
+
+        List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
+                .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
+
+        return cronogramas.stream()
+                .map(cronograma -> {
+                    // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos ambos tipos (1 y 2))
+                    List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
+                            .filter(ddjj -> idTipoGuardia == null ||
+                                    (ddjj.getTipoGuardia() != null &&
+                                    (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) || 
+                                         (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L))))
+                            .map(ddjj -> {
+                                // Aplicamos filtro adicional para tipoGuardia == 1
+                                List<RegistroMensualListDto> registros = idTipoGuardia != null && idTipoGuardia == 1L
+                                        ? filtrarRegistrosConNovedades(ddjj.getRegistrosMensuales())
+                                        : registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(),
+                                                idTipoGuardia);
+
+                                return new DdjjListDto(
+                                        ddjj.getId(),
+                                        ddjj.getMes(),
+                                        ddjj.getAnio(),
+                                        registros,
+                                        ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
+                                        ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
+                                        ddjj.getEstadoDdjjDirector(),
+                                        ddjj.getEstadoDdjjDirectorDPH(),
+                                        ddjj.getEnPosesionDirector(),
+                                        ddjj.getEnPosesionDirectorDPH(),
+                                        ddjj.getMotivoDirector(),
+                                        ddjj.getMotivoDirectorDPH(),
+                                        ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null);
+                            })
+                            .collect(Collectors.toList());
+
+                    return new CronogramaDefinitivoListDto(
+                            cronograma.getId(),
+                            cronograma.getMes(),
+                            cronograma.getAnio(),
+                            ddjjsFiltradas);
+                })
+                .collect(Collectors.toList());
     }
 
+    private List<RegistroMensualListDto> filtrarRegistrosConNovedades(List<RegistroMensual> registros) {
+        return registros.stream()
+                .filter(rm -> !tieneNovedadCompensatoriaOLAO(rm))
+                .map(rm -> registroMensualService.convertirARegistroMensualCompletoDTO(
+                        rm,
+                        rm.getRegistroActividad().stream()
+                                .filter(act -> act.getTipoGuardia() != null && act.getTipoGuardia().getId() == 1L)
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+    }
+
+    private boolean tieneNovedadCompensatoriaOLAO(RegistroMensual registro) {
+        if (registro.getAsistencial() == null) {
+            return false;
+        }
+
+        return registro.getAsistencial().getNovedadesPersonales().stream()
+                .filter(n -> n.isActivo())
+                .anyMatch(novedad -> {
+                    String tipoLicencia = novedad.getTipoLicencia() != null
+                            ? novedad.getTipoLicencia().getNombre()
+                            : null;
+
+                    boolean esLicenciaRelevante = "Compensatorio".equalsIgnoreCase(tipoLicencia)
+                            || "LAO".equalsIgnoreCase(tipoLicencia);
+
+                    if (!esLicenciaRelevante) {
+                        return false;
+                    }
+
+                    return haySolapamiento(
+                            registro.getAnio(), registro.getMes(),
+                            novedad.getFechaInicio(), novedad.getHoraInicio(),
+                            novedad.getFechaFinal(), novedad.getHoraFinal());
+                });
+    }
+
+    private boolean haySolapamiento(
+            int anioAct, MesesEnum mesAct,
+            LocalDate fechaIniNov, LocalTime horaIniNov,
+            LocalDate fechaFinNov, LocalTime horaFinNov) {
+
+        // Asumimos que el registro mensual es para todo el mes
+        LocalDateTime inicioMes = LocalDateTime.of(LocalDate.of(anioAct, mesAct.ordinal() + 1, 1), LocalTime.MIN);
+        LocalDateTime finMes = inicioMes.plusMonths(1).minusSeconds(1);
+
+        LocalDateTime inicioNov = LocalDateTime.of(fechaIniNov, horaIniNov != null ? horaIniNov : LocalTime.MIN);
+        LocalDateTime finNov = LocalDateTime.of(fechaFinNov, horaFinNov != null ? horaFinNov : LocalTime.MAX);
+
+        return inicioNov.isBefore(finMes) && finNov.isAfter(inicioMes);
+    }
+
+     public List<Long> getTiposGuardia(Long idCronograma) {
+        return cronogramaDefinitivoRepository.findByIdAndActivoTrue(idCronograma)
+                .map(cronograma -> cronograma.getDdjjs().stream()
+                        .filter(ddjj -> ddjj.getTipoGuardia() != null)
+                        .map(ddjj -> ddjj.getTipoGuardia().getId())
+                        .distinct()
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList()); // Devuelve lista vacía si no existe
+    }
 
 }
