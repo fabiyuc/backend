@@ -3,6 +3,7 @@ package com.guardias.backend.dto.registroActividad;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.dto.sumaHoras.SumaHorasListDto;
 import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
 
@@ -21,6 +22,8 @@ public class RegActivListDto {
     private LocalTime horaIngreso;
     private LocalTime horaEgreso;
     private TipoGuardiaListDto tipoGuardia;
+    private ServicioSummaryDto servicio;
     private SumaHorasListDto horasRealizadas;
+    
 
 }

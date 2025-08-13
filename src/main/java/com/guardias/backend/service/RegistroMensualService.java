@@ -22,6 +22,7 @@ import com.guardias.backend.dto.novedadPersonal.NovedadPersonalListDto;
 import com.guardias.backend.dto.registroActividad.RegActivListDto;
 import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
 import com.guardias.backend.dto.revista.RevistaListDto;
+import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.dto.sumaHoras.SumaHorasListDto;
 import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
 import com.guardias.backend.dto.tipoLicencia.TipoLicenciaListDto;
@@ -711,6 +712,9 @@ public class RegistroMensualService {
                                                 actividad.getHoraEgreso(),
                                                 new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
                                                                 actividad.getTipoGuardia().getNombre().name()),
+                                                
+                                                new ServicioSummaryDto(actividad.getServicio().getId(), 
+                                                                actividad.getServicio().getDescripcion()),
                                                 actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
                                                                 actividad.getHorasRealizadas().getId(),
                                                                 actividad.getHorasRealizadas().getHorasLav(),
