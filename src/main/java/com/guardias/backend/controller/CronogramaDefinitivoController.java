@@ -147,7 +147,7 @@ public class CronogramaDefinitivoController {
             return new ResponseEntity<>(tiposGuardiaIds,HttpStatus.OK);            
         } catch (Exception e) {
             System.out.println("=== ERROR - Detalle del error: ===");
-            e.printStackTrace(); // Esto imprimirá el stack trace completo
+            e.printStackTrace(); // Esto imprime el stack trace completo
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
