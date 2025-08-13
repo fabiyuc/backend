@@ -30,4 +30,12 @@ public interface CapsRepository extends JpaRepository<Caps, Long> {
 
     @Query("SELECT c.cabecera.nombre FROM Caps c WHERE c.id = :id")
     Optional<String> findCabeceraNameByCapsId(@Param("id") Long id);
+
+    @Query("SELECT c FROM Caps c " +
+            "JOIN c.legajos l " +
+            "JOIN l.persona p " +
+            "JOIN p.usuarios u " +
+            "WHERE u.id = :idUsuario AND c.activo = true AND l.activo = true AND u.activo = true " +
+            "ORDER BY l.fechaInicio DESC")
+    Optional<Caps> findCapsByUsuarioId(@Param("idUsuario") Long idUsuario);
 }

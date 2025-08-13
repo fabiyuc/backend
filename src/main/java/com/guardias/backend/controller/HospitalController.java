@@ -601,4 +601,37 @@ public class HospitalController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/imageByUser/{idUsuario}")
+    public ResponseEntity<?> getImageByUserId(@PathVariable("idUsuario") Long idUsuario) {
+        try {
+            // Buscar el efector asignado al usuario a través de sus legajos
+            Optional<Hospital> hospitalOpt = hospitalService.findHospitalByUsuarioId(idUsuario);
+
+            if (!hospitalOpt.isPresent()) {
+                return new ResponseEntity<>(new Mensaje("Usuario no tiene hospital asignado"), HttpStatus.NOT_FOUND);
+            }
+
+            Hospital hospital = hospitalOpt.get();
+
+            if (hospital.getUrl() == null || hospital.getUrl().isEmpty()) {
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "El hospital no tiene imagen asignada";
+                    public final String hospitalNombre = hospital.getNombre();
+                    public final String url = null;
+                }, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "Imagen encontrada";
+                public final String hospitalNombre = hospital.getNombre();
+                public final String url = hospital.getUrl();
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener imagen por usuario: " + e.getMessage());
+            return new ResponseEntity<>(new Mensaje("Error al obtener la imagen: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

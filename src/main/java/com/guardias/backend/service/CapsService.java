@@ -110,4 +110,8 @@ public class CapsService {
 
         return sb.toString();
     }
+
+    public Optional<Caps> findCapsByUsuarioId(Long idUsuario) {
+        return capsRepository.findCapsByUsuarioId(idUsuario);
+    }
 }

@@ -106,4 +106,8 @@ public class MinisterioService {
 
         return sb.toString();
     }
+
+    public Optional<Ministerio> findMinisterioByUsuarioId(Long idUsuario) {
+        return ministerioRepository.findMinisterioByUsuarioId(idUsuario);
+    }
 }

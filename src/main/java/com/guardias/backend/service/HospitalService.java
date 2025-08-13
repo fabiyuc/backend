@@ -128,6 +128,10 @@ public class HospitalService {
         return Optional.empty();
     }
 
+    public Optional<Hospital> findHospitalByUsuarioId(Long idUsuario) {
+        return hospitalRepository.findHospitalByUsuarioId(idUsuario);
+    }
+
     public String calculateMD5(InputStream inputStream) throws Exception {
         MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] buffer = new byte[8192];

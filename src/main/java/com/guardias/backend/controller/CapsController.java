@@ -194,6 +194,39 @@ public class CapsController {
         return new ResponseEntity(new Mensaje("Efector eliminado FISICAMENTE"), HttpStatus.OK);
     }
 
+    @GetMapping("/imageByUser/{idUsuario}")
+    public ResponseEntity<?> getImageByUserId(@PathVariable("idUsuario") Long idUsuario) {
+        try {
+            // Buscar el caps asignado al usuario a través de sus legajos
+            Optional<Caps> capsOpt = capsService.findCapsByUsuarioId(idUsuario);
+
+            if (!capsOpt.isPresent()) {
+                return new ResponseEntity<>(new Mensaje("Usuario no tiene CAPS asignado"), HttpStatus.NOT_FOUND);
+            }
+
+            Caps caps = capsOpt.get();
+
+            if (caps.getUrl() == null || caps.getUrl().isEmpty()) {
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "El CAPS no tiene imagen asignada";
+                    public final String capsNombre = caps.getNombre();
+                    public final String url = null;
+                }, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "Imagen encontrada";
+                public final String capsNombre = caps.getNombre();
+                public final String url = caps.getUrl();
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener imagen por usuario: " + e.getMessage());
+            return new ResponseEntity<>(new Mensaje("Error al obtener la imagen: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("/uploadImage/{id}")
     public ResponseEntity<?> uploadImage(@PathVariable("id") Long id,
             @RequestParam("image") MultipartFile file) {

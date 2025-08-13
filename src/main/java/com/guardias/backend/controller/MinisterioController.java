@@ -112,7 +112,7 @@ public class MinisterioController {
         Efector efector = efectorController.createUpdate(ministerio, ministerioDto);
         ministerio = (Ministerio) efector;
 
-        // Asignamos la cabecera solo si idCabecera no es nulo
+        // Asignamos la
         if (ministerioDto.getIdCabecera() != null) {
             Ministerio cabecera = ministerioService.findById(ministerioDto.getIdCabecera())
                     .orElseThrow(() -> new IllegalArgumentException(
@@ -357,6 +357,39 @@ public class MinisterioController {
             System.err.println("❌ Error general: " + e.getMessage());
             e.printStackTrace();
             return new ResponseEntity<>(new Mensaje("Error inesperado: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/imageByUser/{idUsuario}")
+    public ResponseEntity<?> getImageByUserId(@PathVariable("idUsuario") Long idUsuario) {
+        try {
+            // Buscar el ministerio asignado al usuario a través de sus legajos
+            Optional<Ministerio> ministerioOpt = ministerioService.findMinisterioByUsuarioId(idUsuario);
+
+            if (!ministerioOpt.isPresent()) {
+                return new ResponseEntity<>(new Mensaje("Usuario no tiene ministerio asignado"), HttpStatus.NOT_FOUND);
+            }
+
+            Ministerio ministerio = ministerioOpt.get();
+
+            if (ministerio.getUrl() == null || ministerio.getUrl().isEmpty()) {
+                return new ResponseEntity<>(new Object() {
+                    public final String mensaje = "El ministerio no tiene imagen asignada";
+                    public final String ministerioNombre = ministerio.getNombre();
+                    public final String url = null;
+                }, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "Imagen encontrada";
+                public final String ministerioNombre = ministerio.getNombre();
+                public final String url = ministerio.getUrl();
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener imagen por usuario: " + e.getMessage());
+            return new ResponseEntity<>(new Mensaje("Error al obtener la imagen: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

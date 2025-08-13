@@ -47,5 +47,13 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
             "WHERE h.id = :idHospital AND s.activo = true")
     List<ServicioSummaryDto> findActiveServiciosByHospitalId(@Param("idHospital") Long idHospital);
 
+    @Query("SELECT h FROM Hospital h " +
+            "JOIN h.legajos l " +
+            "JOIN l.persona p " +
+            "JOIN p.usuarios u " +
+            "WHERE u.id = :idUsuario AND h.activo = true AND l.activo = true AND u.activo = true " +
+            "ORDER BY l.fechaInicio DESC")
+    Optional<Hospital> findHospitalByUsuarioId(@Param("idUsuario") Long idUsuario);
+
     List<Hospital> findByNombreIn(List<String> nombres);
 }
