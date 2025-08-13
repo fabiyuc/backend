@@ -135,7 +135,21 @@ public class CronogramaDefinitivoController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
 
+    @GetMapping("/tiposGuardia/{id}")
+    public ResponseEntity<List<Long>> getTiposGuardia(@PathVariable Long id) {
+
+        System.out.println("=== INICIO - Buscando tipos de guardia para cronograma ID: " + id + " ===");
+        try {
+            List<Long> tiposGuardiaIds = cronogramaDefinitivoService.getTiposGuardia(id);
+            System.out.println("=== RESULTADO - IDs de tipos de guardia encontrados: " + tiposGuardiaIds + " ===");
+            return new ResponseEntity<>(tiposGuardiaIds,HttpStatus.OK);            
+        } catch (Exception e) {
+            System.out.println("=== ERROR - Detalle del error: ===");
+            e.printStackTrace(); // Esto imprimirá el stack trace completo
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

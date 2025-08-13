@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.CronogramaDefinitivo;
@@ -13,6 +15,8 @@ import com.guardias.backend.enums.MesesEnum;
 public interface CronogramaDefinitivoRepository extends JpaRepository<CronogramaDefinitivo, Long> {
 
     Optional<CronogramaDefinitivo> findById(Long id);
+    
+    Optional<CronogramaDefinitivo> findByIdAndActivoTrue(Long id);
 
     Optional<List<CronogramaDefinitivo>> findByActivoTrue();
 
@@ -26,4 +30,6 @@ public interface CronogramaDefinitivoRepository extends JpaRepository<Cronograma
 
     List<CronogramaDefinitivo> findByAnioAndMesAndEfectorIdAndActivoTrue(int anio, MesesEnum mes, Long idEfector);
 
+    @Query("SELECT DISTINCT c FROM cronogramasDefinitivos c LEFT JOIN FETCH c.ddjjs WHERE c.id = :id")
+    Optional<CronogramaDefinitivo> findByIdWithDdjjs(@Param("id") Long id);
 }

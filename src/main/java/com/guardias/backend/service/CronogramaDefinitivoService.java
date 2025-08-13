@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,6 +21,8 @@ import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.CronogramaDefinitivoRepository;
 import com.guardias.backend.repository.DdjjRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 @Transactional
@@ -209,5 +212,16 @@ public class CronogramaDefinitivoService {
             return null;
         }
     }
+
+    public List<Long> getTiposGuardia(Long idCronograma) {
+    return cronogramaDefinitivoRepository.findByIdAndActivoTrue(idCronograma)
+        .map(cronograma -> cronograma.getDdjjs().stream()
+            .filter(ddjj -> ddjj.getTipoGuardia() != null)
+            .map(ddjj -> ddjj.getTipoGuardia().getId())
+            .distinct()
+            .collect(Collectors.toList()))
+        .orElse(Collections.emptyList()); // Devuelve lista vacía si no existe
+    }
+
 
 }
