@@ -27,8 +27,6 @@ import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.repository.CronogramaDefinitivoRepository;
 import com.guardias.backend.repository.DdjjRepository;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @Service
 @Transactional
 public class CronogramaDefinitivoService {
@@ -166,12 +164,13 @@ public class CronogramaDefinitivoService {
 
         return cronogramas.stream()
                 .map(cronograma -> {
-                    // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos ambos tipos (1 y 2))
+                    // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos ambos
+                    // tipos (1 y 2))
                     List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
                             .filter(ddjj -> idTipoGuardia == null ||
                                     (ddjj.getTipoGuardia() != null &&
-                                    (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) || 
-                                         (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L))))
+                                            (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) ||
+                                                    (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L))))
                             .map(ddjj -> {
                                 // Aplicamos filtro adicional para tipoGuardia == 1
                                 List<RegistroMensualListDto> registros = idTipoGuardia != null && idTipoGuardia == 1L
@@ -257,7 +256,7 @@ public class CronogramaDefinitivoService {
         return inicioNov.isBefore(finMes) && finNov.isAfter(inicioMes);
     }
 
-     public List<Long> getTiposGuardia(Long idCronograma) {
+    public List<Long> getTiposGuardia(Long idCronograma) {
         return cronogramaDefinitivoRepository.findByIdAndActivoTrue(idCronograma)
                 .map(cronograma -> cronograma.getDdjjs().stream()
                         .filter(ddjj -> ddjj.getTipoGuardia() != null)
@@ -265,6 +264,34 @@ public class CronogramaDefinitivoService {
                         .distinct()
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList()); // Devuelve lista vacía si no existe
+    }
+
+    public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorAndActivoTrueDto(int anio, MesesEnum mes,
+            Long idEfector) {
+        List<CronogramaDefinitivo> cronogramas = findByAnioAndMesAndIdEfectorAndActivoTrue(anio, mes, idEfector);
+        return cronogramas.stream()
+                .map(cronograma -> new CronogramaDefinitivoListDto(
+                        cronograma.getId(),
+                        cronograma.getMes(),
+                        cronograma.getAnio(),
+                        cronograma.getDdjjs().stream()
+                                .map(ddjj -> new DdjjListDto(
+                                        ddjj.getId(),
+                                        ddjj.getMes(),
+                                        ddjj.getAnio(),
+                                        registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(),
+                                                ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null),
+                                        ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
+                                        ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
+                                        ddjj.getEstadoDdjjDirector(),
+                                        ddjj.getEstadoDdjjDirectorDPH(),
+                                        ddjj.getEnPosesionDirector(),
+                                        ddjj.getEnPosesionDirectorDPH(),
+                                        ddjj.getMotivoDirector(),
+                                        ddjj.getMotivoDirectorDPH(),
+                                        ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
     }
 
 }

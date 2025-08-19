@@ -105,19 +105,18 @@ public class CronogramaDefinitivoController {
     }
 
     @GetMapping("/listCronogramaByAnioMesEfector/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<CronogramaDefinitivo>> listCronograma(
+    public ResponseEntity<List<CronogramaDefinitivoListDto>> listCronograma(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector) {
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
         try {
-            List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoService
-                    .findByAnioAndMesAndIdEfectorAndActivoTrue(anio, mesEnum, idEfector);
-            return new ResponseEntity<>(cronogramas, HttpStatus.OK);
+            List<CronogramaDefinitivoListDto> cronogramasDto = cronogramaDefinitivoService
+                    .findByAnioMesIdEfectorAndActivoTrueDto(anio, mesEnum, idEfector);
+            return new ResponseEntity<>(cronogramasDto, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @GetMapping("/listCronogramaByAnioMesEfectorGuardia/{anio}/{mes}/{idEfector}/{idTipoGuardia}")
@@ -126,7 +125,7 @@ public class CronogramaDefinitivoController {
             @PathVariable String mes,
             @PathVariable Long idEfector,
             @PathVariable Long idTipoGuardia) {
-        
+
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
         try {
             List<CronogramaDefinitivoListDto> cronogramas = cronogramaDefinitivoService
@@ -144,7 +143,7 @@ public class CronogramaDefinitivoController {
         try {
             List<Long> tiposGuardiaIds = cronogramaDefinitivoService.getTiposGuardia(id);
             System.out.println("=== RESULTADO - IDs de tipos de guardia encontrados: " + tiposGuardiaIds + " ===");
-            return new ResponseEntity<>(tiposGuardiaIds,HttpStatus.OK);            
+            return new ResponseEntity<>(tiposGuardiaIds, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println("=== ERROR - Detalle del error: ===");
             e.printStackTrace(); // Esto imprime el stack trace completo
