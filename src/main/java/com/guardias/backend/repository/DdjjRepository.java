@@ -138,4 +138,10 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
         int updateEstadoDdjjDirectorDPHByIds(
                         @Param("ids") List<Long> ids,
                         @Param("nuevoEstado") EstadoDdjjEnum nuevoEstado);
+
+        boolean existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndActivoTrue(
+                        int anio, MesesEnum mes, Long efectorId, Long tipoGuardiaId);
+
+       
+
 }

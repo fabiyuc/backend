@@ -472,23 +472,33 @@ public class DdjjService {
     }
 
     public boolean existsByAnioMesEfectorAndTipoGuardia(int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
-        // Obtenemos el tipo de guardia por ID
+
+        System.out.println("=== INICIO Servicio (con nuevo atributo) ===");
+
         Optional<TipoGuardia> tipoGuardiaOptional = tipoGuardiaRepository.findById(idTipoGuardia);
 
         if (tipoGuardiaOptional.isPresent()) {
             TipoGuardiaEnum tipo = tipoGuardiaOptional.get().getNombre();
+            System.out.println("Tipo de guardia: " + tipo);
 
             if (tipo == TipoGuardiaEnum.CARGO || tipo == TipoGuardiaEnum.AGRUPACION) {
-                // Si es CARGO o AGRUPACION, buscar cualquier ddjj activa con registros activos
-                // de tipo CARGO o AGRUPACION
-                return ddjjRepository.existsDdjjConTipoGuardiaCargoOAgrupacion(anio, mes, idEfector);
+                // Nueva consulta usando el atributo directo
+                System.out.println("Buscando cualquier DDJJ activa con tipo CARGO o AGRUPACION");
+                boolean result = ddjjRepository.existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndActivoTrue(
+                        anio, mes, idEfector,1L);
+                System.out.println("Resultado: " + result);
+                return result;
             } else {
-                // Para cualquier otro tipo de guardia, se usa la lógica original
-                return ddjjRepository.existsByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, idTipoGuardia);
+                // Consulta específica por tipo de guardia
+                System.out.println("Buscando DDJJ con tipo específico: " + tipo);
+                boolean result = ddjjRepository.existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndActivoTrue(
+                        anio, mes, idEfector, idTipoGuardia);
+                System.out.println("Resultado: " + result);
+                return result;
             }
         }
 
-        // Si el tipo de guardia no existe, devolvemos false
+        System.out.println("TipoGuardia no encontrado");
         return false;
     }
 
@@ -788,7 +798,7 @@ public class DdjjService {
     }
 
     public List<DdjjListDto> findExtraServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
-        
+
         List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
         return ddjjs.stream()
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas
@@ -814,8 +824,8 @@ public class DdjjService {
                 .collect(Collectors.toList());
     }
 
-    public List<DdjjListDto> findExtra(int anio, MesesEnum mes, Long idEfector ) {
-        
+    public List<DdjjListDto> findExtra(int anio, MesesEnum mes, Long idEfector) {
+
         List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
         return ddjjs.stream()
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas

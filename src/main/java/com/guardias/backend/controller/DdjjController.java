@@ -245,11 +245,27 @@ public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
             @PathVariable String mes,
             @PathVariable Long idEfector,
             @PathVariable Long idtipoGuardia) {
+        
+        
+        System.out.println("=== INICIO existsDdjj ===");
+        System.out.println("Parámetros recibidos:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+        System.out.println(" - idtipoGuardia: " + idtipoGuardia);
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            System.out.println("Mes convertido a enum: " + mesEnum);
             boolean exists = ddjjService.existsByAnioMesEfectorAndTipoGuardia(anio, mesEnum, idEfector, idtipoGuardia);
+
+            System.out.println("Resultado de la consulta: " + exists);
+            System.out.println("=== FIN existsDdjj ===");
+
             return ResponseEntity.ok(exists);
         } catch (IllegalArgumentException e) {
+            System.out.println("ERROR: Mes inválido - " + mes);
+            System.out.println("Mensaje de error: " + e.getMessage());
+            System.out.println("=== FIN existsDdjj (con error) ===");
             return ResponseEntity.badRequest().body(false);
         }
     }
