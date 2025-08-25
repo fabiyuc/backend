@@ -180,24 +180,24 @@ public class DdjjController {
     }
 
     @PutMapping("/actualizar-estado-pendienteDPH")
-public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
-    @RequestBody List<Long> idsDdjj) {
-    
-    try {
-        ddjjService.actualizarEstadoAPendiente(idsDdjj);
-        return new ResponseEntity<>(
-            new Mensaje(idsDdjj.size() + " DDJJ actualizadas a estado PENDIENTE"), 
-            HttpStatus.OK);
-    } catch (IllegalArgumentException e) {
-        return new ResponseEntity<>(
-            new Mensaje(e.getMessage()), 
-            HttpStatus.NOT_FOUND);
-    } catch (Exception e) {
-        return new ResponseEntity<>(
-            new Mensaje("Error al actualizar estados: " + e.getMessage()), 
-            HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
+            @RequestBody List<Long> idsDdjj) {
+
+        try {
+            ddjjService.actualizarEstadoAPendiente(idsDdjj);
+            return new ResponseEntity<>(
+                    new Mensaje(idsDdjj.size() + " DDJJ actualizadas a estado PENDIENTE"),
+                    HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(
+                    new Mensaje(e.getMessage()),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Mensaje("Error al actualizar estados: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-}
 
     @GetMapping("/listByEfectorAndEstadoPendiente/{idEfector}")
     public ResponseEntity<?> listByEfectorAndEstadoPendiente(@PathVariable("idEfector") Long idEfector) {
@@ -245,8 +245,7 @@ public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
             @PathVariable String mes,
             @PathVariable Long idEfector,
             @PathVariable Long idtipoGuardia) {
-        
-        
+
         System.out.println("=== INICIO existsDdjj ===");
         System.out.println("Parámetros recibidos:");
         System.out.println(" - anio: " + anio);
@@ -478,7 +477,7 @@ public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
                     HttpStatus.NOT_FOUND);
         }
     }
-    
+
     @GetMapping("/listExtraServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<DdjjListDto>> listExtraAndServicio(
             @PathVariable int anio,
@@ -496,7 +495,7 @@ public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
                     HttpStatus.NOT_FOUND);
         }
     }
-    
+
     @GetMapping("/listExtra/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<DdjjListDto>> listExtraAndServicio(
             @PathVariable int anio,
@@ -513,7 +512,7 @@ public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
                     HttpStatus.NOT_FOUND);
         }
     }
-    
+
     @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<DdjjListDto>> listCfAndServicio(
             @PathVariable int anio,
@@ -548,6 +547,5 @@ public ResponseEntity<Mensaje> actualizarEstadoAPendiente(
                     HttpStatus.NOT_FOUND);
         }
     }
-
 
 }
