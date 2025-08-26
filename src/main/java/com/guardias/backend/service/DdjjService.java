@@ -485,7 +485,7 @@ public class DdjjService {
                 // Nueva consulta usando el atributo directo
                 System.out.println("Buscando cualquier DDJJ activa con tipo CARGO o AGRUPACION");
                 boolean result = ddjjRepository.existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndActivoTrue(
-                        anio, mes, idEfector,1L);
+                        anio, mes, idEfector, 1L);
                 System.out.println("Resultado: " + result);
                 return result;
             } else {
