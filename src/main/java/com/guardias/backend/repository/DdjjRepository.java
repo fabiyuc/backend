@@ -83,14 +83,16 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
 
         @Query("SELECT DISTINCT d FROM Ddjjs d " +
                         "JOIN d.registrosMensuales rm " +
-                        "LEFT JOIN rm.registroActividad ra " +
+                        "JOIN rm.registroActividad ra " +
                         "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
                         "AND ra.servicio.id = :idServicio " +
-                        "AND (ra IS NULL OR ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
-        List<Ddjj> findByEfectorIdAndMesAndAnioServicio(@Param("anio") int anio,
-                        @Param("mes") MesesEnum mes,
-                        @Param("idEfector") Long idEfector,
-                        @Param("idServicio") Long idServicio);
+                        "AND ra.activo = true " +
+                        "AND (ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
+        List<Ddjj> findByEfectorIdAndMesAndAnioServicio(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes,
+                @Param("idEfector") Long idEfector,
+                @Param("idServicio") Long idServicio);
 
         @Query("SELECT COUNT(d) FROM Ddjjs d WHERE " +
                         "d.activo = true AND " +

@@ -448,25 +448,22 @@ public class RegistroMensualService {
 
                 System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
                 return registrosMensuales.stream()
-                                .filter(RegistroMensual::isActivo)
-                                .map(rm -> {
-                                        // Filtrar actividades (CARGO/AGRUPACION + servicio)
-                                        List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                                                        .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CARGO
-                                                                                        || actividad.getTipoGuardia()
-                                                                                                        .getNombre() == TipoGuardiaEnum.AGRUPACION)
-                                                                        && actividad.getServicio().getId()
-                                                                                        .equals(idServicio))
-                                                        .collect(Collectors.toList());
+                        .filter(RegistroMensual::isActivo)
+                        .map(rm -> {
+                                // Filtrar actividades (CARGO/AGRUPACION + servicio)
+                                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                        .stream()
+                        .filter(actividad -> actividad.isActivo()
+                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                                || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
+                                && actividad.getServicio().getId().equals(idServicio))
+                        .collect(Collectors.toList());
 
-                                        // Convertir a DTO
+                        // Convertir a DTO
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
-                                })
-                                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
-                                .collect(Collectors.toList());
+                        })
+                        .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                        .collect(Collectors.toList());
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCargoReagrupacion(
