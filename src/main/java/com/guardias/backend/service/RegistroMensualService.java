@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -703,7 +704,7 @@ public class RegistroMensualService {
                 }
 
                 // RegistroActividad (ya filtradas)
-                dto.setRegistroActividad(actividadesFiltradas.stream()
+                List<RegActivListDto> actividadesDto = actividadesFiltradas.stream()
                                 .map(actividad -> new RegActivListDto(
                                                 actividad.getId(),
                                                 actividad.getFechaIngreso(),
@@ -712,8 +713,8 @@ public class RegistroMensualService {
                                                 actividad.getHoraEgreso(),
                                                 new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
                                                                 actividad.getTipoGuardia().getNombre().name()),
-                                                
-                                                new ServicioSummaryDto(actividad.getServicio().getId(), 
+
+                                                new ServicioSummaryDto(actividad.getServicio().getId(),
                                                                 actividad.getServicio().getDescripcion()),
                                                 actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
                                                                 actividad.getHorasRealizadas().getId(),
@@ -722,18 +723,11 @@ public class RegistroMensualService {
                                                                 actividad.getHorasRealizadas().getMontoLav(),
                                                                 actividad.getHorasRealizadas().getMontoSdf(),
                                                                 actividad.getHorasRealizadas().getMontoTotal()) : null))
-                                .collect(Collectors.toList()));
-
-                // TotalHoras
-                if (rm.getTotalHoras() != null) {
-                        dto.setTotalHoras(new SumaHorasListDto(
-                                        rm.getTotalHoras().getId(),
-                                        rm.getTotalHoras().getHorasLav(),
-                                        rm.getTotalHoras().getHorasSdf(),
-                                        rm.getTotalHoras().getMontoLav(),
-                                        rm.getTotalHoras().getMontoSdf(),
-                                        rm.getTotalHoras().getMontoTotal()));
-                }
+                                .collect(Collectors.toList());
+                dto.setRegistroActividad(actividadesDto);
+                // Calcular nuevo totalHoras basado en las actividades filtradas
+                SumaHorasListDto nuevoTotalHoras = calcularTotalHorasDesdeActividades(actividadesFiltradas, rm.getTotalHoras());
+                dto.setTotalHoras(nuevoTotalHoras);
 
                 if (rm.getDdjj() != null) {
                         dto.setIdDdjj(rm.getDdjj().getId());
@@ -742,26 +736,56 @@ public class RegistroMensualService {
                 return dto;
         }
 
+        private SumaHorasListDto calcularTotalHorasDesdeActividades(List<RegistroActividad> actividadesFiltradas, SumaHoras totalHorasOriginal) {
+                float totalHorasLav = 0;
+                float totalHorasSdf = 0;
+                BigDecimal totalMontoLav = BigDecimal.ZERO;
+                BigDecimal totalMontoSdf = BigDecimal.ZERO;
+                BigDecimal totalMontoTotal = BigDecimal.ZERO;
+
+                for (RegistroActividad actividad : actividadesFiltradas) {
+                        if (actividad.getHorasRealizadas() != null) {
+                                SumaHoras horas = actividad.getHorasRealizadas();
+                                totalHorasLav += horas.getHorasLav();
+                                totalHorasSdf += horas.getHorasSdf();
+                                totalMontoLav = totalMontoLav.add(
+                                                horas.getMontoLav() != null ? horas.getMontoLav() : BigDecimal.ZERO);
+                                totalMontoSdf = totalMontoSdf.add(
+                                                horas.getMontoSdf() != null ? horas.getMontoSdf() : BigDecimal.ZERO);
+                                totalMontoTotal = totalMontoTotal
+                                                .add(horas.getMontoTotal() != null ? horas.getMontoTotal()
+                                                                : BigDecimal.ZERO);
+                        }
+                }
+
+                return new SumaHorasListDto(
+                                totalHorasOriginal != null ? totalHorasOriginal.getId() : null,
+                                totalHorasLav,
+                                totalHorasSdf,
+                                totalMontoLav,
+                                totalMontoSdf,
+                                totalMontoTotal);
+        }
+
         public List<RegistroMensualListDto> mapToDtoList(List<RegistroMensual> registros, Long idTipoGuardia) {
                 if (registros == null || registros.isEmpty()) {
                         return Collections.emptyList();
                 }
 
                 return registros.stream()
-                        .map(rm -> {
-                                // Filtra actividades por tipoGuardia si está presente
-                                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> idTipoGuardia == null || (actividad.getTipoGuardia() != null &&
-                                                                actividad.getTipoGuardia().getId()
-                                                                .equals(idTipoGuardia)))
-                                        .collect(Collectors.toList());
+                                .map(rm -> {
+                                        // Filtra actividades por tipoGuardia si está presente
+                                        List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                                                        .stream()
+                                                        .filter(actividad -> idTipoGuardia == null || (actividad
+                                                                        .getTipoGuardia() != null &&
+                                                                        actividad.getTipoGuardia().getId()
+                                                                                        .equals(idTipoGuardia)))
+                                                        .collect(Collectors.toList());
 
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
                                 })
-                        .collect(Collectors.toList());
+                                .collect(Collectors.toList());
         }
-
-     
 
 }
