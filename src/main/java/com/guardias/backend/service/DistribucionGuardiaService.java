@@ -151,7 +151,81 @@ public class DistribucionGuardiaService {
     }
 
     public ValidacionCronogramaResponseDto validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
-        if (dto == null) {
+
+        System.out.println("=== INICIO validarCronogramaEnDistribucion ===");
+    
+    if (dto == null) {
+        System.out.println("ERROR: DTO recibido es nulo");
+        throw new IllegalArgumentException("El DTO no puede ser nulo.");
+    }
+
+    System.out.println("Validando cronograma para: ");
+    System.out.println("  - idAsistencial: " + dto.getIdAsistencial());
+    System.out.println("  - idEfector: " + dto.getIdEfector());
+    System.out.println("  - tipoGuardia: " + dto.getTipoGuardia());
+    System.out.println("  - fechaIngreso: " + dto.getFechaIngreso());
+    System.out.println("  - horaIngreso: " + dto.getHoraIngreso());
+    System.out.println("  - horaEgreso: " + dto.getHoraEgreso());
+
+    // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+    // entenderlo luego como TIME en la comparacion
+    String horaIngresoString = dto.getHoraIngreso().toString();
+    String horaEgresoString = dto.getHoraEgreso().toString();
+    
+    System.out.println("Hora ingreso convertida: " + horaIngresoString);
+    System.out.println("Hora egreso convertida: " + horaEgresoString);
+
+    // 1. Primero verificamos si hay coincidencia exacta
+    System.out.println("Buscando coincidencia exacta en repository...");
+    boolean coincideExactamente = distribucionGuardiaRepository.findValidDistribucion(
+            dto.getIdAsistencial(),
+            dto.getIdEfector(),
+            dto.getTipoGuardia(),
+            dto.getFechaIngreso(),
+            horaIngresoString,
+            horaEgresoString).isPresent();
+
+    System.out.println("Coincidencia exacta encontrada: " + coincideExactamente);
+
+    if (coincideExactamente) {
+        System.out.println("RETURN: Coincidencia exacta - true, false, false");
+        return new ValidacionCronogramaResponseDto(true, false, false);
+    }
+
+    // 2. Verificación de distribución activa parcial (mismo mes y año)
+    System.out.println("Buscando distribución parcial...");
+    
+    LocalDate fechaIngreso = dto.getFechaIngreso();
+    LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+    DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
+    
+    System.out.println("Semana analizada: " + inicioSemana + " a " + finSemana);
+    System.out.println("Día tentativo: " + diaTentativo);
+
+    TipoGuardiaEnum tipoGuardiaEnum = TipoGuardiaEnum.valueOf(dto.getTipoGuardia());
+    
+    System.out.println("Tipo guardia enum: " + tipoGuardiaEnum);
+
+    boolean existeDistribucionParcial = distribucionGuardiaRepository.existsDistribucionParcialSemanal(
+            dto.getIdAsistencial(),
+            dto.getIdEfector(),
+            tipoGuardiaEnum,
+            inicioSemana,
+            finSemana);
+
+    System.out.println("Distribución parcial encontrada: " + existeDistribucionParcial);
+
+    // 3. Determinar si no hay ninguna distribución
+    boolean sinDistribucion = !existeDistribucionParcial;
+    
+    System.out.println("Sin distribución: " + sinDistribucion);
+    System.out.println("RETURN: false, " + existeDistribucionParcial + ", " + sinDistribucion);
+    System.out.println("=== FIN validarCronogramaEnDistribucion ===");
+
+    return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
+}
+        /* if (dto == null) {
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
 
@@ -194,7 +268,7 @@ public class DistribucionGuardiaService {
         boolean sinDistribucion = !existeDistribucionParcial;
 
         return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
-    }
+    } */
 
     public DiasEnum obtenerDiaSemana(LocalDate fecha) {
         DayOfWeek dayOfWeek = fecha.getDayOfWeek();

@@ -235,10 +235,18 @@ public class DistribucionGuardiaController {
     public ResponseEntity<ValidacionCronogramaResponseDto> verificarCronogramaEnDistribucion(
             @RequestBody CronogramaTentativoResquestDto dto) {
 
-        return ResponseEntity.ok(distribucionGuardiaService.validarCronogramaEnDistribucion(dto));
+        System.out.println("=== INICIO verificarCronogramaEnDistribucion ===");
+        System.out.println("Request recibido: " + dto.toString());
+
+        ValidacionCronogramaResponseDto response = distribucionGuardiaService.validarCronogramaEnDistribucion(dto);
+
+        System.out.println("Response generado: " + response.toString());
+        System.out.println("=== FIN verificarCronogramaEnDistribucion ===");
+
+        return ResponseEntity.ok(response);
     }
 
-    // verifica si existe alguna distribucion activa en esa semana 
+    // verifica si existe alguna distribucion activa en esa semana
     @PostMapping("/validarDistribucionSemanal")
     public boolean validarDistribucionSemanal(
             @RequestBody CronogramaTentativoResquestDto dto) {
@@ -257,7 +265,7 @@ public class DistribucionGuardiaController {
         boolean existe = distribucionGuardiaService.tieneDistribucionActiva(request);
         return ResponseEntity.ok(existe);
     }
-    
+
     @PostMapping("/verificarSuperposicionConCargo")
     public ResponseEntity<Boolean> verificarSuperposicionConCargo(@RequestBody ConsultaLicenciaCompensatorioDto dto) {
         boolean existeSuperposicion = distribucionGuardiaService.existeSuperposicionConCargo(
@@ -266,7 +274,7 @@ public class DistribucionGuardiaController {
                 dto.getFechaFinConsulta(),
                 dto.getHoraInicioConsulta(),
                 dto.getHoraFinConsulta());
-        
+
         return ResponseEntity.ok(existeSuperposicion);
     }
 }
