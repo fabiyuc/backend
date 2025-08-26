@@ -113,7 +113,9 @@ public class ObservacionDdjjController {
 
         if (observacion == null) {
             System.out.println("=== FIN CONTROLLER: No se encontraron resultados ===");
-            return ResponseEntity.notFound().build();
+            // Crear un objeto vacío en lugar de retornar 404
+            ObservacionDdjjUltimoDto observacionVacia = new ObservacionDdjjUltimoDto();
+            return ResponseEntity.ok(observacionVacia);
         }
         System.out.println("=== FIN CONTROLLER: Resultado encontrado ===");
         return ResponseEntity.ok(observacion);
@@ -126,10 +128,6 @@ public class ObservacionDdjjController {
 
         List<ObservacionDdjjUltimoDto> observaciones = observacionDdjjService
                 .getAllObservacionesActivasByDdjjAndTipoDph(idDdjj, tipoDph);
-
-        if (observaciones.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
 
         return ResponseEntity.ok(observaciones);
     }
