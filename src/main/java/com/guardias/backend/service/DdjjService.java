@@ -758,8 +758,7 @@ public class DdjjService {
                                 registroMensual.setRegistroActividad(actividadesFiltradas);
                                 return registroMensual;
                             })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin actividades
                             .collect(Collectors.toList());
                     ddjj.setRegistrosMensuales(registrosFiltrados);
                     return convertirADdjjListDto(ddjj);
@@ -814,8 +813,7 @@ public class DdjjService {
                                 registroMensual.setRegistroActividad(actividadesFiltradas);
                                 return registroMensual;
                             })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin actividades
                             .collect(Collectors.toList());
                     ddjj.setRegistrosMensuales(registrosFiltrados);
                     return convertirADdjjListDto(ddjj);
@@ -914,11 +912,9 @@ public class DdjjService {
         // Convertir registros mensuales usando el servicio de RegistroMensual
         List<RegistroMensualListDto> registrosMensualesDto = ddjj.getRegistrosMensuales().stream()
                 .map(rm -> {
-                    // Primero filtramos las actividades (como ya lo haces en el servicio)
+                    // Primero filtramos las actividades
                     List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.isActivo() &&
-                                    (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
-                                            actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION))
+                            .filter(actividad -> actividad.isActivo())
                             .collect(Collectors.toList());
 
                     // Llamamos al método del servicio pasando el registro mensual y las actividades
