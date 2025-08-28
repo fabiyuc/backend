@@ -52,7 +52,7 @@ public class CronogramaDefinitivo {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cronogramaDefinitivo_ddjj", joinColumns = @JoinColumn(name = "id_cronogramaDefinitivo"), inverseJoinColumns = @JoinColumn(name = "id_ddjj"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "registrosMensuales", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramasDefinitivos" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
 
