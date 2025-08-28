@@ -206,42 +206,44 @@ public class DdjjService {
             ddjj.setEfector(efectorService.findById(ddjjDto.getIdEfector()));
         }
 
-        if (ddjjDto.getIdRegistrosMensuales() != null) {
-            // 1. Primero guarda la DDJJ si es nueva (sin los registros)
-            if (ddjj.getId() == null) {
-                ddjj = ddjjRepository.save(ddjj);
-            }
-
-            // 2. Manejo de registros existentes (para actualización)
-            if (ddjj.getRegistrosMensuales() != null) {
-                // Rompe la relación con registros que ya no están en la lista nueva
-                List<RegistroMensual> toRemove = new ArrayList<>();
-                for (RegistroMensual rm : ddjj.getRegistrosMensuales()) {
-                    if (!ddjjDto.getIdRegistrosMensuales().contains(rm.getId())) {
-                        rm.getDdjjs().remove(ddjj);
-                        toRemove.add(rm);
-                    }
-                }
-                ddjj.getRegistrosMensuales().removeAll(toRemove);
-            } else {
-                ddjj.setRegistrosMensuales(new ArrayList<>());
-            }
-
-            // 3. Agrega los nuevos registros
-            for (Long id : ddjjDto.getIdRegistrosMensuales()) {
-                boolean exists = ddjj.getRegistrosMensuales().stream()
-                        .anyMatch(rm -> rm.getId().equals(id));
-
-                if (!exists) {
-                    Optional<RegistroMensual> rmOpt = registroMensualService.findById(id);
-                    if (rmOpt.isPresent()) {
-                        RegistroMensual rm = rmOpt.get();
-                        rm.getDdjjs().add(ddjj); // Agregar al RegistroMensual
-                        ddjj.getRegistrosMensuales().add(rm); // Agregar a la DDJJ
-                    }
-                }
-            }
-        }
+        /*
+         * if (ddjjDto.getIdRegistrosMensuales() != null) {
+         * // 1. Primero guarda la DDJJ si es nueva (sin los registros)
+         * if (ddjj.getId() == null) {
+         * ddjj = ddjjRepository.save(ddjj);
+         * }
+         * 
+         * // 2. Manejo de registros existentes (para actualización)
+         * if (ddjj.getRegistrosMensuales() != null) {
+         * // Rompe la relación con registros que ya no están en la lista nueva
+         * List<RegistroMensual> toRemove = new ArrayList<>();
+         * for (RegistroMensual rm : ddjj.getRegistrosMensuales()) {
+         * if (!ddjjDto.getIdRegistrosMensuales().contains(rm.getId())) {
+         * rm.getDdjjs().remove(ddjj);
+         * toRemove.add(rm);
+         * }
+         * }
+         * ddjj.getRegistrosMensuales().removeAll(toRemove);
+         * } else {
+         * ddjj.setRegistrosMensuales(new ArrayList<>());
+         * }
+         * 
+         * // 3. Agrega los nuevos registros
+         * for (Long id : ddjjDto.getIdRegistrosMensuales()) {
+         * boolean exists = ddjj.getRegistrosMensuales().stream()
+         * .anyMatch(rm -> rm.getId().equals(id));
+         * 
+         * if (!exists) {
+         * Optional<RegistroMensual> rmOpt = registroMensualService.findById(id);
+         * if (rmOpt.isPresent()) {
+         * RegistroMensual rm = rmOpt.get();
+         * rm.getDdjjs().add(ddjj); // Agregar al RegistroMensual
+         * ddjj.getRegistrosMensuales().add(rm); // Agregar a la DDJJ
+         * }
+         * }
+         * }
+         * }
+         */
 
         if (ddjjDto.getIdObservacionesDdjj() != null) {
             // 1. Primero guarda la DDJJ si es nueva (sin los registros)
@@ -331,49 +333,66 @@ public class DdjjService {
         // 1. Carga batch de registros (1 query)
         List<RegistroMensual> registros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // 2. Caso CREACIÓN (inicialización simple)
+        // 2. Caso CREACIÓN - Inicializa y establece relaciones
         if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
-            registros.forEach(rm -> {
-            if (!rm.getDdjjs().contains(ddjj)) {
-                rm.getDdjjs().add(ddjj);
-            }
-            if (!ddjj.getRegistrosMensuales().contains(rm)) {
-                ddjj.getRegistrosMensuales().add(rm);
-            }
-        });
-        return;
-        }
-        // 3. Caso EDICIÓN
-        Set<Long> nuevosIds = registros.stream()
-            .map(RegistroMensual::getId)
-            .collect(Collectors.toSet());
 
-        // a) Elimina solo los registros que ya no están en la nueva lista
-        Iterator<RegistroMensual> iterator = ddjj.getRegistrosMensuales().iterator();
-        while (iterator.hasNext()) {
-            RegistroMensual rmExistente = iterator.next();
-            if (!nuevosIds.contains(rmExistente.getId())) {
-            
-                rmExistente.getDdjjs().remove(ddjj); // Rompe relación del lado del registro
-                iterator.remove(); // Rompe relación del lado de la DDJJ
-            }
-        }
-
-        // b) Agrega solo los registros nuevos (no existentes)
-        registros.forEach(rm -> {
-            boolean yaExiste = ddjj.getRegistrosMensuales().stream()
-                .anyMatch(existente -> existente.getId().equals(rm.getId()));
-        
-            if (!yaExiste) {
+            // Establece relaciones bidireccionales
+            for (RegistroMensual rm : registros) {
+                // Agrega la DDJJ al registro mensual
                 if (!rm.getDdjjs().contains(ddjj)) {
                     rm.getDdjjs().add(ddjj);
                 }
+                // Agrega el registro mensual a la DDJJ
                 if (!ddjj.getRegistrosMensuales().contains(rm)) {
                     ddjj.getRegistrosMensuales().add(rm);
                 }
             }
-        });
+
+            // GUARDA LA DDJJ PRIMERO para tener ID
+            ddjj = ddjjRepository.save(ddjj);
+
+            // GUARDA LOS REGISTROS MODIFICADOS
+            registroMensualRepository.saveAll(registros);
+            return;
+        }
+
+        // 3. Caso EDICIÓN (código existente corregido)
+        Set<Long> nuevosIds = registros.stream()
+                .map(RegistroMensual::getId)
+                .collect(Collectors.toSet());
+
+        // a) Elimina relaciones con registros que ya no están
+        Iterator<RegistroMensual> iterator = ddjj.getRegistrosMensuales().iterator();
+        List<RegistroMensual> registrosToUpdate = new ArrayList<>();
+
+        while (iterator.hasNext()) {
+            RegistroMensual rmExistente = iterator.next();
+            if (!nuevosIds.contains(rmExistente.getId())) {
+                rmExistente.getDdjjs().remove(ddjj);
+                registrosToUpdate.add(rmExistente);
+                iterator.remove();
+            }
+        }
+
+        // b) Agrega nuevas relaciones
+        for (RegistroMensual rm : registros) {
+            boolean yaExiste = ddjj.getRegistrosMensuales().stream()
+                    .anyMatch(existente -> existente.getId().equals(rm.getId()));
+
+            if (!yaExiste) {
+                if (!rm.getDdjjs().contains(ddjj)) {
+                    rm.getDdjjs().add(ddjj);
+                    registrosToUpdate.add(rm);
+                }
+                ddjj.getRegistrosMensuales().add(rm);
+            }
+        }
+
+        // GUARDA LOS CAMBIOS EN LOS REGISTROS
+        if (!registrosToUpdate.isEmpty()) {
+            registroMensualRepository.saveAll(registrosToUpdate);
+        }
     }
 
     private void processDirectores(Ddjj ddjj, DdjjDto ddjjDto) {
@@ -504,171 +523,208 @@ public class DdjjService {
         return false;
     }
 
-    /* public List<Ddjj> findDdjjCargoyAgrup(int anio, MesesEnum mes, Long idEfector) {
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
-
-        return ddjjs.stream()
-                .filter(Ddjj::isActivo) // Filtrar ddjj activas
-                .map(ddjj -> {
-                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                            .map(registroMensual -> {
-                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo() &&
-                                                (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
-                                                        actividad.getTipoGuardia()
-                                                                .getNombre() == TipoGuardiaEnum.AGRUPACION))
-                                        .collect(Collectors.toList());
-                                registroMensual.setRegistroActividad(actividadesFiltradas);
-                                return registroMensual;
-                            })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
-                            .collect(Collectors.toList());
-                    ddjj.setRegistrosMensuales(registrosFiltrados);
-                    return ddjj;
-                })
-                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-                .collect(Collectors.toList());
-    }
- */
-    /* public List<Ddjj> findDdjjCargoyAgrupServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
-        return ddjjs.stream()
-                .filter(Ddjj::isActivo) // Filtrar ddjj activas
-                .map(ddjj -> {
-                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                            .map(registroMensual -> {
-                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo() &&
-                                                (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
-                                                        actividad.getTipoGuardia()
-                                                                .getNombre() == TipoGuardiaEnum.AGRUPACION))
-                                        .collect(Collectors.toList());
-                                registroMensual.setRegistroActividad(actividadesFiltradas);
-                                return registroMensual;
-                            })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
-                            .collect(Collectors.toList());
-                    ddjj.setRegistrosMensuales(registrosFiltrados);
-                    return ddjj;
-                })
-                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-                .collect(Collectors.toList());
-    }
- */
-    /* public List<Ddjj> findDdjjExtra(int anio, MesesEnum mes, Long idEfector) {
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
-
-        return ddjjs.stream()
-                .filter(Ddjj::isActivo) // Filtrar ddjj activas
-                .map(ddjj -> {
-                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                            .map(registroMensual -> {
-                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo() &&
-                                                (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
-                                        .collect(Collectors.toList());
-                                registroMensual.setRegistroActividad(actividadesFiltradas);
-                                return registroMensual;
-                            })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
-                            .collect(Collectors.toList());
-                    ddjj.setRegistrosMensuales(registrosFiltrados);
-                    return ddjj;
-                })
-                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-                .collect(Collectors.toList());
-    }
- */
-    /* public List<Ddjj> findDdjjExtraServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
-        return ddjjs.stream()
-                .filter(Ddjj::isActivo) // Filtrar ddjj activas
-                .map(ddjj -> {
-                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                            .map(registroMensual -> {
-                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo() &&
-                                                (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
-                                        .collect(Collectors.toList());
-                                registroMensual.setRegistroActividad(actividadesFiltradas);
-                                return registroMensual;
-                            })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
-                            .collect(Collectors.toList());
-                    ddjj.setRegistrosMensuales(registrosFiltrados);
-                    return ddjj;
-                })
-                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-                .collect(Collectors.toList());
-    }
- */
-    /* public List<Ddjj> findDdjjCf(int anio, MesesEnum mes, Long idEfector) {
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
-
-        return ddjjs.stream()
-                .filter(Ddjj::isActivo) // Filtrar ddjj activas
-                .map(ddjj -> {
-                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                            .map(registroMensual -> {
-                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo() &&
-                                                (actividad.getTipoGuardia()
-                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
-                                        .collect(Collectors.toList());
-                                registroMensual.setRegistroActividad(actividadesFiltradas);
-                                return registroMensual;
-                            })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
-                            .collect(Collectors.toList());
-                    ddjj.setRegistrosMensuales(registrosFiltrados);
-                    return ddjj;
-                })
-                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-                .collect(Collectors.toList());
-    }
- */
-    /* public List<Ddjj> findDdjjCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
-        return ddjjs.stream()
-                .filter(Ddjj::isActivo) // Filtrar ddjj activas
-                .map(ddjj -> {
-                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                            .map(registroMensual -> {
-                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo() &&
-                                                (actividad.getTipoGuardia()
-                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
-                                        .collect(Collectors.toList());
-                                registroMensual.setRegistroActividad(actividadesFiltradas);
-                                return registroMensual;
-                            })
-                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
-                                                                                // actividades
-                            .collect(Collectors.toList());
-                    ddjj.setRegistrosMensuales(registrosFiltrados);
-                    return ddjj;
-                })
-                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-                .collect(Collectors.toList());
-    }
- */
+    /*
+     * public List<Ddjj> findDdjjCargoyAgrup(int anio, MesesEnum mes, Long
+     * idEfector) {
+     * List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
+     * 
+     * return ddjjs.stream()
+     * .filter(Ddjj::isActivo) // Filtrar ddjj activas
+     * .map(ddjj -> {
+     * List<RegistroMensual> registrosFiltrados =
+     * ddjj.getRegistrosMensuales().stream()
+     * .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+     * .map(registroMensual -> {
+     * List<RegistroActividad> actividadesFiltradas =
+     * registroMensual.getRegistroActividad()
+     * .stream()
+     * .filter(actividad -> actividad.isActivo() &&
+     * (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
+     * actividad.getTipoGuardia()
+     * .getNombre() == TipoGuardiaEnum.AGRUPACION))
+     * .collect(Collectors.toList());
+     * registroMensual.setRegistroActividad(actividadesFiltradas);
+     * return registroMensual;
+     * })
+     * .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se
+     * quedaron sin
+     * // actividades
+     * .collect(Collectors.toList());
+     * ddjj.setRegistrosMensuales(registrosFiltrados);
+     * return ddjj;
+     * })
+     * .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que
+     * se quedaron sin registros
+     * .collect(Collectors.toList());
+     * }
+     */
+    /*
+     * public List<Ddjj> findDdjjCargoyAgrupServicio(int anio, MesesEnum mes, Long
+     * idEfector, Long idServicio) {
+     * List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio,
+     * mes, idEfector, idServicio);
+     * return ddjjs.stream()
+     * .filter(Ddjj::isActivo) // Filtrar ddjj activas
+     * .map(ddjj -> {
+     * List<RegistroMensual> registrosFiltrados =
+     * ddjj.getRegistrosMensuales().stream()
+     * .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+     * .map(registroMensual -> {
+     * List<RegistroActividad> actividadesFiltradas =
+     * registroMensual.getRegistroActividad()
+     * .stream()
+     * .filter(actividad -> actividad.isActivo() &&
+     * (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO ||
+     * actividad.getTipoGuardia()
+     * .getNombre() == TipoGuardiaEnum.AGRUPACION))
+     * .collect(Collectors.toList());
+     * registroMensual.setRegistroActividad(actividadesFiltradas);
+     * return registroMensual;
+     * })
+     * .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se
+     * quedaron sin
+     * // actividades
+     * .collect(Collectors.toList());
+     * ddjj.setRegistrosMensuales(registrosFiltrados);
+     * return ddjj;
+     * })
+     * .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que
+     * se quedaron sin registros
+     * .collect(Collectors.toList());
+     * }
+     */
+    /*
+     * public List<Ddjj> findDdjjExtra(int anio, MesesEnum mes, Long idEfector) {
+     * List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
+     * 
+     * return ddjjs.stream()
+     * .filter(Ddjj::isActivo) // Filtrar ddjj activas
+     * .map(ddjj -> {
+     * List<RegistroMensual> registrosFiltrados =
+     * ddjj.getRegistrosMensuales().stream()
+     * .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+     * .map(registroMensual -> {
+     * List<RegistroActividad> actividadesFiltradas =
+     * registroMensual.getRegistroActividad()
+     * .stream()
+     * .filter(actividad -> actividad.isActivo() &&
+     * (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
+     * .collect(Collectors.toList());
+     * registroMensual.setRegistroActividad(actividadesFiltradas);
+     * return registroMensual;
+     * })
+     * .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se
+     * quedaron sin
+     * // actividades
+     * .collect(Collectors.toList());
+     * ddjj.setRegistrosMensuales(registrosFiltrados);
+     * return ddjj;
+     * })
+     * .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que
+     * se quedaron sin registros
+     * .collect(Collectors.toList());
+     * }
+     */
+    /*
+     * public List<Ddjj> findDdjjExtraServicio(int anio, MesesEnum mes, Long
+     * idEfector, Long idServicio) {
+     * List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio,
+     * mes, idEfector, idServicio);
+     * return ddjjs.stream()
+     * .filter(Ddjj::isActivo) // Filtrar ddjj activas
+     * .map(ddjj -> {
+     * List<RegistroMensual> registrosFiltrados =
+     * ddjj.getRegistrosMensuales().stream()
+     * .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+     * .map(registroMensual -> {
+     * List<RegistroActividad> actividadesFiltradas =
+     * registroMensual.getRegistroActividad()
+     * .stream()
+     * .filter(actividad -> actividad.isActivo() &&
+     * (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
+     * .collect(Collectors.toList());
+     * registroMensual.setRegistroActividad(actividadesFiltradas);
+     * return registroMensual;
+     * })
+     * .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se
+     * quedaron sin
+     * // actividades
+     * .collect(Collectors.toList());
+     * ddjj.setRegistrosMensuales(registrosFiltrados);
+     * return ddjj;
+     * })
+     * .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que
+     * se quedaron sin registros
+     * .collect(Collectors.toList());
+     * }
+     */
+    /*
+     * public List<Ddjj> findDdjjCf(int anio, MesesEnum mes, Long idEfector) {
+     * List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
+     * 
+     * return ddjjs.stream()
+     * .filter(Ddjj::isActivo) // Filtrar ddjj activas
+     * .map(ddjj -> {
+     * List<RegistroMensual> registrosFiltrados =
+     * ddjj.getRegistrosMensuales().stream()
+     * .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+     * .map(registroMensual -> {
+     * List<RegistroActividad> actividadesFiltradas =
+     * registroMensual.getRegistroActividad()
+     * .stream()
+     * .filter(actividad -> actividad.isActivo() &&
+     * (actividad.getTipoGuardia()
+     * .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+     * .collect(Collectors.toList());
+     * registroMensual.setRegistroActividad(actividadesFiltradas);
+     * return registroMensual;
+     * })
+     * .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se
+     * quedaron sin
+     * // actividades
+     * .collect(Collectors.toList());
+     * ddjj.setRegistrosMensuales(registrosFiltrados);
+     * return ddjj;
+     * })
+     * .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que
+     * se quedaron sin registros
+     * .collect(Collectors.toList());
+     * }
+     */
+    /*
+     * public List<Ddjj> findDdjjCfServicio(int anio, MesesEnum mes, Long idEfector,
+     * Long idServicio) {
+     * List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio,
+     * mes, idEfector, idServicio);
+     * return ddjjs.stream()
+     * .filter(Ddjj::isActivo) // Filtrar ddjj activas
+     * .map(ddjj -> {
+     * List<RegistroMensual> registrosFiltrados =
+     * ddjj.getRegistrosMensuales().stream()
+     * .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+     * .map(registroMensual -> {
+     * List<RegistroActividad> actividadesFiltradas =
+     * registroMensual.getRegistroActividad()
+     * .stream()
+     * .filter(actividad -> actividad.isActivo() &&
+     * (actividad.getTipoGuardia()
+     * .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+     * .collect(Collectors.toList());
+     * registroMensual.setRegistroActividad(actividadesFiltradas);
+     * return registroMensual;
+     * })
+     * .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se
+     * quedaron sin
+     * // actividades
+     * .collect(Collectors.toList());
+     * ddjj.setRegistrosMensuales(registrosFiltrados);
+     * return ddjj;
+     * })
+     * .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que
+     * se quedaron sin registros
+     * .collect(Collectors.toList());
+     * }
+     */
     public boolean existsCompleteSetOfDdjj(MesesEnum mes, int anio, Long idEfector) {
 
         EstadoDdjjEnum estadoRequerido = EstadoDdjjEnum.APROBADO;
@@ -744,86 +800,93 @@ public class DdjjService {
     public List<DdjjListDto> findCargoyAgrupServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
         List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CARGO, TipoGuardiaEnum.AGRUPACION);
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector, idServicio, tipos);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector,
+                idServicio, tipos);
         return ddjjs.stream()
-            .filter(Ddjj::isActivo) // Filtrar ddjj activas
-            .map(ddjj -> {
-            List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                .map(registroMensual -> {
-                    List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                    .stream()
-                    .filter(actividad -> actividad.isActivo() 
-                        && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO 
-                        || actividad.getTipoGuardia() .getNombre() == TipoGuardiaEnum.AGRUPACION)
-                        && actividad.getServicio().getId().equals(idServicio))
-                    .collect(Collectors.toList());
-                    registroMensual.setRegistroActividad(actividadesFiltradas);
-                    return registroMensual;
+                .filter(Ddjj::isActivo) // Filtrar ddjj activas
+                .map(ddjj -> {
+                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                                                        || actividad.getTipoGuardia()
+                                                                .getNombre() == TipoGuardiaEnum.AGRUPACION)
+                                                && actividad.getServicio().getId().equals(idServicio))
+                                        .collect(Collectors.toList());
+                                registroMensual.setRegistroActividad(actividadesFiltradas);
+                                return registroMensual;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                                                                                // actividades
+                            .collect(Collectors.toList());
+                    ddjj.setRegistrosMensuales(registrosFiltrados);
+                    return convertirADdjjListDto(ddjj);
                 })
-                .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin actividades
+                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
-                ddjj.setRegistrosMensuales(registrosFiltrados);
-                return convertirADdjjListDto(ddjj);
-            })
-            .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-            .collect(Collectors.toList());
     }
 
     public List<DdjjListDto> findCargoyAgrup(int anio, MesesEnum mes, Long idEfector) {
 
         List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CARGO, TipoGuardiaEnum.AGRUPACION);
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector,tipos);
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, tipos);
         return ddjjs.stream()
-            .filter(Ddjj::isActivo) // Filtrar ddjj activas
-            .map(ddjj -> {
-                List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                .map(registroMensual -> {
-                    List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                    .stream()
-                    .filter(actividad -> actividad.isActivo() 
-                    && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO 
-                    || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION))
-                    .collect(Collectors.toList());
-                    registroMensual.setRegistroActividad(actividadesFiltradas);
-                    return registroMensual;
+                .filter(Ddjj::isActivo) // Filtrar ddjj activas
+                .map(ddjj -> {
+                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
+                                                        || actividad.getTipoGuardia()
+                                                                .getNombre() == TipoGuardiaEnum.AGRUPACION))
+                                        .collect(Collectors.toList());
+                                registroMensual.setRegistroActividad(actividadesFiltradas);
+                                return registroMensual;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                                                                                // actividades
+                            .collect(Collectors.toList());
+                    ddjj.setRegistrosMensuales(registrosFiltrados);
+                    return convertirADdjjListDto(ddjj);
                 })
-                .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin actividades
+                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
-                ddjj.setRegistrosMensuales(registrosFiltrados);
-                return convertirADdjjListDto(ddjj);
-            })
-            .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-            .collect(Collectors.toList());
     }
 
     public List<DdjjListDto> findExtraServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
         List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.EXTRA);
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector, idServicio, tipos);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector,
+                idServicio, tipos);
         return ddjjs.stream()
-            .filter(Ddjj::isActivo) // Filtrar ddjj activas
-            .map(ddjj -> {
-                List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                .map(registroMensual -> {
-                    List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                    .stream()
-                    .filter(actividad -> actividad.isActivo() 
-                        && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
-                        && actividad.getServicio().getId().equals(idServicio))
-                    .collect(Collectors.toList());
-                    registroMensual.setRegistroActividad(actividadesFiltradas);
-                    return registroMensual;
+                .filter(Ddjj::isActivo) // Filtrar ddjj activas
+                .map(ddjj -> {
+                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA)
+                                                && actividad.getServicio().getId().equals(idServicio))
+                                        .collect(Collectors.toList());
+                                registroMensual.setRegistroActividad(actividadesFiltradas);
+                                return registroMensual;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                                                                                // actividades
+                            .collect(Collectors.toList());
+                    ddjj.setRegistrosMensuales(registrosFiltrados);
+                    return convertirADdjjListDto(ddjj);
                 })
-                .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin actividades
+                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
-                ddjj.setRegistrosMensuales(registrosFiltrados);
-                return convertirADdjjListDto(ddjj);
-            })
-            .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-            .collect(Collectors.toList());
     }
 
     public List<DdjjListDto> findExtra(int anio, MesesEnum mes, Long idEfector) {
@@ -831,55 +894,57 @@ public class DdjjService {
         List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.EXTRA);
         List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, tipos);
         return ddjjs.stream()
-            .filter(Ddjj::isActivo) // Filtrar ddjj activas
-            .map(ddjj -> {
-                List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                .map(registroMensual -> {
-                    List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                    .stream()
-                    .filter(actividad -> actividad.isActivo() 
-                        && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
-                    .collect(Collectors.toList());
-                    registroMensual.setRegistroActividad(actividadesFiltradas);
-                    return registroMensual;
-                })
-                .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                .filter(Ddjj::isActivo) // Filtrar ddjj activas
+                .map(ddjj -> {
+                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.EXTRA))
+                                        .collect(Collectors.toList());
+                                registroMensual.setRegistroActividad(actividadesFiltradas);
+                                return registroMensual;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
                                                                                 // actividades
+                            .collect(Collectors.toList());
+                    ddjj.setRegistrosMensuales(registrosFiltrados);
+                    return convertirADdjjListDto(ddjj);
+                })
+                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
-                ddjj.setRegistrosMensuales(registrosFiltrados);
-                return convertirADdjjListDto(ddjj);
-            })
-            .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-            .collect(Collectors.toList());
     }
 
     public List<DdjjListDto> findCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
         List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CONTRAFACTURA);
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector, idServicio, tipos);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector,
+                idServicio, tipos);
         return ddjjs.stream()
-            .filter(Ddjj::isActivo) // Filtrar ddjj activas
-            .map(ddjj -> {
-                List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                .map(registroMensual -> {
-                    List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                    .stream()
-                    .filter(actividad -> actividad.isActivo() 
-                        && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
-                        && actividad.getServicio().getId().equals(idServicio))
-                    .collect(Collectors.toList());
-                    registroMensual.setRegistroActividad(actividadesFiltradas);
-                    return registroMensual;
-                })
-                .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                .filter(Ddjj::isActivo) // Filtrar ddjj activas
+                .map(ddjj -> {
+                    List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia()
+                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                                && actividad.getServicio().getId().equals(idServicio))
+                                        .collect(Collectors.toList());
+                                registroMensual.setRegistroActividad(actividadesFiltradas);
+                                return registroMensual;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
                                                                                 // actividades
+                            .collect(Collectors.toList());
+                    ddjj.setRegistrosMensuales(registrosFiltrados);
+                    return convertirADdjjListDto(ddjj);
+                })
+                .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
-                ddjj.setRegistrosMensuales(registrosFiltrados);
-                return convertirADdjjListDto(ddjj);
-            })
-            .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
-            .collect(Collectors.toList());
     }
 
     public List<DdjjListDto> findCf(int anio, MesesEnum mes, Long idEfector) {
@@ -890,19 +955,20 @@ public class DdjjService {
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas
                 .map(ddjj -> {
                     List<RegistroMensual> registrosFiltrados = ddjj.getRegistrosMensuales().stream()
-                        .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
-                        .map(registroMensual -> {
-                            List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
-                            .stream()
-                            .filter(actividad -> actividad.isActivo() 
-                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
-                            .collect(Collectors.toList());
+                            .filter(RegistroMensual::isActivo) // Filtrar registrosMensuales activos
+                            .map(registroMensual -> {
+                                List<RegistroActividad> actividadesFiltradas = registroMensual.getRegistroActividad()
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia()
+                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                        .collect(Collectors.toList());
                                 registroMensual.setRegistroActividad(actividadesFiltradas);
                                 return registroMensual;
-                        })
-                        .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Excluir los que se quedaron sin
                                                                                 // actividades
-                        .collect(Collectors.toList());
+                            .collect(Collectors.toList());
                     ddjj.setRegistrosMensuales(registrosFiltrados);
                     return convertirADdjjListDto(ddjj);
                 })
@@ -910,7 +976,59 @@ public class DdjjService {
                 .collect(Collectors.toList());
     }
 
-    /* private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
+    /*
+     * private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
+     * DdjjListDto dto = new DdjjListDto();
+     * dto.setId(ddjj.getId());
+     * dto.setMes(ddjj.getMes());
+     * dto.setAnio(ddjj.getAnio());
+     * 
+     * // Convertir registros mensuales usando el servicio de RegistroMensual
+     * List<RegistroMensualListDto> registrosMensualesDto =
+     * ddjj.getRegistrosMensuales().stream()
+     * .map(rm -> {
+     * // Primero filtramos las actividades
+     * List<RegistroActividad> actividadesFiltradas =
+     * rm.getRegistroActividad().stream()
+     * .filter(actividad -> actividad.isActivo())
+     * .collect(Collectors.toList());
+     * 
+     * // Llamamos al método del servicio pasando el registro mensual y las
+     * actividades
+     * // filtradas
+     * return registroMensualService.convertirARegistroMensualCompletoDTO(rm,
+     * actividadesFiltradas);
+     * })
+     * .collect(Collectors.toList());
+     * 
+     * dto.setRegistrosMensuales(registrosMensualesDto);
+     * 
+     * // Director y Director DPH
+     * if (ddjj.getDirector() != null) {
+     * dto.setIdDirector(ddjj.getDirector().getId());
+     * }
+     * if (ddjj.getDirectorDPH() != null) {
+     * dto.setIdDirectorDPH(ddjj.getDirectorDPH().getId());
+     * }
+     * 
+     * dto.setEstadoDdjjDirector(ddjj.getEstadoDdjjDirector());
+     * dto.setEstadoDdjjDirectorDPH(ddjj.getEstadoDdjjDirectorDPH());
+     * dto.setEnPosesionDirector(ddjj.getEnPosesionDirector());
+     * dto.setEnPosesionDirectorDPH(ddjj.getEnPosesionDirectorDPH());
+     * dto.setMotivoDirector(ddjj.getMotivoDirector());
+     * dto.setMotivoDirectorDPH(ddjj.getMotivoDirectorDPH());
+     * 
+     * if (ddjj.getTipoGuardia() != null) {
+     * dto.setIdTipoGuardia(ddjj.getTipoGuardia().getId());
+     * }
+     * 
+     * return dto;
+     * }
+     */
+
+    private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
+        System.out.println("Convertiendo DDJJ ID: " + ddjj.getId() + " a DTO");
+
         DdjjListDto dto = new DdjjListDto();
         dto.setId(ddjj.getId());
         dto.setMes(ddjj.getMes());
@@ -919,10 +1037,19 @@ public class DdjjService {
         // Convertir registros mensuales usando el servicio de RegistroMensual
         List<RegistroMensualListDto> registrosMensualesDto = ddjj.getRegistrosMensuales().stream()
                 .map(rm -> {
+                    System.out.println("  Convirtiendo RegistroMensual ID: " + rm.getId() + " a DTO");
+
                     // Primero filtramos las actividades
                     List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
-                            .filter(actividad -> actividad.isActivo())
+                            .filter(actividad -> {
+                                boolean activo = actividad.isActivo();
+                                System.out.println("    Actividad ID: " + actividad.getId() + " - activo: " + activo);
+                                return activo;
+                            })
                             .collect(Collectors.toList());
+
+                    System.out.println(
+                            "    Actividades después de filtrar en conversión: " + actividadesFiltradas.size());
 
                     // Llamamos al método del servicio pasando el registro mensual y las actividades
                     // filtradas
@@ -935,9 +1062,11 @@ public class DdjjService {
         // Director y Director DPH
         if (ddjj.getDirector() != null) {
             dto.setIdDirector(ddjj.getDirector().getId());
+            System.out.println("  Director ID: " + ddjj.getDirector().getId());
         }
         if (ddjj.getDirectorDPH() != null) {
             dto.setIdDirectorDPH(ddjj.getDirectorDPH().getId());
+            System.out.println("  Director DPH ID: " + ddjj.getDirectorDPH().getId());
         }
 
         dto.setEstadoDdjjDirector(ddjj.getEstadoDdjjDirector());
@@ -949,66 +1078,11 @@ public class DdjjService {
 
         if (ddjj.getTipoGuardia() != null) {
             dto.setIdTipoGuardia(ddjj.getTipoGuardia().getId());
+            System.out.println("  TipoGuardia ID: " + ddjj.getTipoGuardia().getId());
         }
 
+        System.out.println("  Total registros mensuales en DTO: " + dto.getRegistrosMensuales().size());
         return dto;
-    } */
-
-    private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
-    System.out.println("Convertiendo DDJJ ID: " + ddjj.getId() + " a DTO");
-    
-    DdjjListDto dto = new DdjjListDto();
-    dto.setId(ddjj.getId());
-    dto.setMes(ddjj.getMes());
-    dto.setAnio(ddjj.getAnio());
-
-    // Convertir registros mensuales usando el servicio de RegistroMensual
-    List<RegistroMensualListDto> registrosMensualesDto = ddjj.getRegistrosMensuales().stream()
-            .map(rm -> {
-                System.out.println("  Convirtiendo RegistroMensual ID: " + rm.getId() + " a DTO");
-                
-                // Primero filtramos las actividades
-                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
-                        .filter(actividad -> {
-                            boolean activo = actividad.isActivo();
-                            System.out.println("    Actividad ID: " + actividad.getId() + " - activo: " + activo);
-                            return activo;
-                        })
-                        .collect(Collectors.toList());
-
-                System.out.println("    Actividades después de filtrar en conversión: " + actividadesFiltradas.size());
-                
-                // Llamamos al método del servicio pasando el registro mensual y las actividades filtradas
-                return registroMensualService.convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
-            })
-            .collect(Collectors.toList());
-
-    dto.setRegistrosMensuales(registrosMensualesDto);
-
-    // Director y Director DPH
-    if (ddjj.getDirector() != null) {
-        dto.setIdDirector(ddjj.getDirector().getId());
-        System.out.println("  Director ID: " + ddjj.getDirector().getId());
     }
-    if (ddjj.getDirectorDPH() != null) {
-        dto.setIdDirectorDPH(ddjj.getDirectorDPH().getId());
-        System.out.println("  Director DPH ID: " + ddjj.getDirectorDPH().getId());
-    }
-
-    dto.setEstadoDdjjDirector(ddjj.getEstadoDdjjDirector());
-    dto.setEstadoDdjjDirectorDPH(ddjj.getEstadoDdjjDirectorDPH());
-    dto.setEnPosesionDirector(ddjj.getEnPosesionDirector());
-    dto.setEnPosesionDirectorDPH(ddjj.getEnPosesionDirectorDPH());
-    dto.setMotivoDirector(ddjj.getMotivoDirector());
-    dto.setMotivoDirectorDPH(ddjj.getMotivoDirectorDPH());
-
-    if (ddjj.getTipoGuardia() != null) {
-        dto.setIdTipoGuardia(ddjj.getTipoGuardia().getId());
-        System.out.println("  TipoGuardia ID: " + ddjj.getTipoGuardia().getId());
-    }
-
-    System.out.println("  Total registros mensuales en DTO: " + dto.getRegistrosMensuales().size());
-    return dto;
-}
 
 }
