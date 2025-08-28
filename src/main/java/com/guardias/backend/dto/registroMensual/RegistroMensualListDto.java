@@ -22,5 +22,5 @@ public class RegistroMensualListDto {
     private AsistencialListForRmensualDto asistencial;
     private List<RegActivListDto> registroActividad;
     private SumaHorasListDto totalHoras;
-    private Long idDdjj;
+    private List<Long> idDdjjs;
 }

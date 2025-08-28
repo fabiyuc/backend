@@ -2,6 +2,9 @@ package com.guardias.backend.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -215,7 +218,7 @@ public class DdjjService {
                 List<RegistroMensual> toRemove = new ArrayList<>();
                 for (RegistroMensual rm : ddjj.getRegistrosMensuales()) {
                     if (!ddjjDto.getIdRegistrosMensuales().contains(rm.getId())) {
-                        rm.setDdjj(null);
+                        rm.getDdjjs().remove(ddjj);
                         toRemove.add(rm);
                     }
                 }
@@ -233,8 +236,8 @@ public class DdjjService {
                     Optional<RegistroMensual> rmOpt = registroMensualService.findById(id);
                     if (rmOpt.isPresent()) {
                         RegistroMensual rm = rmOpt.get();
-                        rm.setDdjj(ddjj); // Establece la relación inversa
-                        ddjj.getRegistrosMensuales().add(rm);
+                        rm.getDdjjs().add(ddjj); // Agregar al RegistroMensual
+                        ddjj.getRegistrosMensuales().add(rm); // Agregar a la DDJJ
                     }
                 }
             }
@@ -321,19 +324,6 @@ public class DdjjService {
             }
         }
 
-        /*
-         * if (ddjjDto.getIdCronogramaDefinitivo() != null) {
-         * if (ddjj.getCronogramaDefinitivo() == null ||
-         * !Objects.equals(ddjj.getCronogramaDefinitivo().getId(),
-         * ddjjDto.getIdCronogramaDefinitivo())) {
-         * ddjj.setCronogramaDefinitivo(
-         * cronogramaDefinitivoService.findById(ddjjDto.getIdCronogramaDefinitivo())
-         * .orElse(null));
-         * }
-         * } else {
-         * ddjj.setCronogramaDefinitivo(null); // O mantener el existente si lo hay
-         * }
-         */
         ddjj.setActivo(true);
     }
 
@@ -345,31 +335,43 @@ public class DdjjService {
         if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
             registros.forEach(rm -> {
-                rm.setDdjj(ddjj);
+            if (!rm.getDdjjs().contains(ddjj)) {
+                rm.getDdjjs().add(ddjj);
+            }
+            if (!ddjj.getRegistrosMensuales().contains(rm)) {
                 ddjj.getRegistrosMensuales().add(rm);
-            });
-            return;
+            }
+        });
+        return;
         }
         // 3. Caso EDICIÓN
         Set<Long> nuevosIds = registros.stream()
-                .map(RegistroMensual::getId)
-                .collect(Collectors.toSet());
+            .map(RegistroMensual::getId)
+            .collect(Collectors.toSet());
 
         // a) Elimina solo los registros que ya no están en la nueva lista
-        ddjj.getRegistrosMensuales().removeIf(rm -> {
-            if (!nuevosIds.contains(rm.getId())) {
-                rm.setDdjj(null); // Rompe relación
-                return true;
+        Iterator<RegistroMensual> iterator = ddjj.getRegistrosMensuales().iterator();
+        while (iterator.hasNext()) {
+            RegistroMensual rmExistente = iterator.next();
+            if (!nuevosIds.contains(rmExistente.getId())) {
+            
+                rmExistente.getDdjjs().remove(ddjj); // Rompe relación del lado del registro
+                iterator.remove(); // Rompe relación del lado de la DDJJ
             }
-            return false;
-        });
+        }
 
         // b) Agrega solo los registros nuevos (no existentes)
         registros.forEach(rm -> {
-            if (ddjj.getRegistrosMensuales().stream()
-                    .noneMatch(existente -> existente.getId().equals(rm.getId()))) {
-                rm.setDdjj(ddjj);
-                ddjj.getRegistrosMensuales().add(rm);
+            boolean yaExiste = ddjj.getRegistrosMensuales().stream()
+                .anyMatch(existente -> existente.getId().equals(rm.getId()));
+        
+            if (!yaExiste) {
+                if (!rm.getDdjjs().contains(ddjj)) {
+                    rm.getDdjjs().add(ddjj);
+                }
+                if (!ddjj.getRegistrosMensuales().contains(rm)) {
+                    ddjj.getRegistrosMensuales().add(rm);
+                }
             }
         });
     }
@@ -502,7 +504,7 @@ public class DdjjService {
         return false;
     }
 
-    public List<Ddjj> findDdjjCargoyAgrup(int anio, MesesEnum mes, Long idEfector) {
+    /* public List<Ddjj> findDdjjCargoyAgrup(int anio, MesesEnum mes, Long idEfector) {
         List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
 
         return ddjjs.stream()
@@ -530,8 +532,8 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
-
-    public List<Ddjj> findDdjjCargoyAgrupServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+ */
+    /* public List<Ddjj> findDdjjCargoyAgrupServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
         List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
         return ddjjs.stream()
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas
@@ -558,8 +560,8 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
-
-    public List<Ddjj> findDdjjExtra(int anio, MesesEnum mes, Long idEfector) {
+ */
+    /* public List<Ddjj> findDdjjExtra(int anio, MesesEnum mes, Long idEfector) {
         List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
 
         return ddjjs.stream()
@@ -585,8 +587,8 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
-
-    public List<Ddjj> findDdjjExtraServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+ */
+    /* public List<Ddjj> findDdjjExtraServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
         List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
         return ddjjs.stream()
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas
@@ -611,8 +613,8 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
-
-    public List<Ddjj> findDdjjCf(int anio, MesesEnum mes, Long idEfector) {
+ */
+    /* public List<Ddjj> findDdjjCf(int anio, MesesEnum mes, Long idEfector) {
         List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
 
         return ddjjs.stream()
@@ -639,8 +641,8 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
-
-    public List<Ddjj> findDdjjCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+ */
+    /* public List<Ddjj> findDdjjCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
         List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
         return ddjjs.stream()
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas
@@ -666,7 +668,7 @@ public class DdjjService {
                 .filter(ddjj -> !ddjj.getRegistrosMensuales().isEmpty()) // Excluir los que se quedaron sin registros
                 .collect(Collectors.toList());
     }
-
+ */
     public boolean existsCompleteSetOfDdjj(MesesEnum mes, int anio, Long idEfector) {
 
         EstadoDdjjEnum estadoRequerido = EstadoDdjjEnum.APROBADO;
@@ -741,7 +743,8 @@ public class DdjjService {
 
     public List<DdjjListDto> findCargoyAgrupServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
+        List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CARGO, TipoGuardiaEnum.AGRUPACION);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector, idServicio, tipos);
         return ddjjs.stream()
             .filter(Ddjj::isActivo) // Filtrar ddjj activas
             .map(ddjj -> {
@@ -769,7 +772,8 @@ public class DdjjService {
 
     public List<DdjjListDto> findCargoyAgrup(int anio, MesesEnum mes, Long idEfector) {
 
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
+        List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CARGO, TipoGuardiaEnum.AGRUPACION);
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector,tipos);
         return ddjjs.stream()
             .filter(Ddjj::isActivo) // Filtrar ddjj activas
             .map(ddjj -> {
@@ -796,7 +800,8 @@ public class DdjjService {
 
     public List<DdjjListDto> findExtraServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
+        List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.EXTRA);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector, idServicio, tipos);
         return ddjjs.stream()
             .filter(Ddjj::isActivo) // Filtrar ddjj activas
             .map(ddjj -> {
@@ -823,7 +828,8 @@ public class DdjjService {
 
     public List<DdjjListDto> findExtra(int anio, MesesEnum mes, Long idEfector) {
 
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
+        List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.EXTRA);
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, tipos);
         return ddjjs.stream()
             .filter(Ddjj::isActivo) // Filtrar ddjj activas
             .map(ddjj -> {
@@ -849,7 +855,8 @@ public class DdjjService {
     }
 
     public List<DdjjListDto> findCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicio(anio, mes, idEfector, idServicio);
+        List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CONTRAFACTURA);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes, idEfector, idServicio, tipos);
         return ddjjs.stream()
             .filter(Ddjj::isActivo) // Filtrar ddjj activas
             .map(ddjj -> {
@@ -876,7 +883,9 @@ public class DdjjService {
     }
 
     public List<DdjjListDto> findCf(int anio, MesesEnum mes, Long idEfector) {
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfector(anio, mes, idEfector);
+
+        List<TipoGuardiaEnum> tipos = Arrays.asList(TipoGuardiaEnum.CONTRAFACTURA);
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(anio, mes, idEfector, tipos);
         return ddjjs.stream()
                 .filter(Ddjj::isActivo) // Filtrar ddjj activas
                 .map(ddjj -> {
@@ -901,7 +910,7 @@ public class DdjjService {
                 .collect(Collectors.toList());
     }
 
-    private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
+    /* private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
         DdjjListDto dto = new DdjjListDto();
         dto.setId(ddjj.getId());
         dto.setMes(ddjj.getMes());
@@ -943,6 +952,63 @@ public class DdjjService {
         }
 
         return dto;
+    } */
+
+    private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
+    System.out.println("Convertiendo DDJJ ID: " + ddjj.getId() + " a DTO");
+    
+    DdjjListDto dto = new DdjjListDto();
+    dto.setId(ddjj.getId());
+    dto.setMes(ddjj.getMes());
+    dto.setAnio(ddjj.getAnio());
+
+    // Convertir registros mensuales usando el servicio de RegistroMensual
+    List<RegistroMensualListDto> registrosMensualesDto = ddjj.getRegistrosMensuales().stream()
+            .map(rm -> {
+                System.out.println("  Convirtiendo RegistroMensual ID: " + rm.getId() + " a DTO");
+                
+                // Primero filtramos las actividades
+                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                        .filter(actividad -> {
+                            boolean activo = actividad.isActivo();
+                            System.out.println("    Actividad ID: " + actividad.getId() + " - activo: " + activo);
+                            return activo;
+                        })
+                        .collect(Collectors.toList());
+
+                System.out.println("    Actividades después de filtrar en conversión: " + actividadesFiltradas.size());
+                
+                // Llamamos al método del servicio pasando el registro mensual y las actividades filtradas
+                return registroMensualService.convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+            })
+            .collect(Collectors.toList());
+
+    dto.setRegistrosMensuales(registrosMensualesDto);
+
+    // Director y Director DPH
+    if (ddjj.getDirector() != null) {
+        dto.setIdDirector(ddjj.getDirector().getId());
+        System.out.println("  Director ID: " + ddjj.getDirector().getId());
     }
+    if (ddjj.getDirectorDPH() != null) {
+        dto.setIdDirectorDPH(ddjj.getDirectorDPH().getId());
+        System.out.println("  Director DPH ID: " + ddjj.getDirectorDPH().getId());
+    }
+
+    dto.setEstadoDdjjDirector(ddjj.getEstadoDdjjDirector());
+    dto.setEstadoDdjjDirectorDPH(ddjj.getEstadoDdjjDirectorDPH());
+    dto.setEnPosesionDirector(ddjj.getEnPosesionDirector());
+    dto.setEnPosesionDirectorDPH(ddjj.getEnPosesionDirectorDPH());
+    dto.setMotivoDirector(ddjj.getMotivoDirector());
+    dto.setMotivoDirectorDPH(ddjj.getMotivoDirectorDPH());
+
+    if (ddjj.getTipoGuardia() != null) {
+        dto.setIdTipoGuardia(ddjj.getTipoGuardia().getId());
+        System.out.println("  TipoGuardia ID: " + ddjj.getTipoGuardia().getId());
+    }
+
+    System.out.println("  Total registros mensuales en DTO: " + dto.getRegistrosMensuales().size());
+    return dto;
+}
 
 }

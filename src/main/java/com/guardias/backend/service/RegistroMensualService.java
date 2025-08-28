@@ -28,6 +28,7 @@ import com.guardias.backend.dto.sumaHoras.SumaHorasListDto;
 import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
 import com.guardias.backend.dto.tipoLicencia.TipoLicenciaListDto;
 import com.guardias.backend.dto.tipoRevista.TipoRevistaListDto;
+import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
@@ -343,10 +344,17 @@ public class RegistroMensualService {
                         registroMensual.setEfector(efectorService.findById(registroMensualDto.getIdEfector()));
                 }
 
-                if (registroMensualDto.getIdDdjj() != null && (registroMensual.getDdjj() == null
-                                || !Objects.equals(registroMensual.getDdjj().getId(),
-                                                registroMensualDto.getIdDdjj()))) {
-                        registroMensual.setDdjj(ddjjRepository.findById(registroMensualDto.getIdDdjj()).get());
+                // Validar si idDdjjs no es null
+                if (registroMensualDto.getIdDdjjs() != null) {
+                        // Si no es null, procesar las ddjj
+                        for (Long idDdjj : registroMensualDto.getIdDdjjs()) {
+                                // Lógica para procesar cada idDdjj
+                                Ddjj ddjj = ddjjRepository.findById(idDdjj).orElse(null);
+                                if (ddjj != null && !registroMensual.getDdjjs().contains(ddjj)) {
+                                        registroMensual.getDdjjs().add(ddjj);
+                                        ddjj.getRegistrosMensuales().add(registroMensual);
+                                }
+                        }
                 }
 
                 registroMensual.setActivo(true);
@@ -448,22 +456,25 @@ public class RegistroMensualService {
 
                 System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
                 return registrosMensuales.stream()
-                        .filter(RegistroMensual::isActivo)
-                        .map(rm -> {
-                                // Filtrar actividades (CARGO/AGRUPACION + servicio)
-                                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                        .stream()
-                        .filter(actividad -> actividad.isActivo()
-                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CARGO
-                                || actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.AGRUPACION)
-                                && actividad.getServicio().getId().equals(idServicio))
-                        .collect(Collectors.toList());
+                                .filter(RegistroMensual::isActivo)
+                                .map(rm -> {
+                                        // Filtrar actividades (CARGO/AGRUPACION + servicio)
+                                        List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                                                        .stream()
+                                                        .filter(actividad -> actividad.isActivo()
+                                                                        && (actividad.getTipoGuardia()
+                                                                                        .getNombre() == TipoGuardiaEnum.CARGO
+                                                                                        || actividad.getTipoGuardia()
+                                                                                                        .getNombre() == TipoGuardiaEnum.AGRUPACION)
+                                                                        && actividad.getServicio().getId()
+                                                                                        .equals(idServicio))
+                                                        .collect(Collectors.toList());
 
-                        // Convertir a DTO
+                                        // Convertir a DTO
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
-                        })
-                        .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
-                        .collect(Collectors.toList());
+                                })
+                                .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                                .collect(Collectors.toList());
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCargoReagrupacion(
@@ -619,11 +630,10 @@ public class RegistroMensualService {
                                 .map(rm -> {
                                         // Filtrar actividades (CF + servicio)
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                                                        .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
-                                                        .collect(Collectors.toList());
+                                        .stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                        .collect(Collectors.toList());
 
                                         // Convertir a DTO
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
@@ -649,91 +659,89 @@ public class RegistroMensualService {
 
                         // Legajos
                         asistencialDTO.setLegajos(rm.getAsistencial().getLegajos().stream()
-                                        .map(legajo -> {
-                                                LegajoListDto legajoDTO = new LegajoListDto();
-                                                if (legajo.getRevista() != null) {
-                                                        RevistaListDto revistaDTO = new RevistaListDto();
+                                .map(legajo -> {
+                                        LegajoListDto legajoDTO = new LegajoListDto();
+                                        if (legajo.getRevista() != null) {
+                                                RevistaListDto revistaDTO = new RevistaListDto();
 
-                                                        // Manejo seguro de TipoRevista
-                                                        if (legajo.getRevista().getTipoRevista() != null) {
-                                                                revistaDTO.setTipoRevista(
-                                                                                new TipoRevistaListDto(legajo
-                                                                                                .getRevista()
-                                                                                                .getTipoRevista()
-                                                                                                .getNombre()));
-                                                        }
-
-                                                        // Manejo seguro de Categoria
-                                                        if (legajo.getRevista().getCategoria() != null) {
-                                                                revistaDTO.setCategoria(
-                                                                                new CategoriaListDto(legajo.getRevista()
-                                                                                                .getCategoria()
-                                                                                                .getNombre()));
-                                                        }
-
-                                                        // Manejo seguro de Adicional (¡esta era la línea que fallaba!)
-                                                        if (legajo.getRevista().getAdicional() != null) {
-                                                                revistaDTO.setAdicional(
-                                                                                new AdicionalListDto(legajo.getRevista()
-                                                                                                .getAdicional()
-                                                                                                .getNombre()));
-                                                        }
-
-                                                        legajoDTO.setRevista(revistaDTO);
+                                                // Manejo seguro de TipoRevista
+                                                if (legajo.getRevista().getTipoRevista() != null) {
+                                                        revistaDTO.setTipoRevista(new TipoRevistaListDto(
+                                                                legajo.getRevista().getTipoRevista().getNombre()));
                                                 }
-                                                return legajoDTO;
-                                        })
-                                        .collect(Collectors.toList()));
+
+                                                // Manejo seguro de Categoria
+                                                if (legajo.getRevista().getCategoria() != null) {
+                                                        revistaDTO.setCategoria(new CategoriaListDto(
+                                                                legajo.getRevista().getCategoria().getNombre()));
+                                                }
+
+                                                // Manejo seguro de Adicional (¡esta era la línea que fallaba!)
+                                                if (legajo.getRevista().getAdicional() != null) {
+                                                        revistaDTO.setAdicional(new AdicionalListDto(
+                                                                legajo.getRevista().getAdicional().getNombre()));
+                                                }
+
+                                                legajoDTO.setRevista(revistaDTO);
+                                        }
+                                        return legajoDTO;
+                                })
+                                .collect(Collectors.toList()));
 
                         // Novedades
                         asistencialDTO.setNovedadesPersonales(rm.getAsistencial().getNovedadesPersonales().stream()
-                                        .map(novedad -> new NovedadPersonalListDto(
-                                                        novedad.getId(),
-                                                        novedad.getFechaInicio(),
-                                                        novedad.getFechaFinal(),
-                                                        novedad.getHoraInicio(),
-                                                        novedad.getHoraFinal(),
-                                                        new TipoLicenciaListDto(novedad.getTipoLicencia().getId(),
-                                                                        novedad.getTipoLicencia().getNombre())))
-                                        .collect(Collectors.toList()));
+                                .map(novedad -> new NovedadPersonalListDto(
+                                        novedad.getId(),
+                                        novedad.getFechaInicio(),
+                                        novedad.getFechaFinal(),
+                                        novedad.getHoraInicio(),
+                                        novedad.getHoraFinal(),
+                                        new TipoLicenciaListDto(novedad.getTipoLicencia().getId(),
+                                                novedad.getTipoLicencia().getNombre())))
+                                .collect(Collectors.toList()));
 
                         dto.setAsistencial(asistencialDTO);
                 }
 
                 // RegistroActividad (ya filtradas)
                 List<RegActivListDto> actividadesDto = actividadesFiltradas.stream()
-                                .map(actividad -> new RegActivListDto(
-                                                actividad.getId(),
-                                                actividad.getFechaIngreso(),
-                                                actividad.getFechaEgreso(),
-                                                actividad.getHoraIngreso(),
-                                                actividad.getHoraEgreso(),
-                                                new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
-                                                                actividad.getTipoGuardia().getNombre().name()),
+                        .map(actividad -> new RegActivListDto(
+                                actividad.getId(),
+                                actividad.getFechaIngreso(),
+                                actividad.getFechaEgreso(),
+                                actividad.getHoraIngreso(),
+                                actividad.getHoraEgreso(),
+                                new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
+                                        actividad.getTipoGuardia().getNombre().name()),
 
-                                                new ServicioSummaryDto(actividad.getServicio().getId(),
-                                                                actividad.getServicio().getDescripcion()),
-                                                actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
-                                                                actividad.getHorasRealizadas().getId(),
-                                                                actividad.getHorasRealizadas().getHorasLav(),
-                                                                actividad.getHorasRealizadas().getHorasSdf(),
-                                                                actividad.getHorasRealizadas().getMontoLav(),
-                                                                actividad.getHorasRealizadas().getMontoSdf(),
-                                                                actividad.getHorasRealizadas().getMontoTotal()) : null))
-                                .collect(Collectors.toList());
+                                new ServicioSummaryDto(actividad.getServicio().getId(),
+                                        actividad.getServicio().getDescripcion()),
+                                        actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
+                                        actividad.getHorasRealizadas().getId(),
+                                        actividad.getHorasRealizadas().getHorasLav(),
+                                        actividad.getHorasRealizadas().getHorasSdf(),
+                                        actividad.getHorasRealizadas().getMontoLav(),
+                                        actividad.getHorasRealizadas().getMontoSdf(),
+                                        actividad.getHorasRealizadas().getMontoTotal()) : null))
+                        .collect(Collectors.toList());
                 dto.setRegistroActividad(actividadesDto);
                 // Calcular nuevo totalHoras basado en las actividades filtradas
-                SumaHorasListDto nuevoTotalHoras = calcularTotalHorasDesdeActividades(actividadesFiltradas, rm.getTotalHoras());
+                SumaHorasListDto nuevoTotalHoras = calcularTotalHorasDesdeActividades(actividadesFiltradas,
+                                rm.getTotalHoras());
                 dto.setTotalHoras(nuevoTotalHoras);
 
-                if (rm.getDdjj() != null) {
-                        dto.setIdDdjj(rm.getDdjj().getId());
+                if (rm.getDdjjs() != null) {   
+                        List<Long> ddjjIds = rm.getDdjjs().stream()
+                                .map(Ddjj::getId)
+                                .collect(Collectors.toList());
+                        dto.setIdDdjjs(ddjjIds);
                 }
 
                 return dto;
         }
 
-        private SumaHorasListDto calcularTotalHorasDesdeActividades(List<RegistroActividad> actividadesFiltradas, SumaHoras totalHorasOriginal) {
+        private SumaHorasListDto calcularTotalHorasDesdeActividades(List<RegistroActividad> actividadesFiltradas,
+                        SumaHoras totalHorasOriginal) {
                 float totalHorasLav = 0;
                 float totalHorasSdf = 0;
                 BigDecimal totalMontoLav = BigDecimal.ZERO;
@@ -770,19 +778,16 @@ public class RegistroMensualService {
                 }
 
                 return registros.stream()
-                                .map(rm -> {
-                                        // Filtra actividades por tipoGuardia si está presente
-                                        List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                                                        .stream()
-                                                        .filter(actividad -> idTipoGuardia == null || (actividad
-                                                                        .getTipoGuardia() != null &&
-                                                                        actividad.getTipoGuardia().getId()
-                                                                                        .equals(idTipoGuardia)))
-                                                        .collect(Collectors.toList());
-
-                                        return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
-                                })
+                        .map(rm -> {
+                                // Filtra actividades por tipoGuardia si está presente
+                                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                                .stream()
+                                .filter(actividad -> idTipoGuardia == null || (actividad.getTipoGuardia() != null && actividad.getTipoGuardia().getId().equals(idTipoGuardia)))
                                 .collect(Collectors.toList());
+
+                                return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                        })
+                        .collect(Collectors.toList());
         }
 
 }

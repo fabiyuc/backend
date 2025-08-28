@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -269,7 +270,7 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listDdjjCargoyAgrup/{anio}/{mes}/{idEfector}")
+    /* @GetMapping("/listDdjjCargoyAgrup/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrup(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -284,9 +285,9 @@ public class DdjjController {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 
-    @GetMapping("/listDdjjCargoyaAgrupServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    /* @GetMapping("/listDdjjCargoyaAgrupServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrupAndServicio(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -302,9 +303,9 @@ public class DdjjController {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 
-    @GetMapping("/listDdjjExtra/{anio}/{mes}/{idEfector}")
+    /* @GetMapping("/listDdjjExtra/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<Ddjj>> listDdjjExtra(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -319,9 +320,9 @@ public class DdjjController {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 
-    @GetMapping("/listDdjjExtraServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    /* @GetMapping("/listDdjjExtraServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<Ddjj>> listDdjjExtraAndServicio(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -337,9 +338,9 @@ public class DdjjController {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 
-    @GetMapping("/listDdjjCf/{anio}/{mes}/{idEfector}")
+    /* @GetMapping("/listDdjjCf/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<Ddjj>> listDdjjCf(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -354,9 +355,9 @@ public class DdjjController {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 
-    @GetMapping("/listDdjjCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    /* @GetMapping("/listDdjjCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<Ddjj>> listDdjjCfAndServicio(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -372,7 +373,7 @@ public class DdjjController {
             return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
-    }
+    } */
 
     @GetMapping("/getAutoridadImageUrl/{idUsuario}")
     public ResponseEntity<?> getAutoridadImageUrl(@PathVariable("idUsuario") Long idUsuario) {

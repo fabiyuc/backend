@@ -99,7 +99,7 @@ public abstract class Efector {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "mes", "fechaEgreso", "anio",
-            "registroActividad", "asistencial", "efector", "ddjj", "sumaHoras", "totalHoras" })
+            "registroActividad", "asistencial", "efector", "ddjjs", "sumaHoras", "totalHoras" })
     private List<RegistroMensual> registroMensual = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "efector", cascade = CascadeType.ALL)

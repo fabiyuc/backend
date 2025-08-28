@@ -76,23 +76,27 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         "JOIN d.registrosMensuales rm " +
                         "LEFT JOIN rm.registroActividad ra " +
                         "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
+                        "AND d.tipoGuardia.nombre IN :tiposGuardia " +
                         "AND (ra IS NULL OR ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
-        List<Ddjj> findByAnioMesEfector(@Param("anio") int anio,
+        List<Ddjj> findByAnioMesEfectorAndTipoGuardia(@Param("anio") int anio,
                         @Param("mes") MesesEnum mes,
-                        @Param("idEfector") Long idEfector);
+                        @Param("idEfector") Long idEfector,
+                        @Param("tiposGuardia") List<TipoGuardiaEnum> tiposGuardia);
 
         @Query("SELECT DISTINCT d FROM Ddjjs d " +
                         "JOIN d.registrosMensuales rm " +
                         "JOIN rm.registroActividad ra " +
                         "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
                         "AND ra.servicio.id = :idServicio " +
+                        "AND d.tipoGuardia.nombre IN :tiposGuardia " +
                         "AND ra.activo = true " +
                         "AND (ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
-        List<Ddjj> findByEfectorIdAndMesAndAnioServicio(
+        List<Ddjj> findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(
                 @Param("anio") int anio,
                 @Param("mes") MesesEnum mes,
                 @Param("idEfector") Long idEfector,
-                @Param("idServicio") Long idServicio);
+                @Param("idServicio") Long idServicio,
+                @Param("tiposGuardia") List<TipoGuardiaEnum> tiposGuardia);
 
         @Query("SELECT COUNT(d) FROM Ddjjs d WHERE " +
                         "d.activo = true AND " +

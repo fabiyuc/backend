@@ -72,7 +72,7 @@ public class RegistroMensualController {
             return new ResponseEntity<>(registrosMensuales, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -276,7 +276,7 @@ public class RegistroMensualController {
         } catch (Exception e) {
             return new ResponseEntity(
                     new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -294,10 +294,9 @@ public class RegistroMensualController {
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
             return new ResponseEntity(
                     new Mensaje("Registros mensuales de Cargo y reagrupación no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -319,7 +318,7 @@ public class RegistroMensualController {
         } catch (Exception e) {
             return new ResponseEntity(
                     new Mensaje("Registros mensuales de extra no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -339,7 +338,7 @@ public class RegistroMensualController {
         } catch (Exception e) {
             return new ResponseEntity(
                     new Mensaje("Registros mensuales de extra no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -361,7 +360,7 @@ public class RegistroMensualController {
         } catch (Exception e) {
             return new ResponseEntity(
                     new Mensaje("Registros mensuales de CF no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -379,9 +378,8 @@ public class RegistroMensualController {
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(
-                    new Mensaje("Registros mensuales de CF no encontrados"),
-                    HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("Registros mensuales de CF no encontrados"),
+                    HttpStatus.NOT_FOUND);
         }
     }
 

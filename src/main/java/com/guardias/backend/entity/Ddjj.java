@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -62,10 +63,11 @@ public class Ddjj {
             "habilitacionesGenerales", "cronogramasTentativos", "feriados", "cronogramasDefinitivos" })
     private Efector efector;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ddjj", cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "ddjjs_registrosMensuales", joinColumns = @JoinColumn(name = "id_ddjj"), inverseJoinColumns = @JoinColumn(name = "id_registroMensual"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "fechaEgreso", "anio",
-            "efector", "ddjj", "sumaHoras" })
-    List<RegistroMensual> registrosMensuales = new ArrayList<>();
+            "efector", "ddjjs", "sumaHoras" })
+    private List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "director")
