@@ -392,7 +392,7 @@ public class RegistroMensualService {
                 registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
                 registroMensual.setEfector(efectorService.findById(idEfector));
                 registroMensual.setActivo(true);
-                if (quincena != null){
+                if (quincena != null) {
                         registroMensual.setEstadoFacturacion(EstadoFacturacionEnum.PENDIENTE);
                 }
 
@@ -491,6 +491,62 @@ public class RegistroMensualService {
                 }
 
                 // 4. Vincular registro de actividad al mensual (sin modificar sus horas)
+                registroActividad.setRegistroMensual(registroMensual);
+                return registroActividad;
+        }
+
+        public RegistroActividad setRegistroMensualSinHoras(RegistroActividad registroActividad) {
+                // Misma lógica de búsqueda/creación que setRegistroMensual pero SIN acumular horas
+                
+                // 1. Determinar si aplica quincena
+                boolean aplicaQuincena = registroActividad.getTipoGuardia() != null
+                                && registroActividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
+
+                // 2. Identificación del registro
+                Long idAsistencial = registroActividad.getAsistencial().getId();
+                Long idEfector = registroActividad.getEfector().getId();
+                MesesEnum mesEnum = MesesEnum.fromNumeroMes(registroActividad.getFechaIngreso().getMonthValue());
+                int anio = registroActividad.getFechaIngreso().getYear();
+                QuincenaEnum quincena = null;
+
+                // 3. Determinar quincena solo si aplica
+                if (aplicaQuincena) {
+                        quincena = determinarQuincena(registroActividad);
+                }
+
+                // 4. Búsqueda/creación del registro mensual (igual que antes)
+                Optional<RegistroMensual> registroExistente;
+
+                if (aplicaQuincena) {
+                        registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(
+                                        idAsistencial, idEfector, mesEnum, anio, quincena);
+                } else {
+                        registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
+                                        idAsistencial, idEfector, mesEnum, anio);
+                }
+
+                RegistroMensual registroMensual;
+
+                if (registroExistente.isPresent()) {
+                        registroMensual = registroExistente.get();
+                } else {
+                        // Creación de nuevo registro
+                        if (aplicaQuincena) {
+                                registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio,
+                                                quincena);
+                        } else {
+                                registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio, null);
+                        }
+
+                        // Crear SumaHoras vacío para estructura consistente
+                        SumaHoras nuevasHoras = new SumaHoras();
+                        nuevasHoras.setActivo(true);
+                        sumaHorasService.save(nuevasHoras);
+                        registroMensual.setTotalHoras(nuevasHoras);
+                        save(registroMensual);
+                }
+
+                // 5. Vincular registro de actividad al mensual SIN acumular horas
                 registroActividad.setRegistroMensual(registroMensual);
                 return registroActividad;
         }
@@ -941,7 +997,8 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public List<RegistroMensualListDto> findRegistrosFueraDeTerminoPorServicio(Long efectorId, MesesEnum mes, int anio, long idServicio) {
+        public List<RegistroMensualListDto> findRegistrosFueraDeTerminoPorServicio(Long efectorId, MesesEnum mes,
+                        int anio, long idServicio) {
 
                 // Lista de estados que queremos buscar
                 List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
@@ -958,8 +1015,10 @@ public class RegistroMensualService {
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
                                                         .filter(actividad -> actividad.isActivo()
-                                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
-                                                                && actividad.getServicio().getId().equals(idServicio))
+                                                                        && (actividad.getTipoGuardia()
+                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                                                        && actividad.getServicio().getId()
+                                                                                        .equals(idServicio))
                                                         .collect(Collectors.toList());
 
                                         // Convertir a DTO usando tu método existente
@@ -986,17 +1045,18 @@ public class RegistroMensualService {
                 List<RegistroMensual> lista = registroMensualRepository
                                 .findRegistrosFueraDeTermino(efectorId, mesEnum, anio, estadosBuscados);
 
-                return !lista.isEmpty();           
-                
+                return !lista.isEmpty();
+
         }
 
         public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
 
                 List<RegistroMensual> lista = registroMensualRepository
-                                .findRegistrosCompletos(efectorId, mes, anio, quincena, EstadoFacturacionEnum.COMPLETADO);
+                                .findRegistrosCompletos(efectorId, mes, anio, quincena,
+                                                EstadoFacturacionEnum.COMPLETADO);
 
-                return !lista.isEmpty();           
-                
+                return !lista.isEmpty();
+
         }
 
 }

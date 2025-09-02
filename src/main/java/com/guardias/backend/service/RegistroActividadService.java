@@ -345,6 +345,7 @@ public class RegistroActividadService {
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
         ResponseEntity<?> respuestaDeletePendiente = null;
+        
         if (!esGuardiaCorta) {
             /* E. Cálculo de horas y montos */
             SumaHoras horas = calcularHoras(registroActividad);
@@ -370,6 +371,19 @@ public class RegistroActividadService {
         } else {
             // Guardia incompleta: limpia las horas realizadas y no suma al registro mensual
             registroActividad.setHorasRealizadas(null);
+
+            /* Gestión de registros pendientes */
+            // elimina el registro de la lista de pendientes
+            respuestaDeletePendiente = registrosPendientesService
+                    .deleteRegistroActividad(registroActividad);
+
+            // si la eliminacion fue exitosa desvincula el reg pendiente
+            if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
+                registroActividad.setRegistrosPendientes(null);
+
+                /* Actualización de registro mensual sin horas */
+                registroActividad = registroMensualService.setRegistroMensualSinHoras(registroActividad);
+            }
         }
 
         save(registroActividad);
