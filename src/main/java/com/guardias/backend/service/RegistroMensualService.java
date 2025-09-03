@@ -33,6 +33,7 @@ import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.repository.RegistroMensualRepository;
@@ -146,12 +147,12 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId,
-                        Long efectorId,
-                        MesesEnum mes, int anio) {
-                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId,
-                                mes,
-                                anio);
+        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId, MesesEnum mes, int anio) {
+                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId, mes, anio);
+        }
+
+        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId, Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(asistencialId, efectorId, mes, anio);
         }
 
         public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacionAndServicio(
@@ -362,12 +363,13 @@ public class RegistroMensualService {
         }
 
         /* Crea un nuevo RegistroMensual con valores iniciales (horas/montos en 0) */
-        public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio) {
+        public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio, QuincenaEnum quincena) {
 
                 /* Inicializa un nuevo RegistroMensual con mes/año, asistencial,efector */
                 RegistroMensual registroMensual = new RegistroMensual();
                 registroMensual.setMes(mesEnum);
                 registroMensual.setAnio(anio);
+                registroMensual.setQuincena(quincena); // Puede ser null para tipos no CONTRAFACTURA
                 registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
                 registroMensual.setEfector(efectorService.findById(idEfector));
                 registroMensual.setActivo(true);
@@ -394,15 +396,33 @@ public class RegistroMensualService {
          */
         public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
-                // 1. Identificación del registro
+                // 1. Determinar si aplica quincena (solo para CONTRAFACTURA)
+                boolean aplicaQuincena = registroActividad.getTipoGuardia() != null && registroActividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
+
+                // 2. Identificación del registro
                 Long idAsistencial = registroActividad.getAsistencial().getId();
                 Long idEfector = registroActividad.getEfector().getId();
                 MesesEnum mesEnum = MesesEnum.fromNumeroMes(registroActividad.getFechaIngreso().getMonthValue());
                 int anio = registroActividad.getFechaIngreso().getYear();
+                QuincenaEnum quincena = null;
 
-                // 2. Búsqueda del registro mensual existente
-                Optional<RegistroMensual> registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
-                                idAsistencial, idEfector, mesEnum, anio);
+                // 3. Determinar quincena solo si aplica
+                if (aplicaQuincena) {
+                        quincena = determinarQuincena(registroActividad);
+                }
+
+                // 4. Búsqueda del registro mensual existente
+                Optional<RegistroMensual> registroExistente;
+
+                if (aplicaQuincena) {
+                        // Buscar por quincena para CONTRAFACTURA
+                        registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(
+                        idAsistencial, idEfector, mesEnum, anio, quincena);
+                } else {
+                        // Buscar sin quincena para otros tipos de guardia
+                        registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
+                        idAsistencial, idEfector, mesEnum, anio);
+                }
 
                 RegistroMensual registroMensual;
 
@@ -412,7 +432,12 @@ public class RegistroMensualService {
                 } else {
                         // Creación de nuevo registro con sumaHoras integrado
                         System.out.println("DEBUG - Creando nuevo registro mensual");
-                        registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio);
+
+                        if (aplicaQuincena) {
+                                registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio, quincena);
+                        } else {
+                                registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio, null);
+                        }
 
                         // Crear y asignar SumaHoras
                         SumaHoras nuevasHoras = new SumaHoras();
@@ -444,6 +469,13 @@ public class RegistroMensualService {
                 // 4. Vincular registro de actividad al mensual (sin modificar sus horas)
                 registroActividad.setRegistroMensual(registroMensual);
                 return registroActividad;
+        }
+
+        // Método auxiliar para determinar la quincena
+        private QuincenaEnum determinarQuincena(RegistroActividad       registroActividad) {
+        
+                int dia = registroActividad.getFechaIngreso().getDayOfMonth();
+                return (dia <= 15) ? QuincenaEnum.PRIMERA : QuincenaEnum.SEGUNDA;
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCargoReagrupacionAndServicio(

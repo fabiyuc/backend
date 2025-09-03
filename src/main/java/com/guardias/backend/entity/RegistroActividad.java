@@ -128,21 +128,7 @@ public class RegistroActividad {
 
         @Column(columnDefinition = "BIT DEFAULT 1")
         private Boolean esGuardiaIncompleta;
-        /*
-         * @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade =
-         * CascadeType.REMOVE)
-         * 
-         * @JoinColumn(name = "id_valor_guardia")
-         * 
-         * @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler"})
-         * private ValorGuardiaBase valorGuardia;
-         */
-
-        // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","activo",
-        // "fechaIngreso", "fechaEgreso", "horaIngreso", "horaEgreso", "tipoGuardia",
-        // "asistencial","servicio", "efector",
-        // "registroMensual","registrosPendientes","usuario","horaRegistro","fechaRegistro"
-        // })
+        
 
         @Override
         public boolean equals(Object obj) {

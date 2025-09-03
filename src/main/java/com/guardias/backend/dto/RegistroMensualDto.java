@@ -3,6 +3,7 @@ package com.guardias.backend.dto;
 import java.util.List;
 
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +21,7 @@ public class RegistroMensualDto {
     @Min(value = 1991)
     private int anio;
     @Min(value = 1)
-    private Long idAsistencial;
+    private Long idAsistenciales;
 
     private Long idEfector;
 
@@ -28,5 +29,7 @@ public class RegistroMensualDto {
     private List<Long> idDdjjs;
     private Long idSumaHoras;
     private boolean activo;
+
+    private QuincenaEnum quincena; 
 
 }

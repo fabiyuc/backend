@@ -25,6 +25,9 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
                         MesesEnum mes, int anio);
 
+        Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId, Long efectorId,
+                        MesesEnum mes, int anio);
+
         Optional<List<RegistroMensual>> findByActivoTrue();
 
         boolean existsByAnioAndMes(int anio, MesesEnum mes);

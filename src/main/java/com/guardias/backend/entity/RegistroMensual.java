@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,7 +46,7 @@ public class RegistroMensual {
             "telefono", "email", "domicilio", "estado", "activo", "autoridades", "registrosActividades", "descripcion",
             "esAsistencial", "registroMensual", "distribucionesHorarias", "registrosMensuales", "usuarios",
             "habilitacionesGenerales" })
-    private Person asistencial; // para que sea mas facil la busqueda por persona
+    private Person asistencial;
 
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
@@ -71,16 +72,14 @@ public class RegistroMensual {
             "total", "estadoDdjj", "valorGmi", "registrosMensuales", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<Ddjj>();
 
-    /* @OneToOne(mappedBy = "registroMensual") */
     @OneToOne
     @JoinColumn(name = "total_horas_id")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registroMensual" })
     private SumaHoras totalHoras;
 
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo",
-    // "mes", "fechaEgreso","anio",
-    // "registroActividad","idAsistencial","efector","ddjj","sumaHoras","asistencial"
-    // })
+    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+    @Enumerated(EnumType.STRING)
+    private QuincenaEnum quincena;
 
     @Override
     public boolean equals(Object obj) {
