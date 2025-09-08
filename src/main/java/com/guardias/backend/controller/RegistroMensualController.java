@@ -21,6 +21,7 @@ import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.EfectorService;
@@ -342,19 +343,21 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/listCfAndServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    @GetMapping("/listCfAndServicio/{anio}/{mes}/{idEfector}/{idServicio}/{quincena}")
     public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCfAndServicio(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
             @PathVariable("idEfector") Long idEfector,
-            @PathVariable("idServicio") Long idServicio) {
+            @PathVariable("idServicio") Long idServicio,
+            @PathVariable("quincena") String quincena) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
                     .findByTipoGuardiaCfAndServicio(anio, mesEnum, idEfector,
-                            idServicio);
+                            idServicio,quincenaEnum);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -364,17 +367,19 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/listCf/{anio}/{mes}/{idEfector}")
+    @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
     public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCf(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector) {
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("quincena") String quincena) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
-                    .findByTipoGuardiaCf(anio, mesEnum, idEfector);
+                    .findByTipoGuardiaCf(anio, mesEnum, idEfector,quincenaEnum);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {

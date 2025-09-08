@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 
 @Repository
 public interface RegistroMensualRepository extends JpaRepository<RegistroMensual, Long> {
@@ -22,11 +23,18 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                 @Param("mes") MesesEnum mes, 
                 @Param("idEfector") Long idEfector);
 
+        @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND rm.quincena = :quincena")
+        List<RegistroMensual> findByAnioMesEfectorAndQuincena(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes, 
+                @Param("idEfector") Long idEfector,
+                @Param("quincena") QuincenaEnum quincena);
+
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
                         MesesEnum mes, int anio);
 
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId, Long efectorId,
-                        MesesEnum mes, int anio);
+                        MesesEnum mes, int anio, QuincenaEnum quincena);
 
         Optional<List<RegistroMensual>> findByActivoTrue();
 
@@ -41,13 +49,22 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
         List<RegistroMensual> findByActivo(boolean activo);
 
         @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra "
-                        + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector "
-                        + "AND ra.servicio.id = :idServicio")
+                        + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector " + "AND ra.servicio.id = :idServicio")
         List<RegistroMensual> findByAnioMesEfectorAndServicio(
                 @Param("anio") int anio,
                 @Param("mes") MesesEnum mes,
                 @Param("idEfector") Long idEfector,
                 @Param("idServicio") Long idServicio);
+
+        @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra "
+                        + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND rm.quincena = :quincena "
+                        + "AND ra.servicio.id = :idServicio")
+        List<RegistroMensual> findByAnioMesEfectorServicioAndQuincena(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes,
+                @Param("idEfector") Long idEfector,
+                @Param("idServicio") Long idServicio,
+                @Param("quincena") QuincenaEnum quincena);
 
         @Query("SELECT r.id FROM registrosMensuales r WHERE r.id IN :ids")
         List<Long> findExistingIds(@Param("ids") List<Long> ids);

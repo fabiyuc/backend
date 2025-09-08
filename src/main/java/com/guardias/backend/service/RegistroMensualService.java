@@ -152,7 +152,7 @@ public class RegistroMensualService {
         }
 
         public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId, Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
-                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(asistencialId, efectorId, mes, anio);
+                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(asistencialId, efectorId, mes, anio, quincena);
         }
 
         public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacionAndServicio(
@@ -621,12 +621,12 @@ public class RegistroMensualService {
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCfAndServicio(
-                        int anio, MesesEnum mes, Long idEfector, Long idServicio) {
+                        int anio, MesesEnum mes, Long idEfector, Long idServicio, QuincenaEnum quincena) {
 
-                System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}" + anio + mes
-                                + idEfector + idServicio);
+                System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}, quincena: {}" + anio + mes
+                                + idEfector + idServicio + quincena);
                 List<RegistroMensual> registrosMensuales = registroMensualRepository
-                                .findByAnioMesEfectorAndServicio(anio, mes, idEfector, idServicio);
+                                .findByAnioMesEfectorServicioAndQuincena(anio, mes, idEfector, idServicio, quincena);
 
                 System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
                 return registrosMensuales.stream()
@@ -650,17 +650,17 @@ public class RegistroMensualService {
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCf(
-                        int anio, MesesEnum mes, Long idEfector) {
+                        int anio, MesesEnum mes, Long idEfector, QuincenaEnum quincena) {
 
-                System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}" + anio + mes + idEfector);
+                System.out.println("Iniciando consulta para año: " + anio + ", mes: " + mes + ", efector: " + idEfector + ", quincena: " + quincena);
                 List<RegistroMensual> registrosMensuales = registroMensualRepository
-                                .findByAnioMesEfector(anio, mes, idEfector);
+                                .findByAnioMesEfectorAndQuincena(anio, mes, idEfector, quincena);
 
                 System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
                 return registrosMensuales.stream()
                                 .filter(RegistroMensual::isActivo)
                                 .map(rm -> {
-                                        // Filtrar actividades (CF + servicio)
+                                        // Filtrar actividades (CF)
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                         .stream()
                                         .filter(actividad -> actividad.isActivo()
@@ -681,6 +681,7 @@ public class RegistroMensualService {
                 dto.setId(rm.getId());
                 dto.setMes(rm.getMes());
                 dto.setAnio(rm.getAnio());
+                dto.setQuincena(rm.getQuincena());
 
                 // Asistencial
                 if (rm.getAsistencial() != null) {

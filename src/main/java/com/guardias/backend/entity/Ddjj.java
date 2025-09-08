@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.security.entity.Usuario;
 
 import jakarta.persistence.CascadeType;
@@ -107,6 +108,10 @@ public class Ddjj {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "ddjjs", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" , "ddjjs"})
     private List<CronogramaDefinitivo> cronogramasDefinitivos = new ArrayList<CronogramaDefinitivo>();
+
+    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+    @Enumerated(EnumType.STRING)
+    private QuincenaEnum quincena;
 
     @Override
     public boolean equals(Object obj) {

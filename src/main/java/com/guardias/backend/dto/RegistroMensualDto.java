@@ -21,7 +21,7 @@ public class RegistroMensualDto {
     @Min(value = 1991)
     private int anio;
     @Min(value = 1)
-    private Long idAsistenciales;
+    private Long idAsistencial;
 
     private Long idEfector;
 

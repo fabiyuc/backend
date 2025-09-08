@@ -30,6 +30,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DdjjRepository;
@@ -154,8 +155,12 @@ public class DdjjService {
 
     public Ddjj createUpdate(Ddjj ddjj, DdjjDto ddjjDto) {
 
-        // ===== 1. VALIDACIÓN INMEDIATA DE LOS IDs =====
+        // ===== 0. VALIDACIÓN INMEDIATA DE LOS IDs =====
         validateRegistrosMensuales(ddjjDto.getIdRegistrosMensuales());
+
+        // ===== 1. DETERMINAR QUINCENA (NUEVO) =====
+        QuincenaEnum quincena = determinarQuincenaParaDdjj(ddjjDto);
+        ddjj.setQuincena(quincena);
 
         // ===== 2. MAPEO DE CAMPOS BÁSICOS =====
         mapBasicFields(ddjj, ddjjDto);
@@ -172,6 +177,43 @@ public class DdjjService {
     }
 
     // ---- Métodos auxiliares ----
+    
+    private QuincenaEnum determinarQuincenaParaDdjj(DdjjDto ddjjDto) {
+    
+        // Solo aplica quincena para CONTRAFACTURA (idTipoGuardia = 4)
+    if (ddjjDto.getIdTipoGuardia() != null && ddjjDto.getIdTipoGuardia() == 4L) {
+        return obtenerQuincenaDeRegistrosMensuales(ddjjDto.getIdRegistrosMensuales());
+    }
+    
+    // Para otros tipos de guardia, retorna null
+    return null;
+    }
+
+    private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<Long> idsRegistrosMensuales) {
+    
+        if (idsRegistrosMensuales == null || idsRegistrosMensuales.isEmpty()) {
+            return null;
+        }
+    
+        // Obtener todos los registros mensuales
+        List<RegistroMensual> registros = registroMensualRepository.findAllById(idsRegistrosMensuales);
+    
+        if (registros.isEmpty()) {
+            return null;
+        }
+    
+        // Verificar que todos tengan la misma quincena
+        QuincenaEnum quincena = registros.get(0).getQuincena();
+    
+        for (RegistroMensual registro : registros) {
+            if (!Objects.equals(quincena, registro.getQuincena())) {
+                throw new IllegalArgumentException("Todos los registros mensuales deben tener la misma quincena");
+            }
+        }
+    
+        return quincena;
+    }
+
     private void validateRegistrosMensuales(List<Long> idsRegistros) {
         if (idsRegistros == null || idsRegistros.isEmpty()) {
             throw new IllegalArgumentException("La lista de registros mensuales no puede estar vacía");
@@ -205,45 +247,6 @@ public class DdjjService {
                 && (ddjj.getEfector() == null || !Objects.equals(ddjj.getEfector().getId(), ddjjDto.getIdEfector()))) {
             ddjj.setEfector(efectorService.findById(ddjjDto.getIdEfector()));
         }
-
-        /*
-         * if (ddjjDto.getIdRegistrosMensuales() != null) {
-         * // 1. Primero guarda la DDJJ si es nueva (sin los registros)
-         * if (ddjj.getId() == null) {
-         * ddjj = ddjjRepository.save(ddjj);
-         * }
-         * 
-         * // 2. Manejo de registros existentes (para actualización)
-         * if (ddjj.getRegistrosMensuales() != null) {
-         * // Rompe la relación con registros que ya no están en la lista nueva
-         * List<RegistroMensual> toRemove = new ArrayList<>();
-         * for (RegistroMensual rm : ddjj.getRegistrosMensuales()) {
-         * if (!ddjjDto.getIdRegistrosMensuales().contains(rm.getId())) {
-         * rm.getDdjjs().remove(ddjj);
-         * toRemove.add(rm);
-         * }
-         * }
-         * ddjj.getRegistrosMensuales().removeAll(toRemove);
-         * } else {
-         * ddjj.setRegistrosMensuales(new ArrayList<>());
-         * }
-         * 
-         * // 3. Agrega los nuevos registros
-         * for (Long id : ddjjDto.getIdRegistrosMensuales()) {
-         * boolean exists = ddjj.getRegistrosMensuales().stream()
-         * .anyMatch(rm -> rm.getId().equals(id));
-         * 
-         * if (!exists) {
-         * Optional<RegistroMensual> rmOpt = registroMensualService.findById(id);
-         * if (rmOpt.isPresent()) {
-         * RegistroMensual rm = rmOpt.get();
-         * rm.getDdjjs().add(ddjj); // Agregar al RegistroMensual
-         * ddjj.getRegistrosMensuales().add(rm); // Agregar a la DDJJ
-         * }
-         * }
-         * }
-         * }
-         */
 
         if (ddjjDto.getIdObservacionesDdjj() != null) {
             // 1. Primero guarda la DDJJ si es nueva (sin los registros)
