@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
 @Repository
@@ -82,6 +83,21 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("mes") MesesEnum mes,
                         @Param("idEfector") Long idEfector,
                         @Param("tiposGuardia") List<TipoGuardiaEnum> tiposGuardia);
+        
+        @Query("SELECT DISTINCT d FROM Ddjjs d " +
+                "JOIN FETCH d.registrosMensuales rm " +
+                "JOIN FETCH rm.registroActividad ra " +
+                "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
+                "AND d.tipoGuardia.nombre = :tiposGuardia " +
+                "AND rm.quincena = :quincena " +
+                "AND d.activo = true " +
+                "AND (ra IS NULL OR ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
+        List<Ddjj> findByAnioMesEfectorAndTipoGuardiaAndQuincena(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes,
+                @Param("idEfector") Long idEfector,
+                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                @Param("quincena") QuincenaEnum quincena);
 
         @Query("SELECT DISTINCT d FROM Ddjjs d " +
                         "JOIN d.registrosMensuales rm " +
@@ -97,6 +113,23 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                 @Param("idEfector") Long idEfector,
                 @Param("idServicio") Long idServicio,
                 @Param("tiposGuardia") List<TipoGuardiaEnum> tiposGuardia);
+
+        @Query("SELECT DISTINCT d FROM Ddjjs d " +
+                        "JOIN FETCH d.registrosMensuales rm " +
+                        "JOIN FETCH rm.registroActividad ra " +
+                        "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
+                        "AND ra.servicio.id = :idServicio " +
+                        "AND d.tipoGuardia.nombre = :tiposGuardia " +
+                        "AND rm.quincena = :quincena " +
+                        "AND d.activo = true " +
+                        "AND (ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
+        List<Ddjj> findByEfectorIdAndMesAndAnioServicioAndTipoGuardiaAndQuincena(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes,
+                @Param("idEfector") Long idEfector,
+                @Param("idServicio") Long idServicio,
+                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                @Param("quincena") QuincenaEnum quincena);
 
         @Query("SELECT COUNT(d) FROM Ddjjs d WHERE " +
                         "d.activo = true AND " +

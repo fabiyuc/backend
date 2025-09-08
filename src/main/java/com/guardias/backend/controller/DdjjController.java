@@ -25,6 +25,7 @@ import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.DdjjService;
@@ -514,16 +515,19 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
+    @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}/{quincena}")
     public ResponseEntity<List<DdjjListDto>> listCfAndServicio(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector,
-            @PathVariable("idServicio") Long idServicio) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            @PathVariable Long idServicio,
+        @PathVariable String quincena) {
+        
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
         try {
             List<DdjjListDto> ddjjs = ddjjService
-                    .findCfServicio(anio, mesEnum, idEfector, idServicio);
+                    .findCfServicio(anio, mesEnum, idEfector, idServicio, quincenaEnum);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {
@@ -532,15 +536,17 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listCf/{anio}/{mes}/{idEfector}")
+    @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
     public ResponseEntity<List<DdjjListDto>> listCfAnd(
             @PathVariable int anio,
             @PathVariable String mes,
-            @PathVariable Long idEfector) {
+            @PathVariable Long idEfector,
+        @PathVariable String quincena) {
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
         try {
             List<DdjjListDto> ddjjs = ddjjService
-                    .findCf(anio, mesEnum, idEfector);
+                    .findCf(anio, mesEnum, idEfector, quincenaEnum);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {
