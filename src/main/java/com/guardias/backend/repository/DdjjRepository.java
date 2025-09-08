@@ -88,7 +88,7 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                 "JOIN FETCH d.registrosMensuales rm " +
                 "JOIN FETCH rm.registroActividad ra " +
                 "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
-                "AND d.tipoGuardia.nombre = :tiposGuardia " +
+                "AND d.tipoGuardia.nombre = :tipoGuardia " +
                 "AND rm.quincena = :quincena " +
                 "AND d.activo = true " +
                 "AND (ra IS NULL OR ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
@@ -119,7 +119,7 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         "JOIN FETCH rm.registroActividad ra " +
                         "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
                         "AND ra.servicio.id = :idServicio " +
-                        "AND d.tipoGuardia.nombre = :tiposGuardia " +
+                        "AND d.tipoGuardia.nombre = :tipoGuardia " +
                         "AND rm.quincena = :quincena " +
                         "AND d.activo = true " +
                         "AND (ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
