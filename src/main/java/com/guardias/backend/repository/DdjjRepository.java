@@ -85,13 +85,11 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("tiposGuardia") List<TipoGuardiaEnum> tiposGuardia);
         
         @Query("SELECT DISTINCT d FROM Ddjjs d " +
-                "JOIN FETCH d.registrosMensuales rm " +
-                "JOIN FETCH rm.registroActividad ra " +
+                "LEFT JOIN d.registrosMensuales rm " +
                 "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
                 "AND d.tipoGuardia.nombre = :tipoGuardia " +
-                "AND rm.quincena = :quincena " +
-                "AND d.activo = true " +
-                "AND (ra IS NULL OR ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
+                "AND d.quincena = :quincena " +
+                "AND d.activo = true ")
         List<Ddjj> findByAnioMesEfectorAndTipoGuardiaAndQuincena(
                 @Param("anio") int anio,
                 @Param("mes") MesesEnum mes,
@@ -115,12 +113,12 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                 @Param("tiposGuardia") List<TipoGuardiaEnum> tiposGuardia);
 
         @Query("SELECT DISTINCT d FROM Ddjjs d " +
-                        "JOIN FETCH d.registrosMensuales rm " +
-                        "JOIN FETCH rm.registroActividad ra " +
+                        "JOIN d.registrosMensuales rm " +
+                        "JOIN rm.registroActividad ra " +
                         "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
                         "AND ra.servicio.id = :idServicio " +
                         "AND d.tipoGuardia.nombre = :tipoGuardia " +
-                        "AND rm.quincena = :quincena " +
+                        "AND d.quincena = :quincena " +
                         "AND d.activo = true " +
                         "AND (ra.esGuardiaIncompleta IS NULL OR ra.esGuardiaIncompleta = false)")
         List<Ddjj> findByEfectorIdAndMesAndAnioServicioAndTipoGuardiaAndQuincena(

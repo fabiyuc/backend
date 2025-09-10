@@ -1,6 +1,5 @@
 package com.guardias.backend.controller;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -517,20 +516,23 @@ public class DdjjController {
 
     @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}/{quincena}")
     public ResponseEntity<List<DdjjListDto>> listCfAndServicio(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector,
-            @PathVariable Long idServicio,
+        @PathVariable int anio,
+        @PathVariable String mes,
+        @PathVariable Long idEfector,
+        @PathVariable Long idServicio,
         @PathVariable String quincena) {
         
-            MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        
         try {
             List<DdjjListDto> ddjjs = ddjjService
                     .findCfServicio(anio, mesEnum, idEfector, idServicio, quincenaEnum);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println("Error general: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity(new Mensaje("Ddjj de CF no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
@@ -538,18 +540,22 @@ public class DdjjController {
 
     @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
     public ResponseEntity<List<DdjjListDto>> listCfAnd(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector,
+        @PathVariable int anio,
+        @PathVariable String mes,
+        @PathVariable Long idEfector,
         @PathVariable String quincena) {
+
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        
         try {
             List<DdjjListDto> ddjjs = ddjjService
                     .findCf(anio, mesEnum, idEfector, quincenaEnum);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println("Error general: " + e.getMessage());
+            e.printStackTrace();
             return new ResponseEntity(new Mensaje("Ddjj de CF no encontrada"),
                     HttpStatus.NOT_FOUND);
         }
