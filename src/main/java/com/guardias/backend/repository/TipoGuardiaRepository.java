@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 
 @Repository
 public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Long> {
@@ -17,7 +18,7 @@ public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Long> 
 
     Optional<TipoGuardia> findByDescripcion(String descripcion);
 
-    Optional<TipoGuardia> findByNombre(String nombre);
+    Optional<TipoGuardia> findByNombre(TipoGuardiaEnum nombre);
 
     Optional<TipoGuardia> findById(Long id);
 

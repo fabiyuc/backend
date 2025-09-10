@@ -270,110 +270,41 @@ public class DdjjController {
         }
     }
 
-    /* @GetMapping("/listDdjjCargoyAgrup/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrup(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        try {
-            List<Ddjj> ddjjs = ddjjService
-                    .findDdjjCargoyAgrup(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
-                    HttpStatus.NOT_FOUND);
-        }
-    } */
-
-    /* @GetMapping("/listDdjjCargoyaAgrupServicio/{anio}/{mes}/{idEfector}/{idServicio}")
-    public ResponseEntity<List<Ddjj>> listDdjjCargoyAgrupAndServicio(
+    @GetMapping("/existsDdjjCf/{anio}/{mes}/{idEfector}/{quincena}")
+    public ResponseEntity<Boolean> existsDdjjCf(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector,
-            @PathVariable("idServicio") Long idServicio) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            @PathVariable String quincena) {
+
+        System.out.println("=== INICIO existsDdjjCf ===");
+        System.out.println("Parámetros recibidos:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+        System.out.println(" - quincena: " + quincena);
+
         try {
-            List<Ddjj> ddjjs = ddjjService
-                    .findDdjjCargoyAgrupServicio(anio, mesEnum, idEfector, idServicio);
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
-            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
-                    HttpStatus.NOT_FOUND);
+            System.out.println("Mes convertido a enum: " + mesEnum);
+            System.out.println("Quincena convertida a enum: " + quincenaEnum);
+
+            boolean exists = ddjjService.existsByAnioMesEfectorAndQuincenaCf(
+                    anio, mesEnum, idEfector, quincenaEnum);
+
+            System.out.println("Resultado de la consulta: " + exists);
+            System.out.println("=== FIN existsDdjjCf ===");
+
+            return ResponseEntity.ok(exists);
+        } catch (IllegalArgumentException e) {
+            System.out.println("ERROR: Mes o quincena inválido - mes: " + mes + ", quincena: " + quincena);
+            System.out.println("Mensaje de error: " + e.getMessage());
+            System.out.println("=== FIN existsDdjjCf (con error) ===");
+            return ResponseEntity.badRequest().body(false);
         }
-    } */
-
-    /* @GetMapping("/listDdjjExtra/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<Ddjj>> listDdjjExtra(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        try {
-            List<Ddjj> ddjjs = ddjjService
-                    .findDdjjExtra(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
-                    HttpStatus.NOT_FOUND);
-        }
-    } */
-
-    /* @GetMapping("/listDdjjExtraServicio/{anio}/{mes}/{idEfector}/{idServicio}")
-    public ResponseEntity<List<Ddjj>> listDdjjExtraAndServicio(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector,
-            @PathVariable("idServicio") Long idServicio) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        try {
-            List<Ddjj> ddjjs = ddjjService
-                    .findDdjjExtraServicio(anio, mesEnum, idEfector, idServicio);
-
-            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
-                    HttpStatus.NOT_FOUND);
-        }
-    } */
-
-    /* @GetMapping("/listDdjjCf/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<Ddjj>> listDdjjCf(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        try {
-            List<Ddjj> ddjjs = ddjjService
-                    .findDdjjCf(anio, mesEnum, idEfector);
-
-            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
-                    HttpStatus.NOT_FOUND);
-        }
-    } */
-
-    /* @GetMapping("/listDdjjCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
-    public ResponseEntity<List<Ddjj>> listDdjjCfAndServicio(
-            @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable Long idEfector,
-            @PathVariable("idServicio") Long idServicio) {
-        MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        try {
-            List<Ddjj> ddjjs = ddjjService
-                    .findDdjjCfServicio(anio, mesEnum, idEfector, idServicio);
-
-            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity(new Mensaje("Ddjj de Cargo y Agrup no encontrada"),
-                    HttpStatus.NOT_FOUND);
-        }
-    } */
+    }
 
     @GetMapping("/getAutoridadImageUrl/{idUsuario}")
     public ResponseEntity<?> getAutoridadImageUrl(@PathVariable("idUsuario") Long idUsuario) {
@@ -516,15 +447,15 @@ public class DdjjController {
 
     @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}/{quincena}")
     public ResponseEntity<List<DdjjListDto>> listCfAndServicio(
-        @PathVariable int anio,
-        @PathVariable String mes,
-        @PathVariable Long idEfector,
-        @PathVariable Long idServicio,
-        @PathVariable String quincena) {
-        
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector,
+            @PathVariable Long idServicio,
+            @PathVariable String quincena) {
+
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-        
+
         try {
             List<DdjjListDto> ddjjs = ddjjService
                     .findCfServicio(anio, mesEnum, idEfector, idServicio, quincenaEnum);
@@ -540,14 +471,14 @@ public class DdjjController {
 
     @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
     public ResponseEntity<List<DdjjListDto>> listCfAnd(
-        @PathVariable int anio,
-        @PathVariable String mes,
-        @PathVariable Long idEfector,
-        @PathVariable String quincena) {
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector,
+            @PathVariable String quincena) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-        
+
         try {
             List<DdjjListDto> ddjjs = ddjjService
                     .findCf(anio, mesEnum, idEfector, quincenaEnum);
