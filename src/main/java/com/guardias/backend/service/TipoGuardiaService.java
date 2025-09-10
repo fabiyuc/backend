@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.TipoGuardiaRepository;
 
 @Service
@@ -31,23 +32,26 @@ public class TipoGuardiaService {
     }
 
     public Optional<TipoGuardia> findByNombre(String nombre) {
-        return tipoGuardiaRepository.findByNombre(nombre);
+        TipoGuardiaEnum nombreEnum = TipoGuardiaEnum.valueOf(nombre.toUpperCase());
+        return tipoGuardiaRepository.findByNombre(nombreEnum);
     }
 
     public boolean existsByNombre(String nombre) {
-        return tipoGuardiaRepository.existsByNombre(nombre);
+        TipoGuardiaEnum nombreEnum = TipoGuardiaEnum.valueOf(nombre.toUpperCase());
+        return tipoGuardiaRepository.existsByNombre(nombreEnum);
     }
 
     public boolean activoByNombre(String nombre) {
-        return (tipoGuardiaRepository.existsByNombre(nombre)
-                && tipoGuardiaRepository.findByNombre(nombre).get().isActivo());
+        TipoGuardiaEnum nombreEnum = TipoGuardiaEnum.valueOf(nombre.toUpperCase());
+        return (tipoGuardiaRepository.existsByNombre(nombreEnum)
+                && tipoGuardiaRepository.findByNombre(nombreEnum).get().isActivo());
     }
 
-    public Optional <List<TipoGuardia>> findByActivoTrue(){
+    public Optional<List<TipoGuardia>> findByActivoTrue() {
         return tipoGuardiaRepository.findByActivoTrue();
     }
 
-    public List<TipoGuardia> findAll(){
+    public List<TipoGuardia> findAll() {
         return tipoGuardiaRepository.findAll();
     }
 

@@ -22,7 +22,7 @@ public interface TipoGuardiaRepository extends JpaRepository<TipoGuardia, Long> 
 
     Optional<TipoGuardia> findById(Long id);
 
-    boolean existsByNombre(String nombre);
+    boolean existsByNombre(TipoGuardiaEnum nombre);
 
     boolean existsById(Long id);
 
