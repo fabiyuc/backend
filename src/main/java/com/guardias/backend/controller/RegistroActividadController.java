@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.dto.registroActividad.RegActivAsistenciaDto;
 import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
 import com.guardias.backend.dto.registroActividad.RegActivNombresDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegSalidaDto;
@@ -232,6 +233,18 @@ public class RegistroActividadController {
 
         List<Long> ddjjAprobadas = registroActividadService.obtenerIdsDdjjAprobadas(idEfector, mes, anio);
         return new ResponseEntity<>(ddjjAprobadas, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAsistenciaByProfesionalEfectorMesAnio/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<RegActivAsistenciaDto>> listAsistenciaByProfesionalEfectorMesAnio(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int mes,
+            @PathVariable int anio) {
+
+        List<RegActivAsistenciaDto> list = registroActividadService
+                .listarAsistenciaPorProfesionalYEfector(idAsistencial, idEfector, mes, anio);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
 }

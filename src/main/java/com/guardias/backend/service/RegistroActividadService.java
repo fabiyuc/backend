@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
+import com.guardias.backend.dto.registroActividad.RegActivAsistenciaDto;
 import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
@@ -542,5 +543,45 @@ public class RegistroActividadService {
         } catch (NoSuchElementException e) {
             return Collections.emptyList(); // Si falta alguna, devuelve lista vacía
         }
+    }
+
+    public List<RegActivAsistenciaDto> listarAsistenciaPorProfesionalYEfector(Long idAsistencial, Long idEfector,
+            int mes, int anio) {
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+        int mesNumero = mesEnum.getNumeroMes();
+        List<RegistroActividad> registros = registroActividadRepository
+                .findMotivosByEfectorServicioMesAnio(idEfector, mesNumero, anio);
+
+        return registros.stream()
+                .filter(ra -> ra.getAsistencial().getId().equals(idAsistencial) && ra.isActivo())
+                .map(ra -> {
+                    RegActivAsistenciaDto dto = new RegActivAsistenciaDto();
+                    dto.setId(ra.getId());
+                    dto.setFechaIngreso(ra.getFechaIngreso());
+                    dto.setFechaEgreso(ra.getFechaEgreso());
+                    dto.setFechaRegistroIngreso(ra.getFechaRegistroIngreso());
+                    dto.setFechaRegistroEgreso(ra.getFechaRegistroEgreso());
+                    dto.setHoraIngreso(ra.getHoraIngreso());
+                    dto.setHoraEgreso(ra.getHoraEgreso());
+                    dto.setHoraRegistroIngreso(ra.getHoraRegistroIngreso());
+                    dto.setHoraRegistroEgreso(ra.getHoraRegistroEgreso());
+                    dto.setTipoGuardia(ra.getTipoGuardia() != null ? ra.getTipoGuardia().getNombre() : null);
+                    dto.setActivo(ra.isActivo());
+
+                    dto.setIdAsistencial(ra.getAsistencial() != null ? ra.getAsistencial().getId() : null);
+                    dto.setServicio(ra.getServicio() != null ? ra.getServicio().getDescripcion() : null);
+                    dto.setIdEfector(ra.getEfector() != null ? ra.getEfector().getId() : null);
+                    dto.setUsuarioIngreso(
+                            ra.getUsuarioIngreso() != null && ra.getUsuarioIngreso().getPerson() != null
+                                    ? ra.getUsuarioIngreso().getPerson().getNombre() + " "
+                                            + ra.getUsuarioIngreso().getPerson().getApellido()
+                                    : null);
+                    dto.setIdUsuarioEgreso(ra.getUsuarioEgreso() != null ? ra.getUsuarioEgreso().getId() : null);
+                    dto.setMotivoIngreso(ra.getMotivoIngreso());
+                    dto.setMotivoEgreso(ra.getMotivoEgreso());
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
