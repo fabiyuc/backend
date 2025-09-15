@@ -2,6 +2,9 @@ package com.guardias.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+
+import com.guardias.backend.enums.CondicionFiscalEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +15,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FacturaDto {
     
-    private String contribuyente;
+    private Long idAsistencial;
+
+    private List<Long> idRegistrosMensuales;
+
+    private String nombreTitular;
+
+    private String apellidoTitular;
+
+    private int dniTitular;
+
+    private String cuilTitular;
+
+    private CondicionFiscalEnum contribuyente;
 
     private String tipo;
 
@@ -26,5 +41,5 @@ public class FacturaDto {
 
     private boolean activo;
 
-    private Long idAsistencial;
+    
 }

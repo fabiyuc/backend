@@ -71,6 +71,10 @@ public class RegistroMensual {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi", "registrosMensuales", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "tipoGuardia", "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<Ddjj>();
+    
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "registrosMensuales", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosMensuales", "asistencial", "nombreTitular", "apellidoTitular", "dniTitular", "cuilTitular", "contribuyente", "tipo", "puntoVenta", "numeroFactura", "activo" })
+    private List<Factura> facturas = new ArrayList<Factura>();
 
     @OneToOne
     @JoinColumn(name = "total_horas_id")

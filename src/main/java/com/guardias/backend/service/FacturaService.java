@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -11,9 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Caps;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Factura;
+import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.repository.FacturaRepository;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -24,6 +29,8 @@ public class FacturaService {
     
     @Autowired
     FacturaRepository facturaRepository;
+    @Autowired
+    RegistroMensualService registroMensualService;
 
     FacturaService(AsistencialService asistencialService) {
         this.asistencialService = asistencialService;
@@ -59,6 +66,21 @@ public class FacturaService {
         if (facturaDto.getIdAsistencial() == null)
             return new ResponseEntity(new Mensaje("el id delasistencial es obligatorio"),
                     HttpStatus.BAD_REQUEST);
+        if (facturaDto.getIdRegistrosMensuales() == null)
+            return new ResponseEntity(new Mensaje("la lista de id de registros mensuales no debe ser nula"),
+                    HttpStatus.BAD_REQUEST);
+        if (facturaDto.getNombreTitular() == null)
+            return new ResponseEntity(new Mensaje("es obligatorio ingresar el nombre del titular"),
+                    HttpStatus.BAD_REQUEST);
+        if (facturaDto.getApellidoTitular() == null)
+            return new ResponseEntity(new Mensaje("es obligatorio ingresar el apellido del titular"),
+                    HttpStatus.BAD_REQUEST);
+        if (facturaDto.getDniTitular() < 1000000)
+            return new ResponseEntity(new Mensaje("DNI es incorrecto"),
+                    HttpStatus.BAD_REQUEST);
+        if (StringUtils.isBlank(facturaDto.getCuilTitular()))
+            return new ResponseEntity(new Mensaje("El Cuil es obligatorio"),
+                    HttpStatus.BAD_REQUEST);
         if (facturaDto.getContribuyente() == null)
             return new ResponseEntity(new Mensaje("es obligatorio ingresar contribuyente"),
                     HttpStatus.BAD_REQUEST);
@@ -87,6 +109,66 @@ public class FacturaService {
         if (factura.getAsistencial() == null || !Objects
                 .equals(factura.getAsistencial().getId(), facturaDto.getIdAsistencial()))
             factura.setAsistencial(asistencialService.findById(facturaDto.getIdAsistencial()).get());
+
+        if (facturaDto.getIdRegistrosMensuales() != null) {
+
+            if (factura.getRegistrosMensuales() == null) {
+                factura.setRegistrosMensuales(new ArrayList<>());
+            }
+
+            // Crea una nueva lista para almacenar los registros mensuales actualizados
+            List<RegistroMensual> rMActualizados = new ArrayList<>();
+            for (RegistroMensual rm : factura.getRegistrosMensuales()) {
+                if (facturaDto.getIdRegistrosMensuales().contains(factura.getId())) {
+                    rMActualizados.add(rm);
+                } else {
+                    // Remover la factura del registro mensual
+                    rm.getFacturas().remove(factura);
+                }
+            }
+            factura.setRegistrosMensuales(rMActualizados);
+
+            // agrega nuevos registros mensuales si no estan presentes
+            for (Long id : facturaDto.getIdRegistrosMensuales()) {
+                boolean found = false;
+                for (RegistroMensual rm : factura.getRegistrosMensuales()) {
+                    if (rm.getId().equals(id)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    RegistroMensual rmToAdd = registroMensualService.findById(id).get();
+                    if (rmToAdd != null) {
+                        factura.getRegistrosMensuales().add(rmToAdd);
+                        rmToAdd.getFacturas().add(factura);
+                    } else {
+                        throw new RuntimeException("No se encontró el registro mensual con ID: " + id);
+                    }
+                }
+            }
+        }
+        
+        if (facturaDto.getNombreTitular() != null && !facturaDto.getNombreTitular().isEmpty()) {
+            // Si la factura es nueva (nombreTitular es null) o si el valor es diferente
+            if (factura.getNombreTitular() == null || !factura.getNombreTitular().equals(facturaDto.getNombreTitular())) {
+                factura.setNombreTitular(facturaDto.getNombreTitular());
+            }
+        }
+
+        // Para apellidoTitular (aplica la misma lógica)
+        if (facturaDto.getApellidoTitular() != null && !facturaDto.getApellidoTitular().isEmpty()) {
+            if (factura.getApellidoTitular() == null || !factura.getApellidoTitular().equals(facturaDto.getApellidoTitular())) {
+                factura.setApellidoTitular(facturaDto.getApellidoTitular());
+            }
+        }
+
+        if (facturaDto.getDniTitular() != factura.getDniTitular())
+            factura.setDniTitular(facturaDto.getDniTitular());
+
+        if (facturaDto.getCuilTitular() != null && !facturaDto.getCuilTitular().equals(factura.getCuilTitular())
+                && !facturaDto.getCuilTitular().isEmpty())
+            factura.setCuilTitular(facturaDto.getCuilTitular());
 
         if (factura.getContribuyente() != facturaDto.getContribuyente() &&
                 facturaDto.getContribuyente() != null)
