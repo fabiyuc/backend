@@ -73,7 +73,7 @@ public class Ddjj {
     @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "director")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
-            "password", "registrosIngresos", "registrosEgr  esos", "person", "asistencial", "noAsistencial",
+            "password", "registrosIngresos", "registrosEgresos", "person", "asistencial", "noAsistencial",
             "ddjjsDirector", "ddjjsDirectorDPH" , "roles", "observacionesDdjj"})
     Usuario director;
 
