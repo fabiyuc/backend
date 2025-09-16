@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.ddjj.AutoridadImagenDto;
 import com.guardias.backend.entity.Factura;
+import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.enums.QuincenaEnum;
+import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.service.FacturaService;
 
 @RestController
@@ -114,6 +120,27 @@ public class FacturaController {
         facturaService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("factura eliminada FISICAMENTE"), HttpStatus.OK);
     }
+
+    @GetMapping("/getMontoByQuincena/{idAsistencial}/{idEfector}/{quincena}")
+    public ResponseEntity<?> getMontoByQuincena(
+        @PathVariable("idAsistencial") Long idAsistencial,
+        @PathVariable("idEfector") Long idEfector,
+        @PathVariable("quincena") String quincena) {
+
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+
+        try {
+            BigDecimal monto = facturaService.getMontoByQuincena(idAsistencial, idEfector, quincenaEnum);
+  
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 }

@@ -5,6 +5,4 @@ public enum CondicionFiscalEnum {
     MONOTRIBUTISTA,
     CONSUMIDOR_FINAL,
     EXENTO;
-
-    
 }

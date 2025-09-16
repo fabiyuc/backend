@@ -1,5 +1,6 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,10 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.entity.Caps;
-import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.repository.FacturaRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -31,6 +31,8 @@ public class FacturaService {
     FacturaRepository facturaRepository;
     @Autowired
     RegistroMensualService registroMensualService;
+    @Autowired
+    EfectorService efectorService;
 
     FacturaService(AsistencialService asistencialService) {
         this.asistencialService = asistencialService;
@@ -118,8 +120,10 @@ public class FacturaService {
 
             // Crea una nueva lista para almacenar los registros mensuales actualizados
             List<RegistroMensual> rMActualizados = new ArrayList<>();
+
+            // Primero: remover la factura de los registros mensuales que ya no están en la lista
             for (RegistroMensual rm : factura.getRegistrosMensuales()) {
-                if (facturaDto.getIdRegistrosMensuales().contains(factura.getId())) {
+                if (facturaDto.getIdRegistrosMensuales().contains(rm.getId())) {
                     rMActualizados.add(rm);
                 } else {
                     // Remover la factura del registro mensual
@@ -128,7 +132,7 @@ public class FacturaService {
             }
             factura.setRegistrosMensuales(rMActualizados);
 
-            // agrega nuevos registros mensuales si no estan presentes
+            //Segundo: agrega nuevos registros mensuales si no estan presentes
             for (Long id : facturaDto.getIdRegistrosMensuales()) {
                 boolean found = false;
                 for (RegistroMensual rm : factura.getRegistrosMensuales()) {
@@ -208,6 +212,10 @@ public class FacturaService {
 
     public boolean existsById(Long id) {
         return facturaRepository.existsById(id);
+    }
+
+    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena) {
+        return facturaRepository.sumMontoByAsistencialEfectorAndQuincena(idAsistencial,idEfector, quincena);
     }
 
 }
