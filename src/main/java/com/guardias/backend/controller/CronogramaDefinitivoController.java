@@ -65,6 +65,29 @@ public class CronogramaDefinitivoController {
         }
     }
 
+    @PostMapping("/createCF")
+    public ResponseEntity<?> createCF(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
+        try {
+        
+            ResponseEntity<?> respuestaValidaciones = cronogramaDefinitivoService.validations(cronogramaDefinitivoDto);
+            if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+                return respuestaValidaciones;
+            }
+
+            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
+                .createUpdateCF(cronogramaDefinitivoDto);
+        
+            cronogramaDefinitivoService.save(cronogramaDefinitivo);
+            return new ResponseEntity(new Mensaje("Cronograma definitivo creado"), HttpStatus.OK);
+        
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Error al crear cronograma: " + e.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {

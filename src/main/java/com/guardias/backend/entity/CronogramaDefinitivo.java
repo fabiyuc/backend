@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -55,6 +56,9 @@ public class CronogramaDefinitivo {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
+    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+    @Enumerated(EnumType.STRING)
+    private QuincenaEnum quincena;
 
     @Override
     public boolean equals(Object obj) {

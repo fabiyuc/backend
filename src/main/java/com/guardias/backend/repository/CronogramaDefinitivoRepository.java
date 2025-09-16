@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 
 @Repository
 public interface CronogramaDefinitivoRepository extends JpaRepository<CronogramaDefinitivo, Long> {
@@ -32,4 +33,8 @@ public interface CronogramaDefinitivoRepository extends JpaRepository<Cronograma
 
     @Query("SELECT DISTINCT c FROM cronogramasDefinitivos c LEFT JOIN FETCH c.ddjjs WHERE c.id = :id")
     Optional<CronogramaDefinitivo> findByIdWithDdjjs(@Param("id") Long id);
+
+    Optional<CronogramaDefinitivo> findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+        Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena);
+
 }

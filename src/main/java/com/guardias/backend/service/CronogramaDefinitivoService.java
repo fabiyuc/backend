@@ -3,10 +3,13 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.repository.CronogramaDefinitivoRepository;
 import com.guardias.backend.repository.DdjjRepository;
 
@@ -93,6 +97,15 @@ public class CronogramaDefinitivoService {
         if (cronogramaDefinitivoDto.getIdDdjjs() == null)
             return new ResponseEntity(new Mensaje("la lista de ddjj no debe ser nula"), HttpStatus.BAD_REQUEST);
 
+        // Verificar que las DDJJ coincidan en mes y año
+        ResponseEntity<?> validacionDdjjs = validarCoincidenciaMesAnioDdjjs(
+                cronogramaDefinitivoDto.getIdDdjjs(),
+                cronogramaDefinitivoDto.getMes(),
+                cronogramaDefinitivoDto.getAnio());
+
+        if (validacionDdjjs.getStatusCode() != HttpStatus.OK) {
+            return validacionDdjjs;
+        }
         boolean apto = registroActividadService.validarPrecondicionesCronograma(cronogramaDefinitivoDto.getIdEfector(),
                 cronogramaDefinitivoDto.getMes().getNumeroMes(), cronogramaDefinitivoDto.getAnio());
         if (apto != true) {
@@ -100,8 +113,37 @@ public class CronogramaDefinitivoService {
                     new Mensaje("no cumple con las validaciones de la ddjj con estadoDirector aprobadas"),
                     HttpStatus.BAD_REQUEST);
         }
-
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> validarCoincidenciaMesAnioDdjjs(List<Long> idDdjjs, MesesEnum mes, int anio) {
+        if (idDdjjs == null || idDdjjs.isEmpty()) {
+            return new ResponseEntity(new Mensaje("La lista de DDJJ está vacía"), HttpStatus.BAD_REQUEST);
+        }
+
+        for (Long idDdjj : idDdjjs) {
+            Ddjj ddjj = ddjjRepository.findById(idDdjj).orElse(null);
+
+            if (ddjj == null) {
+                return new ResponseEntity(new Mensaje("DDJJ no encontrada con ID: " + idDdjj), HttpStatus.BAD_REQUEST);
+            }
+
+            if (ddjj.getMes() != mes) {
+                return new ResponseEntity(
+                        new Mensaje("La DDJJ con ID " + idDdjj + " es del mes " + ddjj.getMes() +
+                                " pero se esperaba " + mes),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (ddjj.getAnio() != anio) {
+                return new ResponseEntity(
+                        new Mensaje("La DDJJ con ID " + idDdjj + " es del año " + ddjj.getAnio() +
+                                " pero se esperaba " + anio),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        return new ResponseEntity(new Mensaje("DDJJ válidas"), HttpStatus.OK);
     }
 
     public CronogramaDefinitivo createUpdate(CronogramaDefinitivo cronogramaDefinitivo,
@@ -120,6 +162,10 @@ public class CronogramaDefinitivoService {
             cronogramaDefinitivo.setEfector(efectorService.findById(cronogramaDefinitivoDto.getIdEfector()));
         }
 
+        if (cronogramaDefinitivoDto.getQuincena() != null) {
+            cronogramaDefinitivo.setQuincena(cronogramaDefinitivoDto.getQuincena());
+        }
+
         // Validar si idDdjjs no es null
         if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
             // Si no es null, procesar las ddjj
@@ -135,6 +181,84 @@ public class CronogramaDefinitivoService {
 
         cronogramaDefinitivo.setActivo(true);
         return cronogramaDefinitivo;
+    }
+
+    public CronogramaDefinitivo createUpdateCF(CronogramaDefinitivoDto dto) {
+
+        // Validar quincena
+        if (dto.getQuincena() == null) {
+            throw new IllegalArgumentException("La quincena es obligatoria");
+        }
+
+        // según tipo de quincena
+        if (dto.getQuincena() == QuincenaEnum.PRIMERA) {
+            return processPrimeraQuincena(dto);
+        } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA) {
+            return processSegundaQuincena(dto);
+        } else {
+            throw new IllegalArgumentException("Tipo de quincena no válido: " + dto.getQuincena());
+        }
+    }
+
+    private CronogramaDefinitivo processPrimeraQuincena(CronogramaDefinitivoDto dto) {
+        // Verificar si ya existe primera quincena
+        Optional<CronogramaDefinitivo> existente = cronogramaDefinitivoRepository
+                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+
+        if (existente.isPresent()) {
+            throw new IllegalArgumentException("Ya existe un cronograma activo para la primera quincena");
+        }
+
+        // Crear nueva primera quincena
+        return createNewCronograma(dto);
+    }
+
+    private CronogramaDefinitivo processSegundaQuincena(CronogramaDefinitivoDto dto) {
+        // Buscar primera quincena existente
+        Optional<CronogramaDefinitivo> primeraQuincenaOpt = cronogramaDefinitivoRepository
+                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+
+        if (primeraQuincenaOpt.isPresent()) {
+            // Fusionar en cronograma COMPLETO
+            CronogramaDefinitivo cronogramaCompleto = createCronogramaCompleto(primeraQuincenaOpt.get(), dto);
+
+            // Desactivar primera quincena
+            primeraQuincenaOpt.get().setActivo(false);
+            cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
+
+            return cronogramaCompleto;
+        } else {
+            // Crear segunda quincena normal (sin primera existente)
+            return createNewCronograma(dto);
+        }
+    }
+
+    private CronogramaDefinitivo createCronogramaCompleto(CronogramaDefinitivo primeraQuincena,
+            CronogramaDefinitivoDto segundaQuincenaDto) {
+        CronogramaDefinitivo completo = new CronogramaDefinitivo();
+
+        // Configurar datos base usando el método existente createUpdate
+        completo = createUpdate(completo, segundaQuincenaDto);
+        completo.setQuincena(QuincenaEnum.COMPLETO);
+
+        // Combinar DDJJs de ambas quincenas
+        Set<Ddjj> todasDdjjs = new HashSet<>(primeraQuincena.getDdjjs());
+
+        for (Long idDdjj : segundaQuincenaDto.getIdDdjjs()) {
+            Ddjj ddjj = ddjjRepository.findById(idDdjj)
+                    .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
+            todasDdjjs.add(ddjj);
+        }
+
+        completo.setDdjjs(new ArrayList<>(todasDdjjs));
+        return completo;
+    }
+
+    private CronogramaDefinitivo createNewCronograma(CronogramaDefinitivoDto dto) {
+        CronogramaDefinitivo nuevo = new CronogramaDefinitivo();
+        return createUpdate(nuevo, dto);
     }
 
     public CronogramaDefinitivo createCronogramaDefinitivo(Long idAsistencial, Long idEfector, MesesEnum mesEnum,
