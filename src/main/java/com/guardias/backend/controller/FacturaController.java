@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.ddjj.AutoridadImagenDto;
 import com.guardias.backend.entity.Factura;
-import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
-import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.service.FacturaService;
 
 @RestController
@@ -121,16 +118,19 @@ public class FacturaController {
         return new ResponseEntity<>(new Mensaje("factura eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/getMontoByQuincena/{idAsistencial}/{idEfector}/{quincena}")
+    @GetMapping("/getMontoByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
     public ResponseEntity<?> getMontoByQuincena(
         @PathVariable("idAsistencial") Long idAsistencial,
         @PathVariable("idEfector") Long idEfector,
-        @PathVariable("quincena") String quincena) {
+        @PathVariable("quincena") String quincena,
+        @PathVariable("mes") String mes,
+        @PathVariable("anio") int anio) {
 
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
 
         try {
-            BigDecimal monto = facturaService.getMontoByQuincena(idAsistencial, idEfector, quincenaEnum);
+            BigDecimal monto = facturaService.getMontoByQuincena(idAsistencial, idEfector, quincenaEnum, mesEnum, anio);
   
             return new ResponseEntity<>(monto, HttpStatus.OK);
 

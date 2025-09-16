@@ -1,5 +1,6 @@
 package com.guardias.backend.repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,4 +69,20 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         @Query("SELECT r.id FROM registrosMensuales r WHERE r.id IN :ids")
         List<Long> findExistingIds(@Param("ids") List<Long> ids);
+
+        @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
+                "JOIN rm.totalHoras sh " +
+                "WHERE rm.activo = true " +
+                "AND rm.asistencial.id = :asistencialId " +
+                "AND rm.efector.id = :efectorId " +
+                "AND rm.quincena = :quincena " +
+                "AND rm.mes = :mes " +
+                "AND rm.anio = :anio " +
+                "AND sh.activo = true")
+        BigDecimal findMontoTotalHorasByFiltros(
+                @Param("asistencialId") Long asistencialId,
+                @Param("efectorId") Long efectorId,
+                @Param("quincena") QuincenaEnum quincena,
+                @Param("mes") MesesEnum mes,
+                @Param("anio") int anio);
 }

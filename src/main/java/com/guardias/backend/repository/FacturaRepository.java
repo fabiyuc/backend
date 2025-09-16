@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Factura;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 
 @Repository
@@ -21,14 +22,18 @@ public interface FacturaRepository extends JpaRepository<Factura, Long>{
 
     Optional<Factura> findByAsistencialId(Long asistencialId);
 
-    @Query("SELECT SUM(f.monto) FROM facturas f " +
-           "JOIN f.registrosMensuales rm " +
-           "WHERE f.activo = true " +
-           "AND f.asistencial.id = :asistencialId " +
-           "AND rm.efector.id = :efectorId " +
-           "AND rm.quincena = :quincena")
-    BigDecimal sumMontoByAsistencialEfectorAndQuincena(
+    @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
+       "JOIN f.registrosMensuales rm " +
+       "WHERE f.activo = true " +
+       "AND f.asistencial.id = :asistencialId " +
+       "AND rm.efector.id = :efectorId " +
+       "AND rm.quincena = :quincena " +
+       "AND rm.mes = :mes " +
+       "AND rm.anio = :anio")
+    BigDecimal sumMontoByAsistencialEfectorQuincenaMesAnio(
         @Param("asistencialId") Long asistencialId,
         @Param("efectorId") Long efectorId,
-        @Param("quincena") QuincenaEnum quincena);
+        @Param("quincena") QuincenaEnum quincena,
+        @Param("mes") MesesEnum mes,
+        @Param("anio") int anio);
 }

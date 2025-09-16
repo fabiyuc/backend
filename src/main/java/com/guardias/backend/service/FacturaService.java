@@ -15,6 +15,7 @@ import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.repository.FacturaRepository;
 
@@ -214,8 +215,8 @@ public class FacturaService {
         return facturaRepository.existsById(id);
     }
 
-    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena) {
-        return facturaRepository.sumMontoByAsistencialEfectorAndQuincena(idAsistencial,idEfector, quincena);
+    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial,idEfector, quincena, mes, anio);
     }
 
 }

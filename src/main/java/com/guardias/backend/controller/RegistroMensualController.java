@@ -1,5 +1,6 @@
 package com.guardias.backend.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -385,6 +386,29 @@ public class RegistroMensualController {
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Registros mensuales de CF no encontrados"),
                     HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
+    public ResponseEntity<?> getMontoTotalByQuincena(
+        @PathVariable("idAsistencial") Long idAsistencial,
+        @PathVariable("idEfector") Long idEfector,
+        @PathVariable("quincena") String quincena,
+        @PathVariable("mes") String mes,
+        @PathVariable("anio") int anio) {
+
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+        try {
+            BigDecimal monto = registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector, quincenaEnum, mesEnum, anio);
+  
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
