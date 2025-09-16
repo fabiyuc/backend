@@ -823,4 +823,8 @@ public class RegistroMensualService {
                         .collect(Collectors.toList());
         }
 
+        public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
+        return registroMensualRepository.findMontoTotalHorasByFiltros(idAsistencial,idEfector, quincena, mes, anio);
+    }
+
 }

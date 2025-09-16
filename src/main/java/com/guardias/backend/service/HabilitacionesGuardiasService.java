@@ -125,7 +125,7 @@ public class HabilitacionesGuardiasService {
                 if (habilitacionesGuardiasDto.getIdEfectores().contains(efector.getId())) {
                     efectoresActualizados.add(efector);
                 } else {
-                    // Remover el legajo de los efectores que se eliminarán
+                    // Remover las habilitaciones guardias de los efectores que se eliminarán
                     efector.getHabilitacionesGuardias().remove(habilitacionesGuardias);
                 }
             }
