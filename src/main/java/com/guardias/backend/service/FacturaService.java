@@ -110,7 +110,7 @@ public class FacturaService {
             return new ResponseEntity(new Mensaje("es obligatorio indicar el monto"),
                     HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
+        return new ResponseEntity(new Mensaje("valido en validation"), HttpStatus.OK);
     }
 
     public Factura createUpdate(Factura factura,
