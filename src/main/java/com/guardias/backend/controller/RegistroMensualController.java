@@ -488,7 +488,7 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/existen-completos/{idEfector}/{quincena}")
+    @GetMapping("/existen-completos/{idEfector}/{mes}/{anio}/{quincena}/")
     public ResponseEntity<Boolean> existenAutorizados(
             @PathVariable Long idEfector,
              @PathVariable String mes,
