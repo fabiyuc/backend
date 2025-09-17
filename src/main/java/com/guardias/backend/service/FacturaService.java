@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
+import com.guardias.backend.dto.factura.FacturaDetailDto;
 import com.guardias.backend.dto.factura.FacturaSummaryDto;
 import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.Person;
@@ -223,8 +224,8 @@ public class FacturaService {
         return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial,idEfector, quincena, mes, anio);
     }
 
-    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int anio, MesesEnum mes, QuincenaEnum quincena) {
-        List<Factura> facturas = facturaRepository.findByAnioMesQuincena(anio, mes, quincena);
+    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
+        List<Factura> facturas = facturaRepository.findByAnioMesQuincena(idEfector, anio, mes, quincena);
         return facturas.stream()
             .map(this::convertToSummaryDto)
             .collect(Collectors.toList());
@@ -249,5 +250,29 @@ public class FacturaService {
             asistencial.getCuil()
         );
     }
+
+    public List<FacturaDetailDto> getByFiltros(int idAsistencial, int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
+        List<Factura> facturas = facturaRepository.findByFiltros(idAsistencial, idEfector, anio, mes, quincena);
+        return facturas.stream()
+            .map(this::convertToDetailDto)
+            .collect(Collectors.toList());
+    }
+
+    private FacturaDetailDto convertToDetailDto(Factura factura) {
+        FacturaDetailDto dto = new FacturaDetailDto();
+        dto.setId(factura.getId());
+        dto.setNombreTitular(factura.getNombreTitular());
+        dto.setApellidoTitular(factura.getApellidoTitular());
+        dto.setDniTitular(factura.getDniTitular());
+        dto.setCuilTitular(factura.getCuilTitular());
+        dto.setContribuyente(factura.getContribuyente());
+        dto.setTipo(factura.getTipo());
+        dto.setPuntoVenta(factura.getPuntoVenta());
+        dto.setNumeroFactura(factura.getNumeroFactura());
+        dto.setFechaEmision(factura.getFechaEmision());
+        dto.setMonto(factura.getMonto());
+        return dto;
+    }
+
 
 }

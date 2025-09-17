@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.factura.FacturaDetailDto;
 import com.guardias.backend.dto.factura.FacturaSummaryDto;
 import com.guardias.backend.entity.Factura;
 import com.guardias.backend.enums.MesesEnum;
@@ -144,7 +145,8 @@ public class FacturaController {
     }
 
     @GetMapping("/getByAsistencialAndFiltros/{idAsistencial}")
-    public ResponseEntity<Factura> ByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
+    public ResponseEntity<Factura> ByAsistencial(
+        @PathVariable("idAsistencial") Long idAsistencial) {
         if (!facturaService.activoByAsistencial(idAsistencial))
             return new ResponseEntity(new Mensaje("no existe la factura de este asistencial"),
                     HttpStatus.NOT_FOUND);
@@ -152,8 +154,9 @@ public class FacturaController {
         return new ResponseEntity<Factura>(factura, HttpStatus.OK);
     }
 
-    @GetMapping("/listSummary/{anio}/{mes}/{quincena}")
+    @GetMapping("/listSummary/{idEfector}/{anio}/{mes}/{quincena}")
     public ResponseEntity<?> listSummary(
+        @PathVariable("idEfector") int idEfector,
         @PathVariable int anio,
         @PathVariable("mes") String mes,
         @PathVariable("quincena") String quincena) {
@@ -161,7 +164,7 @@ public class FacturaController {
         try {
             QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
-            List<FacturaSummaryDto> facturas = facturaService.getFacturasByAnioMesQuincena(anio, mesEnum, quincenaEnum);
+            List<FacturaSummaryDto> facturas = facturaService.getFacturasByAnioMesQuincena(idEfector,anio, mesEnum, quincenaEnum);
             return ResponseEntity.ok(facturas);
         
         } catch (Exception e) {
@@ -169,5 +172,25 @@ public class FacturaController {
             .body(new Mensaje("Error al obtener facturas: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/getByFiltros/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    public ResponseEntity<?> getFacturasByFiltros(
+        @PathVariable("idAsistencial") int idAsistencial,
+        @PathVariable("idEfector") int idEfector,
+        @PathVariable("anio") int anio,
+        @PathVariable("mes") String mes,
+        @PathVariable("quincena") String quincena) {
+    
+    try {
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+        List<FacturaDetailDto> facturas = facturaService.getByFiltros(idAsistencial,idEfector, anio, mesEnum, quincenaEnum);
+        return ResponseEntity.ok(facturas);
+        
+    } catch (Exception e) {
+        return ResponseEntity.internalServerError()
+            .body(new Mensaje("Error al obtener facturas: " + e.getMessage()));
+    }
+}
 
 }
