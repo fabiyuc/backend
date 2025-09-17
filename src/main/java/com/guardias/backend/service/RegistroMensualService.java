@@ -686,8 +686,10 @@ public class RegistroMensualService {
                 // Asistencial
                 if (rm.getAsistencial() != null) {
                         AsistencialListForRmensualDto asistencialDTO = new AsistencialListForRmensualDto();
+                        asistencialDTO.setId(rm.getAsistencial().getId());
                         asistencialDTO.setApellido(rm.getAsistencial().getApellido());
                         asistencialDTO.setNombre(rm.getAsistencial().getNombre());
+                        asistencialDTO.setDni(rm.getAsistencial().getDni());
                         asistencialDTO.setCuil(rm.getAsistencial().getCuil());
 
                         // Legajos

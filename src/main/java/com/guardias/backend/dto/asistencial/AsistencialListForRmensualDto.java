@@ -14,8 +14,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AsistencialListForRmensualDto {
 
+    private Long id;
     private String apellido;
     private String nombre;
+    private int dni;
     private String cuil;
     private List<LegajoListDto> legajos;
     private List<NovedadPersonalListDto> novedadesPersonales;
