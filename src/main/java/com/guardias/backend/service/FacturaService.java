@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asistencial.AsistencialDetailDto;
+import com.guardias.backend.dto.factura.FacturaSummaryDto;
 import com.guardias.backend.entity.Factura;
+import com.guardias.backend.entity.Person;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -217,6 +221,33 @@ public class FacturaService {
 
     public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
         return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial,idEfector, quincena, mes, anio);
+    }
+
+    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int anio, MesesEnum mes, QuincenaEnum quincena) {
+        List<Factura> facturas = facturaRepository.findByAnioMesQuincena(anio, mes, quincena);
+        return facturas.stream()
+            .map(this::convertToSummaryDto)
+            .collect(Collectors.toList());
+    }
+
+    private FacturaSummaryDto convertToSummaryDto(Factura factura) {
+        FacturaSummaryDto dto = new FacturaSummaryDto();
+        dto.setId(factura.getId());
+        dto.setAsistencial(convertToAsistencialDetailDto(factura.getAsistencial()));
+    
+        return dto;
+    }
+
+    private AsistencialDetailDto convertToAsistencialDetailDto(Person asistencial) {
+        if (asistencial == null) {
+            return null;
+        }
+        return new AsistencialDetailDto(
+            asistencial.getId(),
+            asistencial.getNombre(),
+            asistencial.getApellido(),
+            asistencial.getCuil()
+        );
     }
 
 }

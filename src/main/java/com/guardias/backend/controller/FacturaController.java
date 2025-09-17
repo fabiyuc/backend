@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.FacturaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.factura.FacturaSummaryDto;
 import com.guardias.backend.entity.Factura;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -141,6 +143,31 @@ public class FacturaController {
         }
     }
 
+    @GetMapping("/getByAsistencialAndFiltros/{idAsistencial}")
+    public ResponseEntity<Factura> ByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
+        if (!facturaService.activoByAsistencial(idAsistencial))
+            return new ResponseEntity(new Mensaje("no existe la factura de este asistencial"),
+                    HttpStatus.NOT_FOUND);
+        Factura factura = facturaService.findByAsistencial(idAsistencial).get();
+        return new ResponseEntity<Factura>(factura, HttpStatus.OK);
+    }
 
+    @GetMapping("/listSummary/{anio}/{mes}/{quincena}")
+    public ResponseEntity<?> listSummary(
+        @PathVariable int anio,
+        @PathVariable("mes") String mes,
+        @PathVariable("quincena") String quincena) {
+    
+        try {
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            List<FacturaSummaryDto> facturas = facturaService.getFacturasByAnioMesQuincena(anio, mesEnum, quincenaEnum);
+            return ResponseEntity.ok(facturas);
+        
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+            .body(new Mensaje("Error al obtener facturas: " + e.getMessage()));
+        }
+    }
 
 }

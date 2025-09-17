@@ -36,4 +36,18 @@ public interface FacturaRepository extends JpaRepository<Factura, Long>{
         @Param("quincena") QuincenaEnum quincena,
         @Param("mes") MesesEnum mes,
         @Param("anio") int anio);
+
+
+@Query("SELECT DISTINCT f FROM facturas f " +
+       "JOIN f.registrosMensuales rm " +
+       "WHERE f.activo = true " +
+       "AND rm.anio = :anio " +
+       "AND rm.mes = :mes " +
+       "AND rm.quincena = :quincena")
+List<Factura> findByAnioMesQuincena(
+    @Param("anio") int anio,
+    @Param("mes") MesesEnum mes,
+    @Param("quincena") QuincenaEnum quincena);
+
+
 }
