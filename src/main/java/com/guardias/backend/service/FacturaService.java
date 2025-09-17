@@ -251,7 +251,7 @@ public class FacturaService {
         );
     }
 
-    public List<FacturaDetailDto> getByFiltros(int idAsistencial, int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
+    public List<FacturaDetailDto> getByFiltros(Long idAsistencial, Long idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
         List<Factura> facturas = facturaRepository.findByFiltros(idAsistencial, idEfector, anio, mes, quincena);
         return facturas.stream()
             .map(this::convertToDetailDto)
@@ -274,5 +274,7 @@ public class FacturaService {
         return dto;
     }
 
-
+    public boolean existeFacturaByFiltros(Long idAsistencial, Long idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
+        return facturaRepository.existsByAsistencialAndEfectorAndAnioMesQuincena(idAsistencial, idEfector, anio, mes, quincena);
+    }
 }
