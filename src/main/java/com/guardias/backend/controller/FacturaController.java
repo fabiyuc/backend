@@ -220,4 +220,30 @@ public class FacturaController {
         }
     }
 
+    @GetMapping("/existenDosFacturas/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    public ResponseEntity<?> existenDosFacturas(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable String quincena) {
+
+        try {
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            boolean existenDosFacturas = facturaService.existenDosFacturasByFiltros(
+                    idAsistencial, idEfector, anio, mesEnum, quincenaEnum);
+
+            return ResponseEntity.ok(existenDosFacturas);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new Mensaje("Parámetro no válido: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al verificar facturas: " + e.getMessage()));
+        }
+    }
+
 }
