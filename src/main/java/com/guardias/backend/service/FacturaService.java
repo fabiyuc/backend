@@ -160,6 +160,10 @@ public class FacturaService {
             }
         }
 
+        // Después de asociar los registros mensuales, validar la completitud de
+        // facturas
+        validarCompletitudFacturas(facturaDto);
+
         if (facturaDto.getNombreTitular() != null && !facturaDto.getNombreTitular().isEmpty()) {
             // Si la factura es nueva (nombreTitular es null) o si el valor es diferente
             if (factura.getNombreTitular() == null
@@ -208,7 +212,78 @@ public class FacturaService {
             factura.setMonto(facturaDto.getMonto());
 
         factura.setActivo(true);
+
+        // actualizar el estado de completitud después de asociar los registros
+        Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0);
+        RegistroMensual rmActivo = registroMensualService.findByIdAndActivoTrue(idRegistroActivo).get();
+        actualizarEstadoFacturasCompletas(rmActivo, facturaDto);
+
         return factura;
+    }
+
+    public void validarCompletitudFacturas(FacturaDto facturaDto) {
+        // 1. Obtener el ID del registro mensual activo
+        Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0); // Primer y único registro activo
+        RegistroMensual rmActivo = registroMensualService.findByIdAndActivoTrue(idRegistroActivo).get();
+
+        // 2. Obtener monto total esperado del registro mensual
+        BigDecimal montoTotalEsperado = rmActivo.getTotalHoras().getMontoTotal();
+        BigDecimal montoFacturaDto = facturaDto.getMonto();
+
+        // 3. Buscar facturas existentes con mismo efector, mes, quincena, año y
+        // asistencial
+        BigDecimal montoFacturasExistentes = facturaRepository.sumMontoFacturasExistentes(
+                rmActivo.getEfector().getId(),
+                rmActivo.getAsistencial().getId(),
+                rmActivo.getMes(),
+                rmActivo.getQuincena(),
+                rmActivo.getAnio());
+
+        // 4. Calcular suma total
+        BigDecimal sumaTotal = montoFacturasExistentes.add(montoFacturaDto);
+
+        // 5. Validaciones según escenarios
+        if (montoFacturasExistentes.compareTo(BigDecimal.ZERO) > 0) {
+            // ESCENARIO 1: Existen facturas previas!!
+            if (sumaTotal.compareTo(montoTotalEsperado) > 0) {
+                throw new RuntimeException("El monto total de facturas (" + sumaTotal + ") " +
+                        "excede el monto esperado (" + montoTotalEsperado + ")");
+            }
+
+        } else {
+            // ESCENARIO 2: No existen facturas previas!!
+            if (montoFacturaDto.compareTo(montoTotalEsperado) > 0) {
+                throw new RuntimeException("El monto de la factura (" + montoFacturaDto + ") " +
+                        "excede el monto esperado (" + montoTotalEsperado + ")");
+            }
+        }
+    }
+
+    public void actualizarEstadoFacturasCompletas(RegistroMensual registro, FacturaDto facturaDto) {
+        BigDecimal montoTotalEsperado = registro.getTotalHoras().getMontoTotal();
+        BigDecimal montoFacturaDto = facturaDto.getMonto();
+
+        BigDecimal montoFacturasExistentes = facturaRepository.sumMontoFacturasExistentes(
+                registro.getEfector().getId(),
+                registro.getAsistencial().getId(),
+                registro.getMes(),
+                registro.getQuincena(),
+                registro.getAnio());
+
+        BigDecimal sumaTotal = montoFacturasExistentes.add(montoFacturaDto);
+
+        boolean completas;
+    
+        if (montoFacturasExistentes.compareTo(BigDecimal.ZERO) > 0) {
+            // EXISTEN facturas previas - comparar SUMA TOTAL
+            completas = sumaTotal.compareTo(montoTotalEsperado) == 0;
+        } else {
+            // NO existen facturas previas - comparar solo la NUEVA factura
+            completas = montoFacturaDto.compareTo(montoTotalEsperado) == 0;
+        }
+
+        registro.setFacturasCompletas(completas);
+        registroMensualService.save(registro);
     }
 
     public void save(Factura factura) {
@@ -297,6 +372,5 @@ public class FacturaService {
         // Devolver true si hay exactamente 2 facturas
         return cantidadFacturas == 2;
     }
-
-
+    
 }

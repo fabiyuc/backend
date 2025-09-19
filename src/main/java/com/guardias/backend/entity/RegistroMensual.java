@@ -85,6 +85,9 @@ public class RegistroMensual {
     @Enumerated(EnumType.STRING)
     private QuincenaEnum quincena;
 
+    @Column(columnDefinition = "BIT", nullable = true) // Permite null para no contrafactura
+    private Boolean facturasCompletas;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

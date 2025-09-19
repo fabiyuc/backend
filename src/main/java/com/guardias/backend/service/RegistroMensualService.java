@@ -278,6 +278,10 @@ public class RegistroMensualService {
                 return registroMensualRepository.findById(id);
         }
 
+        public Optional<RegistroMensual> findByIdAndActivoTrue(Long id) {
+                return registroMensualRepository.findByIdAndActivoTrue(id);
+        }
+
         boolean existsByAnioAndMes(int anio, MesesEnum mes) {
                 return registroMensualRepository.existsByAnioAndMes(anio, mes);
         }
@@ -373,6 +377,7 @@ public class RegistroMensualService {
                 registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
                 registroMensual.setEfector(efectorService.findById(idEfector));
                 registroMensual.setActivo(true);
+                registroMensual.setFacturasCompletas(false);
 
                 // Creo SumaHoras vacio
                 SumaHoras horas = new SumaHoras();
