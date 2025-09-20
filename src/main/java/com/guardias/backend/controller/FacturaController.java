@@ -74,10 +74,19 @@ public class FacturaController {
                 .validations(facturaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            // PRIMERO: Validar completitud de facturas
+            ResponseEntity<?> validacionCompletitud = facturaService.validarCompletitudAntesDeGuardar(facturaDto);
+            if (validacionCompletitud.getStatusCode() != HttpStatus.OK) {
+                return validacionCompletitud;
+            }
 
-            Factura factura = facturaService
-                    .createUpdate(new Factura(), facturaDto);
+            // SEGUNDO: Crear y guardar
+            Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
             facturaService.save(factura);
+
+            // TERCERO: Actualizar estado de registros
+            facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura);
+
             return new ResponseEntity(new Mensaje("Factura creada"), HttpStatus.OK);
         }
         return respuestaValidaciones;

@@ -28,6 +28,7 @@ import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.TipoGuardia;
+import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -334,14 +335,35 @@ public class DdjjService {
 
     private void processRegistrosMensuales(Ddjj ddjj, DdjjDto ddjjDto) {
         // 1. Carga batch de registros (1 query)
-        List<RegistroMensual> registros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
+        List<RegistroMensual> todosRegistros  = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // 2. Caso CREACIÓN - Inicializa y establece relaciones
+        // Filtrar registros válidos
+        List<RegistroMensual> registrosFiltrados = todosRegistros.stream()
+            .filter(rm -> rm.getFacturasCompletas() == null || Boolean.TRUE.equals(rm.getFacturasCompletas()))
+            .collect(Collectors.toList());
+    
+        // Validar que haya al menos un registro válido
+        if (registrosFiltrados.isEmpty()) {
+            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ.");
+        }
+
+        // 2. Determinar la condición de la DDJJ
+        CondicionDdjjEnum condicion;
+    
+        if (todosRegistros.size() == registrosFiltrados.size()) {
+            condicion = CondicionDdjjEnum.OFICIAL;  // Todos válidos
+        } else {
+            condicion = CondicionDdjjEnum.PARCIAL;  // Algunos excluidos
+        }
+    
+        ddjj.setCondicionDdjj(condicion);
+
+        // 3. Caso CREACIÓN - Inicializa y establece relaciones
         if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
 
             // Establece relaciones bidireccionales
-            for (RegistroMensual rm : registros) {
+            for (RegistroMensual rm : registrosFiltrados) {
                 // Agrega la DDJJ al registro mensual
                 if (!rm.getDdjjs().contains(ddjj)) {
                     rm.getDdjjs().add(ddjj);
@@ -356,12 +378,12 @@ public class DdjjService {
             ddjj = ddjjRepository.save(ddjj);
 
             // GUARDA LOS REGISTROS MODIFICADOS
-            registroMensualRepository.saveAll(registros);
+            registroMensualRepository.saveAll(registrosFiltrados);
             return;
         }
 
-        // 3. Caso EDICIÓN (código existente corregido)
-        Set<Long> nuevosIds = registros.stream()
+        // 4. Caso EDICIÓN (código existente corregido)
+        Set<Long> nuevosIds = registrosFiltrados.stream()
                 .map(RegistroMensual::getId)
                 .collect(Collectors.toSet());
 
@@ -379,7 +401,7 @@ public class DdjjService {
         }
 
         // b) Agrega nuevas relaciones
-        for (RegistroMensual rm : registros) {
+        for (RegistroMensual rm : registrosFiltrados) {
             boolean yaExiste = ddjj.getRegistrosMensuales().stream()
                     .anyMatch(existente -> existente.getId().equals(rm.getId()));
 

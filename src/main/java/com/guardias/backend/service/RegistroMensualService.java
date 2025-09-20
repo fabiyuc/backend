@@ -303,6 +303,10 @@ public class RegistroMensualService {
                 registroMensualRepository.save(registroMensual);
         }
 
+        public void saveAll(List<RegistroMensual> registros) {
+                registroMensualRepository.saveAll(registros);
+        }
+        
         public void deleteById(Long id) {
                 registroMensualRepository.deleteById(id);
         }
