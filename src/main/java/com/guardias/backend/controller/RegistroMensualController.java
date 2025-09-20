@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
@@ -412,4 +414,22 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/incompletos/{idEfector}/{mes}/{anio}/{quincena}")
+    public ResponseEntity<List<RegistroMensual>> getRegistrosIncompletos(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable String quincena) {
+        
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            List<RegistroMensual> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum, anio, quincenaEnum);
+            
+            return ResponseEntity.ok(registros);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
 }

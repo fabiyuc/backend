@@ -93,4 +93,17 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
            "WHERE rm.id = :id " +
            "AND rm.activo = true")
         Optional<BigDecimal> findMontoTotalById(@Param("id") Long id);
+
+        @Query("SELECT rm FROM registrosMensuales rm " +
+           "WHERE rm.efector.id = :efectorId " +
+           "AND rm.mes = :mes " +
+           "AND rm.anio = :anio " +
+           "AND rm.quincena = :quincena " +
+           "AND rm.facturasCompletas = false " +
+           "AND rm.activo = true")
+    List<RegistroMensual> findRegistrosIncompletos(
+            @Param("efectorId") Long efectorId,
+            @Param("mes") MesesEnum mes,
+            @Param("anio") int anio,
+            @Param("quincena") QuincenaEnum quincena);
 }

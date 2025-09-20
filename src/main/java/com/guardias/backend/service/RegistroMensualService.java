@@ -147,12 +147,16 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId, MesesEnum mes, int anio) {
-                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId, mes, anio);
+        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId,
+                        Long efectorId, MesesEnum mes, int anio) {
+                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnio(asistencialId, efectorId,
+                                mes, anio);
         }
 
-        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId, Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
-                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(asistencialId, efectorId, mes, anio, quincena);
+        public Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId,
+                        Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+                return registroMensualRepository.findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(asistencialId,
+                                efectorId, mes, anio, quincena);
         }
 
         public List<RegistroMensual> findByAnioMesEfectorAndTipoGuardiaCargoReagrupacionAndServicio(
@@ -306,7 +310,7 @@ public class RegistroMensualService {
         public void saveAll(List<RegistroMensual> registros) {
                 registroMensualRepository.saveAll(registros);
         }
-        
+
         public void deleteById(Long id) {
                 registroMensualRepository.deleteById(id);
         }
@@ -371,7 +375,8 @@ public class RegistroMensualService {
         }
 
         /* Crea un nuevo RegistroMensual con valores iniciales (horas/montos en 0) */
-        public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio, QuincenaEnum quincena) {
+        public RegistroMensual createRegistroMensual(Long idAsistencial, Long idEfector, MesesEnum mesEnum, int anio,
+                        QuincenaEnum quincena) {
 
                 /* Inicializa un nuevo RegistroMensual con mes/año, asistencial,efector */
                 RegistroMensual registroMensual = new RegistroMensual();
@@ -406,7 +411,8 @@ public class RegistroMensualService {
         public RegistroActividad setRegistroMensual(RegistroActividad registroActividad) {
 
                 // 1. Determinar si aplica quincena (solo para CONTRAFACTURA)
-                boolean aplicaQuincena = registroActividad.getTipoGuardia() != null && registroActividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
+                boolean aplicaQuincena = registroActividad.getTipoGuardia() != null
+                                && registroActividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
 
                 // 2. Identificación del registro
                 Long idAsistencial = registroActividad.getAsistencial().getId();
@@ -426,11 +432,11 @@ public class RegistroMensualService {
                 if (aplicaQuincena) {
                         // Buscar por quincena para CONTRAFACTURA
                         registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(
-                        idAsistencial, idEfector, mesEnum, anio, quincena);
+                                        idAsistencial, idEfector, mesEnum, anio, quincena);
                 } else {
                         // Buscar sin quincena para otros tipos de guardia
                         registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
-                        idAsistencial, idEfector, mesEnum, anio);
+                                        idAsistencial, idEfector, mesEnum, anio);
                 }
 
                 RegistroMensual registroMensual;
@@ -443,7 +449,8 @@ public class RegistroMensualService {
                         System.out.println("DEBUG - Creando nuevo registro mensual");
 
                         if (aplicaQuincena) {
-                                registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio, quincena);
+                                registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio,
+                                                quincena);
                         } else {
                                 registroMensual = createRegistroMensual(idAsistencial, idEfector, mesEnum, anio, null);
                         }
@@ -481,8 +488,8 @@ public class RegistroMensualService {
         }
 
         // Método auxiliar para determinar la quincena
-        private QuincenaEnum determinarQuincena(RegistroActividad       registroActividad) {
-        
+        private QuincenaEnum determinarQuincena(RegistroActividad registroActividad) {
+
                 int dia = registroActividad.getFechaIngreso().getDayOfMonth();
                 return (dia <= 15) ? QuincenaEnum.PRIMERA : QuincenaEnum.SEGUNDA;
         }
@@ -632,7 +639,8 @@ public class RegistroMensualService {
         public List<RegistroMensualListDto> findByTipoGuardiaCfAndServicio(
                         int anio, MesesEnum mes, Long idEfector, Long idServicio, QuincenaEnum quincena) {
 
-                System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}, quincena: {}" + anio + mes
+                System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}, quincena: {}"
+                                + anio + mes
                                 + idEfector + idServicio + quincena);
                 List<RegistroMensual> registrosMensuales = registroMensualRepository
                                 .findByAnioMesEfectorServicioAndQuincena(anio, mes, idEfector, idServicio, quincena);
@@ -661,7 +669,8 @@ public class RegistroMensualService {
         public List<RegistroMensualListDto> findByTipoGuardiaCf(
                         int anio, MesesEnum mes, Long idEfector, QuincenaEnum quincena) {
 
-                System.out.println("Iniciando consulta para año: " + anio + ", mes: " + mes + ", efector: " + idEfector + ", quincena: " + quincena);
+                System.out.println("Iniciando consulta para año: " + anio + ", mes: " + mes + ", efector: " + idEfector
+                                + ", quincena: " + quincena);
                 List<RegistroMensual> registrosMensuales = registroMensualRepository
                                 .findByAnioMesEfectorAndQuincena(anio, mes, idEfector, quincena);
 
@@ -671,10 +680,11 @@ public class RegistroMensualService {
                                 .map(rm -> {
                                         // Filtrar actividades (CF)
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                                        .stream()
-                                        .filter(actividad -> actividad.isActivo()
-                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
-                                        .collect(Collectors.toList());
+                                                        .stream()
+                                                        .filter(actividad -> actividad.isActivo()
+                                                                        && (actividad.getTipoGuardia()
+                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                                        .collect(Collectors.toList());
 
                                         // Convertir a DTO
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
@@ -703,81 +713,84 @@ public class RegistroMensualService {
 
                         // Legajos
                         asistencialDTO.setLegajos(rm.getAsistencial().getLegajos().stream()
-                                .map(legajo -> {
-                                        LegajoListDto legajoDTO = new LegajoListDto();
-                                        if (legajo.getRevista() != null) {
-                                                RevistaListDto revistaDTO = new RevistaListDto();
+                                        .map(legajo -> {
+                                                LegajoListDto legajoDTO = new LegajoListDto();
+                                                if (legajo.getRevista() != null) {
+                                                        RevistaListDto revistaDTO = new RevistaListDto();
 
-                                                // Manejo seguro de TipoRevista
-                                                if (legajo.getRevista().getTipoRevista() != null) {
-                                                        revistaDTO.setTipoRevista(new TipoRevistaListDto(
-                                                                legajo.getRevista().getTipoRevista().getNombre()));
+                                                        // Manejo seguro de TipoRevista
+                                                        if (legajo.getRevista().getTipoRevista() != null) {
+                                                                revistaDTO.setTipoRevista(new TipoRevistaListDto(
+                                                                                legajo.getRevista().getTipoRevista()
+                                                                                                .getNombre()));
+                                                        }
+
+                                                        // Manejo seguro de Categoria
+                                                        if (legajo.getRevista().getCategoria() != null) {
+                                                                revistaDTO.setCategoria(new CategoriaListDto(
+                                                                                legajo.getRevista().getCategoria()
+                                                                                                .getNombre()));
+                                                        }
+
+                                                        // Manejo seguro de Adicional (¡esta era la línea que fallaba!)
+                                                        if (legajo.getRevista().getAdicional() != null) {
+                                                                revistaDTO.setAdicional(new AdicionalListDto(
+                                                                                legajo.getRevista().getAdicional()
+                                                                                                .getNombre()));
+                                                        }
+
+                                                        legajoDTO.setRevista(revistaDTO);
                                                 }
-
-                                                // Manejo seguro de Categoria
-                                                if (legajo.getRevista().getCategoria() != null) {
-                                                        revistaDTO.setCategoria(new CategoriaListDto(
-                                                                legajo.getRevista().getCategoria().getNombre()));
-                                                }
-
-                                                // Manejo seguro de Adicional (¡esta era la línea que fallaba!)
-                                                if (legajo.getRevista().getAdicional() != null) {
-                                                        revistaDTO.setAdicional(new AdicionalListDto(
-                                                                legajo.getRevista().getAdicional().getNombre()));
-                                                }
-
-                                                legajoDTO.setRevista(revistaDTO);
-                                        }
-                                        return legajoDTO;
-                                })
-                                .collect(Collectors.toList()));
+                                                return legajoDTO;
+                                        })
+                                        .collect(Collectors.toList()));
 
                         // Novedades
                         asistencialDTO.setNovedadesPersonales(rm.getAsistencial().getNovedadesPersonales().stream()
-                                .map(novedad -> new NovedadPersonalListDto(
-                                        novedad.getId(),
-                                        novedad.getFechaInicio(),
-                                        novedad.getFechaFinal(),
-                                        novedad.getHoraInicio(),
-                                        novedad.getHoraFinal(),
-                                        new TipoLicenciaListDto(novedad.getTipoLicencia().getId(),
-                                                novedad.getTipoLicencia().getNombre())))
-                                .collect(Collectors.toList()));
+                                        .map(novedad -> new NovedadPersonalListDto(
+                                                        novedad.getId(),
+                                                        novedad.getFechaInicio(),
+                                                        novedad.getFechaFinal(),
+                                                        novedad.getHoraInicio(),
+                                                        novedad.getHoraFinal(),
+                                                        new TipoLicenciaListDto(novedad.getTipoLicencia().getId(),
+                                                                        novedad.getTipoLicencia().getNombre())))
+                                        .collect(Collectors.toList()));
 
                         dto.setAsistencial(asistencialDTO);
                 }
 
                 // RegistroActividad (ya filtradas)
                 List<RegActivListDto> actividadesDto = actividadesFiltradas.stream()
-                        .map(actividad -> new RegActivListDto(
-                                actividad.getId(),
-                                actividad.getFechaIngreso(),
-                                actividad.getFechaEgreso(),
-                                actividad.getHoraIngreso(),
-                                actividad.getHoraEgreso(),
-                                new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
-                                        actividad.getTipoGuardia().getNombre().name()),
+                                .map(actividad -> new RegActivListDto(
+                                                actividad.getId(),
+                                                actividad.getFechaIngreso(),
+                                                actividad.getFechaEgreso(),
+                                                actividad.getHoraIngreso(),
+                                                actividad.getHoraEgreso(),
+                                                new TipoGuardiaListDto(actividad.getTipoGuardia().getId(),
+                                                                actividad.getTipoGuardia().getNombre().name()),
 
-                                new ServicioSummaryDto(actividad.getServicio().getId(),
-                                        actividad.getServicio().getDescripcion()),
-                                        actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
-                                        actividad.getHorasRealizadas().getId(),
-                                        actividad.getHorasRealizadas().getHorasLav(),
-                                        actividad.getHorasRealizadas().getHorasSdf(),
-                                        actividad.getHorasRealizadas().getMontoLav(),
-                                        actividad.getHorasRealizadas().getMontoSdf(),
-                                        actividad.getHorasRealizadas().getMontoTotal()) : null))
-                        .collect(Collectors.toList());
+                                                new ServicioSummaryDto(actividad.getServicio().getId(),
+                                                                actividad.getServicio().getDescripcion()),
+                                                actividad.getHorasRealizadas() != null ? new SumaHorasListDto(
+                                                                actividad.getHorasRealizadas().getId(),
+                                                                actividad.getHorasRealizadas().getHorasLav(),
+                                                                actividad.getHorasRealizadas().getHorasSdf(),
+                                                                actividad.getHorasRealizadas().getMontoLav(),
+                                                                actividad.getHorasRealizadas().getMontoSdf(),
+                                                                actividad.getHorasRealizadas().getMontoTotal()) : null))
+                                .collect(Collectors.toList());
                 dto.setRegistroActividad(actividadesDto);
                 // Calcular nuevo totalHoras basado en las actividades filtradas
                 SumaHorasListDto nuevoTotalHoras = calcularTotalHorasDesdeActividades(actividadesFiltradas,
                                 rm.getTotalHoras());
                 dto.setTotalHoras(nuevoTotalHoras);
 
-                if (rm.getDdjjs() != null) {   
+                if (rm.getDdjjs() != null) {
                         List<Long> ddjjIds = rm.getDdjjs().stream()
-                                .map(Ddjj::getId)
-                                .collect(Collectors.toList());
+                                        .map(Ddjj::getId)
+                                        .collect(Collectors.toList());
                         dto.setIdDdjjs(ddjjIds);
                 }
 
@@ -822,20 +835,30 @@ public class RegistroMensualService {
                 }
 
                 return registros.stream()
-                        .map(rm -> {
-                                // Filtra actividades por tipoGuardia si está presente
-                                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
-                                .stream()
-                                .filter(actividad -> idTipoGuardia == null || (actividad.getTipoGuardia() != null && actividad.getTipoGuardia().getId().equals(idTipoGuardia)))
-                                .collect(Collectors.toList());
+                                .map(rm -> {
+                                        // Filtra actividades por tipoGuardia si está presente
+                                        List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                                                        .stream()
+                                                        .filter(actividad -> idTipoGuardia == null || (actividad
+                                                                        .getTipoGuardia() != null
+                                                                        && actividad.getTipoGuardia().getId()
+                                                                                        .equals(idTipoGuardia)))
+                                                        .collect(Collectors.toList());
 
-                                return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
-                        })
-                        .collect(Collectors.toList());
+                                        return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                                })
+                                .collect(Collectors.toList());
         }
 
-        public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
-        return registroMensualRepository.findMontoTotalHorasByFiltros(idAsistencial,idEfector, quincena, mes, anio);
-    }
+        public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena,
+                        MesesEnum mes, int anio) {
+                return registroMensualRepository.findMontoTotalHorasByFiltros(idAsistencial, idEfector, quincena, mes,
+                                anio);
+        }
+
+        public List<RegistroMensual> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio,
+                        QuincenaEnum quincena) {
+                return registroMensualRepository.findRegistrosIncompletos(efectorId, mes, anio, quincena);
+        }
 
 }
