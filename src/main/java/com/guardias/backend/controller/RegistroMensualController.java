@@ -414,7 +414,7 @@ public class RegistroMensualController {
     }
 
     @GetMapping("/incompletos/{idEfector}/{mes}/{anio}/{quincena}")
-    public ResponseEntity<List<RegistroMensual>> getRegistrosIncompletos(
+    public ResponseEntity<List<RegistroMensualListDto>> getRegistrosIncompletos(
             @PathVariable Long idEfector,
             @PathVariable String mes,
             @PathVariable int anio,
@@ -423,7 +423,7 @@ public class RegistroMensualController {
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-            List<RegistroMensual> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum, anio, quincenaEnum);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum, anio, quincenaEnum);
             
             return ResponseEntity.ok(registros);
             

@@ -883,9 +883,24 @@ public class RegistroMensualService {
                                 anio);
         }
 
-        public List<RegistroMensual> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio,
-                        QuincenaEnum quincena) {
-                return registroMensualRepository.findRegistrosIncompletos(efectorId, mes, anio, quincena);
+        public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+
+                List<RegistroMensual> registrosMensuales = registroMensualRepository.findRegistrosIncompletos(efectorId, mes, anio, quincena);
+
+                return registrosMensuales.stream()
+                        .filter(RegistroMensual::isActivo)
+                        .map(rm -> {
+                                // Filtrar actividades (CF)
+                                List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad().stream()
+                                        .filter(actividad -> actividad.isActivo()
+                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                        .collect(Collectors.toList());
+
+                                // Convertir a DTO
+                                return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                                })
+                        .filter(dto -> !dto.getRegistroActividad().isEmpty()) // Excluir DTOs sin actividades
+                        .collect(Collectors.toList());
         }
 
 }
