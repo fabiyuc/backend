@@ -5,7 +5,6 @@ import java.util.List;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

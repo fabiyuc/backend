@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import com.guardias.backend.dto.RegistroMensualDto;
 import com.guardias.backend.dto.adicional.AdicionalListDto;
 import com.guardias.backend.dto.asistencial.AsistencialListForRmensualDto;
 import com.guardias.backend.dto.categoria.CategoriaListDto;
+import com.guardias.backend.dto.factura.FacturaDetailDto;
 import com.guardias.backend.dto.legajo.LegajoListDto;
 import com.guardias.backend.dto.novedadPersonal.NovedadPersonalListDto;
 import com.guardias.backend.dto.registroActividad.RegActivListDto;
@@ -29,6 +31,7 @@ import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
 import com.guardias.backend.dto.tipoLicencia.TipoLicenciaListDto;
 import com.guardias.backend.dto.tipoRevista.TipoRevistaListDto;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
@@ -701,6 +704,7 @@ public class RegistroMensualService {
                 dto.setMes(rm.getMes());
                 dto.setAnio(rm.getAnio());
                 dto.setQuincena(rm.getQuincena());
+                dto.setFacturasCompletas(rm.getFacturasCompletas());
 
                 // Asistencial
                 if (rm.getAsistencial() != null) {
@@ -782,6 +786,7 @@ public class RegistroMensualService {
                                                                 actividad.getHorasRealizadas().getMontoTotal()) : null))
                                 .collect(Collectors.toList());
                 dto.setRegistroActividad(actividadesDto);
+
                 // Calcular nuevo totalHoras basado en las actividades filtradas
                 SumaHorasListDto nuevoTotalHoras = calcularTotalHorasDesdeActividades(actividadesFiltradas,
                                 rm.getTotalHoras());
@@ -792,6 +797,28 @@ public class RegistroMensualService {
                                         .map(Ddjj::getId)
                                         .collect(Collectors.toList());
                         dto.setIdDdjjs(ddjjIds);
+                }
+
+                // Facturas 
+                if (rm.getFacturas() != null) {
+                        List<FacturaDetailDto> facturasDto = rm.getFacturas().stream()
+                                        .filter(Factura::isActivo) // Solo facturas activas
+                                        .map(factura -> new FacturaDetailDto(
+                                                        factura.getId(),
+                                                        factura.getNombreTitular(),
+                                                        factura.getApellidoTitular(),
+                                                        factura.getDniTitular(),
+                                                        factura.getCuilTitular(),
+                                                        factura.getContribuyente(),
+                                                        factura.getTipo(),
+                                                        factura.getPuntoVenta(),
+                                                        factura.getNumeroFactura(),
+                                                        factura.getFechaEmision(),
+                                                        factura.getMonto()))
+                                        .collect(Collectors.toList());
+                        dto.setFacturas(facturasDto);
+                } else {
+                        dto.setFacturas(new ArrayList<>()); // Lista vacía si no hay facturas
                 }
 
                 return dto;
