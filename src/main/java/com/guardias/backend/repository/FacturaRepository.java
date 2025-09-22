@@ -108,9 +108,10 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
            "JOIN f.registrosMensuales rm " +
            "WHERE rm.efector.id = :efectorId " +
            "AND rm.asistencial.id = :asistencialId " +
+           "AND f.activo = true " +
            "AND rm.mes = :mes " +
            "AND rm.quincena = :quincena " +
-           "AND rm.anio = :anio")
+           "AND rm.anio = :anio" )
         BigDecimal sumMontoFacturasExistentes(
             @Param("efectorId") Long efectorId,
             @Param("asistencialId") Long asistencialId,
