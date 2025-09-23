@@ -23,6 +23,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.factura.FacturaDetailDto;
 import com.guardias.backend.dto.factura.FacturaSummaryDto;
 import com.guardias.backend.entity.Factura;
+import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.service.FacturaService;
@@ -116,17 +117,39 @@ public class FacturaController {
         if (!facturaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
+         // 1. Obtener la factura antes de eliminarla
         Factura factura = facturaService.findById(id).get();
+
+        // 2. Guardar referencia a los registros mensuales afectados
+        List<RegistroMensual> registrosAfectados = factura.getRegistrosMensuales();
+        
+        // 3. Realizar el borrado lógico
         factura.setActivo(false);
         facturaService.save(factura);
+
+        // 4. Actualizar el estado de facturasCompletas para los registros afectados
+        facturaService.actualizarEstadoFacturasDespuesDeEliminar(registrosAfectados);
+        
         return new ResponseEntity<>(new Mensaje("factura  eliminada correctamente"), HttpStatus.OK);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
     public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
-        if (!facturaService.existsById(id))
+        if (!facturaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
+
+         // 1. Obtener la factura antes de eliminarla
+        Factura factura = facturaService.findById(id).get();
+
+        // 2. Guardar referencia a los registros mensuales afectados
+        List<RegistroMensual> registrosAfectados = factura.getRegistrosMensuales();
+
+        // 3. Realizar el borrado 
         facturaService.deleteById(id);
+
+        // 4. Actualizar el estado de facturasCompletas para los registros afectados
+        facturaService.actualizarEstadoFacturasDespuesDeEliminar(registrosAfectados);
+        
         return new ResponseEntity<>(new Mensaje("factura eliminada FISICAMENTE"), HttpStatus.OK);
     }
 

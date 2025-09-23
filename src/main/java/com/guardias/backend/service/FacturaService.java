@@ -370,4 +370,26 @@ public class FacturaService {
         return cantidadFacturas == 2;
     }
 
+    public void actualizarEstadoFacturasDespuesDeEliminar(List<RegistroMensual> registrosAfectados) {
+        for (RegistroMensual registro : registrosAfectados) {
+            BigDecimal montoTotalEsperado = registro.getTotalHoras().getMontoTotal();
+
+            // Obtener el monto de las facturas ACTIVAS que quedan
+            BigDecimal montoFacturasExistentes = facturaRepository.sumMontoFacturasExistentes(
+                    registro.getEfector().getId(),
+                    registro.getAsistencial().getId(),
+                    registro.getMes(),
+                    registro.getQuincena(),
+                    registro.getAnio());
+
+            // Verificar si quedan facturas y si completan el monto
+            boolean quedanFacturas = montoFacturasExistentes.compareTo(BigDecimal.ZERO) > 0;
+            boolean completas = quedanFacturas && montoFacturasExistentes.compareTo(montoTotalEsperado) == 0;
+
+            registro.setFacturasCompletas(completas);
+        }
+
+        registroMensualService.saveAll(registrosAfectados);
+    }
+
 }
