@@ -392,7 +392,9 @@ public class RegistroMensualService {
                 registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
                 registroMensual.setEfector(efectorService.findById(idEfector));
                 registroMensual.setActivo(true);
-                registroMensual.setEstadoFacturacion(EstadoFacturacionEnum.PENDIENTE);
+                if (quincena != null){
+                        registroMensual.setEstadoFacturacion(EstadoFacturacionEnum.PENDIENTE);
+                }
 
                 // Creo SumaHoras vacio
                 SumaHoras horas = new SumaHoras();
@@ -436,11 +438,11 @@ public class RegistroMensualService {
                 Optional<RegistroMensual> registroExistente;
 
                 if (aplicaQuincena) {
-                        // Buscar por quincena para CONTRAFACTURA
+                        // Buscar RM por quincena para CONTRAFACTURA
                         registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(
                                         idAsistencial, idEfector, mesEnum, anio, quincena);
                 } else {
-                        // Buscar sin quincena para otros tipos de guardia
+                        // Buscar RM sin quincena para otros tipos de guardia
                         registroExistente = findByAsistencialIdAndEfectorIdAndMesAndAnio(
                                         idAsistencial, idEfector, mesEnum, anio);
                 }

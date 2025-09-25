@@ -86,7 +86,7 @@ public class RegistroMensual {
     @Enumerated(EnumType.STRING)
     private QuincenaEnum quincena;
 
-    @Column(columnDefinition = "VARCHAR(20)")
+    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
     private EstadoFacturacionEnum estadoFacturacion;
 
