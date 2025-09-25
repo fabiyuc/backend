@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -264,6 +265,57 @@ public class FacturaService {
         }
     }
 
+    /**
+     * Determina si la factura se está creando fuera del término establecido
+     */
+    public boolean determinarSiEsFueraDeTermino(FacturaDto facturaDto) {
+        try {
+            // Obtener el primer registro mensual para calcular la fecha límite
+            Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0);
+            RegistroMensual rmActivo = registroMensualService.findByIdAndActivoTrue(idRegistroActivo)
+                .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
+
+            // Calcular fecha límite (ejemplo: día 10 del mes siguiente)
+            LocalDate fechaLimite = calcularFechaLimite(rmActivo);
+            LocalDate fechaActual = LocalDate.now();
+
+            System.out.println("=== DEBUG FECHAS ===");
+            System.out.println("Fecha límite: " + fechaLimite);
+            System.out.println("Fecha actual: " + fechaActual);
+            System.out.println("Es fuera de término: " + fechaActual.isAfter(fechaLimite));
+            System.out.println("====================");
+
+            return fechaActual.isAfter(fechaLimite);
+
+        } catch (Exception e) {
+            // En caso de error, asumir que es a tiempo para no bloquear la creación
+            System.err.println("Error al determinar fecha límite: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Calcula la fecha límite para la facturación (ejemplo: día 10 del mes siguiente)
+     */
+    private LocalDate calcularFechaLimite(RegistroMensual registro) {
+        // Obtener mes y año del registro
+        int numeroMes = convertirMesANumero(registro.getMes());
+        int anio = registro.getAnio();
+
+        // Fecha límite: día 10 del mes siguiente al del registro
+        LocalDate fechaBase = LocalDate.of(anio, numeroMes, 1);
+        return fechaBase.plusMonths(1).withDayOfMonth(10);
+    }
+
+    /**
+     * Convierte el enum MesesEnum a número (ajusta según tu implementación)
+     */
+    private int convertirMesANumero(MesesEnum mes) {
+        // Depende de cómo tengas implementado tu MesesEnum
+        // Ejemplo si tienes ENERO, FEBRERO, etc.:
+        return mes.ordinal() + 1; // o implementa un método getNumero() en tu enum
+    }
+    
     public void actualizarEstadoFacturasDespuesDeGuardar(Factura factura) {
 
         for (RegistroMensual registro : factura.getRegistrosMensuales()) {

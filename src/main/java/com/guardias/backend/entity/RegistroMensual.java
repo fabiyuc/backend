@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 
@@ -85,8 +86,9 @@ public class RegistroMensual {
     @Enumerated(EnumType.STRING)
     private QuincenaEnum quincena;
 
-    @Column(columnDefinition = "BIT", nullable = true) // Permite null para no contrafactura
-    private Boolean facturasCompletas;
+    @Column(columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    private EstadoFacturacionEnum estadoFacturacion;
 
     @Override
     public boolean equals(Object obj) {

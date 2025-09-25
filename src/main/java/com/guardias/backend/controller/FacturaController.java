@@ -81,14 +81,19 @@ public class FacturaController {
                 return validacionCompletitud;
             }
 
-            // SEGUNDO: Crear y guardar
+            // SEGUNDO: Determinar si es fuera de término
+            boolean esFueraDeTermino = facturaService.determinarSiEsFueraDeTermino(facturaDto);
+
+            // TERCERO: Crear y guardar
             Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
             facturaService.save(factura);
 
-            // TERCERO: Actualizar estado de registros
-            facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura);
+            // CUARTO: Actualizar estado de registros con la información de fuera de término
+            facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura,esFueraDeTermino);
 
-            return new ResponseEntity(new Mensaje("Factura creada"), HttpStatus.OK);
+            String mensaje = esFueraDeTermino ? 
+            "Factura creada (fuera de término)" : "Factura creada (a tiempo)";
+            return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
         }
         return respuestaValidaciones;
     }

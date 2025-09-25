@@ -2,6 +2,7 @@ package com.guardias.backend.dto;
 
 import java.util.List;
 
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 
@@ -32,6 +33,6 @@ public class RegistroMensualDto {
 
     private QuincenaEnum quincena; 
 
-    private Boolean facturasCompletas;
+    private EstadoFacturacionEnum estadoFacturacion;
 
 }
