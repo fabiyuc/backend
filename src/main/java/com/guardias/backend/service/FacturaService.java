@@ -32,7 +32,7 @@ import jakarta.transaction.Transactional;
 public class FacturaService {
 
     private final AsistencialService asistencialService;
-    
+
     @Autowired
     FacturaRepository facturaRepository;
     @Autowired
@@ -127,7 +127,8 @@ public class FacturaService {
             // Crea una nueva lista para almacenar los registros mensuales actualizados
             List<RegistroMensual> rMActualizados = new ArrayList<>();
 
-            // Primero: remover la factura de los registros mensuales que ya no están en la lista
+            // Primero: remover la factura de los registros mensuales que ya no están en la
+            // lista
             for (RegistroMensual rm : factura.getRegistrosMensuales()) {
                 if (facturaDto.getIdRegistrosMensuales().contains(rm.getId())) {
                     rMActualizados.add(rm);
@@ -138,7 +139,7 @@ public class FacturaService {
             }
             factura.setRegistrosMensuales(rMActualizados);
 
-            //Segundo: agrega nuevos registros mensuales si no estan presentes
+            // Segundo: agrega nuevos registros mensuales si no estan presentes
             for (Long id : facturaDto.getIdRegistrosMensuales()) {
                 boolean found = false;
                 for (RegistroMensual rm : factura.getRegistrosMensuales()) {
@@ -158,17 +159,19 @@ public class FacturaService {
                 }
             }
         }
-        
+
         if (facturaDto.getNombreTitular() != null && !facturaDto.getNombreTitular().isEmpty()) {
             // Si la factura es nueva (nombreTitular es null) o si el valor es diferente
-            if (factura.getNombreTitular() == null || !factura.getNombreTitular().equals(facturaDto.getNombreTitular())) {
+            if (factura.getNombreTitular() == null
+                    || !factura.getNombreTitular().equals(facturaDto.getNombreTitular())) {
                 factura.setNombreTitular(facturaDto.getNombreTitular());
             }
         }
 
         // Para apellidoTitular (aplica la misma lógica)
         if (facturaDto.getApellidoTitular() != null && !facturaDto.getApellidoTitular().isEmpty()) {
-            if (factura.getApellidoTitular() == null || !factura.getApellidoTitular().equals(facturaDto.getApellidoTitular())) {
+            if (factura.getApellidoTitular() == null
+                    || !factura.getApellidoTitular().equals(facturaDto.getApellidoTitular())) {
                 factura.setApellidoTitular(facturaDto.getApellidoTitular());
             }
         }
@@ -220,22 +223,25 @@ public class FacturaService {
         return facturaRepository.existsById(id);
     }
 
-    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
-        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial,idEfector, quincena, mes, anio);
+    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes,
+            int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial, idEfector, quincena, mes,
+                anio);
     }
 
-    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
+    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes,
+            QuincenaEnum quincena) {
         List<Factura> facturas = facturaRepository.findByAnioMesQuincena(idEfector, anio, mes, quincena);
         return facturas.stream()
-            .map(this::convertToSummaryDto)
-            .collect(Collectors.toList());
+                .map(this::convertToSummaryDto)
+                .collect(Collectors.toList());
     }
 
     private FacturaSummaryDto convertToSummaryDto(Factura factura) {
         FacturaSummaryDto dto = new FacturaSummaryDto();
         dto.setId(factura.getId());
         dto.setAsistencial(convertToAsistencialDetailDto(factura.getAsistencial()));
-    
+
         return dto;
     }
 
@@ -244,18 +250,18 @@ public class FacturaService {
             return null;
         }
         return new AsistencialDetailDto(
-            asistencial.getId(),
-            asistencial.getNombre(),
-            asistencial.getApellido(),
-            asistencial.getCuil()
-        );
+                asistencial.getId(),
+                asistencial.getNombre(),
+                asistencial.getApellido(),
+                asistencial.getCuil());
     }
 
-    public List<FacturaDetailDto> getByFiltros(Long idAsistencial, Long idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
+    public List<FacturaDetailDto> getByFiltros(Long idAsistencial, Long idEfector, int anio, MesesEnum mes,
+            QuincenaEnum quincena) {
         List<Factura> facturas = facturaRepository.findByFiltros(idAsistencial, idEfector, anio, mes, quincena);
         return facturas.stream()
-            .map(this::convertToDetailDto)
-            .collect(Collectors.toList());
+                .map(this::convertToDetailDto)
+                .collect(Collectors.toList());
     }
 
     private FacturaDetailDto convertToDetailDto(Factura factura) {
@@ -274,7 +280,23 @@ public class FacturaService {
         return dto;
     }
 
-    public boolean existeFacturaByFiltros(Long idAsistencial, Long idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
-        return facturaRepository.existsByAsistencialAndEfectorAndAnioMesQuincena(idAsistencial, idEfector, anio, mes, quincena);
+    public boolean existeFacturaByFiltros(Long idAsistencial, Long idEfector, int anio, MesesEnum mes,
+            QuincenaEnum quincena) {
+        return facturaRepository.existsByAsistencialAndEfectorAndAnioMesQuincena(idAsistencial, idEfector, anio, mes,
+                quincena);
     }
+
+    public boolean existenDosFacturasByFiltros(Long idAsistencial, Long idEfector, int anio,
+            MesesEnum mes, QuincenaEnum quincena) {
+
+        // Contar facturas activas para el asistencial en el efector, mes, año y
+        // quincena
+        long cantidadFacturas = facturaRepository.countByAsistencialAndEfectorAndPeriodo(
+                idAsistencial, idEfector, anio, mes, quincena);
+
+        // Devolver true si hay exactamente 2 facturas
+        return cantidadFacturas == 2;
+    }
+
+
 }
