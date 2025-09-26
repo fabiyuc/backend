@@ -231,7 +231,15 @@ public class RegistroActividadController {
             @PathVariable int mes,
             @PathVariable int anio) {
 
+    
+        System.out.println("=== INICIO obtenerDdjjAprobadas ===");
+        System.out.println("Parámetros recibidos - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
+        
         List<Long> ddjjAprobadas = registroActividadService.obtenerIdsDdjjAprobadas(idEfector, mes, anio);
+
+        System.out.println("Resultado final: " + ddjjAprobadas);
+        System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
+        
         return new ResponseEntity<>(ddjjAprobadas, HttpStatus.OK);
     }
 

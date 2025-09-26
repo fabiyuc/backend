@@ -503,46 +503,78 @@ public class RegistroActividadService {
     }
 
     public List<Long> obtenerIdsDdjjAprobadas(Long idEfector, int mes, int anio) {
+        System.out.println("=== INICIO obtenerIdsDdjjAprobadas ===");
+        System.out.println("Parámetros - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
+
         List<Long> idsDdjjAprobadas = new ArrayList<>();
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+        System.out.println("MesEnum convertido: " + mesEnum);
 
         // 1. Verificar registros de actividad
+        System.out.println("\n--- Verificando registros de actividad ---");
+
         boolean tieneCargo = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
                 idEfector, mes, anio, TipoGuardiaEnum.CARGO);
+        System.out.println("¿Tiene CARGO? " + tieneCargo);
+
         boolean tieneAgrupacion = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
                 idEfector, mes, anio, TipoGuardiaEnum.AGRUPACION);
+        System.out.println("¿Tiene AGRUPACION? " + tieneAgrupacion);
+
         boolean tieneExtra = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
                 idEfector, mes, anio, TipoGuardiaEnum.EXTRA);
+        System.out.println("¿Tiene EXTRA? " + tieneExtra);
+
         boolean tieneContrafactura = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
                 idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
+        System.out.println("¿Tiene CONTRAFACTURA? " + tieneContrafactura);
 
-        // 2. Buscar DDJJ aprobadas (todas deben existir)
-        try {
-            if (tieneCargo || tieneAgrupacion) {
-                Long idCargo = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
-                        idEfector, mesEnum, anio, TipoGuardiaEnum.CARGO, EstadoDdjjEnum.APROBADO)
-                        .orElseThrow(() -> new NoSuchElementException("Falta DDJJ CARGO aprobada"));
-                idsDdjjAprobadas.add(idCargo);
+        // 2. Buscar DDJJ aprobadas por el director
+        System.out.println("\n--- Buscando DDJJ aprobadas ---");
+
+        if (tieneCargo || tieneAgrupacion) {
+            System.out.println("Buscando DDJJ CARGO aprobada...");
+            Optional<Long> idCargo = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                    idEfector, mesEnum, anio, TipoGuardiaEnum.CARGO, EstadoDdjjEnum.APROBADO);
+
+            if (idCargo.isPresent()) {
+                System.out.println("DDJJ CARGO encontrada - ID: " + idCargo.get());
+                idsDdjjAprobadas.add(idCargo.get());
+            } else {
+                System.out.println("No se encontró DDJJ CARGO aprobada");
             }
-
-            if (tieneExtra) {
-                Long idExtra = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
-                        idEfector, mesEnum, anio, TipoGuardiaEnum.EXTRA, EstadoDdjjEnum.APROBADO)
-                        .orElseThrow(() -> new NoSuchElementException("Falta DDJJ EXTRA aprobada"));
-                idsDdjjAprobadas.add(idExtra);
-            }
-
-            if (tieneContrafactura) {
-                Long idContrafactura = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
-                        idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO)
-                        .orElseThrow(() -> new NoSuchElementException("Falta DDJJ CONTRAFACTURA aprobada"));
-                idsDdjjAprobadas.add(idContrafactura);
-            }
-
-            return idsDdjjAprobadas;
-        } catch (NoSuchElementException e) {
-            return Collections.emptyList(); // Si falta alguna, devuelve lista vacía
         }
+
+        if (tieneExtra) {
+            System.out.println("Buscando DDJJ EXTRA aprobada...");
+            Optional<Long> idExtra = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                    idEfector, mesEnum, anio, TipoGuardiaEnum.EXTRA, EstadoDdjjEnum.APROBADO);
+
+            if (idExtra.isPresent()) {
+                System.out.println("DDJJ EXTRA encontrada - ID: " + idExtra.get());
+                idsDdjjAprobadas.add(idExtra.get());
+            } else {
+                System.out.println("No se encontró DDJJ EXTRA aprobada");
+            }
+        }
+
+        if (tieneContrafactura) {
+            System.out.println("Buscando DDJJ CONTRAFACTURA aprobada...");
+            Optional<Long> idContrafactura = ddjjRepository
+                    .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO);
+
+            if (idContrafactura.isPresent()) {
+                System.out.println("DDJJ CONTRAFACTURA encontrada - ID: " + idContrafactura.get());
+                idsDdjjAprobadas.add(idContrafactura.get());
+            } else {
+                System.out.println("No se encontró DDJJ CONTRAFACTURA aprobada");
+            }
+        }
+
+        System.out.println("Lista de IDs encontrados: " + idsDdjjAprobadas);
+        System.out.println("=== FIN obtenerIdsDdjjAprobadas ===\n");
+        return idsDdjjAprobadas;
     }
 
     public List<RegActivAsistenciaDto> listarAsistenciaPorProfesionalYEfector(Long idAsistencial, Long idEfector,
