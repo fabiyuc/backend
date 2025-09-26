@@ -71,31 +71,40 @@ public class FacturaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FacturaDto facturaDto) {
 
+        // PRIMERO: Validaciones básicas
         ResponseEntity<?> respuestaValidaciones = facturaService
                 .validations(facturaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            // PRIMERO: Validar completitud de facturas
-            ResponseEntity<?> validacionCompletitud = facturaService.validarCompletitudAntesDeGuardar(facturaDto);
-            if (validacionCompletitud.getStatusCode() != HttpStatus.OK) {
-                return validacionCompletitud;
-            }
-
-            // SEGUNDO: Determinar si es fuera de término
-            boolean esFueraDeTermino = facturaService.determinarSiEsFueraDeTermino(facturaDto);
-
-            // TERCERO: Crear y guardar
-            Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
-            facturaService.save(factura);
-
-            // CUARTO: Actualizar estado de registros con la información de fuera de término
-            facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura,esFueraDeTermino);
-
-            String mensaje = esFueraDeTermino ? 
-            "Factura creada (fuera de término)" : "Factura creada (a tiempo)";
-            return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
+             return respuestaValidaciones;
         }
-        return respuestaValidaciones;
+            
+        // SEGUNDO: Validar completitud de montos de facturas
+        ResponseEntity<?> validacionCompletitud = facturaService.validarCompletitudAntesDeGuardar(facturaDto);
+        if (validacionCompletitud.getStatusCode() != HttpStatus.OK) {
+            return validacionCompletitud;
+        }
+
+        // TERCERO: Validar que la fecha de emisión esté en el rango permitido para la quincena
+        ResponseEntity<?> validacionFecha = facturaService.validarRangoFechasEmision(facturaDto);
+        if (validacionFecha.getStatusCode() != HttpStatus.OK) {
+            return validacionFecha;
+        }
+
+        // CUARTO: Determinar si es fuera de término
+        boolean esFueraDeTermino = facturaService.determinarSiEsFueraDeTermino(facturaDto);
+
+        // QUINTO: Crear y guardar
+        Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
+        facturaService.save(factura);
+
+        // SEXTO: Actualizar estado de registros
+        facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura, esFueraDeTermino);
+
+        String mensaje = esFueraDeTermino ? "Factura creada (fuera de término)" : "Factura creada (a tiempo)";
+        
+        return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
+        
     }
 
     @PutMapping(("/update/{id}"))
@@ -122,19 +131,19 @@ public class FacturaController {
         if (!facturaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-         // 1. Obtener la factura antes de eliminarla
+        // 1. Obtener la factura antes de eliminarla
         Factura factura = facturaService.findById(id).get();
 
         // 2. Guardar referencia a los registros mensuales afectados
         List<RegistroMensual> registrosAfectados = factura.getRegistrosMensuales();
-        
+
         // 3. Realizar el borrado lógico
         factura.setActivo(false);
         facturaService.save(factura);
 
         // 4. Actualizar el estado de facturasCompletas para los registros afectados
         facturaService.actualizarEstadoFacturasDespuesDeEliminar(registrosAfectados);
-        
+
         return new ResponseEntity<>(new Mensaje("factura  eliminada correctamente"), HttpStatus.OK);
     }
 
@@ -143,18 +152,18 @@ public class FacturaController {
         if (!facturaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-         // 1. Obtener la factura antes de eliminarla
+        // 1. Obtener la factura antes de eliminarla
         Factura factura = facturaService.findById(id).get();
 
         // 2. Guardar referencia a los registros mensuales afectados
         List<RegistroMensual> registrosAfectados = factura.getRegistrosMensuales();
 
-        // 3. Realizar el borrado 
+        // 3. Realizar el borrado
         facturaService.deleteById(id);
 
         // 4. Actualizar el estado de facturasCompletas para los registros afectados
         facturaService.actualizarEstadoFacturasDespuesDeEliminar(registrosAfectados);
-        
+
         return new ResponseEntity<>(new Mensaje("factura eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
