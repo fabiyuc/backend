@@ -1,4 +1,4 @@
-/* package com.guardias.backend.security.util;
+package com.guardias.backend.security.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -27,4 +27,3 @@ public class CreateRoles implements CommandLineRunner{
     }
 
 }
- */
