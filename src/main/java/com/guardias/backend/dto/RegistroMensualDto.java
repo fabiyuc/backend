@@ -32,4 +32,6 @@ public class RegistroMensualDto {
 
     private QuincenaEnum quincena; 
 
+    private Boolean facturasCompletas;
+
 }

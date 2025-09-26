@@ -6,7 +6,7 @@ public enum RolNombre {
     ROLE_DPH,
     ROLE_SUPERUSER,
     ROLE_AUTORIDAD,
-    ROLE_HOSPITAL,
+    ROLE_HOSPITAL
 }
 
 /*

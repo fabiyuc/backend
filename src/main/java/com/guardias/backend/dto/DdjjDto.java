@@ -3,6 +3,7 @@ package com.guardias.backend.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -57,5 +58,8 @@ public class DdjjDto {
     private List<Long> idCronogramasDefinitivos;
 
     private QuincenaEnum quincena;
+
+    private CondicionDdjjEnum condicionDdjj;
+
 }
 

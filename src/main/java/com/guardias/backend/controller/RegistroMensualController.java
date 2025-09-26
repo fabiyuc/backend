@@ -1,6 +1,7 @@
 package com.guardias.backend.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -412,4 +413,22 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/incompletos/{idEfector}/{mes}/{anio}/{quincena}")
+    public ResponseEntity<List<RegistroMensualListDto>> getRegistrosIncompletos(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable String quincena) {
+        
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum, anio, quincenaEnum);
+            
+            return ResponseEntity.ok(registros);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
 }

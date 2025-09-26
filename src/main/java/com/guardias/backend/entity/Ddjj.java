@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -112,6 +113,10 @@ public class Ddjj {
     @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
     private QuincenaEnum quincena;
+
+    @Column(columnDefinition = "VARCHAR(20)", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private CondicionDdjjEnum condicionDdjj;
 
     @Override
     public boolean equals(Object obj) {

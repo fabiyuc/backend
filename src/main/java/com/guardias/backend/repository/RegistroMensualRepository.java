@@ -18,6 +18,8 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
 
         Optional<RegistroMensual> findById(Long id);
 
+        Optional<RegistroMensual> findByIdAndActivoTrue(Long id);
+
         @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector")
         List<RegistroMensual> findByAnioMesEfector(
                 @Param("anio") int anio,
@@ -85,4 +87,23 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                 @Param("quincena") QuincenaEnum quincena,
                 @Param("mes") MesesEnum mes,
                 @Param("anio") int anio);
+
+
+        @Query("SELECT rm.totalHoras.montoTotal FROM registrosMensuales rm " +
+           "WHERE rm.id = :id " +
+           "AND rm.activo = true")
+        Optional<BigDecimal> findMontoTotalById(@Param("id") Long id);
+
+        @Query("SELECT rm FROM registrosMensuales rm " +
+           "WHERE rm.efector.id = :efectorId " +
+           "AND rm.mes = :mes " +
+           "AND rm.anio = :anio " +
+           "AND rm.quincena = :quincena " +
+           "AND rm.facturasCompletas = false " +
+           "AND rm.activo = true")
+    List<RegistroMensual> findRegistrosIncompletos(
+            @Param("efectorId") Long efectorId,
+            @Param("mes") MesesEnum mes,
+            @Param("anio") int anio,
+            @Param("quincena") QuincenaEnum quincena);
 }
