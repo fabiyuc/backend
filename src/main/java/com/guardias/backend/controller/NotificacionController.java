@@ -1,9 +1,18 @@
 package com.guardias.backend.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.DateFormatSymbols;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,8 +23,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.NotificacionDto;
 import com.guardias.backend.entity.Efector;
@@ -33,6 +45,9 @@ public class NotificacionController {
     NotificacionService notificacionService;
     @Autowired
     EfectorService efectorService;
+
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
     @GetMapping("/list")
     public ResponseEntity<List<Notificacion>> list() {
@@ -113,23 +128,36 @@ public class NotificacionController {
         if (notificacionDto.getFechaBaja() != null && notificacionDto.getFechaBaja() != notificacion.getFechaBaja())
             notificacion.setFechaBaja(notificacionDto.getFechaBaja());
 
+        // NUEVO: reemplazo total de efectores (lista completa recibida)
         if (notificacionDto.getIdEfectores() != null) {
-            List<Long> idList = new ArrayList<Long>();
+            // Limpiar relaciones previas si es update
             if (notificacion.getEfectores() != null) {
-                for (Efector efector : notificacion.getEfectores()) {
-                    for (Long id : notificacionDto.getIdEfectores()) {
-                        if (!efector.getId().equals(id)) {
-                            idList.add(id);
-                        }
+                for (Efector efPrev : notificacion.getEfectores()) {
+                    if (efPrev.getNotificaciones() != null) {
+                        efPrev.getNotificaciones().remove(notificacion);
                     }
                 }
-            } else {
-                notificacion.setEfectores(new ArrayList<>());
             }
-            List<Long> idsToAdd = idList.isEmpty() ? notificacionDto.getIdEfectores() : idList;
-            for (Long id : idsToAdd) {
-                notificacion.getEfectores().add(efectorService.findById(id));
-                efectorService.findById(id).getNotificaciones().add(notificacion);
+            Set<Long> únicos = new HashSet<>();
+            List<Efector> nuevos = new ArrayList<>();
+            for (Long id : notificacionDto.getIdEfectores()) {
+                if (id == null)
+                    continue;
+                if (únicos.add(id)) {
+                    Efector ef = efectorService.findById(id);
+                    if (ef != null && ef.isActivo()) {
+                        nuevos.add(ef);
+                    }
+                }
+            }
+            notificacion.setEfectores(nuevos);
+            for (Efector ef : nuevos) {
+                if (ef.getNotificaciones() == null) {
+                    ef.setNotificaciones(new ArrayList<>());
+                }
+                if (!ef.getNotificaciones().contains(notificacion)) {
+                    ef.getNotificaciones().add(notificacion);
+                }
             }
         }
 
@@ -140,14 +168,45 @@ public class NotificacionController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto) {
         ResponseEntity<?> respuestaValidaciones = validations(notificacionDto);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            Notificacion notificacion = createUpdate(new Notificacion(), notificacionDto);
-            notificacionService.save(notificacion);
-            return new ResponseEntity<>(new Mensaje("Notificación creada correctamente"), HttpStatus.OK);
-        } else {
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
             return respuestaValidaciones;
         }
+
+        Notificacion notificacion = new Notificacion();
+        notificacion.setTipo(notificacionDto.getTipo());
+        notificacion.setCategoria(notificacionDto.getCategoria());
+        notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
+        notificacion.setDetalle(notificacionDto.getDetalle());
+        notificacion.setUrl(notificacionDto.getUrl());
+        notificacion.setActivo(true);
+        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+
+        List<Efector> efectores = new ArrayList<>();
+        if (notificacionDto.getIdEfectores() != null && !notificacionDto.getIdEfectores().isEmpty()) {
+            Set<Long> únicos = new HashSet<>();
+            for (Long id : notificacionDto.getIdEfectores()) {
+                if (id == null)
+                    continue;
+                if (únicos.add(id)) {
+                    Efector ef = efectorService.findById(id);
+                    if (ef != null && ef.isActivo()) {
+                        efectores.add(ef);
+                    }
+                }
+            }
+        }
+        notificacion.setEfectores(efectores);
+        notificacionService.save(notificacion);
+        for (Efector ef : efectores) {
+            if (ef.getNotificaciones() == null) {
+                ef.setNotificaciones(new ArrayList<>());
+            }
+            if (!ef.getNotificaciones().contains(notificacion)) {
+                ef.getNotificaciones().add(notificacion);
+            }
+        }
+
+        return new ResponseEntity<>(notificacion, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
@@ -165,101 +224,6 @@ public class NotificacionController {
         }
     }
 
-    // Método create
-    /*
-     * @PostMapping("/create")
-     * public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto)
-     * {
-     * // Validaciones
-     * 
-     * if (StringUtils.isBlank(notificacionDto.getCategoria())) {
-     * return new ResponseEntity<>(new Mensaje("La Categoria es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * }
-     * 
-     * if (notificacionDto.getTipo() == null)
-     * return new ResponseEntity<>(new Mensaje("El Tipo es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getFechaNotificacion() == null)
-     * return new ResponseEntity<>(new
-     * Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getFechaBaja() == null)
-     * return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (StringUtils.isBlank(notificacionDto.getDetalle())) {
-     * return new ResponseEntity(new Mensaje("El Detalle es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * }
-     * 
-     * if (notificacionDto.getUrl() == null)
-     * return new ResponseEntity(new Mensaje("El Url es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * Notificacion notificacion = new Notificacion();
-     * notificacion.setTipo(notificacionDto.getTipo());
-     * notificacion.setCategoria(notificacionDto.getCategoria());
-     * notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
-     * notificacion.setDetalle(notificacionDto.getDetalle());
-     * notificacion.setUrl(notificacionDto.getUrl());
-     * notificacion.setActivo(notificacionDto.isActivo());
-     * notificacion.setFechaBaja(notificacionDto.getFechaBaja());
-     * 
-     * notificacionService.save(notificacion);
-     * 
-     * return new ResponseEntity<>(new Mensaje("Notificación creada"),
-     * HttpStatus.OK);
-     * }
-     * 
-     * // Método update
-     * 
-     * @PutMapping("/update/{id}")
-     * public ResponseEntity<?> update(@PathVariable("id") long id, @RequestBody
-     * NotificacionDto notificacionDto) {
-     * if (!notificacionService.existsById(id))
-     * return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
-     * 
-     * if (notificacionDto.getTipo() == null)
-     * return new ResponseEntity<>(new Mensaje("el Tipo es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getCategoria() == null)
-     * return new ResponseEntity(new Mensaje("La Categoria es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getFechaNotificacion() == null)
-     * return new ResponseEntity<>(new
-     * Mensaje("La Fecha de Notificacion es obligatoria"), HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getFechaBaja() == null)
-     * return new ResponseEntity<>(new Mensaje("La Fecha de Baja es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getDetalle() == null)
-     * return new ResponseEntity(new Mensaje("El Detalle es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (notificacionDto.getUrl() == null)
-     * return new ResponseEntity(new Mensaje("El Url es obligatorio"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * Notificacion notificacion = notificacionService.findById(id).get();
-     * notificacion.setTipo(notificacionDto.getTipo());
-     * notificacion.setCategoria(notificacionDto.getCategoria());
-     * notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
-     * notificacion.setDetalle(notificacionDto.getDetalle());
-     * notificacion.setUrl(notificacionDto.getUrl());
-     * notificacion.setActivo(notificacionDto.isActivo());
-     * notificacion.setFechaBaja(notificacionDto.getFechaBaja());
-     * 
-     * notificacionService.save(notificacion);
-     * 
-     * return new ResponseEntity<>(new Mensaje("Notificaión Actualizada"),
-     * HttpStatus.OK);
-     * }
-     */
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
         if (!notificacionService.activo(id))
@@ -278,6 +242,149 @@ public class NotificacionController {
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
         notificacionService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Notificación eliminada FISICAMENTE"), HttpStatus.OK);
+    }
+
+    @PostMapping("/uploadPdf/{efectorId}")
+    public ResponseEntity<?> uploadPdf(@PathVariable("efectorId") Long efectorId,
+            @RequestParam("pdf") MultipartFile file,
+            @RequestParam("notificacion") String notificacionJson) {
+        Efector efectorPrincipal = efectorService.findById(efectorId);
+        if (efectorPrincipal == null || !efectorPrincipal.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("Efector no encontrado o inactivo"), HttpStatus.NOT_FOUND);
+        }
+
+        if (file.isEmpty()) {
+            return new ResponseEntity<>(new Mensaje("No se seleccionó ningún archivo"), HttpStatus.BAD_REQUEST);
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.equals("application/pdf")) {
+            return new ResponseEntity<>(new Mensaje("El archivo debe ser un PDF"), HttpStatus.BAD_REQUEST);
+        }
+
+        if (file.getSize() > 10 * 1024 * 1024) {
+            return new ResponseEntity<>(new Mensaje("El archivo no puede ser mayor a 10MB"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            NotificacionDto notificacionDto = mapper.readValue(notificacionJson, NotificacionDto.class);
+
+            ResponseEntity<?> validaciones = validations(notificacionDto);
+            if (validaciones.getStatusCode() != HttpStatus.OK) {
+                return validaciones;
+            }
+
+            // Obtener fecha actual o la de la notificación
+            LocalDate fecha = notificacionDto.getFechaNotificacion() != null
+                    ? notificacionDto.getFechaNotificacion()
+                    : LocalDate.now();
+            int año = fecha.getYear();
+            int mes = fecha.getMonthValue();
+
+            // Obtener nombre del mes en español y en mayúsculas
+            String[] meses = new DateFormatSymbols(new java.util.Locale("es")).getMonths();
+            String nombreMes = meses[mes - 1].toUpperCase();
+            String carpetaMes = nombreMes + "-" + año;
+
+            // Carpeta: /uploads/notificaciones/{año}/{MES-AÑO}/
+            Path notificacionesDir = Paths.get(uploadDir, "notificaciones");
+            Path añoDir = notificacionesDir.resolve(String.valueOf(año));
+            Path mesDir = añoDir.resolve(carpetaMes);
+
+            if (!Files.exists(notificacionesDir))
+                Files.createDirectories(notificacionesDir);
+            if (!Files.exists(añoDir))
+                Files.createDirectories(añoDir);
+            if (!Files.exists(mesDir))
+                Files.createDirectories(mesDir);
+
+            // Nombre único para el PDF
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            String baseName = "archivo";
+            if (originalFilename != null && !originalFilename.isBlank()) {
+                int dot = originalFilename.lastIndexOf('.');
+                if (dot > 0) {
+                    baseName = originalFilename.substring(0, dot);
+                    extension = originalFilename.substring(dot);
+                } else {
+                    baseName = originalFilename;
+                }
+            }
+            baseName = baseName
+                    .replaceAll("[^a-zA-Z0-9_\\-]", "_")
+                    .replaceAll("_+", "_")
+                    .replaceAll("^_|_$", "");
+            if (baseName.isBlank())
+                baseName = "archivo";
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String uniqueFilename = baseName + "_" + timestamp + extension;
+
+            Path filePathTmp = mesDir.resolve(uniqueFilename);
+            Files.copy(file.getInputStream(), filePathTmp, StandardCopyOption.REPLACE_EXISTING);
+
+            // URL para guardar en la notificación
+            String pdfUrlTmp = "/uploads/notificaciones/" + año + "/" + carpetaMes + "/" + uniqueFilename;
+
+            Notificacion notificacion = new Notificacion();
+            notificacion.setTipo(notificacionDto.getTipo());
+            notificacion.setCategoria(notificacionDto.getCategoria());
+            notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
+            notificacion.setDetalle(notificacionDto.getDetalle());
+            notificacion.setUrl(pdfUrlTmp);
+            notificacion.setActivo(true);
+            notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+
+            List<Efector> efectores = new ArrayList<>();
+            Set<Long> unicos = new HashSet<>();
+            if (notificacionDto.getIdEfectores() != null && !notificacionDto.getIdEfectores().isEmpty()) {
+                for (Long id : notificacionDto.getIdEfectores()) {
+                    if (id == null)
+                        continue;
+                    if (unicos.add(id)) {
+                        Efector ef = efectorService.findById(id);
+                        if (ef != null && ef.isActivo()) {
+                            efectores.add(ef);
+                        }
+                    }
+                }
+            }
+            if (unicos.add(efectorId)) {
+                efectores.add(efectorPrincipal);
+            }
+
+            notificacion.setEfectores(efectores);
+            notificacionService.save(notificacion);
+            for (Efector ef : efectores) {
+                if (ef.getNotificaciones() == null) {
+                    ef.setNotificaciones(new ArrayList<>());
+                }
+                if (!ef.getNotificaciones().contains(notificacion)) {
+                    ef.getNotificaciones().add(notificacion);
+                }
+            }
+
+            final String finalCarpetaMes = carpetaMes;
+            final String finalUniqueFilename = uniqueFilename;
+            final String finalPdfUrl = pdfUrlTmp;
+            final String finalFilePath = filePathTmp.toString();
+
+            return new ResponseEntity<>(new Object() {
+                public final String mensaje = "PDF subido y notificación creada exitosamente";
+                public final String url = finalPdfUrl;
+                public final String filename = finalUniqueFilename;
+                public final String mesFolder = finalCarpetaMes;
+                public final String fullPath = finalFilePath;
+                public final Long notificacionId = notificacion.getId();
+                public final int efectoresAsociados = efectores.size();
+            }, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al guardar el PDF y la notificación: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
