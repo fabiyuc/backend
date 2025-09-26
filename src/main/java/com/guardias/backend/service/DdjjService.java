@@ -30,6 +30,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -176,8 +177,6 @@ public class DdjjService {
         return ddjjRepository.save(ddjj);
 
     }
-
-    // ---- Métodos auxiliares ----
 
     private QuincenaEnum determinarQuincenaParaDdjj(DdjjDto ddjjDto) {
 
@@ -335,30 +334,32 @@ public class DdjjService {
 
     private void processRegistrosMensuales(Ddjj ddjj, DdjjDto ddjjDto) {
         // 1. Carga batch de registros (1 query)
-        List<RegistroMensual> todosRegistros  = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
+        List<RegistroMensual> todosRegistros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // Filtrar registros válidos
-        List<RegistroMensual> registrosFiltrados = todosRegistros.stream()
-            .filter(rm -> rm.getFacturasCompletas() == null || Boolean.TRUE.equals(rm.getFacturasCompletas()))
-            .collect(Collectors.toList());
-    
-        // Validar que haya al menos un registro válido
-        if (registrosFiltrados.isEmpty()) {
-            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ.");
-        }
-
-        // 2. Determinar la condición de la DDJJ
-        CondicionDdjjEnum condicion;
-    
-        if (todosRegistros.size() == registrosFiltrados.size()) {
-            condicion = CondicionDdjjEnum.OFICIAL;  // Todos válidos
-        } else {
-            condicion = CondicionDdjjEnum.PARCIAL;  // Algunos excluidos
-        }
-    
+        // 2. Determinar el tipo de DDJJ basado en los estados de los registros
+        CondicionDdjjEnum condicion = determinarTipoDdjjDesdeRegistros(todosRegistros);
         ddjj.setCondicionDdjj(condicion);
 
-        // 3. Caso CREACIÓN - Inicializa y establece relaciones
+        // 3. Filtrar registros según el tipo de DDJJ
+        List<RegistroMensual> registrosFiltrados = filtrarRegistrosPorTipoDdjj(todosRegistros, condicion);
+
+        // 4. Validar que haya al menos un registro válido
+        if (registrosFiltrados.isEmpty()) {
+            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ. " +
+                    "Para DDJJ OFICIAL todos los registros deben estar COMPLETADOS. " +
+                    "Para DDJJ FUERA_DE_TERMINO todos los registros deben estar REGULARIZADOS.");
+        }
+
+        System.out.println("=== DEBUG CREACIÓN DDJJ ===");
+        System.out.println("Total registros solicitados: " + todosRegistros.size());
+        System.out.println("Registros válidos después de filtrar: " + registrosFiltrados.size());
+        System.out.println("Tipo DDJJ determinado: " + condicion);
+        System.out.println("Estados encontrados en registros:");
+        todosRegistros
+                .forEach(rm -> System.out.println(" - Registro " + rm.getId() + ": " + rm.getEstadoFacturacion()));
+        System.out.println("===========================");
+
+        // 5. Caso CREACIÓN - Inicializa y establece relaciones
         if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
 
@@ -382,7 +383,7 @@ public class DdjjService {
             return;
         }
 
-        // 4. Caso EDICIÓN (código existente corregido)
+        // 6. Caso EDICIÓN (código existente adaptado)
         Set<Long> nuevosIds = registrosFiltrados.stream()
                 .map(RegistroMensual::getId)
                 .collect(Collectors.toSet());
@@ -417,6 +418,74 @@ public class DdjjService {
         // GUARDA LOS CAMBIOS EN LOS REGISTROS
         if (!registrosToUpdate.isEmpty()) {
             registroMensualRepository.saveAll(registrosToUpdate);
+        }
+    }
+
+    /**
+     * Determina el tipo de DDJJ basado en los estados de los registros
+     */
+    private CondicionDdjjEnum determinarTipoDdjjDesdeRegistros(List<RegistroMensual> registros) {
+        // Contar registros por estado
+        long completados = registros.stream()
+                .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.COMPLETADO)
+                .count();
+
+        long regularizados = registros.stream()
+                .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.REGULARIZADO)
+                .count();
+
+        long pendientes = registros.stream()
+                .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.PENDIENTE ||
+                        rm.getEstadoFacturacion() == null)
+                .count();
+
+        System.out.println("=== DEBUG DETERMINACIÓN TIPO DDJJ ===");
+        System.out.println("COMPLETADO: " + completados);
+        System.out.println("REGULARIZADO: " + regularizados);
+        System.out.println("PENDIENTE: " + pendientes);
+        System.out.println("Total registros: " + registros.size());
+
+        // Validar que no haya mezcla de COMPLETADO y REGULARIZADO
+        if (completados > 0 && regularizados > 0) {
+            throw new IllegalArgumentException(
+                    "No se puede crear una DDJJ con mezcla de registros COMPLETADOS y REGULARIZADOS. " +
+                            "Todos los registros deben ser del mismo tipo.");
+        }
+
+        // Determinar tipo de DDJJ
+        if (completados > 0) {
+            System.out.println("Tipo determinado: OFICIAL");
+            return CondicionDdjjEnum.OFICIAL;
+        } else if (regularizados > 0) {
+            System.out.println("Tipo determinado: FUERA_DE_TERMINO");
+            return CondicionDdjjEnum.FUERA_DE_TERMINO;
+        } else {
+            throw new IllegalArgumentException("No hay registros válidos. " +
+                    "Para DDJJ OFICIAL todos los registros deben estar COMPLETADOS. " +
+                    "Para DDJJ FUERA_DE_TERMINO todos los registros deben estar REGULARIZADOS.");
+        }
+    }
+
+    /**
+     * Filtra registros según el tipo de DDJJ
+     */
+    private List<RegistroMensual> filtrarRegistrosPorTipoDdjj(List<RegistroMensual> registros,
+            CondicionDdjjEnum tipoDdjj) {
+        switch (tipoDdjj) {
+            case OFICIAL:
+                // Solo registros COMPLETADO (excluye PENDIENTE y REGULARIZADO)
+                return registros.stream()
+                        .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.COMPLETADO)
+                        .collect(Collectors.toList());
+
+            case FUERA_DE_TERMINO:
+                // Solo registros REGULARIZADO (excluye PENDIENTE y COMPLETADO)
+                return registros.stream()
+                        .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.REGULARIZADO)
+                        .collect(Collectors.toList());
+
+            default:
+                throw new IllegalArgumentException("Tipo de DDJJ no soportado: " + tipoDdjj);
         }
     }
 

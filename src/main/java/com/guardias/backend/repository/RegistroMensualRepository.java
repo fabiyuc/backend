@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.RegistroMensual;
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 
@@ -99,11 +100,12 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
            "AND rm.mes = :mes " +
            "AND rm.anio = :anio " +
            "AND rm.quincena = :quincena " +
-           "AND rm.facturasCompletas = false " +
+           "AND rm.estadoFacturacion = :estado " +
            "AND rm.activo = true")
     List<RegistroMensual> findRegistrosIncompletos(
             @Param("efectorId") Long efectorId,
             @Param("mes") MesesEnum mes,
             @Param("anio") int anio,
-            @Param("quincena") QuincenaEnum quincena);
+            @Param("quincena") QuincenaEnum quincena,
+            @Param("estado") EstadoFacturacionEnum estado);
 }

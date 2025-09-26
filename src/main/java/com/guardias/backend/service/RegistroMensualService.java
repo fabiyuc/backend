@@ -35,6 +35,7 @@ import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.SumaHoras;
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -389,7 +390,7 @@ public class RegistroMensualService {
                 registroMensual.setAsistencial(asistencialService.findById(idAsistencial).get());
                 registroMensual.setEfector(efectorService.findById(idEfector));
                 registroMensual.setActivo(true);
-                registroMensual.setFacturasCompletas(false);
+                registroMensual.setEstadoFacturacion(EstadoFacturacionEnum.PENDIENTE);
 
                 // Creo SumaHoras vacio
                 SumaHoras horas = new SumaHoras();
@@ -704,7 +705,7 @@ public class RegistroMensualService {
                 dto.setMes(rm.getMes());
                 dto.setAnio(rm.getAnio());
                 dto.setQuincena(rm.getQuincena());
-                dto.setFacturasCompletas(rm.getFacturasCompletas());
+                dto.setEstadoFacturacion(rm.getEstadoFacturacion());
 
                 // Asistencial
                 if (rm.getAsistencial() != null) {
@@ -885,7 +886,7 @@ public class RegistroMensualService {
 
         public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
 
-                List<RegistroMensual> registrosMensuales = registroMensualRepository.findRegistrosIncompletos(efectorId, mes, anio, quincena);
+                List<RegistroMensual> registrosMensuales = registroMensualRepository.findRegistrosIncompletos(efectorId, mes, anio, quincena, EstadoFacturacionEnum.PENDIENTE);
 
                 return registrosMensuales.stream()
                         .filter(RegistroMensual::isActivo)

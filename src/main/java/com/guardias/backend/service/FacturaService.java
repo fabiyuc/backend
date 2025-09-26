@@ -534,6 +534,10 @@ public class FacturaService {
     }
 
     public void actualizarEstadoFacturasDespuesDeEliminar(List<RegistroMensual> registrosAfectados) {
+
+        // Obtener la fecha actual para determinar si estamos dentro o fuera de término
+        LocalDate fechaActual = LocalDate.now();
+
         for (RegistroMensual registro : registrosAfectados) {
             BigDecimal montoTotalEsperado = registro.getTotalHoras().getMontoTotal();
 
@@ -547,12 +551,56 @@ public class FacturaService {
 
             // Verificar si quedan facturas y si completan el monto
             boolean quedanFacturas = montoFacturasExistentes.compareTo(BigDecimal.ZERO) > 0;
-            boolean completas = quedanFacturas && montoFacturasExistentes.compareTo(montoTotalEsperado) == 0;
+            boolean facturasCompletas  = quedanFacturas && montoFacturasExistentes.compareTo(montoTotalEsperado) == 0;
 
-            registro.setFacturasCompletas(completas);
+            // Determinar si estamos dentro o fuera del plazo
+            boolean esFueraDeTermino = determinarSiEsFueraDeTerminoParaRegistro(registro, fechaActual);
+
+            // Determinar el nuevo estado según el enum
+            EstadoFacturacionEnum nuevoEstado;
+
+            if (!quedanFacturas) {
+                // No hay facturas activas → PENDIENTE
+                nuevoEstado = EstadoFacturacionEnum.PENDIENTE;
+            } else if (facturasCompletas) {
+                // Hay facturas y están completas → determinar si es a tiempo o fuera de tiempo
+                nuevoEstado = esFueraDeTermino ? 
+                EstadoFacturacionEnum.REGULARIZADO : EstadoFacturacionEnum.COMPLETADO;
+            } else {
+                // Hay facturas pero no completan el monto → PENDIENTE
+                nuevoEstado = EstadoFacturacionEnum.PENDIENTE;
+            }
+
+            registro.setEstadoFacturacion(nuevoEstado);
+
+            System.out.println("=== DEBUG ELIMINACIÓN FACTURA ===");
+            System.out.println("Registro ID: " + registro.getId());
+            System.out.println("Monto esperado: " + montoTotalEsperado);
+            System.out.println("Monto facturas existentes: " + montoFacturasExistentes);
+            System.out.println("Quedan facturas: " + quedanFacturas);
+            System.out.println("Facturas completas: " + facturasCompletas);
+            System.out.println("Fecha actual: " + fechaActual);
+            System.out.println("Es fuera de término: " + esFueraDeTermino);
+            System.out.println("Nuevo estado: " + nuevoEstado);
+            System.out.println("================================");
         }
 
         registroMensualService.saveAll(registrosAfectados);
     }
+
+    /**
+    * Determina si para un registro específico estamos fuera del término
+    */
+    private boolean determinarSiEsFueraDeTerminoParaRegistro(RegistroMensual registro, LocalDate fechaActual) {
+        try {
+            LocalDate fechaLimite = calcularFechaLimiteSegunQuincena(registro);
+            return fechaActual.isAfter(fechaLimite);
+        } catch (Exception e) {
+            System.err.println("Error al determinar fecha límite para registro " + registro.getId() + ": " + e.getMessage());
+            return false; // Por defecto, asumir dentro del término
+        }
+    }
+
+
 
 }
