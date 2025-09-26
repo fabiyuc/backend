@@ -9,13 +9,14 @@ public enum RolNombre {
     ROLE_HOSPITAL
 }
 
-/* otros roles:
-referente hospitalario
-referente regional
-director medico
-referente ministerio
-
-ya estan:
-profesional = ROLE_USER
-administrador = ROLE_ADMIN
+/*
+ * otros roles:
+ * referente hospitalario
+ * referente regional
+ * director medico
+ * referente ministerio
+ * 
+ * ya estan:
+ * profesional = ROLE_USER
+ * administrador = ROLE_ADMIN
  */

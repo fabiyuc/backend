@@ -47,7 +47,7 @@ public class Notificacion {
     @Column(columnDefinition = "VARCHAR(80)")
     private String detalle;
 
-    @Column(columnDefinition = "VARCHAR(100)")
+    @Column(columnDefinition = "VARCHAR(255)")
     private String url;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
@@ -57,7 +57,7 @@ public class Notificacion {
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "notificacion_efector", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "efector_id"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nombre", "autoridades", "domicilio", "telefono",
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
             "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
             "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
             "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs" })

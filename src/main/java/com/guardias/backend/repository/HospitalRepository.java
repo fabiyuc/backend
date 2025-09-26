@@ -14,46 +14,46 @@ import com.guardias.backend.entity.Hospital;
 @Repository
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
 
-    Optional<Hospital> findByNombre(String nombre);
+        Optional<Hospital> findByNombre(String nombre);
 
-    Optional<List<Hospital>> findByActivoTrue();
+        Optional<List<Hospital>> findByActivoTrue();
 
-    Optional<Hospital> findById(Long id);
+        Optional<Hospital> findById(Long id);
 
-    @Query("SELECT h FROM Hospital h WHERE h.admitePasiva = true AND activo = true")
-    List<Hospital> findByAdmitePasiva();
+        @Query("SELECT h FROM Hospital h WHERE h.admitePasiva = true AND activo = true")
+        List<Hospital> findByAdmitePasiva();
 
-    boolean existsById(Long id);
+        boolean existsById(Long id);
 
-    boolean existsByIdAndActivoTrue(Long idHospital);
+        boolean existsByIdAndActivoTrue(Long idHospital);
 
-    boolean existsByNombre(String nombre);
+        boolean existsByNombre(String nombre);
 
-    List<Hospital> findByActivo(boolean activo);
+        List<Hospital> findByActivo(boolean activo);
 
-    @Query("SELECT h FROM Hospital h WHERE h.nivelComplejidad = ?1")
-    List<Hospital> findHospitalesPorNivel(int nivelComplejidad);
+        @Query("SELECT h FROM Hospital h WHERE h.nivelComplejidad = ?1")
+        List<Hospital> findHospitalesPorNivel(int nivelComplejidad);
 
-    @Query("SELECT h FROM Hospital h WHERE h.nivelComplejidad = ?1 AND h.nombre <> ?2")
-    List<Hospital> findHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir);
+        @Query("SELECT h FROM Hospital h WHERE h.nivelComplejidad = ?1 AND h.nombre <> ?2")
+        List<Hospital> findHospitalesPorNivelExcluyendo(int nivelComplejidad, String nombreAExcluir);
 
-    Optional<Hospital> findByIdAndActivoTrue(Long id);
+        Optional<Hospital> findByIdAndActivoTrue(Long id);
 
-    @Query("SELECT h.id FROM Hospital h WHERE h.id IN :ids")
-    List<Long> findValidIds(List<Long> ids);
+        @Query("SELECT h.id FROM Hospital h WHERE h.id IN :ids")
+        List<Long> findValidIds(List<Long> ids);
 
-    @Query("SELECT new com.guardias.backend.dto.servicio.ServicioSummaryDto(s.id, s.descripcion) " +
-            "FROM Hospital h JOIN h.servicios s " +
-            "WHERE h.id = :idHospital AND s.activo = true")
-    List<ServicioSummaryDto> findActiveServiciosByHospitalId(@Param("idHospital") Long idHospital);
+        @Query("SELECT new com.guardias.backend.dto.servicio.ServicioSummaryDto(s.id, s.descripcion) " +
+                        "FROM Hospital h JOIN h.servicios s " +
+                        "WHERE h.id = :idHospital AND s.activo = true")
+        List<ServicioSummaryDto> findActiveServiciosByHospitalId(@Param("idHospital") Long idHospital);
 
-    @Query("SELECT h FROM Hospital h " +
-            "JOIN h.legajos l " +
-            "JOIN l.persona p " +
-            "JOIN p.usuarios u " +
-            "WHERE u.id = :idUsuario AND h.activo = true AND l.activo = true AND u.activo = true " +
-            "ORDER BY l.fechaInicio DESC")
-    Optional<Hospital> findHospitalByUsuarioId(@Param("idUsuario") Long idUsuario);
+        @Query("SELECT h FROM Hospital h " +
+                        "JOIN h.legajos l " +
+                        "JOIN l.persona p " +
+                        "JOIN p.usuarios u " +
+                        "WHERE u.id = :idUsuario AND h.activo = true AND l.activo = true AND u.activo = true " +
+                        "ORDER BY l.fechaInicio DESC")
+        Optional<Hospital> findHospitalByUsuarioId(@Param("idUsuario") Long idUsuario);
 
-    List<Hospital> findByNombreIn(List<String> nombres);
+        List<Hospital> findByNombreIn(List<String> nombres);
 }
