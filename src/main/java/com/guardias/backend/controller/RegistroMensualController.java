@@ -1,10 +1,12 @@
 package com.guardias.backend.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
@@ -359,7 +362,7 @@ public class RegistroMensualController {
         try {
             List<RegistroMensualListDto> registros = registroMensualService
                     .findByTipoGuardiaCfAndServicio(anio, mesEnum, idEfector,
-                            idServicio,quincenaEnum);
+                            idServicio, quincenaEnum);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -381,7 +384,7 @@ public class RegistroMensualController {
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
-                    .findByTipoGuardiaCf(anio, mesEnum, idEfector,quincenaEnum);
+                    .findByTipoGuardiaCf(anio, mesEnum, idEfector, quincenaEnum);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -392,18 +395,19 @@ public class RegistroMensualController {
 
     @GetMapping("/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
     public ResponseEntity<?> getMontoTotalByQuincena(
-        @PathVariable("idAsistencial") Long idAsistencial,
-        @PathVariable("idEfector") Long idEfector,
-        @PathVariable("quincena") String quincena,
-        @PathVariable("mes") String mes,
-        @PathVariable("anio") int anio) {
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("quincena") String quincena,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
 
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
         MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
 
         try {
-            BigDecimal monto = registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector, quincenaEnum, mesEnum, anio);
-  
+            BigDecimal monto = registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector, quincenaEnum,
+                    mesEnum, anio);
+
             return new ResponseEntity<>(monto, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -419,16 +423,50 @@ public class RegistroMensualController {
             @PathVariable String mes,
             @PathVariable int anio,
             @PathVariable String quincena) {
-        
+
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum, anio, quincenaEnum);
-            
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum,
+                    anio, quincenaEnum);
+
             return ResponseEntity.ok(registros);
-            
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
         }
     }
+
+    @GetMapping("/fuera-de-termino/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTermino(idEfector,
+                    mesEnum, anio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
+    @GetMapping("/existen-fuera-de-termino/{idEfector}")
+    public ResponseEntity<Boolean> existenRegistrosFueraDeTermino(
+            @PathVariable Long idEfector,
+            @PathVariable LocalDate fechaActual) {
+
+        try {
+            boolean existen = registroMensualService.existenRegistrosFueraDeTermino(idEfector, fechaActual);
+            return ResponseEntity.ok(existen);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
 }
