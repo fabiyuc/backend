@@ -455,6 +455,25 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/fuera-de-termino-por-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable Long idServicio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoPorServicio(idEfector,
+                    mesEnum, anio, idServicio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
     @GetMapping("/existen-fuera-de-termino/{idEfector}")
     public ResponseEntity<Boolean> existenRegistrosFueraDeTermino(
             @PathVariable Long idEfector,

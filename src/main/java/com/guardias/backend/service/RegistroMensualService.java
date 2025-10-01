@@ -941,6 +941,35 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
+        public List<RegistroMensualListDto> findRegistrosFueraDeTerminoPorServicio(Long efectorId, MesesEnum mes, int anio, long idServicio) {
+
+                // Lista de estados que queremos buscar
+                List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
+
+                // Buscar registros con los estados especificados
+                List<RegistroMensual> registrosMensuales = registroMensualRepository
+                                .findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
+
+                return registrosMensuales.stream()
+                                .filter(RegistroMensual::isActivo)
+                                .map(rm -> {
+                                        List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                                                        .stream()
+                                                        .filter(actividad -> actividad.isActivo()
+                                                                && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                                                && actividad.getServicio().getId().equals(idServicio))
+                                                        .collect(Collectors.toList());
+
+                                        // Convertir a DTO usando tu método existente
+                                        return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                                })
+                                // Si quieres excluir DTOs sin actividades, mantén esta línea:
+                                .filter(dto -> !dto.getRegistroActividad().isEmpty())
+                                .collect(Collectors.toList());
+        }
+
         public boolean existenRegistrosFueraDeTermino(Long efectorId, LocalDate fechaActual) {
                 // Calcular mes anterior manteniendo el mismo año
                 LocalDate mesAnterior = fechaActual.minusMonths(1);
