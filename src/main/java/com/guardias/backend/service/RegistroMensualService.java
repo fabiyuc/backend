@@ -990,4 +990,13 @@ public class RegistroMensualService {
                 
         }
 
+        public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+
+                List<RegistroMensual> lista = registroMensualRepository
+                                .findRegistrosCompletos(efectorId, mes, anio, quincena, EstadoFacturacionEnum.COMPLETADO);
+
+                return !lista.isEmpty();           
+                
+        }
+
 }

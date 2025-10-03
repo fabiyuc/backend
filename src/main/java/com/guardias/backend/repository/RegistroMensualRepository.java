@@ -122,4 +122,18 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("anio") int anio,
                         @Param("estados") List<EstadoFacturacionEnum> estados);
 
+        @Query("SELECT rm FROM registrosMensuales rm " +
+                        "WHERE rm.efector.id = :efectorId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND rm.quincena = :quincena " +
+                        "AND rm.estadoFacturacion = :estado " +
+                        "AND rm.activo = true")
+        List<RegistroMensual> findRegistrosCompletos(
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("quincena") QuincenaEnum quincena,
+                        @Param("estado") EstadoFacturacionEnum estado);
+
 }

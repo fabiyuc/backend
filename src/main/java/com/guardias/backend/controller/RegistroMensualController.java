@@ -488,4 +488,22 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/existen-completos/{idEfector}/{quincena}")
+    public ResponseEntity<Boolean> existenAutorizados(
+            @PathVariable Long idEfector,
+             @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable String quincena) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            boolean existen = registroMensualService.existenCompletos(idEfector, mesEnum, anio, quincenaEnum);
+            return ResponseEntity.ok(existen);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
 }
