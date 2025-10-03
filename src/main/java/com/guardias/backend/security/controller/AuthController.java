@@ -303,4 +303,47 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    // Endpoint para usuario hospital/administrativo
+    @GetMapping("/detailPersonBasicPanel/hospital")
+    public ResponseEntity<PersonBasicPanelDto> obtenerPerfilHospital(Principal principal) {
+        String username = principal.getName();
+        
+        // Verificar que el usuario tenga rol de hospital
+        Usuario usuario = usuarioService.findByNombreUsuario(username)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+        // Validar que tenga rol de hospital o admin
+        boolean hasHospitalRole = usuario.getRoles().stream()
+            .anyMatch(rol -> rol.getRolNombre() == RolNombre.ROLE_HOSPITAL);
+    
+        if (!hasHospitalRole) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    
+        PersonBasicPanelDto dto = personService.convertirAPersonaBasicaPanelDTO(usuario.getPerson());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    // Endpoint para usuario profesional
+    @GetMapping("/detailPersonBasicPanel/professional")
+    public ResponseEntity<PersonBasicPanelDto> obtenerPerfilProfessional(Principal principal) {
+        String username = principal.getName();
+        
+        // Verificar que el usuario tenga rol de profesional
+        Usuario usuario = usuarioService.findByNombreUsuario(username)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            
+        // Validar que tenga rol de usuario/profesional
+        boolean hasUserRole = usuario.getRoles().stream()
+            .anyMatch(rol -> rol.getRolNombre() == RolNombre.ROLE_USER);
+    
+        if (!hasUserRole) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    
+        PersonBasicPanelDto dto = personService.convertirAPersonaBasicaPanelDTO(usuario.getPerson());
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
 }
