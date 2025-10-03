@@ -50,7 +50,7 @@ public class CronogramaDefinitivoController {
         return new ResponseEntity(cronogramaDefinitivo, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    /* @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
         ResponseEntity<?> respuestaValidaciones = cronogramaDefinitivoService.validations(cronogramaDefinitivoDto);
 
@@ -63,10 +63,10 @@ public class CronogramaDefinitivoController {
         } else {
             return respuestaValidaciones;
         }
-    }
+    } */
 
-    @PostMapping("/createCF")
-    public ResponseEntity<?> createCF(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
         try {
         
             ResponseEntity<?> respuestaValidaciones = cronogramaDefinitivoService.validations(cronogramaDefinitivoDto);
@@ -75,7 +75,7 @@ public class CronogramaDefinitivoController {
             }
 
             CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
-                .createUpdateCF(cronogramaDefinitivoDto);
+                .createUpdateDefinitivo(cronogramaDefinitivoDto);
         
             cronogramaDefinitivoService.save(cronogramaDefinitivo);
             return new ResponseEntity(new Mensaje("Cronograma definitivo creado"), HttpStatus.OK);

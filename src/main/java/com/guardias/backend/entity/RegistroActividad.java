@@ -94,14 +94,14 @@ public class RegistroActividad {
         @JoinColumn(name = "usuarioIngreso")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
                         "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial",
-                        "noAsistencial", "ddjjsDirector" })
+                        "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH", "observacionesDdjj" })
         Usuario usuarioIngreso;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "usuarioEgreso")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "nombre", "nombreUsuario", "email",
                         "password", "roles", "registrosIngresos", "registrosEgresos", "person", "asistencial",
-                        "noAsistencial", "ddjjsDirector" })
+                        "noAsistencial", "ddjjsDirector", "ddjjsDirectorDPH", "observacionesDdjj" })
         Usuario usuarioEgreso;
 
         @Temporal(TemporalType.DATE)
