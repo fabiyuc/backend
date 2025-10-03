@@ -304,7 +304,7 @@ public class AuthController {
         }
     }
 
-    // Endpoint para usuario hospital/administrativo
+    // Endpoint para usuario hospital
     @GetMapping("/detailPersonBasicPanel/hospital")
     public ResponseEntity<PersonBasicPanelDto> obtenerPerfilHospital(Principal principal) {
         String username = principal.getName();
