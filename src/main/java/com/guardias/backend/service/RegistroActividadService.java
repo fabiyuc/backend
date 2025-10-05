@@ -670,7 +670,10 @@ public class RegistroActividadService {
         predicates.add(cb.equal(root.get("efector").get("id"), idEfector));
         predicates.add(cb.equal(root.get("mes"), mesEnum));
         predicates.add(cb.equal(root.get("anio"), anio));
-        predicates.add(cb.equal(root.get("tipoGuardia"), tipo));
+        // Comparar el atributo 'nombre' de la entidad TipoGuardia (que es un
+        // TipoGuardiaEnum)
+        predicates.add(cb.equal(root.get("tipoGuardia").get("nombre"), tipo));
+        // predicates.add(cb.equal(root.get("tipoGuardia"), tipo));
         predicates.add(cb.equal(root.get("estadoDdjjDirector"), EstadoDdjjEnum.APROBADO));
 
         cq.select(root.get("id")).where(predicates.toArray(new Predicate[0]));
