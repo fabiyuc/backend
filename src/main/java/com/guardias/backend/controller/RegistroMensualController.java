@@ -472,13 +472,15 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/existen-fuera-de-termino/{idEfector}/{fechaActual}")
+    @GetMapping("/existen-fuera-de-termino/{idEfector}/{mes}/{anio}")
     public ResponseEntity<Boolean> existenRegistrosFueraDeTermino(
             @PathVariable Long idEfector,
-            @PathVariable LocalDate fechaActual) {
+            @PathVariable String mes,
+            @PathVariable int anio) {
 
         try {
-            boolean existen = registroMensualService.existenRegistrosFueraDeTermino(idEfector, fechaActual);
+             MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            boolean existen = registroMensualService.existenRegistrosFueraDeTermino(idEfector, mesEnum, anio);
             return ResponseEntity.ok(existen);
 
         } catch (Exception e) {

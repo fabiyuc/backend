@@ -1029,13 +1029,8 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public boolean existenRegistrosFueraDeTermino(Long efectorId, LocalDate fechaActual) {
-                // Calcular mes anterior manteniendo el mismo año
-                LocalDate mesAnterior = fechaActual.minusMonths(1);
-
-                // Usar el método que ya existe en tu enum
-                MesesEnum mesEnum = MesesEnum.fromNumeroMes(mesAnterior.getMonthValue());
-                int anio = mesAnterior.getYear();
+        public boolean existenRegistrosFueraDeTermino(Long efectorId, MesesEnum mes,
+                        int anio) {
 
                 // Lista de estados que queremos buscar
                 List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
@@ -1043,7 +1038,7 @@ public class RegistroMensualService {
                                 EstadoFacturacionEnum.REGULARIZADO);
 
                 List<RegistroMensual> lista = registroMensualRepository
-                                .findRegistrosFueraDeTermino(efectorId, mesEnum, anio, estadosBuscados);
+                                .findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
 
                 return !lista.isEmpty();
 
