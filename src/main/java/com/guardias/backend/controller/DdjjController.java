@@ -23,6 +23,7 @@ import com.guardias.backend.dto.ddjj.DdjjListDto;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.security.entity.Usuario;
@@ -470,7 +471,7 @@ public class DdjjController {
     }
 
     @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
-    public ResponseEntity<List<DdjjListDto>> listCfAnd(
+    public ResponseEntity<List<DdjjListDto>> listCf(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector,
@@ -482,6 +483,27 @@ public class DdjjController {
         try {
             List<DdjjListDto> ddjjs = ddjjService
                     .findCf(anio, mesEnum, idEfector, quincenaEnum);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error general: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity(new Mensaje("Ddjj de CF no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/listCfFueraTermino/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<DdjjListDto>> listCfFueraTermino(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<DdjjListDto> ddjjs = ddjjService
+                    .findCfFueraTermino(anio, mesEnum, idEfector, CondicionDdjjEnum.FUERA_DE_TERMINO);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {

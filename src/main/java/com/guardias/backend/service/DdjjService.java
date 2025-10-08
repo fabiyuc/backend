@@ -919,6 +919,49 @@ public class DdjjService {
         return result;
     }
 
+    public List<DdjjListDto> findCfFueraTermino(int anio, MesesEnum mes, Long idEfector, CondicionDdjjEnum condicionDdjj) {
+
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardiaAndCondicionDdjj(
+                anio, mes, idEfector, TipoGuardiaEnum.CONTRAFACTURA, condicionDdjj);
+
+        if (ddjjs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DdjjListDto> result = ddjjs.stream()
+                .map(ddjj -> {
+
+                    // Filtrar solo registros mensuales activos
+                    List<RegistroMensual> registrosActivos = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo)
+                            .map(rm -> {
+
+                                // Filtrar solo regActiv activas
+                                List<RegistroActividad> actividadesActivas = rm.getRegistroActividad().stream()
+                                        .filter(actividad -> {
+                                            boolean activo = actividad.isActivo();
+                                            boolean guardiaCompleta = actividad.getEsGuardiaIncompleta() == null ||
+                                                    !actividad.getEsGuardiaIncompleta();
+
+                                            return activo && guardiaCompleta;
+                                        })
+                                        .collect(Collectors.toList());
+
+                                rm.setRegistroActividad(actividadesActivas);
+                                return rm;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Solo registros con actividades
+                            .collect(Collectors.toList());
+
+                    ddjj.setRegistrosMensuales(registrosActivos);
+                    return convertirADdjjListDto(ddjj);
+                })
+                .filter(dto -> !dto.getRegistrosMensuales().isEmpty()) // Solo DTOs con registros
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
     private DdjjListDto convertirADdjjListDto(Ddjj ddjj) {
         System.out.println("Convertiendo DDJJ ID: " + ddjj.getId() + " a DTO");
 

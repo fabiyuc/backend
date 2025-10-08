@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -96,6 +97,19 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                 @Param("idEfector") Long idEfector,
                 @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
                 @Param("quincena") QuincenaEnum quincena);
+
+        @Query("SELECT DISTINCT d FROM Ddjjs d " +
+                "LEFT JOIN d.registrosMensuales rm " +
+                "WHERE d.anio = :anio AND d.mes = :mes AND d.efector.id = :idEfector " +
+                "AND d.tipoGuardia.nombre = :tipoGuardia " +
+                "AND d.condicionDdjj = :condicionDdjj " +
+                "AND d.activo = true ")
+        List<Ddjj> findByAnioMesEfectorAndTipoGuardiaAndCondicionDdjj(
+                @Param("anio") int anio,
+                @Param("mes") MesesEnum mes,
+                @Param("idEfector") Long idEfector,
+                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                @Param("condicionDdjj") CondicionDdjjEnum condicionDdjj);
 
         @Query("SELECT DISTINCT d FROM Ddjjs d " +
                         "JOIN d.registrosMensuales rm " +
