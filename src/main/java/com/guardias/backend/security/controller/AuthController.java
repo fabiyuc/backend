@@ -241,6 +241,28 @@ public class AuthController {
 
     }
 
+    //devuelve true o false segun validacion de Password
+    @PostMapping("/validate-password")
+    public ResponseEntity<Boolean> validatePasswordSimple(@Valid @RequestBody LoginUsuario loginUsuario,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginUsuario.getNombreUsuario(),
+                            loginUsuario.getPassword()));
+
+            return new ResponseEntity<>(true, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     /* @PreAuthorize("hasRole('ADMIN')") */
     @GetMapping("/list")
     public ResponseEntity<List<Usuario>> list() {
@@ -308,19 +330,19 @@ public class AuthController {
     @GetMapping("/detailPersonBasicPanel/hospital")
     public ResponseEntity<PersonBasicPanelDto> obtenerPerfilHospital(Principal principal) {
         String username = principal.getName();
-        
+
         // Verificar que el usuario tenga rol de hospital
         Usuario usuario = usuarioService.findByNombreUsuario(username)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         // Validar que tenga rol de hospital o admin
         boolean hasHospitalRole = usuario.getRoles().stream()
-            .anyMatch(rol -> rol.getRolNombre() == RolNombre.ROLE_HOSPITAL);
-    
+                .anyMatch(rol -> rol.getRolNombre() == RolNombre.ROLE_HOSPITAL);
+
         if (!hasHospitalRole) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-    
+
         PersonBasicPanelDto dto = personService.convertirAPersonaBasicaPanelDTO(usuario.getPerson());
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -329,19 +351,19 @@ public class AuthController {
     @GetMapping("/detailPersonBasicPanel/professional")
     public ResponseEntity<PersonBasicPanelDto> obtenerPerfilProfessional(Principal principal) {
         String username = principal.getName();
-        
+
         // Verificar que el usuario tenga rol de profesional
         Usuario usuario = usuarioService.findByNombreUsuario(username)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         // Validar que tenga rol de usuario/profesional
         boolean hasUserRole = usuario.getRoles().stream()
-            .anyMatch(rol -> rol.getRolNombre() == RolNombre.ROLE_USER);
-    
+                .anyMatch(rol -> rol.getRolNombre() == RolNombre.ROLE_USER);
+
         if (!hasUserRole) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-    
+
         PersonBasicPanelDto dto = personService.convertirAPersonaBasicaPanelDTO(usuario.getPerson());
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
