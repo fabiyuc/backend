@@ -85,7 +85,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("horaEgreso") String horaEgreso);
 
         @Query(nativeQuery = true, value = """
-                        SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
+                        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
                         FROM distribuciones_guardias d
                         WHERE d.id_persona = :idAsistencial
                         AND d.id_efector = :idEfector

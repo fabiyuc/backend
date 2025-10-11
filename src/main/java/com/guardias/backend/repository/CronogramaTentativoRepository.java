@@ -38,7 +38,7 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
         Optional<List<CronogramaTentativo>> findByIdAsistencial(@Param("idAsistencial") Long idAsistencial);
 
         @Query(value = """
-                        SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
+                        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
                         FROM cronogramas_tentativos c
                         WHERE c.id_asistencial = :idAsistencial
                           AND c.id_efector = :idEfector
