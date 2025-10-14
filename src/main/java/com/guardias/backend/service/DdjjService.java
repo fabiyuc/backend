@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -178,40 +179,58 @@ public class DdjjService {
 
     }
 
+    //solo para CONTRAFACTURA sino retorna NULL
     private QuincenaEnum determinarQuincenaParaDdjj(DdjjDto ddjjDto) {
 
-        // Solo aplica quincena para CONTRAFACTURA (idTipoGuardia = 4)
-        if (ddjjDto.getIdTipoGuardia() != null && ddjjDto.getIdTipoGuardia() == 4L) {
-            return obtenerQuincenaDeRegistrosMensuales(ddjjDto.getIdRegistrosMensuales());
-        }
+        Optional<TipoGuardia> tipoGuardia = tipoGuardiaRepository.findById(ddjjDto.getIdTipoGuardia());
+        List<RegistroMensual> registros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
+        if (!registros.isEmpty() && tipoGuardia.isPresent() && tipoGuardia.get().getNombre() == TipoGuardiaEnum.CONTRAFACTURA) {   
+            return obtenerQuincenaDeRegistrosMensuales(registros);
+        }
         // Para otros tipos de guardia, retorna null
         return null;
     }
 
-    private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<Long> idsRegistrosMensuales) {
+    private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<RegistroMensual> registrosMensuales) {
 
-        if (idsRegistrosMensuales == null || idsRegistrosMensuales.isEmpty()) {
-            return null;
-        }
-
-        // Obtener todos los registros mensuales
-        List<RegistroMensual> registros = registroMensualRepository.findAllById(idsRegistrosMensuales);
-
-        if (registros.isEmpty()) {
-            return null;
-        }
-
-        // Verificar que todos tengan la misma quincena
-        QuincenaEnum quincena = registros.get(0).getQuincena();
-
-        for (RegistroMensual registro : registros) {
-            if (!Objects.equals(quincena, registro.getQuincena())) {
-                throw new IllegalArgumentException("Todos los registros mensuales deben tener la misma quincena");
+        // Verificar si todos los registros tienen la misma quincena
+        boolean quincenaConsistente = true;
+        QuincenaEnum quincenaComun = registrosMensuales.get(0).getQuincena();
+        for (RegistroMensual registro : registrosMensuales) {
+            if (!Objects.equals(quincenaComun, registro.getQuincena())) {
+                quincenaConsistente = false;
+                break;
             }
         }
 
-        return quincena;
+        // Si tienen misma quincena, evaluar condiciones temporales
+        if (quincenaConsistente) {
+            // Obtener mes y anio de registro mensual
+            MesesEnum mesComun = registrosMensuales.get(0).getMes();
+            int anioComun = registrosMensuales.get(0).getAnio();
+            // Obtener fecha actual del sistema
+            LocalDate fechaActual = LocalDate.now();
+            int mesSistema = fechaActual.getMonthValue();
+            int diaSistema = fechaActual.getDayOfMonth();
+            int anioSistema = fechaActual.getYear();
+
+            // Convertir mesComun (MesesEnum) a número de mes (1-12)
+            int mesRegistro = mesComun.ordinal() + 1; // Asumiendo MesesEnum es ENERO(0), FEBRERO(1), ..., DICIEMBRE(11)
+
+            // Determinar si el mes del registro es igual o anterior al del sistema
+            boolean mismoAnioMes = (anioComun == anioSistema && mesRegistro == mesSistema);
+            boolean mesAnterior = (anioComun < anioSistema) || (anioComun == anioSistema && mesRegistro < mesSistema);
+
+            // Determino quincena para registros con misma quincena
+            if (quincenaComun == QuincenaEnum.PRIMERA && mismoAnioMes && diaSistema < 20) {
+                return QuincenaEnum.PRIMERA;
+            } else if (quincenaComun == QuincenaEnum.SEGUNDA && mesAnterior && diaSistema < 10) {
+                return QuincenaEnum.SEGUNDA;
+            }
+        }
+        //devuelve fuera de termino para registros con diferente quincena
+        return QuincenaEnum.FUERA_DE_TERMINO;
     }
 
     private void validateRegistrosMensuales(List<Long> idsRegistros) {
@@ -333,10 +352,10 @@ public class DdjjService {
     }
 
     private void processRegistrosMensuales(Ddjj ddjj, DdjjDto ddjjDto) {
-        // 1. Carga batch de registros (1 query)
+        // 1. Carga de los registros mensuales
         List<RegistroMensual> todosRegistros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // 2. Determinar el tipo de DDJJ basado en los estados de los registros
+        // 2. Determina condicion Ddjj: cuenta estados (completados, regularizados, pendientes)
         CondicionDdjjEnum condicion = determinarTipoDdjjDesdeRegistros(todosRegistros);
         ddjj.setCondicionDdjj(condicion);
 
@@ -359,7 +378,7 @@ public class DdjjService {
                 .forEach(rm -> System.out.println(" - Registro " + rm.getId() + ": " + rm.getEstadoFacturacion()));
         System.out.println("===========================");
 
-        // 5. Caso CREACIÓN - Inicializa y establece relaciones
+        // 5. si ddjj nueva - Caso CREACIÓN - Inicializa y establece relaciones
         if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
 
@@ -383,7 +402,7 @@ public class DdjjService {
             return;
         }
 
-        // 6. Caso EDICIÓN (código existente adaptado)
+        // 6. si Caso EDICIÓN
         Set<Long> nuevosIds = registrosFiltrados.stream()
                 .map(RegistroMensual::getId)
                 .collect(Collectors.toSet());
@@ -422,7 +441,7 @@ public class DdjjService {
     }
 
     /**
-     * Determina el tipo de DDJJ basado en los estados de los registros
+     * Determina la condicion de la DDJJ
      */
     private CondicionDdjjEnum determinarTipoDdjjDesdeRegistros(List<RegistroMensual> registros) {
         // Contar registros por estado
