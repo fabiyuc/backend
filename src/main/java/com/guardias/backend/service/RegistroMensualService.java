@@ -1075,4 +1075,24 @@ public class RegistroMensualService {
                 efectorId, asistencialId, mes, anio);
     }
 
+    /**
+     * Busca registros por quincena específica
+     */
+    public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+            Long efectorId, Long asistencialId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+        return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                efectorId, asistencialId, mes, anio, quincena);
+    }
+
+    /**
+     * Busca registros pendientes
+     */
+    public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, 
+                                                        MesesEnum mes, int anio) {
+        return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio);
+    }
+
+
+   
+
 }

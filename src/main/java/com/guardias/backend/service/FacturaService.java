@@ -113,6 +113,265 @@ public class FacturaService {
         return new ResponseEntity(new Mensaje("valido en validation"), HttpStatus.OK);
     }
 
+    /**
+     * NUEVO: Determinar periodoCarga según fecha sistema vs fecha emisión
+     */
+    public QuincenaEnum determinarPeriodoCarga(FacturaDto facturaDto) {
+        LocalDate fechaSistema = LocalDate.now();
+        LocalDate fechaEmision = facturaDto.getFechaEmision();
+        
+        System.out.println("=== DEBUG PERIODO CARGA ===");
+        System.out.println("Fecha sistema: " + fechaSistema);
+        System.out.println("Fecha emisión: " + fechaEmision);
+        
+        // a. PRIMERA: fecha sistema < día 21 del mes de emisión
+        LocalDate limitePrimera = LocalDate.of(fechaEmision.getYear(), fechaEmision.getMonth(), 21);
+        if (fechaSistema.isBefore(limitePrimera)) {
+            System.out.println("Periodo carga: PRIMERA");
+            return QuincenaEnum.PRIMERA;
+        }
+        
+        // b. SEGUNDA: fecha sistema < día 5 del mes siguiente de emisión
+        LocalDate primerDiaMesSiguiente = fechaEmision.plusMonths(1).withDayOfMonth(1);
+        LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(5);
+        if (fechaSistema.isBefore(limiteSegunda)) {
+            System.out.println("Periodo carga: SEGUNDA");
+            return QuincenaEnum.SEGUNDA;
+        }
+        
+        // c. Si no cumple ninguna, es FUERA_DE_TERMINO
+        System.out.println("Periodo carga: FUERA_DE_TERMINO");
+        return QuincenaEnum.FUERA_DE_TERMINO;
+    }
+
+    /**
+     * NUEVO: Validar cantidad de facturas según periodoCarga
+     */
+    public ResponseEntity<?> validarCantidadFacturas(FacturaDto facturaDto, QuincenaEnum periodoCarga) {
+        try {
+            Long idRegistro = facturaDto.getIdRegistrosMensuales().get(0);
+            RegistroMensual registro = registroMensualService.findById(idRegistro)
+                .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
+            
+            int cantidadFacturas;
+            
+            if (periodoCarga == QuincenaEnum.PRIMERA || periodoCarga == QuincenaEnum.SEGUNDA) {
+                // Para PRIMERA o SEGUNDA: contar por quincena específica
+                cantidadFacturas = facturaRepository.countFacturasPorQuincena(
+                        registro.getEfector().getId(),
+                        registro.getAsistencial().getId(),
+                        registro.getMes(),
+                        registro.getAnio(),
+                        periodoCarga);
+            } else {
+                // Para FUERA_DE_TERMINO: contar facturas para registros pendientes
+                cantidadFacturas = facturaRepository.countFacturasParaRegistrosPendientes(
+                        registro.getEfector().getId(),
+                        registro.getAsistencial().getId(),
+                        registro.getMes(),
+                        registro.getAnio());
+            }
+            
+            System.out.println("=== DEBUG CANTIDAD FACTURAS ===");
+            System.out.println("Periodo carga: " + periodoCarga);
+            System.out.println("Cantidad facturas existentes: " + cantidadFacturas);
+            
+            if (cantidadFacturas >= 2) {
+                return new ResponseEntity(
+                    new Mensaje("Ya existen " + cantidadFacturas + " facturas para " + 
+                               registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga + ")"), 
+                    HttpStatus.BAD_REQUEST);
+            }
+            
+            return new ResponseEntity(new Mensaje("Validación cantidad OK"), HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Error validando cantidad: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * NUEVO: Validar montos según periodoCarga
+     */
+    public ResponseEntity<?> validarMontosFacturas(FacturaDto facturaDto, QuincenaEnum periodoCarga) {
+        try {
+            Long idRegistro = facturaDto.getIdRegistrosMensuales().get(0);
+            RegistroMensual registro = registroMensualService.findById(idRegistro)
+                .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
+            
+            BigDecimal montoFacturasExistentes;
+            BigDecimal montoRegistro;
+            
+            if (periodoCarga == QuincenaEnum.PRIMERA || periodoCarga == QuincenaEnum.SEGUNDA) {
+                // Para PRIMERA o SEGUNDA: usar quincena específica del registro
+                montoFacturasExistentes = facturaRepository.sumMontosFacturasPorQuincena(
+                        registro.getEfector().getId(),
+                        registro.getAsistencial().getId(),
+                        registro.getMes(),
+                        registro.getAnio(),
+                        periodoCarga);
+                
+                // El monto del registro es el del registro específico
+                montoRegistro = registro.getTotalHoras().getMontoTotal();
+            } else {
+                // Para FUERA_DE_TERMINO: usar registros pendientes
+                montoFacturasExistentes = facturaRepository.sumMontosFacturasParaRegistrosPendientes(
+                        registro.getEfector().getId(),
+                        registro.getAsistencial().getId(),
+                        registro.getMes(),
+                        registro.getAnio());
+                
+                // Sumar montos de TODOS los registros pendientes del periodo
+                montoRegistro = BigDecimal.ZERO;
+                List<RegistroMensual> registrosPendientes = registroMensualService.findRegistrosPendientes(
+                        registro.getEfector().getId(),
+                        registro.getAsistencial().getId(),
+                        registro.getMes(),
+                        registro.getAnio());
+                
+                for (RegistroMensual rm : registrosPendientes) {
+                    montoRegistro = montoRegistro.add(rm.getTotalHoras().getMontoTotal());
+                }
+            }
+            
+            // Validar que no exceda
+            BigDecimal sumaTotal = montoFacturasExistentes.add(facturaDto.getMonto());
+            
+            System.out.println("=== DEBUG VALIDACIÓN MONTOS ===");
+            System.out.println("Periodo carga: " + periodoCarga);
+            System.out.println("Monto facturas existentes: " + montoFacturasExistentes);
+            System.out.println("Monto nueva factura: " + facturaDto.getMonto());
+            System.out.println("Monto registro(s): " + montoRegistro);
+            System.out.println("Suma total: " + sumaTotal);
+            
+            if (sumaTotal.compareTo(montoRegistro) > 0) {
+                String mensajeError = String.format(
+                    "Monto excedido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s",
+                    periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal);
+                return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
+            }
+            
+            return new ResponseEntity(new Mensaje("Validación montos OK"), HttpStatus.OK);
+            
+        } catch (Exception e) {
+            return new ResponseEntity(new Mensaje("Error validando montos: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * NUEVO: Actualizar estado de facturación según periodoCarga
+     */
+    @Transactional
+    public void actualizarEstadoFacturacion(Factura factura, QuincenaEnum periodoCarga) {
+        RegistroMensual registroBase = factura.getRegistrosMensuales().get(0);
+        
+        BigDecimal montoFacturasExistentes;
+        BigDecimal montoRegistro;
+        List<RegistroMensual> registrosAActualizar;
+        
+        if (periodoCarga == QuincenaEnum.PRIMERA || periodoCarga == QuincenaEnum.SEGUNDA) {
+            // Para PRIMERA o SEGUNDA
+            montoFacturasExistentes = facturaRepository.sumMontosFacturasPorQuincena(
+                    registroBase.getEfector().getId(),
+                    registroBase.getAsistencial().getId(),
+                    registroBase.getMes(),
+                    registroBase.getAnio(),
+                    periodoCarga);
+            
+            montoRegistro = registroBase.getTotalHoras().getMontoTotal();
+            
+            registrosAActualizar = registroMensualService.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                    registroBase.getEfector().getId(),
+                    registroBase.getAsistencial().getId(),
+                    registroBase.getMes(),
+                    registroBase.getAnio(),
+                    periodoCarga);
+        } else {
+            // Para FUERA_DE_TERMINO
+            montoFacturasExistentes = facturaRepository.sumMontosFacturasParaRegistrosPendientes(
+                    registroBase.getEfector().getId(),
+                    registroBase.getAsistencial().getId(),
+                    registroBase.getMes(),
+                    registroBase.getAnio());
+            
+            registrosAActualizar = registroMensualService.findRegistrosPendientes(
+                    registroBase.getEfector().getId(),
+                    registroBase.getAsistencial().getId(),
+                    registroBase.getMes(),
+                    registroBase.getAnio());
+            
+            // Calcular monto total de registros pendientes
+            montoRegistro = BigDecimal.ZERO;
+            for (RegistroMensual rm : registrosAActualizar) {
+                montoRegistro = montoRegistro.add(rm.getTotalHoras().getMontoTotal());
+            }
+        }
+        
+        // Determinar estado según lógica de negocio
+        EstadoFacturacionEnum nuevoEstado;
+        
+        if (montoFacturasExistentes.compareTo(montoRegistro) < 0) {
+            nuevoEstado = EstadoFacturacionEnum.PENDIENTE;
+        } else {
+            if (periodoCarga == QuincenaEnum.FUERA_DE_TERMINO) {
+                nuevoEstado = EstadoFacturacionEnum.REGULARIZADO;
+            } else {
+                nuevoEstado = EstadoFacturacionEnum.COMPLETADO;
+            }
+        }
+        
+        // Actualizar registros
+        for (RegistroMensual rm : registrosAActualizar) {
+            rm.setEstadoFacturacion(nuevoEstado);
+            
+            System.out.println("=== DEBUG ACTUALIZACIÓN ESTADO ===");
+            System.out.println("Registro ID: " + rm.getId() + " - Quincena: " + rm.getQuincena());
+            System.out.println("Periodo carga: " + periodoCarga);
+            System.out.println("Monto registros: " + montoRegistro);
+            System.out.println("Monto facturas: " + montoFacturasExistentes);
+            System.out.println("Nuevo estado: " + nuevoEstado);
+            System.out.println("==================================");
+        }
+        
+        registroMensualService.saveAll(registrosAActualizar);
+    }
+
+
+    /**
+     * NUEVO: Determinar la fase de la creacion de la factura (PRIMERA, SEGUNDA o FUERA_DE_TERMINO)
+     */
+    public QuincenaEnum determinarFase(FacturaDto facturaDto, RegistroMensual registro) {
+        LocalDate fechaEmision = facturaDto.getFechaEmision();
+        int numeroMes = convertirMesANumero(registro.getMes());
+        int anio = registro.getAnio();
+        
+        QuincenaEnum quincenaRegistro = registro.getQuincena();
+        
+        if (quincenaRegistro == QuincenaEnum.PRIMERA) {
+            // PRIMERA quincena: carga de factura válida entre 1-20 del mismo mes
+            LocalDate inicio = LocalDate.of(anio, numeroMes, 1);
+            LocalDate fin = LocalDate.of(anio, numeroMes, 20);
+            
+            if (!fechaEmision.isBefore(inicio) && !fechaEmision.isAfter(fin)) {
+                return QuincenaEnum.PRIMERA;
+            }
+        } else if (quincenaRegistro == QuincenaEnum.SEGUNDA) {
+            // SEGUNDA quincena: válido entre 16 del mismo mes - 10 del siguiente mes
+            LocalDate inicio = LocalDate.of(anio, numeroMes, 16);
+            LocalDate fin = LocalDate.of(anio, numeroMes, 1).plusMonths(1).withDayOfMonth(10);
+            
+            if (!fechaEmision.isBefore(inicio) && !fechaEmision.isAfter(fin)) {
+                return QuincenaEnum.SEGUNDA;
+            }
+        }
+        
+        // Si no cumple con los rangos anteriores, es FUERA_DE_TERMINO
+        return QuincenaEnum.FUERA_DE_TERMINO;
+    }
+
+
     public ResponseEntity<?> validarCantidadFacturas(FacturaDto facturaDto) {
         // Obtener primer registro para tener mes/año/efector/asistencial
         Long idRegistro = facturaDto.getIdRegistrosMensuales().get(0);

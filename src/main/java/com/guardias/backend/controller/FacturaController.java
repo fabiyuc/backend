@@ -37,6 +37,7 @@ public class FacturaController {
     FacturaService facturaService;
     @Autowired
     RegistroMensualService registroMensualService;
+
     @GetMapping("/list")
     public ResponseEntity<List<Factura>> list() {
         List<Factura> facturasList = facturaService.findByActivoTrue()
@@ -71,38 +72,55 @@ public class FacturaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FacturaDto facturaDto) {
+        try {
+            System.out.println("=== INICIANDO CREACIÓN DE FACTURA ===");
 
-        // 1. Validaciones básicas
-       ResponseEntity<?> validacionesBasicas = facturaService.validations(facturaDto);
-        if (validacionesBasicas.getStatusCode() != HttpStatus.OK) 
-            return validacionesBasicas;
+            // 1. Validaciones básicas
+            ResponseEntity<?> validacionesBasicas = facturaService.validations(facturaDto);
+            if (validacionesBasicas.getStatusCode() != HttpStatus.OK) {
+                System.out.println("Validaciones básicas fallaron");
+                return validacionesBasicas;
+            }
+            System.out.println("✓ Validaciones básicas OK");
 
-        // 2. Validar cantidad de facturas (máximo 2)
-        ResponseEntity<?> validacionCantidad = facturaService.validarCantidadFacturas(facturaDto);
-        if (validacionCantidad.getStatusCode() != HttpStatus.OK)
-            return validacionCantidad;
+            // 2. Determinar periodoCarga (PRIMERA, SEGUNDA o FUERA_DE_TERMINO)
+            QuincenaEnum periodoCarga = facturaService.determinarPeriodoCarga(facturaDto);
+            System.out.println("✓ Periodo carga determinado: " + periodoCarga);
 
-        // 3. Validar montos (suma total por mes/año)
-        ResponseEntity<?> validacionMontos = facturaService.validarMontosFacturas(facturaDto);
-        if (validacionMontos.getStatusCode() != HttpStatus.OK)
-            return validacionMontos;
+            // 3. Validar cantidad de facturas según periodoCarga
+            ResponseEntity<?> validacionCantidad = facturaService.validarCantidadFacturas(facturaDto, periodoCarga);
+            if (validacionCantidad.getStatusCode() != HttpStatus.OK) {
+                System.out.println("Validación cantidad falló");
+                return validacionCantidad;
+            }
+            System.out.println("✓ Validación cantidad OK");
 
-        // 4. Determinar si es fuera de término (según mes factura vs mes
-        // registro)
-        RegistroMensual registroBase = registroMensualService.findById(facturaDto.getIdRegistrosMensuales().get(0))
-                .get();
-        boolean esFueraDeTermino = facturaService.determinarFueraDeTerminoNuevo(facturaDto, registroBase);
+            // 4. Validar montos según periodoCarga
+            ResponseEntity<?> validacionMontos = facturaService.validarMontosFacturas(facturaDto, periodoCarga);
+            if (validacionMontos.getStatusCode() != HttpStatus.OK) {
+                System.out.println("Validación montos falló");
+                return validacionMontos;
+            }
+            System.out.println("✓ Validación montos OK");
 
-        // 5. Crear y guardar factura
-        Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
-        facturaService.save(factura);
+            // 5. Crear y guardar factura
+            Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
+            facturaService.save(factura);
+            System.out.println("✓ Factura creada y guardada - ID: " + factura.getId());
 
-        // 6. Actualizar estado de facturación
-        facturaService.actualizarEstadoFacturacionNuevo(factura, esFueraDeTermino);
+            // 6. Actualizar estado de facturación según periodoCarga
+            facturaService.actualizarEstadoFacturacion(factura, periodoCarga);
+            System.out.println("✓ Estado de facturación actualizado");
 
-        String mensaje = esFueraDeTermino ? "Factura creada (fuera de término)" : "Factura creada (a tiempo)";
-        return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
+            String mensaje = "Factura creada exitosamente (" + periodoCarga + ")";
+            return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
 
+        } catch (Exception e) {
+            System.err.println("❌ Error creando factura: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity(new Mensaje("Error creando factura: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping(("/update/{id}"))
