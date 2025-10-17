@@ -214,18 +214,19 @@ public class FacturaService {
         return factura;
     }
 
+    //Garantiza que el monto total facturado no supere el monto esperado para el registro mensual, evitando sobrefacturación
     public ResponseEntity<?> validarCompletitudAntesDeGuardar(FacturaDto facturaDto) {
         try {
-            // 1. Obtener el ID del registro mensual activo
-            Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0); // Primer y único registro activo
+            // 1. Obtener el primer id de la lista idRegistrosMensuales
+            Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0); 
+
             RegistroMensual rmActivo = registroMensualService.findByIdAndActivoTrue(idRegistroActivo).get();
 
-            // 2. Obtener monto total esperado del registro mensual
+            // 2. obtengo el monto total del registro mensual
             BigDecimal montoTotalEsperado = rmActivo.getTotalHoras().getMontoTotal();
             BigDecimal montoFacturaDto = facturaDto.getMonto();
 
-            // 3. Buscar facturas existentes con mismo efector, mes, quincena, año y
-            // asistencial
+            // 3. Buscar el monto total de facturas existentes para el mismo efector, mes, quincena, año y asistencial
             BigDecimal montoFacturasExistentes = facturaRepository.sumMontoFacturasExistentes(
                     rmActivo.getEfector().getId(),
                     rmActivo.getAsistencial().getId(),
@@ -240,19 +241,20 @@ public class FacturaService {
             System.out.println("Suma total: " + montoFacturasExistentes.add(montoFacturaDto));
             System.out.println("=========================");
 
-            // 4. Calcular suma total
+            // 4. Calcular sumaTotal de la suma de la nueva factura al monto de facturas existentes
             BigDecimal sumaTotal = montoFacturasExistentes.add(montoFacturaDto);
 
             // 5. Validaciones según escenarios
+            //ESCENARIO 1: si existen facturas previas, verifica que la sumaTotal no exceda el montoTotalEsperado 
             if (montoFacturasExistentes.compareTo(BigDecimal.ZERO) > 0) {
-                // ESCENARIO 1: Existen facturas previas!!
+               
                 if (sumaTotal.compareTo(montoTotalEsperado) > 0) {
                     throw new RuntimeException("El monto total de facturas (" + sumaTotal + ") " +
                             "excede el monto esperado (" + montoTotalEsperado + ")");
                 }
 
             } else {
-                // ESCENARIO 2: No existen facturas previas!!
+                // ESCENARIO 2: No existen facturas previasverifica que el montoFacturaDto no exceda el montoTotalEsperado.
                 if (montoFacturaDto.compareTo(montoTotalEsperado) > 0) {
                     throw new RuntimeException("El monto de la factura (" + montoFacturaDto + ") " +
                             "excede el monto esperado (" + montoTotalEsperado + ")");
@@ -271,15 +273,15 @@ public class FacturaService {
      */
     public ResponseEntity<?> validarRangoFechasEmision(FacturaDto facturaDto) {
         try {
-            // Obtener el registro mensual
+            // Obtener el registro mensual asociado
             Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0);
             RegistroMensual rmActivo = registroMensualService.findByIdAndActivoTrue(idRegistroActivo)
                 .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
 
-            // Convertir fecha de emisión a LocalDate
+            //extraer fecha de emisión del dto
             LocalDate fechaEmision = facturaDto.getFechaEmision();
             
-            // Validar rango según quincena
+            // Validar que la fecha de emision esté dentro del rango permitido según la quincena
             boolean fechaValida = validarRangoFechasPermitido(rmActivo, fechaEmision);
             
             if (!fechaValida) {
@@ -299,6 +301,8 @@ public class FacturaService {
      * Valida que la fecha de emisión esté dentro del rango permitido para la quincena
      */
     private boolean validarRangoFechasPermitido(RegistroMensual registro, LocalDate fechaEmision) {
+
+        //obtener mes y anio del RM
         int numeroMes = convertirMesANumero(registro.getMes());
         int anio = registro.getAnio();
         
@@ -352,14 +356,18 @@ public class FacturaService {
 }
 
     /**
-     * Determina si la factura se crea fuera de término
+     * Determina si la factura se crea dentro del plazo permitido o si se considera "fuera de término" para su posterior clasificación
      */
     public boolean determinarSiEsFueraDeTermino(FacturaDto facturaDto) {
         try {
+            //obtener el RM asociado del dto
             Long idRegistroActivo = facturaDto.getIdRegistrosMensuales().get(0);
             RegistroMensual rmActivo = registroMensualService.findByIdAndActivoTrue(idRegistroActivo)
                 .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
 
+            //calcular la fecha limite para la quincena
+            //1ra quincena: dia 20 del mismo mes
+            //2da quincena: dia 10 del mes siguiente
             LocalDate fechaLimite = calcularFechaLimiteSegunQuincena(rmActivo);
             LocalDate fechaActual = LocalDate.now();
 
@@ -370,6 +378,8 @@ public class FacturaService {
             System.out.println("Es fuera de término: " + fechaActual.isAfter(fechaLimite));
             System.out.println("================================");
 
+            //retorna true si la fechaActual es posterior a la fechaLimite
+            //o retorna false si está a tiempo
             return fechaActual.isAfter(fechaLimite);
 
         } catch (Exception e) {
@@ -405,11 +415,18 @@ public class FacturaService {
         return mes.getNumeroMes(); 
     }
     
+    /** 
+     * Actualiza el estado de facturación de los registros mensuales asociados según la completitud de los montos y el estado de "fuera de término".
+    */
+
     public void actualizarEstadoFacturasDespuesDeGuardar(Factura factura, boolean esFueraDeTermino) {
 
+    //para cada RM 
     for (RegistroMensual registro : factura.getRegistrosMensuales()) {
+        //monto total del registro
         BigDecimal montoTotalEsperado = registro.getTotalHoras().getMontoTotal();
         
+        //suma de montos de facturas existentes para el mismo efector. asistencial, mes, quincena y año
         BigDecimal montoFacturasExistentes = facturaRepository.sumMontoFacturasExistentes(
                 registro.getEfector().getId(),
                 registro.getAsistencial().getId(),
@@ -417,16 +434,20 @@ public class FacturaService {
                 registro.getQuincena(),
                 registro.getAnio());
 
+        //determinar si las facturas estan completas comparando montoFacturasExistentes con montoTotalEsperado
         boolean facturasCompletas = montoFacturasExistentes.compareTo(montoTotalEsperado) == 0;
 
+        //actualizar el estado de facturacion del registro
         EstadoFacturacionEnum nuevoEstado;
         
+        // Si no están completas, mantener PENDIENTE o el estado actual?
         if (!facturasCompletas) {
-            // Si no están completas, mantener PENDIENTE o el estado actual
             nuevoEstado = (registro.getEstadoFacturacion() == null) ? 
                 EstadoFacturacionEnum.PENDIENTE : registro.getEstadoFacturacion();
         } else {
             // Si están completas, determinar si es COMPLETADO o REGULARIZADO
+            //REGULARIZADO si esFueraDeTermino es true
+            //COMPLETADO si esFueraDeTermino es false
             nuevoEstado = esFueraDeTermino ? 
                 EstadoFacturacionEnum.REGULARIZADO : EstadoFacturacionEnum.COMPLETADO;
         }

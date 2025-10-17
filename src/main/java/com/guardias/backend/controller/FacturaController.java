@@ -78,7 +78,7 @@ public class FacturaController {
              return respuestaValidaciones;
         }
             
-        // SEGUNDO: Validar completitud de montos de facturas
+        // SEGUNDO: valida que el monto total facturado no supere el monto esperado para el registro mensual
         ResponseEntity<?> validacionCompletitud = facturaService.validarCompletitudAntesDeGuardar(facturaDto);
         if (validacionCompletitud.getStatusCode() != HttpStatus.OK) {
             return validacionCompletitud;
@@ -97,7 +97,7 @@ public class FacturaController {
         Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
         facturaService.save(factura);
 
-        // SEXTO: Actualizar estado de registros
+        // SEXTO: Actualizar estado de de facturacion del RM
         facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura, esFueraDeTermino);
 
         String mensaje = esFueraDeTermino ? "Factura creada (fuera de término)" : "Factura creada (a tiempo)";
