@@ -26,6 +26,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.service.FacturaService;
+import com.guardias.backend.service.RegistroMensualService;
 
 @RestController
 @RequestMapping("/factura")
@@ -34,7 +35,8 @@ public class FacturaController {
 
     @Autowired
     FacturaService facturaService;
-
+    @Autowired
+    RegistroMensualService registroMensualService;
     @GetMapping("/list")
     public ResponseEntity<List<Factura>> list() {
         List<Factura> facturasList = facturaService.findByActivoTrue()
@@ -70,40 +72,37 @@ public class FacturaController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FacturaDto facturaDto) {
 
-        // PRIMERO: Validaciones básicas
-        ResponseEntity<?> respuestaValidaciones = facturaService
-                .validations(facturaDto);
+        // 1. Validaciones básicas
+       ResponseEntity<?> validacionesBasicas = facturaService.validations(facturaDto);
+        if (validacionesBasicas.getStatusCode() != HttpStatus.OK) 
+            return validacionesBasicas;
 
-        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
-             return respuestaValidaciones;
-        }
-            
-        // SEGUNDO: valida que el monto total facturado no supere el monto esperado para el registro mensual
-        ResponseEntity<?> validacionCompletitud = facturaService.validarCompletitudAntesDeGuardar(facturaDto);
-        if (validacionCompletitud.getStatusCode() != HttpStatus.OK) {
-            return validacionCompletitud;
-        }
+        // 2. Validar cantidad de facturas (máximo 2)
+        ResponseEntity<?> validacionCantidad = facturaService.validarCantidadFacturas(facturaDto);
+        if (validacionCantidad.getStatusCode() != HttpStatus.OK)
+            return validacionCantidad;
 
-        // TERCERO: Validar que la fecha de emisión esté en el rango permitido para la quincena
-        ResponseEntity<?> validacionFecha = facturaService.validarRangoFechasEmision(facturaDto);
-        if (validacionFecha.getStatusCode() != HttpStatus.OK) {
-            return validacionFecha;
-        }
+        // 3. Validar montos (suma total por mes/año)
+        ResponseEntity<?> validacionMontos = facturaService.validarMontosFacturas(facturaDto);
+        if (validacionMontos.getStatusCode() != HttpStatus.OK)
+            return validacionMontos;
 
-        // CUARTO: Determinar si es fuera de término
-        boolean esFueraDeTermino = facturaService.determinarSiEsFueraDeTermino(facturaDto);
+        // 4. Determinar si es fuera de término (según mes factura vs mes
+        // registro)
+        RegistroMensual registroBase = registroMensualService.findById(facturaDto.getIdRegistrosMensuales().get(0))
+                .get();
+        boolean esFueraDeTermino = facturaService.determinarFueraDeTerminoNuevo(facturaDto, registroBase);
 
-        // QUINTO: Crear y guardar
+        // 5. Crear y guardar factura
         Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
         facturaService.save(factura);
 
-        // SEXTO: Actualizar estado de de facturacion del RM
-        facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura, esFueraDeTermino);
+        // 6. Actualizar estado de facturación
+        facturaService.actualizarEstadoFacturacionNuevo(factura, esFueraDeTermino);
 
         String mensaje = esFueraDeTermino ? "Factura creada (fuera de término)" : "Factura creada (a tiempo)";
-        
         return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
-        
+
     }
 
     @PutMapping(("/update/{id}"))

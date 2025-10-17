@@ -114,7 +114,7 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         "WHERE rm.efector.id = :efectorId " +
                         "AND rm.mes = :mes " +
                         "AND rm.anio = :anio " +
-                        "AND rm.estadoFacturacion IN :estados " + 
+                        "AND rm.estadoFacturacion IN :estados " +
                         "AND rm.activo = true")
         List<RegistroMensual> findRegistrosFueraDeTermino(
                         @Param("efectorId") Long efectorId,
@@ -135,5 +135,21 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("anio") int anio,
                         @Param("quincena") QuincenaEnum quincena,
                         @Param("estado") EstadoFacturacionEnum estado);
+
+        /**
+         * Busca registros mensuales por efector, asistencial, mes y año
+         * Incluye TODAS las quincenas del mes
+         */
+        @Query("SELECT rm FROM registrosMensuales rm " +
+                        "WHERE rm.efector.id = :efectorId " +
+                        "AND rm.asistencial.id = :asistencialId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND rm.activo = true")
+        List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnio(
+                        @Param("efectorId") Long efectorId,
+                        @Param("asistencialId") Long asistencialId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio);
 
 }

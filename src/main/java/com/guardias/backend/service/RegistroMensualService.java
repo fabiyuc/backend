@@ -1054,4 +1054,25 @@ public class RegistroMensualService {
 
         }
 
+        /**
+     * Suma los montos totales de TODOS los registros mensuales por mes y año
+     */
+    public BigDecimal sumMontosRegistrosMensuales(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+        List<RegistroMensual> registros = registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
+                efectorId, asistencialId, mes, anio);
+        
+        return registros.stream()
+                .map(rm -> rm.getTotalHoras().getMontoTotal())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Busca TODOS los registros mensuales por efector, asistencial, mes y año
+     */
+    public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnio(
+            Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+        return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
+                efectorId, asistencialId, mes, anio);
+    }
+
 }
