@@ -35,6 +35,13 @@ public class NotificacionService {
         return notificacionRepository.findByTipoAndActivo(tipo, activo);
     }
 
+    public List<Notificacion> findByTipo(TipoNotificacionEnum tipo) {
+        if (tipo == null) {
+            return java.util.Collections.emptyList();
+        }
+        return notificacionRepository.findByTipoAndActivo(tipo, true);
+    }
+
     public boolean existsById(Long id) {
         return notificacionRepository.existsById((Long) id);
     }

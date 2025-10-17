@@ -35,6 +35,7 @@ import com.guardias.backend.entity.Notificacion;
 import com.guardias.backend.enums.TipoNotificacionEnum;
 import com.guardias.backend.service.EfectorService;
 import com.guardias.backend.service.NotificacionService;
+import com.guardias.backend.service.TipoGuardiaService;
 
 @RestController
 @RequestMapping("/notificacion")
@@ -45,6 +46,8 @@ public class NotificacionController {
     NotificacionService notificacionService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    TipoGuardiaService tipoGuardiaService;
 
     @Value("${app.upload.dir}")
     private String uploadDir;
@@ -52,6 +55,12 @@ public class NotificacionController {
     @GetMapping("/list")
     public ResponseEntity<List<Notificacion>> list() {
         List<Notificacion> list = notificacionService.findByActivoTrue().get();
+        return new ResponseEntity<List<Notificacion>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByTipo/{tipo}")
+    public ResponseEntity<List<Notificacion>> listByTipo(@PathVariable("tipo") TipoNotificacionEnum tipo) {
+        List<Notificacion> list = notificacionService.findByTipo(tipo);
         return new ResponseEntity<List<Notificacion>>(list, HttpStatus.OK);
     }
 
@@ -128,6 +137,11 @@ public class NotificacionController {
         if (notificacionDto.getFechaBaja() != null && notificacionDto.getFechaBaja() != notificacion.getFechaBaja())
             notificacion.setFechaBaja(notificacionDto.getFechaBaja());
 
+        if (notificacionDto.getTipoGuardia() != null
+                && !notificacionDto.getTipoGuardia().equals(notificacion.getTipoGuardia())
+                && !notificacionDto.getTipoGuardia().isEmpty())
+            notificacion.setTipoGuardia(notificacionDto.getTipoGuardia());
+
         // NUEVO: reemplazo total de efectores (lista completa recibida)
         if (notificacionDto.getIdEfectores() != null) {
             // Limpiar relaciones previas si es update
@@ -161,52 +175,21 @@ public class NotificacionController {
             }
         }
 
-        notificacion.setActivo(true);
+        notificacion.setActivo(notificacionDto.isActivo());
         return notificacion;
     }
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody NotificacionDto notificacionDto) {
         ResponseEntity<?> respuestaValidaciones = validations(notificacionDto);
-        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+            Notificacion notificacion = createUpdate(new Notificacion(), notificacionDto);
+            notificacionService.save(notificacion);
+
+            return new ResponseEntity<>(notificacion, HttpStatus.OK);
+        } else {
             return respuestaValidaciones;
         }
-
-        Notificacion notificacion = new Notificacion();
-        notificacion.setTipo(notificacionDto.getTipo());
-        notificacion.setCategoria(notificacionDto.getCategoria());
-        notificacion.setFechaNotificacion(notificacionDto.getFechaNotificacion());
-        notificacion.setDetalle(notificacionDto.getDetalle());
-        notificacion.setUrl(notificacionDto.getUrl());
-        notificacion.setActivo(true);
-        notificacion.setFechaBaja(notificacionDto.getFechaBaja());
-
-        List<Efector> efectores = new ArrayList<>();
-        if (notificacionDto.getIdEfectores() != null && !notificacionDto.getIdEfectores().isEmpty()) {
-            Set<Long> únicos = new HashSet<>();
-            for (Long id : notificacionDto.getIdEfectores()) {
-                if (id == null)
-                    continue;
-                if (únicos.add(id)) {
-                    Efector ef = efectorService.findById(id);
-                    if (ef != null && ef.isActivo()) {
-                        efectores.add(ef);
-                    }
-                }
-            }
-        }
-        notificacion.setEfectores(efectores);
-        notificacionService.save(notificacion);
-        for (Efector ef : efectores) {
-            if (ef.getNotificaciones() == null) {
-                ef.setNotificaciones(new ArrayList<>());
-            }
-            if (!ef.getNotificaciones().contains(notificacion)) {
-                ef.getNotificaciones().add(notificacion);
-            }
-        }
-
-        return new ResponseEntity<>(notificacion, HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
@@ -231,6 +214,8 @@ public class NotificacionController {
 
         Notificacion notificacion = notificacionService.findById(id).get();
         notificacion.setActivo(false);
+        // Setear fecha de baja al día de la eliminación
+        notificacion.setFechaBaja(LocalDate.now());
         notificacionService.save(notificacion);
         return new ResponseEntity<>(new Mensaje("Notificación eliminada"), HttpStatus.OK);
 
@@ -336,6 +321,7 @@ public class NotificacionController {
             notificacion.setUrl(pdfUrlTmp);
             notificacion.setActivo(true);
             notificacion.setFechaBaja(notificacionDto.getFechaBaja());
+            notificacion.setTipoGuardia(notificacionDto.getTipoGuardia());
 
             List<Efector> efectores = new ArrayList<>();
             Set<Long> unicos = new HashSet<>();

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.TipoGuardiaDto;
+import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.TipoGuardia;
@@ -62,6 +63,12 @@ public class TipoGuardiaController {
     public ResponseEntity<List<TipoGuardia>> listAll() {
         List<TipoGuardia> list = tipoGuardiaService.findAll();
         return new ResponseEntity<List<TipoGuardia>>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listTipoGuardiaAll")
+    public ResponseEntity<List<TipoGuardiaListDto>> listTipoGuardiaAll() {
+        List<TipoGuardiaListDto> list = tipoGuardiaService.findTipoGuardiaAll();
+        return new ResponseEntity(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")

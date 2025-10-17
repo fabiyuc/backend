@@ -2,10 +2,12 @@ package com.guardias.backend.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.region.RegionSummaryDto;
 import com.guardias.backend.entity.Region;
 import com.guardias.backend.repository.RegionRepository;
 
@@ -59,5 +61,13 @@ public class RegionService {
 
     public boolean activoByNombre(String nombre) {
         return (regionRepository.existsByNombre(nombre) && regionRepository.findByNombre(nombre).get().isActivo());
+    }
+
+    // Nuevo: devolver lista de RegionSummaryDto
+    public List<RegionSummaryDto> findAllSummary() {
+        return regionRepository.findAll()
+                .stream()
+                .map(r -> new RegionSummaryDto(r.getId(), r.getNombre(), r.isActivo()))
+                .collect(Collectors.toList());
     }
 }

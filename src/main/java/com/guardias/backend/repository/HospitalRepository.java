@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.guardias.backend.dto.efector.EfectorRegionDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Hospital;
 
@@ -56,4 +57,11 @@ public interface HospitalRepository extends JpaRepository<Hospital, Long> {
         Optional<Hospital> findHospitalByUsuarioId(@Param("idUsuario") Long idUsuario);
 
         List<Hospital> findByNombreIn(List<String> nombres);
+
+        // Nuevo: hospitales activos por región
+        List<Hospital> findByRegion_IdAndActivoTrue(Long regionId);
+
+        @Query("SELECT new com.guardias.backend.dto.efector.EfectorRegionDto(h.id, h.nombre, h.region.id) " +
+                        "FROM Hospital h WHERE h.region.id = :regionId AND h.activo = true")
+        List<EfectorRegionDto> findSummaryByRegionId(@Param("regionId") Long regionId);
 }

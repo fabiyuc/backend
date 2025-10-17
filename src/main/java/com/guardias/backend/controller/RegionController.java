@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegionDto;
+import com.guardias.backend.dto.region.RegionSummaryDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Region;
@@ -48,6 +49,12 @@ public class RegionController {
     @GetMapping("/listAll")
     public ResponseEntity<List<Region>> listAll() {
         List<Region> list = regionService.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listSummary")
+    public ResponseEntity<List<RegionSummaryDto>> listSummary() {
+        List<RegionSummaryDto> list = regionService.findAllSummary();
         return new ResponseEntity(list, HttpStatus.OK);
     }
 

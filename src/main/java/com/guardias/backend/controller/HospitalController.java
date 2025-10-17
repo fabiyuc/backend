@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +22,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.guardias.backend.dto.HospitalDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.dto.efector.EfectorHospitalDto;
+import com.guardias.backend.dto.efector.EfectorRegionDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Caps;
@@ -37,8 +38,9 @@ import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
+import com.guardias.backend.service.RegionService;
 
-@Controller
+@RestController
 @RequestMapping("/hospital")
 @CrossOrigin(origins = "http://localhost:4200")
 public class HospitalController {
@@ -55,6 +57,9 @@ public class HospitalController {
 
     @Autowired
     EfectorController efectorController;
+
+    @Autowired
+    private RegionService regionService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Hospital>> list() {
@@ -634,4 +639,22 @@ public class HospitalController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/region/{regionId}")
+    public ResponseEntity<List<EfectorRegionDto>> listByRegion(@PathVariable Long regionId) {
+        if (regionId == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        // Solo comprobar existencia. Si no existe -> 404
+        if (!regionService.existsById(regionId)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // Obtener lista (puede ser vacía) y devolver 200 OK
+        List<EfectorRegionDto> hospitales = hospitalService.findHospitalesPorRegion(regionId);
+        if (hospitales == null) {
+            hospitales = new ArrayList<>();
+        }
+        return ResponseEntity.ok(hospitales);
+    }
+
 }

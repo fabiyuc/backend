@@ -55,12 +55,17 @@ public class Notificacion {
     @Temporal(TemporalType.DATE)
     private LocalDate fechaBaja;
 
+    @Column(columnDefinition = "VARCHAR(10)")
+    private String tipoGuardia;
+
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "notificacion_efector", joinColumns = @JoinColumn(name = "notificacion_id"), inverseJoinColumns = @JoinColumn(name = "efector_id"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "autoridades", "domicilio", "telefono",
             "estado", "activo", "observacion", "region", "localidad", "distribucionesHorarias", "legajosUdo", "legajos",
             "notificaciones", "esCabecera", "admitePasiva", "caps", "cabecera", "areaProgramatica", "tipoCaps",
-            "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs" })
+            "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs",
+            "servicios", "habilitacionesGuardias", "habilitacionesGenerales", "registrosPendientes",
+            "cronogramasTentativos", "feriados", "cronogramasDefinitivos", "valoresGuardiaBase", "url" })
     private List<Efector> efectores = new ArrayList<>();
 
     // @JsonIgnoreProperties({ "hibernateLazyInitializer",

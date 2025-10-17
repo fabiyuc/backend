@@ -37,6 +37,8 @@ public class NotificacionDto {
     @NotNull
     private boolean activo;
 
+    private String tipoGuardia;
+
     @NotNull
     private List<Long> idEfectores;
 

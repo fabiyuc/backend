@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.guardias.backend.dto.tipoGuardia.TipoGuardiaListDto;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.TipoGuardiaRepository;
@@ -55,6 +56,13 @@ public class TipoGuardiaService {
         return tipoGuardiaRepository.findAll();
     }
 
+    public List<TipoGuardiaListDto> findTipoGuardiaAll() {
+        return tipoGuardiaRepository.findAll()
+                .stream()
+                .map(tg -> new TipoGuardiaListDto(tg.getId(), tg.getNombre().name()))
+                .toList();
+    }
+
     public Optional<TipoGuardia> findById(Long id) {
         return tipoGuardiaRepository.findById(id);
     }
@@ -73,6 +81,14 @@ public class TipoGuardiaService {
 
     public boolean activo(Long id) {
         return (tipoGuardiaRepository.existsById(id) && tipoGuardiaRepository.findById(id).get().isActivo());
+    }
+
+    public List<TipoGuardiaListDto> findAllActivo() {
+        return tipoGuardiaRepository.findByActivoTrue()
+                .orElse(List.of())
+                .stream()
+                .map(tg -> new TipoGuardiaListDto(tg.getId(), tg.getNombre().name()))
+                .toList();
     }
 
 }

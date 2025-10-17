@@ -50,7 +50,8 @@ public class Factura {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "facturas_registrosMensuales", joinColumns = @JoinColumn(name = "id_factura"), inverseJoinColumns = @JoinColumn(name = "id_registroMensual"))
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "facturas", "asistencial", "activo", "efector", "ddjjs"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "facturas", "asistencial", "activo", "efector",
+            "ddjjs" })
     private List<RegistroMensual> registrosMensuales = new ArrayList<>();
 
     @Column(columnDefinition = "VARCHAR(50)")
@@ -82,6 +83,9 @@ public class Factura {
     private BigDecimal monto;
 
     private boolean activo;
+
+    @Column(columnDefinition = "VARCHAR(255)")
+    private String url;
 
     @Override
     public boolean equals(Object obj) {

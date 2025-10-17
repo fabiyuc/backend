@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FacturaDto {
-    
+
     @NotBlank
     private Long idAsistencial;
 
@@ -48,10 +48,12 @@ public class FacturaDto {
 
     @NotBlank
     private LocalDate fechaEmision;
-    
+
     @NotBlank
     private BigDecimal monto;
 
     private boolean activo;
+
+    private String url;
 
 }
