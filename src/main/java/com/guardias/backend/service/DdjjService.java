@@ -696,6 +696,36 @@ public class DdjjService {
         return result;
     }
 
+    public boolean existsByAnioMesAndEfectorCfFueraTermino(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        System.out.println("=== INICIO existsByAnioMesAndEfectorCf ===");
+        System.out.println("Parámetros:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+
+        // Buscar el ID de CONTRAFACTURA
+        Optional<TipoGuardia> tipoGuardiaCf = tipoGuardiaRepository.findByNombre(TipoGuardiaEnum.CONTRAFACTURA);
+
+        if (!tipoGuardiaCf.isPresent()) {
+            System.out.println("ERROR: TipoGuardia CONTRAFACTURA no encontrado");
+            return false;
+        }
+
+        Long idTipoGuardiaCf = tipoGuardiaCf.get().getId();
+        System.out.println("ID de CONTRAFACTURA: " + idTipoGuardiaCf);
+
+        // Consulta específica para CONTRAFACTURA 
+        boolean result = ddjjRepository.existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndCondicionDdjjAndActivoTrue(
+                anio, mes, idEfector, idTipoGuardiaCf,CondicionDdjjEnum.FUERA_DE_TERMINO);
+
+        System.out.println("Resultado de la consulta: " + result);
+        System.out.println("=== FIN existsByAnioMesAndEfectorCf ===");
+
+        return result;
+    }
+
     public boolean existsCompleteSetOfDdjj(MesesEnum mes, int anio, Long idEfector) {
 
         EstadoDdjjEnum estadoRequerido = EstadoDdjjEnum.APROBADO;
