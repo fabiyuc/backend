@@ -196,4 +196,6 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
        
         boolean existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndQuincenaAndActivoTrue(
         int anio, MesesEnum mes, Long efectorId, Long tipoGuardiaId, QuincenaEnum quincena);
+        
+       
 }

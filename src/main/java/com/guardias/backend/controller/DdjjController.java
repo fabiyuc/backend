@@ -306,6 +306,36 @@ public class DdjjController {
             return ResponseEntity.badRequest().body(false);
         }
     }
+    @GetMapping("/existsDdjjCfSinQuincena/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<Boolean> existsDdjjCfSinQuincena(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+
+        System.out.println("=== INICIO existsDdjjCf ===");
+        System.out.println("Parámetros recibidos:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            System.out.println("Mes convertido a enum: " + mesEnum);
+
+            boolean exists = ddjjService.existsByAnioMesAndEfectorCf(
+                    anio, mesEnum, idEfector);
+
+            System.out.println("Resultado de la consulta: " + exists);
+            System.out.println("=== FIN existsDdjjCf ===");
+
+            return ResponseEntity.ok(exists);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Mensaje de error: " + e.getMessage());
+            System.out.println("=== FIN existsDdjjCf (con error) ===");
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
 
     @GetMapping("/getAutoridadImageUrl/{idUsuario}")
     public ResponseEntity<?> getAutoridadImageUrl(@PathVariable("idUsuario") Long idUsuario) {
