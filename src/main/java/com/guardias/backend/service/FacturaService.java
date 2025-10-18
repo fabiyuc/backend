@@ -114,34 +114,64 @@ public class FacturaService {
     }
 
     /**
-     * Determinar periodoCarga según fecha sistema vs fecha emisión
+     * Determinar periodoCarga según fecha sistema y datos del RM
      */
     public QuincenaEnum determinarPeriodoCarga(FacturaDto facturaDto) {
+        // 1. Obtener registro mensual
+        Long idRegistro = facturaDto.getIdRegistrosMensuales().get(0);
+        RegistroMensual registro = registroMensualService.findById(idRegistro)
+                .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
+
         LocalDate fechaSistema = LocalDate.now();
-        LocalDate fechaEmision = facturaDto.getFechaEmision();
-        
+        QuincenaEnum quincenaRegistro = registro.getQuincena();
+        int mesRegistro = convertirMesANumero(registro.getMes());
+        int anioRegistro = registro.getAnio();
+
         System.out.println("=== DEBUG PERIODO CARGA ===");
         System.out.println("Fecha sistema: " + fechaSistema);
-        System.out.println("Fecha emisión: " + fechaEmision);
-        
-        // a. PRIMERA: fecha sistema < día 21 del mes de emisión
-        LocalDate limitePrimera = LocalDate.of(fechaEmision.getYear(), fechaEmision.getMonth(), 21);
-        if (fechaSistema.isBefore(limitePrimera)) {
-            System.out.println("Periodo carga: PRIMERA");
-            return QuincenaEnum.PRIMERA;
+        System.out.println("Quincena registro: " + quincenaRegistro);
+        System.out.println("Mes registro: " + registro.getMes() + " " + anioRegistro);
+
+        // ETAPA 1: Determinar si está EN TÉRMINO
+        boolean enTermino = estaEnTermino(fechaSistema, mesRegistro, anioRegistro);
+
+        if (!enTermino) {
+            System.out.println("🕒 Periodo carga: FUERA_DE_TERMINO (no está en término)");
+            return QuincenaEnum.FUERA_DE_TERMINO;
         }
-        
-        // b. SEGUNDA: fecha sistema < día 5 del mes siguiente de emisión
-        LocalDate primerDiaMesSiguiente = fechaEmision.plusMonths(1).withDayOfMonth(1);
-        LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(5);
-        if (fechaSistema.isBefore(limiteSegunda)) {
-            System.out.println("Periodo carga: SEGUNDA");
-            return QuincenaEnum.SEGUNDA;
+
+        // ETAPA 2: Si está EN TÉRMINO, determinar quincena específica
+        if (quincenaRegistro == QuincenaEnum.PRIMERA) {
+            LocalDate limitePrimera = LocalDate.of(anioRegistro, mesRegistro, 21);
+            if (fechaSistema.isBefore(limitePrimera)) {
+                System.out.println("✅ Periodo carga: PRIMERA (en término)");
+                return QuincenaEnum.PRIMERA;
+            }
+        } else if (quincenaRegistro == QuincenaEnum.SEGUNDA) {
+            LocalDate primerDiaMesSiguiente = LocalDate.of(anioRegistro, mesRegistro, 1).plusMonths(1);
+            LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(5);
+            if (fechaSistema.isBefore(limiteSegunda)) {
+                System.out.println("✅ Periodo carga: SEGUNDA (en término)");
+                return QuincenaEnum.SEGUNDA;
+            }
         }
-        
-        // c. Si no cumple ninguna, es FUERA_DE_TERMINO
-        System.out.println("Periodo carga: FUERA_DE_TERMINO");
+
+        // Si está en término pero no cumple las condiciones específicas de quincena
+        System.out.println("🕒 Periodo carga: FUERA_DE_TERMINO (en término pero fuera de quincena)");
         return QuincenaEnum.FUERA_DE_TERMINO;
+    }
+
+    private boolean estaEnTermino(LocalDate fechaSistema, int mesRegistro, int anioRegistro) {
+        // Rango en término: desde primer día del mes registro hasta día 5 del mes
+        // siguiente
+        LocalDate inicioTermino = LocalDate.of(anioRegistro, mesRegistro, 1);
+        LocalDate finTermino = LocalDate.of(anioRegistro, mesRegistro, 1)
+                .plusMonths(1)
+                .withDayOfMonth(5);
+
+        System.out.println("Rango en término: " + inicioTermino + " a " + finTermino);
+
+        return !fechaSistema.isBefore(inicioTermino) && !fechaSistema.isAfter(finTermino);
     }
 
     /**
@@ -151,10 +181,10 @@ public class FacturaService {
         try {
             Long idRegistro = facturaDto.getIdRegistrosMensuales().get(0);
             RegistroMensual registro = registroMensualService.findById(idRegistro)
-                .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
-            
+                    .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
+
             int cantidadFacturas;
-            
+
             if (periodoCarga == QuincenaEnum.PRIMERA || periodoCarga == QuincenaEnum.SEGUNDA) {
                 // Para PRIMERA o SEGUNDA: contar por quincena específica
                 cantidadFacturas = facturaRepository.countFacturasPorQuincena(
@@ -172,20 +202,20 @@ public class FacturaService {
                         registro.getAnio(),
                         EstadoFacturacionEnum.PENDIENTE);
             }
-            
+
             System.out.println("=== DEBUG CANTIDAD FACTURAS ===");
             System.out.println("Periodo carga: " + periodoCarga);
             System.out.println("Cantidad facturas existentes: " + cantidadFacturas);
-            
+
             if (cantidadFacturas >= 2) {
                 return new ResponseEntity(
-                    new Mensaje("Ya existen " + cantidadFacturas + " facturas para " + 
-                               registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga + ")"), 
-                    HttpStatus.BAD_REQUEST);
+                        new Mensaje("Ya existen " + cantidadFacturas + " facturas para " +
+                                registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga + ")"),
+                        HttpStatus.BAD_REQUEST);
             }
-            
+
             return new ResponseEntity(new Mensaje("Validación cantidad OK"), HttpStatus.OK);
-            
+
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Error validando cantidad: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -199,11 +229,11 @@ public class FacturaService {
         try {
             Long idRegistro = facturaDto.getIdRegistrosMensuales().get(0);
             RegistroMensual registro = registroMensualService.findById(idRegistro)
-                .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
-            
+                    .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
+
             BigDecimal montoFacturasExistentes;
             BigDecimal montoRegistro;
-            
+
             if (periodoCarga == QuincenaEnum.PRIMERA || periodoCarga == QuincenaEnum.SEGUNDA) {
                 // Para PRIMERA o SEGUNDA: usar quincena específica del registro
                 montoFacturasExistentes = facturaRepository.sumMontosFacturasPorQuincena(
@@ -212,7 +242,7 @@ public class FacturaService {
                         registro.getMes(),
                         registro.getAnio(),
                         periodoCarga);
-                
+
                 // El monto del registro es el del registro específico que vino en el dto
                 montoRegistro = registro.getTotalHoras().getMontoTotal();
             } else {
@@ -223,7 +253,7 @@ public class FacturaService {
                         registro.getMes(),
                         registro.getAnio(),
                         EstadoFacturacionEnum.PENDIENTE);
-                
+
                 // Sumar montos de TODOS los registros pendientes del periodo
                 montoRegistro = BigDecimal.ZERO;
                 List<RegistroMensual> registrosPendientes = registroMensualService.findRegistrosPendientes(
@@ -231,31 +261,31 @@ public class FacturaService {
                         registro.getAsistencial().getId(),
                         registro.getMes(),
                         registro.getAnio());
-                
+
                 for (RegistroMensual rm : registrosPendientes) {
                     montoRegistro = montoRegistro.add(rm.getTotalHoras().getMontoTotal());
                 }
             }
-            
+
             // Validar que no exceda
             BigDecimal sumaTotal = montoFacturasExistentes.add(facturaDto.getMonto());
-            
+
             System.out.println("=== DEBUG VALIDACIÓN MONTOS ===");
             System.out.println("Periodo carga: " + periodoCarga);
             System.out.println("Monto facturas existentes: " + montoFacturasExistentes);
             System.out.println("Monto nueva factura: " + facturaDto.getMonto());
             System.out.println("Monto registro(s): " + montoRegistro);
             System.out.println("Suma total: " + sumaTotal);
-            
+
             if (sumaTotal.compareTo(montoRegistro) > 0) {
                 String mensajeError = String.format(
-                    "Monto excedido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s",
-                    periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal);
+                        "Monto excedido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s",
+                        periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal);
                 return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
             }
-            
+
             return new ResponseEntity(new Mensaje("Validación montos OK"), HttpStatus.OK);
-            
+
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Error validando montos: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -267,11 +297,11 @@ public class FacturaService {
      */
     public void actualizarEstadoFacturacion(Factura factura, QuincenaEnum periodoCarga) {
         RegistroMensual registroBase = factura.getRegistrosMensuales().get(0);
-        
+
         BigDecimal montoFacturasExistentes;
         BigDecimal montoRegistro;
         List<RegistroMensual> registrosAActualizar;
-        
+
         if (periodoCarga == QuincenaEnum.PRIMERA || periodoCarga == QuincenaEnum.SEGUNDA) {
             // Para PRIMERA o SEGUNDA
             montoFacturasExistentes = facturaRepository.sumMontosFacturasPorQuincena(
@@ -280,9 +310,9 @@ public class FacturaService {
                     registroBase.getMes(),
                     registroBase.getAnio(),
                     periodoCarga);
-            
+
             montoRegistro = registroBase.getTotalHoras().getMontoTotal();
-            
+
             registrosAActualizar = registroMensualService.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
                     registroBase.getEfector().getId(),
                     registroBase.getAsistencial().getId(),
@@ -297,37 +327,37 @@ public class FacturaService {
                     registroBase.getMes(),
                     registroBase.getAnio(),
                     EstadoFacturacionEnum.PENDIENTE);
-            
+
             registrosAActualizar = registroMensualService.findRegistrosPendientes(
                     registroBase.getEfector().getId(),
                     registroBase.getAsistencial().getId(),
                     registroBase.getMes(),
                     registroBase.getAnio());
-            
+
             // Calcular monto total de registros pendientes
             montoRegistro = BigDecimal.ZERO;
             for (RegistroMensual rm : registrosAActualizar) {
                 montoRegistro = montoRegistro.add(rm.getTotalHoras().getMontoTotal());
             }
         }
-        
+
         // Determinar estado según lógica de negocio
         EstadoFacturacionEnum nuevoEstado;
-        
+
         if (montoFacturasExistentes.compareTo(montoRegistro) < 0) {
-            nuevoEstado = EstadoFacturacionEnum.PENDIENTE;//Faltan facturas
+            nuevoEstado = EstadoFacturacionEnum.PENDIENTE;// Faltan facturas
         } else {
             if (periodoCarga == QuincenaEnum.FUERA_DE_TERMINO) {
-                nuevoEstado = EstadoFacturacionEnum.REGULARIZADO;//Completado fuera de plazo
+                nuevoEstado = EstadoFacturacionEnum.REGULARIZADO;// Completado fuera de plazo
             } else {
-                nuevoEstado = EstadoFacturacionEnum.COMPLETADO;//Completado en plazo
+                nuevoEstado = EstadoFacturacionEnum.COMPLETADO;// Completado en plazo
             }
         }
-        
+
         // Actualizar registros
         for (RegistroMensual rm : registrosAActualizar) {
             rm.setEstadoFacturacion(nuevoEstado);
-            
+
             System.out.println("=== DEBUG ACTUALIZACIÓN ESTADO ===");
             System.out.println("Registro ID: " + rm.getId() + " - Quincena: " + rm.getQuincena());
             System.out.println("Periodo carga: " + periodoCarga);
@@ -336,7 +366,7 @@ public class FacturaService {
             System.out.println("Nuevo estado: " + nuevoEstado);
             System.out.println("==================================");
         }
-        
+
         registroMensualService.saveAll(registrosAActualizar);
     }
 
