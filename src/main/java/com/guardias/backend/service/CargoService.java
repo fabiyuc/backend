@@ -1,6 +1,5 @@
 package com.guardias.backend.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
