@@ -308,4 +308,50 @@ public class FacturaController {
         }
     }
 
+    @GetMapping("/existeFacturaSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
+    public ResponseEntity<?> existeFacturaSinQuincena(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int anio,
+            @PathVariable String mes) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            boolean existe = facturaService.existeFacturaByFiltrosSinQuincena(idAsistencial, idEfector, anio, mesEnum);
+            return ResponseEntity.ok(existe);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new Mensaje("Parámetro no válido: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al verificar factura: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/existenDosFacturasSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    public ResponseEntity<?> existenDosFacturasSinQuincena(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int anio,
+            @PathVariable String mes) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            boolean existenDosFacturas = facturaService.existenDosFacturasByFiltrosSinQuincena(
+                    idAsistencial, idEfector, anio, mesEnum);
+
+            return ResponseEntity.ok(existenDosFacturas);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new Mensaje("Parámetro no válido: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al verificar facturas: " + e.getMessage()));
+        }
+    }
+
 }

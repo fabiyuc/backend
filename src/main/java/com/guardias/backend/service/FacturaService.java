@@ -584,6 +584,21 @@ public class FacturaService {
         // Devolver true si hay exactamente 2 facturas
         return cantidadFacturas == 2;
     }
+    public boolean existeFacturaByFiltrosSinQuincena(Long idAsistencial, Long idEfector, int anio, MesesEnum mes) {
+        return facturaRepository.existsByAsistencialAndEfectorAndAnioMes(idAsistencial, idEfector, anio, mes);
+    }
+
+    public boolean existenDosFacturasByFiltrosSinQuincena(Long idAsistencial, Long idEfector, int anio,
+            MesesEnum mes) {
+
+        // Contar facturas activas para el asistencial en el efector, mes, año y
+        // quincena
+        long cantidadFacturas = facturaRepository.countByAsistencialAndEfectorAndPeriodoSinQuincena(
+                idAsistencial, idEfector, anio, mes);
+
+        // Devolver true si hay exactamente 2 facturas
+        return cantidadFacturas == 2;
+    }
 
     public void actualizarEstadoFacturasDespuesDeEliminar(List<RegistroMensual> registrosAfectados) {
 
