@@ -38,6 +38,19 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("mes") MesesEnum mes,
                   @Param("anio") int anio);
 
+      @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
+                  "JOIN f.registrosMensuales rm " +
+                  "WHERE f.activo = true " +
+                  "AND f.asistencial.id = :asistencialId " +
+                  "AND rm.efector.id = :efectorId " +
+                  "AND rm.mes = :mes " +
+                  "AND rm.anio = :anio")
+      BigDecimal sumMontoByAsistencialEfectorMesAnio(
+                  @Param("asistencialId") Long asistencialId,
+                  @Param("efectorId") Long efectorId,
+                  @Param("mes") MesesEnum mes,
+                  @Param("anio") int anio);
+
       @Query("SELECT DISTINCT f FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE f.activo = true " +

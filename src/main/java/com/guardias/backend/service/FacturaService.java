@@ -515,6 +515,11 @@ public class FacturaService {
         return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial, idEfector, quincena, mes,
                 anio);
     }
+    public BigDecimal getMonto(Long idAsistencial, Long idEfector, MesesEnum mes,
+            int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorMesAnio(idAsistencial, idEfector, mes,
+                anio);
+    }
 
     public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes,
             QuincenaEnum quincena) {
