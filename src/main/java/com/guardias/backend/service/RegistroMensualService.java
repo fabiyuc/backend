@@ -1087,9 +1087,8 @@ public class RegistroMensualService {
     /**
      * Busca registros pendientes
      */
-    public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, 
-                                                        MesesEnum mes, int anio) {
-        return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio);
+    public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+        return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio, EstadoFacturacionEnum.PENDIENTE);
     }
 
 

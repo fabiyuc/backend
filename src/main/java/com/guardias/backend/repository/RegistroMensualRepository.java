@@ -152,41 +152,38 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio);
 
+        /**
+         * Busca registros por quincena específica
+         */
+        @Query("SELECT rm FROM registrosMensuales rm " +
+                        "WHERE rm.efector.id = :efectorId " +
+                        "AND rm.asistencial.id = :asistencialId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND rm.quincena = :quincena " +
+                        "AND rm.activo = true")
+        List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                        @Param("efectorId") Long efectorId,
+                        @Param("asistencialId") Long asistencialId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("quincena") QuincenaEnum quincena);
 
-/**
-     * Busca registros por quincena específica
-     */
-    @Query("SELECT rm FROM registrosMensuales rm " +
-           "WHERE rm.efector.id = :efectorId " +
-           "AND rm.asistencial.id = :asistencialId " +
-           "AND rm.mes = :mes " +
-           "AND rm.anio = :anio " +
-           "AND rm.quincena = :quincena " +
-           "AND rm.activo = true")
-    List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
-            @Param("efectorId") Long efectorId,
-            @Param("asistencialId") Long asistencialId,
-            @Param("mes") MesesEnum mes,
-            @Param("anio") int anio,
-            @Param("quincena") QuincenaEnum quincena);
-
-    /**
-     * Busca registros pendientes (estado NULL o PENDIENTE)
-     */
-    @Query("SELECT rm FROM registrosMensuales rm " +
-           "WHERE rm.efector.id = :efectorId " +
-           "AND rm.asistencial.id = :asistencialId " +
-           "AND rm.mes = :mes " +
-           "AND rm.anio = :anio " +
-           "AND (rm.estadoFacturacion IS NULL OR rm.estadoFacturacion = 'PENDIENTE') " +
-           "AND rm.activo = true")
-    List<RegistroMensual> findRegistrosPendientes(
-            @Param("efectorId") Long efectorId,
-            @Param("asistencialId") Long asistencialId,
-            @Param("mes") MesesEnum mes,
-            @Param("anio") int anio);
-
-   
-        
+        /**
+         * Busca registros pendientes (estado NULL o PENDIENTE)
+         */
+        @Query("SELECT rm FROM registrosMensuales rm " +
+                        "WHERE rm.efector.id = :efectorId " +
+                        "AND rm.asistencial.id = :asistencialId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND (rm.estadoFacturacion IS NULL OR rm.estadoFacturacion = :estadoFacturacion) " +
+                        "AND rm.activo = true")
+        List<RegistroMensual> findRegistrosPendientes(
+                        @Param("efectorId") Long efectorId,
+                        @Param("asistencialId") Long asistencialId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("estadoFacturacion") EstadoFacturacionEnum estadoFacturacion);
 
 }
