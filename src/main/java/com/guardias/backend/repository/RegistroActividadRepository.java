@@ -35,8 +35,8 @@ public interface RegistroActividadRepository extends JpaRepository<RegistroActiv
         @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
            "FROM registrosActividades r " +
            "WHERE r.efector.id = :idEfector " +
-            "AND MONTH(r.fechaIngreso) = :mes " +
-            "AND YEAR(r.fechaIngreso) = :anio " +
+           "AND MONTH(r.fechaIngreso) = :mes " +
+           "AND YEAR(r.fechaIngreso) = :anio " +
            "AND r.activo = true " +
            "AND r.tipoGuardia.nombre = :tipoGuardia")
         boolean existsByEfectorAndMesAndAnioAndTipoGuardia(

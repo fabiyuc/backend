@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.FacturaDto;
@@ -27,6 +26,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.service.FacturaService;
+import com.guardias.backend.service.RegistroMensualService;
 
 @RestController
 @RequestMapping("/factura")
@@ -35,6 +35,8 @@ public class FacturaController {
 
     @Autowired
     FacturaService facturaService;
+    @Autowired
+    RegistroMensualService registroMensualService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Factura>> list() {
@@ -70,27 +72,55 @@ public class FacturaController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FacturaDto facturaDto) {
+        try {
+            System.out.println("=== INICIANDO CREACIÓN DE FACTURA ===");
 
-        ResponseEntity<?> respuestaValidaciones = facturaService
-                .validations(facturaDto);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            // PRIMERO: Validar completitud de facturas
-            ResponseEntity<?> validacionCompletitud = facturaService.validarCompletitudAntesDeGuardar(facturaDto);
-            if (validacionCompletitud.getStatusCode() != HttpStatus.OK) {
-                return validacionCompletitud;
+            // 1. Validaciones básicas
+            ResponseEntity<?> validacionesBasicas = facturaService.validations(facturaDto);
+            if (validacionesBasicas.getStatusCode() != HttpStatus.OK) {
+                System.out.println("Validaciones básicas fallaron");
+                return validacionesBasicas;
             }
+            System.out.println("✓ Validaciones básicas OK");
 
-            // SEGUNDO: Crear y guardar
+            // 2. Determinar periodoCarga (PRIMERA, SEGUNDA o FUERA_DE_TERMINO)
+            QuincenaEnum periodoCarga = facturaService.determinarPeriodoCarga(facturaDto);
+            System.out.println("✓ Periodo carga determinado: " + periodoCarga);
+
+            // 3. Validar cantidad de facturas según periodoCarga
+            ResponseEntity<?> validacionCantidad = facturaService.validarCantidadFacturas(facturaDto, periodoCarga);
+            if (validacionCantidad.getStatusCode() != HttpStatus.OK) {
+                System.out.println("Validación cantidad falló");
+                return validacionCantidad;
+            }
+            System.out.println("✓ Validación cantidad OK");
+
+            // 4. Validar montos según periodoCarga
+            ResponseEntity<?> validacionMontos = facturaService.validarMontosFacturas(facturaDto, periodoCarga);
+            if (validacionMontos.getStatusCode() != HttpStatus.OK) {
+                System.out.println("Validación montos falló");
+                return validacionMontos;
+            }
+            System.out.println("✓ Validación montos OK");
+
+            // 5. Crear y guardar factura
             Factura factura = facturaService.createUpdate(new Factura(), facturaDto);
             facturaService.save(factura);
+            System.out.println("✓ Factura creada y guardada - ID: " + factura.getId());
 
-            // TERCERO: Actualizar estado de registros
-            facturaService.actualizarEstadoFacturasDespuesDeGuardar(factura);
+            // 6. Actualizar estado de facturación según periodoCarga
+            facturaService.actualizarEstadoFacturacion(factura, periodoCarga);
+            System.out.println("✓ Estado de facturación actualizado");
 
-            return new ResponseEntity(new Mensaje("Factura creada"), HttpStatus.OK);
+            String mensaje = "Factura creada exitosamente (" + periodoCarga + ")";
+            return new ResponseEntity(new Mensaje(mensaje), HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error creando factura: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity(new Mensaje("Error creando factura: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return respuestaValidaciones;
     }
 
     @PutMapping(("/update/{id}"))
@@ -117,19 +147,19 @@ public class FacturaController {
         if (!facturaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-         // 1. Obtener la factura antes de eliminarla
+        // 1. Obtener la factura antes de eliminarla
         Factura factura = facturaService.findById(id).get();
 
         // 2. Guardar referencia a los registros mensuales afectados
         List<RegistroMensual> registrosAfectados = factura.getRegistrosMensuales();
-        
+
         // 3. Realizar el borrado lógico
         factura.setActivo(false);
         facturaService.save(factura);
 
         // 4. Actualizar el estado de facturasCompletas para los registros afectados
         facturaService.actualizarEstadoFacturasDespuesDeEliminar(registrosAfectados);
-        
+
         return new ResponseEntity<>(new Mensaje("factura  eliminada correctamente"), HttpStatus.OK);
     }
 
@@ -138,18 +168,18 @@ public class FacturaController {
         if (!facturaService.activo(id))
             return new ResponseEntity(new Mensaje("no existe"), HttpStatus.NOT_FOUND);
 
-         // 1. Obtener la factura antes de eliminarla
+        // 1. Obtener la factura antes de eliminarla
         Factura factura = facturaService.findById(id).get();
 
         // 2. Guardar referencia a los registros mensuales afectados
         List<RegistroMensual> registrosAfectados = factura.getRegistrosMensuales();
 
-        // 3. Realizar el borrado 
+        // 3. Realizar el borrado
         facturaService.deleteById(id);
 
         // 4. Actualizar el estado de facturasCompletas para los registros afectados
         facturaService.actualizarEstadoFacturasDespuesDeEliminar(registrosAfectados);
-        
+
         return new ResponseEntity<>(new Mensaje("factura eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
@@ -166,6 +196,26 @@ public class FacturaController {
 
         try {
             BigDecimal monto = facturaService.getMontoByQuincena(idAsistencial, idEfector, quincenaEnum, mesEnum, anio);
+
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @GetMapping("/getMonto/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<?> getMonto(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+        try {
+            BigDecimal monto = facturaService.getMonto(idAsistencial, idEfector, mesEnum, anio);
 
             return new ResponseEntity<>(monto, HttpStatus.OK);
 
@@ -266,6 +316,52 @@ public class FacturaController {
 
             boolean existenDosFacturas = facturaService.existenDosFacturasByFiltros(
                     idAsistencial, idEfector, anio, mesEnum, quincenaEnum);
+
+            return ResponseEntity.ok(existenDosFacturas);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new Mensaje("Parámetro no válido: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al verificar facturas: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/existeFacturaSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
+    public ResponseEntity<?> existeFacturaSinQuincena(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int anio,
+            @PathVariable String mes) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            boolean existe = facturaService.existeFacturaByFiltrosSinQuincena(idAsistencial, idEfector, anio, mesEnum);
+            return ResponseEntity.ok(existe);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(new Mensaje("Parámetro no válido: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al verificar factura: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/existenDosFacturasSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
+    public ResponseEntity<?> existenDosFacturasSinQuincena(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int anio,
+            @PathVariable String mes) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            boolean existenDosFacturas = facturaService.existenDosFacturasByFiltrosSinQuincena(
+                    idAsistencial, idEfector, anio, mesEnum);
 
             return ResponseEntity.ok(existenDosFacturas);
 

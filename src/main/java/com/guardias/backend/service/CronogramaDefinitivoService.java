@@ -183,18 +183,13 @@ public class CronogramaDefinitivoService {
         return cronogramaDefinitivo;
     }
 
-    public CronogramaDefinitivo createUpdateCF(CronogramaDefinitivoDto dto) {
-
-        // Validar quincena
-        if (dto.getQuincena() == null) {
-            throw new IllegalArgumentException("La quincena es obligatoria");
-        }
+    public CronogramaDefinitivo createUpdateDefinitivo(CronogramaDefinitivoDto dto) {
 
         // según tipo de quincena
         if (dto.getQuincena() == QuincenaEnum.PRIMERA) {
             return processPrimeraQuincena(dto);
-        } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA) {
-            return processSegundaQuincena(dto);
+        } else if (dto.getQuincena() == QuincenaEnum.COMPLETO) {
+            return processCompleto(dto);
         } else {
             throw new IllegalArgumentException("Tipo de quincena no válido: " + dto.getQuincena());
         }
@@ -214,7 +209,7 @@ public class CronogramaDefinitivoService {
         return createNewCronograma(dto);
     }
 
-    private CronogramaDefinitivo processSegundaQuincena(CronogramaDefinitivoDto dto) {
+    private CronogramaDefinitivo processCompleto(CronogramaDefinitivoDto dto) {
         // Buscar primera quincena existente
         Optional<CronogramaDefinitivo> primeraQuincenaOpt = cronogramaDefinitivoRepository
                 .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
@@ -230,23 +225,23 @@ public class CronogramaDefinitivoService {
 
             return cronogramaCompleto;
         } else {
-            // Crear segunda quincena normal (sin primera existente)
+            // Crear con estado completo
             return createNewCronograma(dto);
         }
     }
 
     private CronogramaDefinitivo createCronogramaCompleto(CronogramaDefinitivo primeraQuincena,
-            CronogramaDefinitivoDto segundaQuincenaDto) {
+            CronogramaDefinitivoDto completarDto) {
         CronogramaDefinitivo completo = new CronogramaDefinitivo();
 
         // Configurar datos base usando el método existente createUpdate
-        completo = createUpdate(completo, segundaQuincenaDto);
+        completo = createUpdate(completo, completarDto );
         completo.setQuincena(QuincenaEnum.COMPLETO);
 
         // Combinar DDJJs de ambas quincenas
         Set<Ddjj> todasDdjjs = new HashSet<>(primeraQuincena.getDdjjs());
 
-        for (Long idDdjj : segundaQuincenaDto.getIdDdjjs()) {
+        for (Long idDdjj : completarDto .getIdDdjjs()) {
             Ddjj ddjj = ddjjRepository.findById(idDdjj)
                     .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
             todasDdjjs.add(ddjj);

@@ -80,22 +80,6 @@ public class RegistroActividadController {
         return new ResponseEntity(registroActividad, HttpStatus.OK);
     }
 
-    /*
-     * public ResponseEntity<?> validations(RegistroActividadDto
-     * registroActividadDto) {
-     * 
-     * if (registroActividadDto.getFechaIngreso() == null)
-     * return new ResponseEntity(new Mensaje("la fecha de ingreso es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * if (registroActividadDto.getHoraIngreso() == null)
-     * return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
-     * HttpStatus.BAD_REQUEST);
-     * 
-     * return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-     * }
-     */
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody RegistroActividadDto registroActividadDto) {
 
@@ -139,7 +123,6 @@ public class RegistroActividadController {
         }
     }
 
-    // VER que tipo de registro recibirá desde el front para la salida
     @PutMapping("/registrarSalida/{id}")
     public ResponseEntity<?> registrarSalida(@PathVariable("id") Long id,
             @RequestBody RegistroActividadDto registroActividadDto) {
@@ -231,7 +214,15 @@ public class RegistroActividadController {
             @PathVariable int mes,
             @PathVariable int anio) {
 
+    
+        System.out.println("=== INICIO obtenerDdjjAprobadas ===");
+        System.out.println("Parámetros recibidos - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
+        
         List<Long> ddjjAprobadas = registroActividadService.obtenerIdsDdjjAprobadas(idEfector, mes, anio);
+
+        System.out.println("Resultado final: " + ddjjAprobadas);
+        System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
+        
         return new ResponseEntity<>(ddjjAprobadas, HttpStatus.OK);
     }
 
