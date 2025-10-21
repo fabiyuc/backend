@@ -943,6 +943,11 @@ public class RegistroMensualService {
                                 anio);
         }
 
+        public BigDecimal getMontoTotal(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+                return registroMensualRepository.findMontoTotalHorasByFiltrosSinQuincena(idAsistencial, idEfector, mes,
+                                anio);
+        }
+
         public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio,
                         QuincenaEnum quincena) {
 

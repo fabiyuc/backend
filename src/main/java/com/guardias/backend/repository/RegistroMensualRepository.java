@@ -90,6 +90,20 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("quincena") QuincenaEnum quincena,
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio);
+        
+        @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
+                        "JOIN rm.totalHoras sh " +
+                        "WHERE rm.activo = true " +
+                        "AND rm.asistencial.id = :asistencialId " +
+                        "AND rm.efector.id = :efectorId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND sh.activo = true")
+        BigDecimal findMontoTotalHorasByFiltrosSinQuincena(
+                        @Param("asistencialId") Long asistencialId,
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio);
 
         @Query("SELECT rm.totalHoras.montoTotal FROM registrosMensuales rm " +
                         "WHERE rm.id = :id " +
