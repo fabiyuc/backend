@@ -74,7 +74,7 @@ public class RegistroMensual {
     private List<Ddjj> ddjjs = new ArrayList<Ddjj>();
     
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "registrosMensuales", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosMensuales", "asistencial", "nombreTitular", "apellidoTitular", "dniTitular", "cuilTitular", "contribuyente", "tipo", "puntoVenta", "numeroFactura", "activo" })
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registrosMensuales", "asistencial", "nombreTitular", "apellidoTitular", "dniTitular", "cuilTitular", "contribuyente", "tipo", "puntoVenta", "numeroFactura" })
     private List<Factura> facturas = new ArrayList<Factura>();
 
     @OneToOne
