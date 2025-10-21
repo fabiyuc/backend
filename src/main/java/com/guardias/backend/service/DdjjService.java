@@ -353,28 +353,40 @@ public class DdjjService {
     }
 
     private void processRegistrosMensuales(Ddjj ddjj, DdjjDto ddjjDto) {
+        
         // 1. Carga de los registros mensuales
         List<RegistroMensual> todosRegistros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // 2. Determina condicion de la Ddjj
-        CondicionDdjjEnum condicion = determinarTipoDdjjDesdeRegistros(todosRegistros);
-        ddjj.setCondicionDdjj(condicion);
+        // 2. VERIFICAR TIPO DE GUARDIA
+        Optional<TipoGuardia> tipoGuardia = tipoGuardiaRepository.findById(ddjjDto.getIdTipoGuardia());
+        boolean esContrafactura = tipoGuardia.isPresent() && tipoGuardia.get().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
 
-        // 3. Filtrar registros según el tipo de DDJJ
-        List<RegistroMensual> registrosFiltrados = filtrarRegistrosPorTipoDdjj(todosRegistros, condicion);
+        List<RegistroMensual> registrosFiltrados;
+        CondicionDdjjEnum condicion = null;
+
+        // ===== LÓGICA SOLO PARA CONTRAFACTURA =====
+        if (esContrafactura) {
+        
+            condicion = determinarTipoDdjjDesdeRegistros(todosRegistros);
+            ddjj.setCondicionDdjj(condicion);
+            registrosFiltrados = filtrarRegistrosPorTipoDdjj(todosRegistros, condicion);
+        } else {
+            // ===== PARA OTROS TIPOS DE GUARDIA =====
+            // NO determinar condición, NO filtrar registros
+            ddjj.setCondicionDdjj(null);
+            registrosFiltrados = todosRegistros; // Usar TODOS los registros sin filtrar
+        }
 
         // 4. Validar que haya al menos un registro válido
         if (registrosFiltrados.isEmpty()) {
-            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ. " +
-                    "Para DDJJ OFICIAL todos los registros deben estar COMPLETADOS. " +
-                    "Para DDJJ FUERA_DE_TERMINO todos los registros deben estar REGULARIZADOS." +
-                    "Para DDJJ PARCIAL: debe haber al menos 1 registro COMPLETADO y 1 registro PENDIENTE.");
+            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ. ");
         }
 
         System.out.println("=== DEBUG CREACIÓN DDJJ ===");
+        System.out.println("Tipo Guardia: " + (esContrafactura ? "CONTRAFACTURA" : "OTRO"));
+        System.out.println("Condición DDJJ: " + condicion);
         System.out.println("Total registros solicitados: " + todosRegistros.size());
-        System.out.println("Registros válidos después de filtrar: " + registrosFiltrados.size());
-        System.out.println("Tipo DDJJ determinado: " + condicion);
+        System.out.println("Registros usados: " + registrosFiltrados.size());
         System.out.println("Estados encontrados en registros:");
         todosRegistros
                 .forEach(rm -> System.out.println(" - Registro " + rm.getId() + ": " + rm.getEstadoFacturacion()));
