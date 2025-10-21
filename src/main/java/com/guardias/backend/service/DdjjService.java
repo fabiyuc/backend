@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
@@ -177,42 +179,58 @@ public class DdjjService {
 
     }
 
-    // ---- Métodos auxiliares ----
-
+    //solo para CONTRAFACTURA sino retorna NULL
     private QuincenaEnum determinarQuincenaParaDdjj(DdjjDto ddjjDto) {
 
-        // Solo aplica quincena para CONTRAFACTURA (idTipoGuardia = 4)
-        if (ddjjDto.getIdTipoGuardia() != null && ddjjDto.getIdTipoGuardia() == 4L) {
-            return obtenerQuincenaDeRegistrosMensuales(ddjjDto.getIdRegistrosMensuales());
-        }
+        Optional<TipoGuardia> tipoGuardia = tipoGuardiaRepository.findById(ddjjDto.getIdTipoGuardia());
+        List<RegistroMensual> registros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
+        if (!registros.isEmpty() && tipoGuardia.isPresent() && tipoGuardia.get().getNombre() == TipoGuardiaEnum.CONTRAFACTURA) {   
+            return obtenerQuincenaDeRegistrosMensuales(registros);
+        }
         // Para otros tipos de guardia, retorna null
         return null;
     }
 
-    private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<Long> idsRegistrosMensuales) {
+    private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<RegistroMensual> registrosMensuales) {
 
-        if (idsRegistrosMensuales == null || idsRegistrosMensuales.isEmpty()) {
-            return null;
-        }
-
-        // Obtener todos los registros mensuales
-        List<RegistroMensual> registros = registroMensualRepository.findAllById(idsRegistrosMensuales);
-
-        if (registros.isEmpty()) {
-            return null;
-        }
-
-        // Verificar que todos tengan la misma quincena
-        QuincenaEnum quincena = registros.get(0).getQuincena();
-
-        for (RegistroMensual registro : registros) {
-            if (!Objects.equals(quincena, registro.getQuincena())) {
-                throw new IllegalArgumentException("Todos los registros mensuales deben tener la misma quincena");
+        // Verificar si todos los registros tienen la misma quincena
+        boolean quincenaConsistente = true;
+        QuincenaEnum quincenaComun = registrosMensuales.get(0).getQuincena();
+        for (RegistroMensual registro : registrosMensuales) {
+            if (!Objects.equals(quincenaComun, registro.getQuincena())) {
+                quincenaConsistente = false;
+                break;
             }
         }
 
-        return quincena;
+        // Si tienen misma quincena, evaluar condiciones temporales
+        if (quincenaConsistente) {
+            // Obtener mes y anio de registro mensual
+            MesesEnum mesComun = registrosMensuales.get(0).getMes();
+            int anioComun = registrosMensuales.get(0).getAnio();
+            // Obtener fecha actual del sistema
+            LocalDate fechaActual = LocalDate.now();
+            int mesSistema = fechaActual.getMonthValue();
+            int diaSistema = fechaActual.getDayOfMonth();
+            int anioSistema = fechaActual.getYear();
+
+            // Convertir mesComun (MesesEnum) a número de mes (1-12)
+            int mesRegistro = mesComun.ordinal() + 1; // Asumiendo MesesEnum es ENERO(0), FEBRERO(1), ..., DICIEMBRE(11)
+
+            // Determinar si el mes del registro es igual o anterior al del sistema
+            boolean mismoAnioMes = (anioComun == anioSistema && mesRegistro == mesSistema);
+            boolean mesAnterior = (anioComun < anioSistema) || (anioComun == anioSistema && mesRegistro < mesSistema);
+
+            // Determino quincena para registros con misma quincena
+            if (quincenaComun == QuincenaEnum.PRIMERA && mismoAnioMes && diaSistema < 20) {
+                return QuincenaEnum.PRIMERA;
+            } else if (quincenaComun == QuincenaEnum.SEGUNDA && mesAnterior && diaSistema < 10) {
+                return QuincenaEnum.SEGUNDA;
+            }
+        }
+        //devuelve fuera de termino para registros con diferente quincena
+        return QuincenaEnum.FUERA_DE_TERMINO;
     }
 
     private void validateRegistrosMensuales(List<Long> idsRegistros) {
@@ -334,31 +352,33 @@ public class DdjjService {
     }
 
     private void processRegistrosMensuales(Ddjj ddjj, DdjjDto ddjjDto) {
-        // 1. Carga batch de registros (1 query)
-        List<RegistroMensual> todosRegistros  = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
+        // 1. Carga de los registros mensuales
+        List<RegistroMensual> todosRegistros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
 
-        // Filtrar registros válidos
-        List<RegistroMensual> registrosFiltrados = todosRegistros.stream()
-            .filter(rm -> rm.getFacturasCompletas() == null || Boolean.TRUE.equals(rm.getFacturasCompletas()))
-            .collect(Collectors.toList());
-    
-        // Validar que haya al menos un registro válido
-        if (registrosFiltrados.isEmpty()) {
-            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ.");
-        }
-
-        // 2. Determinar la condición de la DDJJ
-        CondicionDdjjEnum condicion;
-    
-        if (todosRegistros.size() == registrosFiltrados.size()) {
-            condicion = CondicionDdjjEnum.OFICIAL;  // Todos válidos
-        } else {
-            condicion = CondicionDdjjEnum.PARCIAL;  // Algunos excluidos
-        }
-    
+        // 2. Determina condicion Ddjj: cuenta estados (completados, regularizados, pendientes)
+        CondicionDdjjEnum condicion = determinarTipoDdjjDesdeRegistros(todosRegistros);
         ddjj.setCondicionDdjj(condicion);
 
-        // 3. Caso CREACIÓN - Inicializa y establece relaciones
+        // 3. Filtrar registros según el tipo de DDJJ
+        List<RegistroMensual> registrosFiltrados = filtrarRegistrosPorTipoDdjj(todosRegistros, condicion);
+
+        // 4. Validar que haya al menos un registro válido
+        if (registrosFiltrados.isEmpty()) {
+            throw new IllegalArgumentException("No hay registros mensuales válidos para crear la DDJJ. " +
+                    "Para DDJJ OFICIAL todos los registros deben estar COMPLETADOS. " +
+                    "Para DDJJ FUERA_DE_TERMINO todos los registros deben estar REGULARIZADOS.");
+        }
+
+        System.out.println("=== DEBUG CREACIÓN DDJJ ===");
+        System.out.println("Total registros solicitados: " + todosRegistros.size());
+        System.out.println("Registros válidos después de filtrar: " + registrosFiltrados.size());
+        System.out.println("Tipo DDJJ determinado: " + condicion);
+        System.out.println("Estados encontrados en registros:");
+        todosRegistros
+                .forEach(rm -> System.out.println(" - Registro " + rm.getId() + ": " + rm.getEstadoFacturacion()));
+        System.out.println("===========================");
+
+        // 5. si ddjj nueva - Caso CREACIÓN - Inicializa y establece relaciones
         if (ddjj.getId() == null) {
             ddjj.setRegistrosMensuales(new ArrayList<>());
 
@@ -382,7 +402,7 @@ public class DdjjService {
             return;
         }
 
-        // 4. Caso EDICIÓN (código existente corregido)
+        // 6. si Caso EDICIÓN
         Set<Long> nuevosIds = registrosFiltrados.stream()
                 .map(RegistroMensual::getId)
                 .collect(Collectors.toSet());
@@ -417,6 +437,74 @@ public class DdjjService {
         // GUARDA LOS CAMBIOS EN LOS REGISTROS
         if (!registrosToUpdate.isEmpty()) {
             registroMensualRepository.saveAll(registrosToUpdate);
+        }
+    }
+
+    /**
+     * Determina la condicion de la DDJJ
+     */
+    private CondicionDdjjEnum determinarTipoDdjjDesdeRegistros(List<RegistroMensual> registros) {
+        // Contar registros por estado
+        long completados = registros.stream()
+                .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.COMPLETADO)
+                .count();
+
+        long regularizados = registros.stream()
+                .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.REGULARIZADO)
+                .count();
+
+        long pendientes = registros.stream()
+                .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.PENDIENTE ||
+                        rm.getEstadoFacturacion() == null)
+                .count();
+
+        System.out.println("=== DEBUG DETERMINACIÓN TIPO DDJJ ===");
+        System.out.println("COMPLETADO: " + completados);
+        System.out.println("REGULARIZADO: " + regularizados);
+        System.out.println("PENDIENTE: " + pendientes);
+        System.out.println("Total registros: " + registros.size());
+
+        // Validar que no haya mezcla de COMPLETADO y REGULARIZADO
+        if (completados > 0 && regularizados > 0) {
+            throw new IllegalArgumentException(
+                    "No se puede crear una DDJJ con mezcla de registros COMPLETADOS y REGULARIZADOS. " +
+                            "Todos los registros deben ser del mismo tipo.");
+        }
+
+        // Determinar tipo de DDJJ
+        if (completados > 0) {
+            System.out.println("Tipo determinado: OFICIAL");
+            return CondicionDdjjEnum.OFICIAL;
+        } else if (regularizados > 0) {
+            System.out.println("Tipo determinado: FUERA_DE_TERMINO");
+            return CondicionDdjjEnum.FUERA_DE_TERMINO;
+        } else {
+            throw new IllegalArgumentException("No hay registros válidos. " +
+                    "Para DDJJ OFICIAL todos los registros deben estar COMPLETADOS. " +
+                    "Para DDJJ FUERA_DE_TERMINO todos los registros deben estar REGULARIZADOS.");
+        }
+    }
+
+    /**
+     * Filtra registros según el tipo de DDJJ
+     */
+    private List<RegistroMensual> filtrarRegistrosPorTipoDdjj(List<RegistroMensual> registros,
+            CondicionDdjjEnum tipoDdjj) {
+        switch (tipoDdjj) {
+            case OFICIAL:
+                // Solo registros COMPLETADO (excluye PENDIENTE y REGULARIZADO)
+                return registros.stream()
+                        .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.COMPLETADO)
+                        .collect(Collectors.toList());
+
+            case FUERA_DE_TERMINO:
+                // Solo registros REGULARIZADO (excluye PENDIENTE y COMPLETADO)
+                return registros.stream()
+                        .filter(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.REGULARIZADO)
+                        .collect(Collectors.toList());
+
+            default:
+                throw new IllegalArgumentException("Tipo de DDJJ no soportado: " + tipoDdjj);
         }
     }
 
@@ -575,6 +663,65 @@ public class DdjjService {
 
         System.out.println("Resultado de la consulta: " + result);
         System.out.println("=== FIN existsByAnioMesEfectorAndQuincenaCf ===");
+
+        return result;
+    }
+    public boolean existsByAnioMesAndEfectorCf(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        System.out.println("=== INICIO existsByAnioMesAndEfectorCf ===");
+        System.out.println("Parámetros:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+
+        // Buscar el ID de CONTRAFACTURA
+        Optional<TipoGuardia> tipoGuardiaCf = tipoGuardiaRepository.findByNombre(TipoGuardiaEnum.CONTRAFACTURA);
+
+        if (!tipoGuardiaCf.isPresent()) {
+            System.out.println("ERROR: TipoGuardia CONTRAFACTURA no encontrado");
+            return false;
+        }
+
+        Long idTipoGuardiaCf = tipoGuardiaCf.get().getId();
+        System.out.println("ID de CONTRAFACTURA: " + idTipoGuardiaCf);
+
+        // Consulta específica para CONTRAFACTURA 
+        boolean result = ddjjRepository.existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndActivoTrue(
+                anio, mes, idEfector, idTipoGuardiaCf);
+
+        System.out.println("Resultado de la consulta: " + result);
+        System.out.println("=== FIN existsByAnioMesAndEfectorCf ===");
+
+        return result;
+    }
+
+    public boolean existsByAnioMesAndEfectorCfFueraTermino(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        System.out.println("=== INICIO existsByAnioMesAndEfectorCf ===");
+        System.out.println("Parámetros:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+
+        // Buscar el ID de CONTRAFACTURA
+        Optional<TipoGuardia> tipoGuardiaCf = tipoGuardiaRepository.findByNombre(TipoGuardiaEnum.CONTRAFACTURA);
+
+        if (!tipoGuardiaCf.isPresent()) {
+            System.out.println("ERROR: TipoGuardia CONTRAFACTURA no encontrado");
+            return false;
+        }
+
+        Long idTipoGuardiaCf = tipoGuardiaCf.get().getId();
+        System.out.println("ID de CONTRAFACTURA: " + idTipoGuardiaCf);
+
+        // Consulta específica para CONTRAFACTURA 
+        boolean result = ddjjRepository.existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndCondicionDdjjAndActivoTrue(
+                anio, mes, idEfector, idTipoGuardiaCf,CondicionDdjjEnum.FUERA_DE_TERMINO);
+
+        System.out.println("Resultado de la consulta: " + result);
+        System.out.println("=== FIN existsByAnioMesAndEfectorCf ===");
 
         return result;
     }
@@ -811,6 +958,49 @@ public class DdjjService {
 
         List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardiaAndQuincena(
                 anio, mes, idEfector, TipoGuardiaEnum.CONTRAFACTURA, quincena);
+
+        if (ddjjs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<DdjjListDto> result = ddjjs.stream()
+                .map(ddjj -> {
+
+                    // Filtrar solo registros mensuales activos
+                    List<RegistroMensual> registrosActivos = ddjj.getRegistrosMensuales().stream()
+                            .filter(RegistroMensual::isActivo)
+                            .map(rm -> {
+
+                                // Filtrar solo regActiv activas
+                                List<RegistroActividad> actividadesActivas = rm.getRegistroActividad().stream()
+                                        .filter(actividad -> {
+                                            boolean activo = actividad.isActivo();
+                                            boolean guardiaCompleta = actividad.getEsGuardiaIncompleta() == null ||
+                                                    !actividad.getEsGuardiaIncompleta();
+
+                                            return activo && guardiaCompleta;
+                                        })
+                                        .collect(Collectors.toList());
+
+                                rm.setRegistroActividad(actividadesActivas);
+                                return rm;
+                            })
+                            .filter(rm -> !rm.getRegistroActividad().isEmpty()) // Solo registros con actividades
+                            .collect(Collectors.toList());
+
+                    ddjj.setRegistrosMensuales(registrosActivos);
+                    return convertirADdjjListDto(ddjj);
+                })
+                .filter(dto -> !dto.getRegistrosMensuales().isEmpty()) // Solo DTOs con registros
+                .collect(Collectors.toList());
+
+        return result;
+    }
+
+    public List<DdjjListDto> findCfFueraTermino(int anio, MesesEnum mes, Long idEfector, CondicionDdjjEnum condicionDdjj) {
+
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardiaAndCondicionDdjj(
+                anio, mes, idEfector, TipoGuardiaEnum.CONTRAFACTURA, condicionDdjj);
 
         if (ddjjs.isEmpty()) {
             return Collections.emptyList();

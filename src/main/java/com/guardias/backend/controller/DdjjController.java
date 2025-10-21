@@ -23,6 +23,7 @@ import com.guardias.backend.dto.ddjj.DdjjListDto;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.Legajo;
+import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.security.entity.Usuario;
@@ -305,6 +306,66 @@ public class DdjjController {
             return ResponseEntity.badRequest().body(false);
         }
     }
+    @GetMapping("/existsDdjjCfSinQuincena/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<Boolean> existsDdjjCfSinQuincena(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+
+        System.out.println("=== INICIO existsDdjjCf ===");
+        System.out.println("Parámetros recibidos:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            System.out.println("Mes convertido a enum: " + mesEnum);
+
+            boolean exists = ddjjService.existsByAnioMesAndEfectorCf(
+                    anio, mesEnum, idEfector);
+
+            System.out.println("Resultado de la consulta: " + exists);
+            System.out.println("=== FIN existsDdjjCf ===");
+
+            return ResponseEntity.ok(exists);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Mensaje de error: " + e.getMessage());
+            System.out.println("=== FIN existsDdjjCf (con error) ===");
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+    @GetMapping("/existsDdjjCfFueraTermino/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<Boolean> existsDdjjCfFueraTermino(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+
+        System.out.println("=== INICIO existsDdjjCf ===");
+        System.out.println("Parámetros recibidos:");
+        System.out.println(" - anio: " + anio);
+        System.out.println(" - mes: " + mes);
+        System.out.println(" - idEfector: " + idEfector);
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+            System.out.println("Mes convertido a enum: " + mesEnum);
+
+            boolean exists = ddjjService.existsByAnioMesAndEfectorCfFueraTermino(
+                    anio, mesEnum, idEfector);
+
+            System.out.println("Resultado de la consulta: " + exists);
+            System.out.println("=== FIN existsDdjjCf ===");
+
+            return ResponseEntity.ok(exists);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Mensaje de error: " + e.getMessage());
+            System.out.println("=== FIN existsDdjjCf (con error) ===");
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
 
     @GetMapping("/getAutoridadImageUrl/{idUsuario}")
     public ResponseEntity<?> getAutoridadImageUrl(@PathVariable("idUsuario") Long idUsuario) {
@@ -470,7 +531,7 @@ public class DdjjController {
     }
 
     @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
-    public ResponseEntity<List<DdjjListDto>> listCfAnd(
+    public ResponseEntity<List<DdjjListDto>> listCf(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector,
@@ -482,6 +543,27 @@ public class DdjjController {
         try {
             List<DdjjListDto> ddjjs = ddjjService
                     .findCf(anio, mesEnum, idEfector, quincenaEnum);
+
+            return new ResponseEntity<>(ddjjs, HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println("Error general: " + e.getMessage());
+            e.printStackTrace();
+            return new ResponseEntity(new Mensaje("Ddjj de CF no encontrada"),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/listCfFueraTermino/{anio}/{mes}/{idEfector}")
+    public ResponseEntity<List<DdjjListDto>> listCfFueraTermino(
+            @PathVariable int anio,
+            @PathVariable String mes,
+            @PathVariable Long idEfector) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes);
+
+        try {
+            List<DdjjListDto> ddjjs = ddjjService
+                    .findCfFueraTermino(anio, mesEnum, idEfector, CondicionDdjjEnum.FUERA_DE_TERMINO);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import com.guardias.backend.dto.asistencial.AsistencialListForRmensualDto;
 import com.guardias.backend.dto.factura.FacturaDetailDto;
 import com.guardias.backend.dto.registroActividad.RegActivListDto;
 import com.guardias.backend.dto.sumaHoras.SumaHorasListDto;
+import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 
@@ -27,7 +28,7 @@ public class RegistroMensualListDto {
     private List<Long> idDdjjs;
     private QuincenaEnum quincena;
 
-    private Boolean facturasCompletas;
+    private EstadoFacturacionEnum estadoFacturacion;
     private List<FacturaDetailDto> facturas;
 
 }

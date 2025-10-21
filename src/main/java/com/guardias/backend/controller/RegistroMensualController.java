@@ -359,7 +359,7 @@ public class RegistroMensualController {
         try {
             List<RegistroMensualListDto> registros = registroMensualService
                     .findByTipoGuardiaCfAndServicio(anio, mesEnum, idEfector,
-                            idServicio,quincenaEnum);
+                            idServicio, quincenaEnum);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -381,7 +381,7 @@ public class RegistroMensualController {
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
-                    .findByTipoGuardiaCf(anio, mesEnum, idEfector,quincenaEnum);
+                    .findByTipoGuardiaCf(anio, mesEnum, idEfector, quincenaEnum);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -392,18 +392,19 @@ public class RegistroMensualController {
 
     @GetMapping("/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
     public ResponseEntity<?> getMontoTotalByQuincena(
-        @PathVariable("idAsistencial") Long idAsistencial,
-        @PathVariable("idEfector") Long idEfector,
-        @PathVariable("quincena") String quincena,
-        @PathVariable("mes") String mes,
-        @PathVariable("anio") int anio) {
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("quincena") String quincena,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
 
         QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
         MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
 
         try {
-            BigDecimal monto = registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector, quincenaEnum, mesEnum, anio);
-  
+            BigDecimal monto = registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector, quincenaEnum,
+                    mesEnum, anio);
+
             return new ResponseEntity<>(monto, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -419,16 +420,89 @@ public class RegistroMensualController {
             @PathVariable String mes,
             @PathVariable int anio,
             @PathVariable String quincena) {
-        
+
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum, anio, quincenaEnum);
-            
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum,
+                    anio, quincenaEnum);
+
             return ResponseEntity.ok(registros);
-            
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
         }
     }
+
+    @GetMapping("/fuera-de-termino/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTermino(idEfector,
+                    mesEnum, anio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
+    @GetMapping("/fuera-de-termino-por-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable Long idServicio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoPorServicio(idEfector,
+                    mesEnum, anio, idServicio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
+    @GetMapping("/existen-fuera-de-termino/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existenRegistrosFueraDeTermino(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio) {
+
+        try {
+             MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            boolean existen = registroMensualService.existenRegistrosFueraDeTermino(idEfector, mesEnum, anio);
+            return ResponseEntity.ok(existen);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    @GetMapping("/existen-completos/{idEfector}/{mes}/{anio}/{quincena}")
+    public ResponseEntity<Boolean> existenAutorizados(
+            @PathVariable Long idEfector,
+             @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable String quincena) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            boolean existen = registroMensualService.existenCompletos(idEfector, mesEnum, anio, quincenaEnum);
+            return ResponseEntity.ok(existen);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
 }
