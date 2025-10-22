@@ -144,14 +144,14 @@ public class FacturaService {
         if (quincenaRegistro == QuincenaEnum.PRIMERA) {
             LocalDate limitePrimera = LocalDate.of(anioRegistro, mesRegistro, 21);
             if (fechaSistema.isBefore(limitePrimera)) {
-                System.out.println("✅ Periodo carga: PRIMERA (en término)");
+                System.out.println("Periodo carga: PRIMERA (en término)");
                 return QuincenaEnum.PRIMERA;
             }
         } else if (quincenaRegistro == QuincenaEnum.SEGUNDA) {
             LocalDate primerDiaMesSiguiente = LocalDate.of(anioRegistro, mesRegistro, 1).plusMonths(1);
-            LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(5);
+            LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(6);
             if (fechaSistema.isBefore(limiteSegunda)) {
-                System.out.println("✅ Periodo carga: SEGUNDA (en término)");
+                System.out.println("Periodo carga: SEGUNDA (en término)");
                 return QuincenaEnum.SEGUNDA;
             }
         }
