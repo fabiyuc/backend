@@ -224,9 +224,9 @@ public class DdjjService {
             boolean mesAnterior = (anioComun < anioSistema) || (anioComun == anioSistema && mesRegistro < mesSistema);
 
             // Determino quincena para registros con misma quincena
-            if (quincenaComun == QuincenaEnum.PRIMERA && mismoAnioMes && diaSistema < 20) {
+            if (quincenaComun == QuincenaEnum.PRIMERA && mismoAnioMes && diaSistema <= 20) {
                 return QuincenaEnum.PRIMERA;
-            } else if (quincenaComun == QuincenaEnum.SEGUNDA && mesAnterior && diaSistema < 10) {
+            } else if (quincenaComun == QuincenaEnum.SEGUNDA && mesAnterior && diaSistema <= 10) {
                 return QuincenaEnum.SEGUNDA;
             }
         }
