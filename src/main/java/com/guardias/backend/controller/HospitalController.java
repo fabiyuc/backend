@@ -40,6 +40,7 @@ import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 import com.guardias.backend.service.RegionService;
 
+//@Controller cambio por @RestController
 @RestController
 @RequestMapping("/hospital")
 @CrossOrigin(origins = "http://localhost:4200")
