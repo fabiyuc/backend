@@ -177,7 +177,7 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
                         @Param("estadoDirector") EstadoDdjjEnum estadoDirector);
 
-        @Query("SELECT d.id FROM Ddjjs d WHERE d.efector.id = :efectorId AND d.mes = :mes AND d.anio = :anio AND d.tipoGuardia.nombre = :tipoGuardia AND d.estadoDdjjDirector = :estado")
+        @Query("SELECT d.id FROM Ddjjs d WHERE d.efector.id = :efectorId AND d.mes = :mes AND d.anio = :anio AND d.tipoGuardia.nombre = :tipoGuardia AND d.estadoDdjjDirector = :estado AND d.activo = true")
         Optional<Long> findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
                         @Param("efectorId") Long efectorId,
                         @Param("mes") MesesEnum mes,
