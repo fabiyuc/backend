@@ -258,7 +258,8 @@ public class AsistencialController {
         return new ResponseEntity<>(asistenciales, HttpStatus.OK);
     }
 
-    //NO VA, NO VIENE AL CASO PORQUE NO HAY Q BUSCAR EN LA LISTA DE ASISTENCIALES SINO EN LA LISTA DE HABILIT EN GUARDIAS EXTRAS
+    // NO VA, NO VIENE AL CASO PORQUE NO HAY Q BUSCAR EN LA LISTA DE ASISTENCIALES
+    // SINO EN LA LISTA DE HABILIT EN GUARDIAS EXTRAS
     @GetMapping("/listByEfectorAndTipoGuardiaExtraHabilitado/{idEfector}")
     public ResponseEntity<List<AsistencialSummaryDto>> listByEfectorAndTipoGuardiaExtraHabilitado(
             @PathVariable Long idEfector) {
@@ -275,6 +276,17 @@ public class AsistencialController {
     public ResponseEntity<List<AsistencialEfectorDto>> getAsistencialesByEfector(
             @PathVariable("idEfector") Long idEfector) {
         List<AsistencialEfectorDto> asistenciales = asistencialService.getAsistencialesByEfector(idEfector);
+        if (asistenciales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(asistenciales, HttpStatus.OK);
+    }
+
+    //
+    @GetMapping("/listAsistencialDetailByEfector/{idEfector}")
+    public ResponseEntity<List<AsistencialDetailDto>> getAsistencialesDetailByEfector(
+            @PathVariable("idEfector") Long idEfector) {
+        List<AsistencialDetailDto> asistenciales = asistencialService.getAsistencialesDetailByEfector(idEfector);
         if (asistenciales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -368,7 +380,7 @@ public class AsistencialController {
     @GetMapping("/getTiposGuardias/{idAsistencial}")
     public ResponseEntity<List<AsistencialTiposGuardiasDto>> getTiposGuardias(
             @PathVariable("idAsistencial") Long idAsistencial) {
-        
+
         List<AsistencialTiposGuardiasDto> tiposGuardias = asistencialService.obtenerTiposGuardia(idAsistencial);
 
         return new ResponseEntity<>(tiposGuardias, HttpStatus.OK);
