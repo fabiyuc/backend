@@ -169,13 +169,30 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         "d.mes = :mes AND " +
                         "d.anio = :anio AND " +
                         "d.tipoGuardia.nombre = :tipoGuardia AND " +
-                        "d.estadoDdjjDirector = :estadoDirector ")
+                        "d.estadoDdjjDirector = :estadoDirector AND " +
+                        "d.activo = true")
         boolean existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
                         @Param("idEfector") Long idEfector,
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio,
                         @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
                         @Param("estadoDirector") EstadoDdjjEnum estadoDirector);
+        
+        @Query("SELECT COUNT(d) > 0 FROM Ddjjs d WHERE " +
+                        "d.efector.id = :idEfector AND " +
+                        "d.mes = :mes AND " +
+                        "d.anio = :anio AND " +
+                        "d.tipoGuardia.nombre = :tipoGuardia AND " +
+                        "d.estadoDdjjDirector = :estadoDirector AND " +
+                        "d.activo = true AND " +
+                        "d.quincena = :quincena ")
+        boolean existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorQuincena(
+                        @Param("idEfector") Long idEfector,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                        @Param("estadoDirector") EstadoDdjjEnum estadoDirector,
+                        @Param("quincena") QuincenaEnum quincena);
 
         @Query("SELECT d.id FROM Ddjjs d WHERE d.efector.id = :efectorId AND d.mes = :mes AND d.anio = :anio AND d.tipoGuardia.nombre = :tipoGuardia AND d.estadoDdjjDirector = :estado AND d.activo = true")
         Optional<Long> findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
@@ -184,6 +201,15 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         @Param("anio") int anio,
                         @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
                         @Param("estado") EstadoDdjjEnum estado);
+        
+        @Query("SELECT d.id FROM Ddjjs d WHERE d.efector.id = :efectorId AND d.mes = :mes AND d.anio = :anio AND d.tipoGuardia.nombre = :tipoGuardia AND d.estadoDdjjDirector = :estado AND d.activo = true AND d.quincena = :quincena")
+        Optional<Long> findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorAndQuincena(
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                        @Param("estado") EstadoDdjjEnum estado,
+                        @Param("quincena") QuincenaEnum quincena);
 
         @Query("UPDATE Ddjjs d SET d.estadoDdjjDirectorDPH = :nuevoEstado WHERE d.id IN :ids")
         int updateEstadoDdjjDirectorDPHByIds(
