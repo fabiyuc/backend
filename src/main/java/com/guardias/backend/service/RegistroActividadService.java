@@ -21,6 +21,7 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.registroActividad.RegActivAsistenciaDto;
 import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
+import com.guardias.backend.entity.Ddjj; // añadido
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
@@ -42,8 +43,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
-
-import com.guardias.backend.entity.Ddjj; // añadido
 
 @Service
 @Transactional
@@ -75,7 +74,8 @@ public class RegistroActividadService {
     @Autowired
     DdjjRepository ddjjRepository;
 
-    // Inyectar EntityManager para consultas flexibles que puedan devolver múltiples resultados
+    // Inyectar EntityManager para consultas flexibles que puedan devolver múltiples
+    // resultados
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -356,7 +356,7 @@ public class RegistroActividadService {
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
         ResponseEntity<?> respuestaDeletePendiente = null;
-        
+
         if (!esGuardiaCorta) {
             /* E. Cálculo de horas y montos */
             SumaHoras horas = calcularHoras(registroActividad);
@@ -554,7 +554,8 @@ public class RegistroActividadService {
                 idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
         System.out.println("¿Tiene CONTRAFACTURA? " + tieneContrafactura);
 
-        // 2. Buscar DDJJ aprobadas por el director (usar consulta que devuelve lista de ids)
+        // 2. Buscar DDJJ aprobadas por el director (usar consulta que devuelve lista de
+        // ids)
         System.out.println("\n--- Buscando DDJJ aprobadas ---");
 
         if (tieneCargo || tieneAgrupacion) {
