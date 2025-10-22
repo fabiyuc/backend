@@ -106,13 +106,6 @@ public class CronogramaDefinitivoService {
         if (validacionDdjjs.getStatusCode() != HttpStatus.OK) {
             return validacionDdjjs;
         }
-        boolean apto = registroActividadService.validarPrecondicionesCronograma(cronogramaDefinitivoDto.getIdEfector(),
-                cronogramaDefinitivoDto.getMes().getNumeroMes(), cronogramaDefinitivoDto.getAnio());
-        if (apto != true) {
-            return new ResponseEntity(
-                    new Mensaje("no cumple con las validaciones de la ddjj con estadoDirector aprobadas"),
-                    HttpStatus.BAD_REQUEST);
-        }
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
@@ -188,7 +181,7 @@ public class CronogramaDefinitivoService {
         // según tipo de quincena
         if (dto.getQuincena() == QuincenaEnum.PRIMERA) {
             return processPrimeraQuincena(dto);
-        } else if (dto.getQuincena() == QuincenaEnum.COMPLETO) {
+        } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA) {
             return processCompleto(dto);
         } else {
             throw new IllegalArgumentException("Tipo de quincena no válido: " + dto.getQuincena());
