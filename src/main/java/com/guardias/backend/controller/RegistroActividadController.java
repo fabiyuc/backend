@@ -198,6 +198,25 @@ public class RegistroActividadController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
+    //toma el id de la ddjj 1ra quincena de CF
+    @GetMapping("/obtener-ddjjCf-primeraQ-aprobada/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<Long>> obtenerDdjjAprobadasCf(
+            @PathVariable Long idEfector,
+            @PathVariable int mes,
+            @PathVariable int anio) {
+
+    
+        System.out.println("=== INICIO obtenerDdjjAprobada CF primera quincena ===");
+        System.out.println("Parámetros recibidos - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
+        
+        List<Long> ddjjAprobada = registroActividadService.obtenerIdDdjjAprobadaCf(idEfector, mes, anio);
+
+        System.out.println("Resultado final: " + ddjjAprobada);
+        System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
+        
+        return new ResponseEntity<>(ddjjAprobada, HttpStatus.OK);
+    }
+
     @GetMapping("/validar-precondiciones-cronograma/{idEfector}/{mes}/{anio}")
     public ResponseEntity<Boolean> checkCompleteDdjjSet(
             @PathVariable Long idEfector,
@@ -208,6 +227,7 @@ public class RegistroActividadController {
         return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
     }
 
+    //toma los id de las ddjj de todos los tipos de guardia incluyendo solo de la 2da quincena de CF
     @GetMapping("/obtener-ddjj-aprobadas/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<Long>> obtenerDdjjAprobadas(
             @PathVariable Long idEfector,
