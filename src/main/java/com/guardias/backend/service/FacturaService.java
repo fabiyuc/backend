@@ -528,6 +528,20 @@ public class FacturaService {
                 .collect(Collectors.toList());
     }
 
+    public List<FacturaSummaryDto> getFacturasByAnioMes(int idEfector, int anio, MesesEnum mes) {
+        List<Factura> facturas = facturaRepository.findByAnioMes(idEfector, anio, mes);
+        return facturas.stream()
+                .map(this::convertToSummaryDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FacturaSummaryDto> getFacturasByAsistencialSinQuincena(int idEfector, int anio, MesesEnum mes, int idAsistencial) {
+        List<Factura> facturas = facturaRepository.findByAsistencialYfiltros(idEfector, anio, mes, idAsistencial);
+        return facturas.stream()
+                .map(this::convertToSummaryDto)
+                .collect(Collectors.toList());
+    }
+
     private FacturaSummaryDto convertToSummaryDto(Factura factura) {
         FacturaSummaryDto dto = new FacturaSummaryDto();
         dto.setId(factura.getId());

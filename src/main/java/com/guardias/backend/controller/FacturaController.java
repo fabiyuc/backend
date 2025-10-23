@@ -291,6 +291,41 @@ public class FacturaController {
         }
     }
 
+    @GetMapping("/listSummarySinQuincena/{idEfector}/{anio}/{mes}")
+    public ResponseEntity<?> listSummarySinQuincena(
+            @PathVariable("idEfector") int idEfector,
+            @PathVariable int anio,
+            @PathVariable("mes") String mes) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            List<FacturaSummaryDto> facturas = facturaService.getFacturasByAnioMes(idEfector, anio, mesEnum);
+            return ResponseEntity.ok(facturas);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al obtener facturas: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/listByAsistencialSinQuincena/{idEfector}/{anio}/{mes}/{idAsistencial}")
+    public ResponseEntity<?> listByAsistencialSinQuincena(
+            @PathVariable("idEfector") int idEfector,
+            @PathVariable int anio,
+            @PathVariable("mes") String mes,
+            @PathVariable("idAsistencial") int idAsistencial) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            List<FacturaSummaryDto> facturas = facturaService.getFacturasByAsistencialSinQuincena(idEfector, anio, mesEnum, idAsistencial);
+            return ResponseEntity.ok(facturas);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(new Mensaje("Error al obtener facturas: " + e.getMessage()));
+        }
+    }
+
     @GetMapping("/getByFiltros/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
     public ResponseEntity<?> getFacturasByFiltros(
             @PathVariable("idAsistencial") Long idAsistencial,

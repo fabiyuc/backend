@@ -75,12 +75,39 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   "AND rm.efector.id = :idEfector " +
                   "AND rm.anio = :anio " +
                   "AND rm.mes = :mes " +
+                  "AND rm.activo = true " +
                   "AND rm.quincena = :quincena")
       List<Factura> findByAnioMesQuincena(
                   @Param("idEfector") int idEfector,
                   @Param("anio") int anio,
                   @Param("mes") MesesEnum mes,
                   @Param("quincena") QuincenaEnum quincena);
+      
+      @Query("SELECT DISTINCT f FROM facturas f " +
+                  "JOIN f.registrosMensuales rm " +
+                  "WHERE f.activo = true " +
+                  "AND rm.efector.id = :idEfector " +
+                  "AND rm.anio = :anio " +
+                  "AND rm.activo = true " +
+                  "AND rm.mes = :mes ")
+      List<Factura> findByAnioMes(
+                  @Param("idEfector") int idEfector,
+                  @Param("anio") int anio,
+                  @Param("mes") MesesEnum mes);
+      
+      @Query("SELECT DISTINCT f FROM facturas f " +
+                  "JOIN f.registrosMensuales rm " +
+                  "WHERE f.activo = true " +
+                  "AND f.asistencial.id = :idAsistencial " +
+                  "AND rm.efector.id = :idEfector " +
+                  "AND rm.anio = :anio " +
+                  "AND rm.activo = true " +
+                  "AND rm.mes = :mes ")
+      List<Factura> findByAsistencialYfiltros(
+                  @Param("idEfector") int idEfector,
+                  @Param("anio") int anio,
+                  @Param("mes") MesesEnum mes,
+                  @Param("idAsistencial") int idAsistencial);
 
       @Query("SELECT DISTINCT f FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
