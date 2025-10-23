@@ -535,10 +535,10 @@ public class FacturaService {
                 .collect(Collectors.toList());
     }
 
-    public List<FacturaSummaryDto> getFacturasByAsistencialSinQuincena(int idEfector, int anio, MesesEnum mes, int idAsistencial) {
+    public List<FacturaDetailDto> getFacturasByAsistencialSinQuincena(int idEfector, int anio, MesesEnum mes, int idAsistencial) {
         List<Factura> facturas = facturaRepository.findByAsistencialYfiltros(idEfector, anio, mes, idAsistencial);
         return facturas.stream()
-                .map(this::convertToSummaryDto)
+                .map(this::convertToDetailDto)
                 .collect(Collectors.toList());
     }
 

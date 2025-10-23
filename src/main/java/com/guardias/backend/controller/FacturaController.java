@@ -317,7 +317,7 @@ public class FacturaController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
-            List<FacturaSummaryDto> facturas = facturaService.getFacturasByAsistencialSinQuincena(idEfector, anio, mesEnum, idAsistencial);
+            List<FacturaDetailDto> facturas = facturaService.getFacturasByAsistencialSinQuincena(idEfector, anio, mesEnum, idAsistencial);
             return ResponseEntity.ok(facturas);
 
         } catch (Exception e) {
