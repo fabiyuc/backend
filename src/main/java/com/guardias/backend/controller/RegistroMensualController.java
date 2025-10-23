@@ -436,6 +436,26 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/getMontoTotalFueraTermino/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<?> getMontoTotalFueraTermino(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+        try {
+            BigDecimal monto = registroMensualService.getMontoTotalFueraTermino(idAsistencial, idEfector, mesEnum, anio);
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/incompletos/{idEfector}/{mes}/{anio}/{quincena}")
     public ResponseEntity<List<RegistroMensualListDto>> getRegistrosIncompletos(
             @PathVariable Long idEfector,

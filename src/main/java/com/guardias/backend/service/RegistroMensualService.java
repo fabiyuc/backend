@@ -898,13 +898,9 @@ public class RegistroMensualService {
                                 SumaHoras horas = actividad.getHorasRealizadas();
                                 totalHorasLav += horas.getHorasLav();
                                 totalHorasSdf += horas.getHorasSdf();
-                                totalMontoLav = totalMontoLav.add(
-                                                horas.getMontoLav() != null ? horas.getMontoLav() : BigDecimal.ZERO);
-                                totalMontoSdf = totalMontoSdf.add(
-                                                horas.getMontoSdf() != null ? horas.getMontoSdf() : BigDecimal.ZERO);
-                                totalMontoTotal = totalMontoTotal
-                                                .add(horas.getMontoTotal() != null ? horas.getMontoTotal()
-                                                                : BigDecimal.ZERO);
+                                totalMontoLav = totalMontoLav.add(horas.getMontoLav() != null ? horas.getMontoLav() : BigDecimal.ZERO);
+                                totalMontoSdf = totalMontoSdf.add(horas.getMontoSdf() != null ? horas.getMontoSdf() : BigDecimal.ZERO);
+                                totalMontoTotal = totalMontoTotal.add(horas.getMontoTotal() != null ? horas.getMontoTotal() : BigDecimal.ZERO);
                         }
                 }
 
@@ -927,10 +923,7 @@ public class RegistroMensualService {
                                         // Filtra actividades por tipoGuardia si está presente
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> idTipoGuardia == null || (actividad
-                                                                        .getTipoGuardia() != null
-                                                                        && actividad.getTipoGuardia().getId()
-                                                                                        .equals(idTipoGuardia)))
+                                                        .filter(actividad -> idTipoGuardia == null || (actividad.getTipoGuardia() != null && actividad.getTipoGuardia().getId().equals(idTipoGuardia)))
                                                         .collect(Collectors.toList());
 
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
@@ -938,22 +931,26 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena,
-                        MesesEnum mes, int anio) {
-                return registroMensualRepository.findMontoTotalHorasByFiltros(idAsistencial, idEfector, quincena, mes,
-                                anio);
+        public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
+                return registroMensualRepository.findMontoTotalHorasByFiltros(idAsistencial, idEfector, quincena, mes, anio);
         }
 
         public BigDecimal getMontoTotal(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
-                return registroMensualRepository.findMontoTotalHorasByFiltrosSinQuincena(idAsistencial, idEfector, mes,
-                                anio);
+                return registroMensualRepository.findMontoTotalHorasByFiltrosSinQuincena(idAsistencial, idEfector, mes, anio);
         }
 
-        public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio,
-                        QuincenaEnum quincena) {
+        public BigDecimal getMontoTotalFueraTermino(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+                // Lista de estados que queremos buscar
+                List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
 
-                List<RegistroMensual> registrosMensuales = registroMensualRepository.findRegistrosIncompletos(efectorId,
-                                mes, anio, quincena, EstadoFacturacionEnum.PENDIENTE);
+                return registroMensualRepository.findMontoTotalByFiltros(idAsistencial, idEfector, mes, anio, estadosBuscados);
+        }
+
+        public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+
+                List<RegistroMensual> registrosMensuales = registroMensualRepository.findRegistrosIncompletos(efectorId, mes, anio, quincena, EstadoFacturacionEnum.PENDIENTE);
 
                 return registrosMensuales.stream()
                                 .filter(RegistroMensual::isActivo)
@@ -961,9 +958,7 @@ public class RegistroMensualService {
                                         // Filtrar actividades (CF)
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                                        .filter(actividad -> actividad.isActivo() && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
                                                         .collect(Collectors.toList());
 
                                         // Convertir a DTO
@@ -989,9 +984,7 @@ public class RegistroMensualService {
                                 .map(rm -> {
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                                        .filter(actividad -> actividad.isActivo() && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
                                                         .collect(Collectors.toList());
 
                                         // Convertir a DTO usando tu método existente
@@ -1019,11 +1012,7 @@ public class RegistroMensualService {
                                 .map(rm -> {
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
-                                                                        && actividad.getServicio().getId()
-                                                                                        .equals(idServicio))
+                                                        .filter(actividad -> actividad.isActivo() && (actividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA) && actividad.getServicio().getId().equals(idServicio))
                                                         .collect(Collectors.toList());
 
                                         // Convertir a DTO usando tu método existente
@@ -1041,22 +1030,19 @@ public class RegistroMensualService {
                                 EstadoFacturacionEnum.PENDIENTE,
                                 EstadoFacturacionEnum.REGULARIZADO);
 
-                List<RegistroMensual> lista = registroMensualRepository.findRegistrosFueraDeTermino(efectorId, mes,
-                                anio, estadosBuscados);
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
 
                 return !lista.isEmpty();
         }
 
         public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
 
-                List<RegistroMensual> lista = registroMensualRepository.findRegistrosCompletos(efectorId, mes, anio,
-                                quincena, EstadoFacturacionEnum.COMPLETADO);
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosCompletos(efectorId, mes, anio,quincena, EstadoFacturacionEnum.COMPLETADO);
                 return !lista.isEmpty();
         }
 
         public boolean existenRegularizados(Long efectorId, MesesEnum mes, int anio) {
-                List<RegistroMensual> lista = registroMensualRepository.findRegistrosRegularizados(efectorId, mes, anio,
-                                EstadoFacturacionEnum.REGULARIZADO);
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosRegularizados(efectorId, mes, anio, EstadoFacturacionEnum.REGULARIZADO);
                 return !lista.isEmpty();
         }
 
@@ -1105,8 +1091,7 @@ public class RegistroMensualService {
         /**
          * Busca registros pendientes
          */
-        public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes,
-                        int anio) {
+        public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
                 return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio,
                                 EstadoFacturacionEnum.PENDIENTE);
         }

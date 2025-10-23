@@ -510,19 +510,18 @@ public class FacturaService {
         return facturaRepository.existsById(id);
     }
 
-    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes,
-            int anio) {
-        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial, idEfector, quincena, mes,
-                anio);
+    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial, idEfector, quincena, mes, anio);
     }
-    public BigDecimal getMonto(Long idAsistencial, Long idEfector, MesesEnum mes,
-            int anio) {
-        return facturaRepository.sumMontoByAsistencialEfectorMesAnio(idAsistencial, idEfector, mes,
-                anio);
+    public BigDecimal getMonto(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorMesAnio(idAsistencial, idEfector, mes, anio);
     }
 
-    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes,
-            QuincenaEnum quincena) {
+    public BigDecimal getMontoFueraTermino(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorMesAnioEstadoFacturacion(idAsistencial, idEfector, mes, anio, EstadoFacturacionEnum.PENDIENTE);
+    }
+
+    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
         List<Factura> facturas = facturaRepository.findByAnioMesQuincena(idEfector, anio, mes, quincena);
         return facturas.stream()
                 .map(this::convertToSummaryDto)

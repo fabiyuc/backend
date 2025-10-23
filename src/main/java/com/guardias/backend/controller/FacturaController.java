@@ -240,6 +240,27 @@ public class FacturaController {
         }
     }
 
+    @GetMapping("/getMontoFueraTermino/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<?> getMontoFueraTermino(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+        try {
+            BigDecimal monto = facturaService.getMontoFueraTermino(idAsistencial, idEfector, mesEnum, anio);
+
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/getByAsistencialAndFiltros/{idAsistencial}")
     public ResponseEntity<Factura> ByAsistencial(
             @PathVariable("idAsistencial") Long idAsistencial) {
