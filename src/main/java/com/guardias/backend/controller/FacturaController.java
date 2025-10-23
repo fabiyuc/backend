@@ -251,7 +251,6 @@ public class FacturaController {
 
         try {
             BigDecimal monto = facturaService.getMontoFueraTermino(idAsistencial, idEfector, mesEnum, anio);
-
             return new ResponseEntity<>(monto, HttpStatus.OK);
 
         } catch (Exception e) {

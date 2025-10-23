@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -518,7 +519,11 @@ public class FacturaService {
     }
 
     public BigDecimal getMontoFueraTermino(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
-        return facturaRepository.sumMontoByAsistencialEfectorMesAnioEstadoFacturacion(idAsistencial, idEfector, mes, anio, EstadoFacturacionEnum.PENDIENTE);
+        // Lista de estados que queremos buscar
+            List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
+        return facturaRepository.sumMontoByAsistencialEfectorMesAnioEstadoFacturacion(idAsistencial, idEfector, mes, anio, estadosBuscados);
     }
 
     public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {

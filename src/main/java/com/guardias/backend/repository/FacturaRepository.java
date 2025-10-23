@@ -59,7 +59,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   "AND f.asistencial.id = :asistencialId " +
                   "AND rm.efector.id = :efectorId " +
                   "AND rm.mes = :mes " +
-                  "AND rm.estadoFacturacion = :estadoFacturacion " +
+                  "AND rm.estadoFacturacion IN :estados " +
                   "AND rm.activo = true " +
                   "AND rm.anio = :anio")
       BigDecimal sumMontoByAsistencialEfectorMesAnioEstadoFacturacion(
@@ -67,7 +67,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("efectorId") Long efectorId,
                   @Param("mes") MesesEnum mes,
                   @Param("anio") int anio,
-                  @Param("estadoFacturacion") EstadoFacturacionEnum estadoFacturacion);
+                  @Param("estados") List<EstadoFacturacionEnum> estados);
 
       @Query("SELECT DISTINCT f FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
