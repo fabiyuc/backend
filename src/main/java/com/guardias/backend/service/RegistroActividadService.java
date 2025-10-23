@@ -21,7 +21,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.RegistroActividadDto;
 import com.guardias.backend.dto.registroActividad.RegActivAsistenciaDto;
 import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
-import com.guardias.backend.entity.Ddjj; // añadido
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
@@ -36,13 +35,6 @@ import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.repository.RegistroActividadRepository;
 import com.guardias.backend.security.service.UsuarioService;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -74,11 +66,6 @@ public class RegistroActividadService {
     HospitalService hospitalService;
     @Autowired
     DdjjRepository ddjjRepository;
-
-    // Inyectar EntityManager para consultas flexibles que puedan devolver múltiples
-    // resultados
-    @PersistenceContext
-    private EntityManager entityManager;
 
     public Optional<List<RegistroActividad>> findByActivoTrue() {
         return registroActividadRepository.findByActivoTrue();
@@ -357,7 +344,7 @@ public class RegistroActividadService {
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
         ResponseEntity<?> respuestaDeletePendiente = null;
-
+        
         if (!esGuardiaCorta) {
             /* E. Cálculo de horas y montos */
             SumaHoras horas = calcularHoras(registroActividad);
@@ -502,8 +489,7 @@ public class RegistroActividadService {
         }
 
         if (tieneContrafactura) {
-            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistenteCfSegunda(idEfector, mes, anio,
-                    TipoGuardiaEnum.CONTRAFACTURA, QuincenaEnum.SEGUNDA);
+            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistenteCfSegunda(idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA, QuincenaEnum.SEGUNDA);
             System.out.println(" - DDJJ CONTRAFACTURA aprobada: " + ddjjContrafacturaAprobada);
             if (!ddjjContrafacturaAprobada) {
                 System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para CONTRAFACTURA");
@@ -528,8 +514,7 @@ public class RegistroActividadService {
         return exists;
     }
 
-    private boolean ddjjPreAprobadaExistenteCfSegunda(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo,
-            QuincenaEnum quincena) {
+    private boolean ddjjPreAprobadaExistenteCfSegunda(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo, QuincenaEnum quincena) {
 
         // Convertir int a MesesEnum
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
@@ -564,8 +549,7 @@ public class RegistroActividadService {
             System.out.println("Buscando DDJJ CONTRAFACTURA aprobada...");
             Optional<Long> idContrafactura = ddjjRepository
                     .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorAndQuincena(
-                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO,
-                            QuincenaEnum.PRIMERA);
+                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO, QuincenaEnum.PRIMERA);
 
             if (idContrafactura.isPresent()) {
                 System.out.println("DDJJ CONTRAFACTURA encontrada - ID: " + idContrafactura.get());
@@ -579,7 +563,7 @@ public class RegistroActividadService {
         System.out.println("=== FIN obtenerIdsDdjjAprobadas ===\n");
         return idDdjjAprobada;
     }
-
+    
     public List<Long> obtenerIdsDdjjAprobadas(Long idEfector, int mes, int anio) {
         System.out.println("=== INICIO obtenerIdsDdjjAprobadas ===");
         System.out.println("Parámetros - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
@@ -607,16 +591,17 @@ public class RegistroActividadService {
                 idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
         System.out.println("¿Tiene CONTRAFACTURA? " + tieneContrafactura);
 
-        // 2. Buscar DDJJ aprobadas por el director (usar consulta que devuelve lista de
-        // ids)
+        // 2. Buscar DDJJ aprobadas por el director
         System.out.println("\n--- Buscando DDJJ aprobadas ---");
 
         if (tieneCargo || tieneAgrupacion) {
             System.out.println("Buscando DDJJ CARGO aprobada...");
-            List<Long> idsCargo = buscarIdsDdjjAprobadasPorTipo(idEfector, mesEnum, anio, TipoGuardiaEnum.CARGO);
-            if (!idsCargo.isEmpty()) {
-                System.out.println("DDJJ CARGO encontradas - IDs: " + idsCargo);
-                idsDdjjAprobadas.addAll(idsCargo);
+            Optional<Long> idCargo = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                    idEfector, mesEnum, anio, TipoGuardiaEnum.CARGO, EstadoDdjjEnum.APROBADO);
+
+            if (idCargo.isPresent()) {
+                System.out.println("DDJJ CARGO encontrada - ID: " + idCargo.get());
+                idsDdjjAprobadas.add(idCargo.get());
             } else {
                 System.out.println("No se encontró DDJJ CARGO aprobada");
             }
@@ -624,10 +609,12 @@ public class RegistroActividadService {
 
         if (tieneExtra) {
             System.out.println("Buscando DDJJ EXTRA aprobada...");
-            List<Long> idsExtra = buscarIdsDdjjAprobadasPorTipo(idEfector, mesEnum, anio, TipoGuardiaEnum.EXTRA);
-            if (!idsExtra.isEmpty()) {
-                System.out.println("DDJJ EXTRA encontradas - IDs: " + idsExtra);
-                idsDdjjAprobadas.addAll(idsExtra);
+            Optional<Long> idExtra = ddjjRepository.findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                    idEfector, mesEnum, anio, TipoGuardiaEnum.EXTRA, EstadoDdjjEnum.APROBADO);
+
+            if (idExtra.isPresent()) {
+                System.out.println("DDJJ EXTRA encontrada - ID: " + idExtra.get());
+                idsDdjjAprobadas.add(idExtra.get());
             } else {
                 System.out.println("No se encontró DDJJ EXTRA aprobada");
             }
@@ -637,8 +624,7 @@ public class RegistroActividadService {
             System.out.println("Buscando DDJJ CONTRAFACTURA aprobada...");
             Optional<Long> idContrafactura = ddjjRepository
                     .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorAndQuincena(
-                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO,
-                            QuincenaEnum.SEGUNDA);
+                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO, QuincenaEnum.SEGUNDA);
 
             if (idContrafactura.isPresent()) {
                 System.out.println("DDJJ CONTRAFACTURA encontrada - ID: " + idContrafactura.get());
@@ -651,37 +637,6 @@ public class RegistroActividadService {
         System.out.println("Lista de IDs encontrados: " + idsDdjjAprobadas);
         System.out.println("=== FIN obtenerIdsDdjjAprobadas ===\n");
         return idsDdjjAprobadas;
-    }
-
-    /**
-     * Helper que consulta directamente la entidad DDJJ y devuelve todos los IDs
-     * que cumplan con efector/mes/anio/tipo/estado = APROBADO.
-     * Implementación usando Criteria API para resolver la entidad por clase.
-     */
-    private List<Long> buscarIdsDdjjAprobadasPorTipo(Long idEfector, MesesEnum mesEnum, int anio,
-            TipoGuardiaEnum tipo) {
-
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<Ddjj> root = cq.from(Ddjj.class);
-
-        // construir predicados
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.equal(root.get("efector").get("id"), idEfector));
-        predicates.add(cb.equal(root.get("mes"), mesEnum));
-        predicates.add(cb.equal(root.get("anio"), anio));
-        // Comparar el atributo 'nombre' de la entidad TipoGuardia (que es un
-        // TipoGuardiaEnum)
-        predicates.add(cb.equal(root.get("tipoGuardia").get("nombre"), tipo));
-        // predicates.add(cb.equal(root.get("tipoGuardia"), tipo));
-        predicates.add(cb.equal(root.get("estadoDdjjDirector"), EstadoDdjjEnum.APROBADO));
-
-        cq.select(root.get("id")).where(predicates.toArray(new Predicate[0]));
-
-        TypedQuery<Long> query = entityManager.createQuery(cq);
-        List<Long> results = query.getResultList();
-        System.out.println("buscarIdsDdjjAprobadasPorTipo -> tipo: " + tipo + ", resultados: " + results);
-        return results;
     }
 
     public List<RegActivAsistenciaDto> listarAsistenciaPorProfesionalYEfector(Long idAsistencial, Long idEfector,
