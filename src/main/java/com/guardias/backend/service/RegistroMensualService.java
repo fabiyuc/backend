@@ -495,8 +495,9 @@ public class RegistroMensualService {
         }
 
         public RegistroActividad setRegistroMensualSinHoras(RegistroActividad registroActividad) {
-                // Misma lógica de búsqueda/creación que setRegistroMensual pero SIN acumular horas
-                
+                // Misma lógica de búsqueda/creación que setRegistroMensual pero SIN acumular
+                // horas
+
                 // 1. Determinar si aplica quincena
                 boolean aplicaQuincena = registroActividad.getTipoGuardia() != null
                                 && registroActividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
@@ -1033,69 +1034,81 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public boolean existenRegistrosFueraDeTermino(Long efectorId, MesesEnum mes,
-                        int anio) {
+        public boolean existenRegistrosFueraDeTermino(Long efectorId, MesesEnum mes, int anio) {
 
                 // Lista de estados que queremos buscar
                 List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
                                 EstadoFacturacionEnum.PENDIENTE,
                                 EstadoFacturacionEnum.REGULARIZADO);
 
-                List<RegistroMensual> lista = registroMensualRepository
-                                .findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosFueraDeTermino(efectorId, mes,
+                                anio, estadosBuscados);
 
                 return !lista.isEmpty();
-
         }
 
         public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
 
-                List<RegistroMensual> lista = registroMensualRepository
-                                .findRegistrosCompletos(efectorId, mes, anio, quincena,
-                                                EstadoFacturacionEnum.COMPLETADO);
-
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosCompletos(efectorId, mes, anio,
+                                quincena, EstadoFacturacionEnum.COMPLETADO);
                 return !lista.isEmpty();
+        }
 
+        public boolean existenRegularizados(Long efectorId, MesesEnum mes, int anio) {
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosRegularizados(efectorId, mes, anio,
+                                EstadoFacturacionEnum.REGULARIZADO);
+                return !lista.isEmpty();
+        }
+
+        public boolean existenRegularizadosSinPendientes(Long efectorId, MesesEnum mes, int anio) {
+                // Verificar que existe al menos 1 registro regularizado
+                boolean existeRegularizado = !registroMensualRepository
+                                .findRegistrosByEfectorAndMesAndAnioAndEstado(efectorId, mes, anio, EstadoFacturacionEnum.REGULARIZADO).isEmpty();
+
+                // Verificar que NO existe ningún registro pendiente
+                boolean noExistenPendientes = registroMensualRepository
+                                .findRegistrosByEfectorAndMesAndAnioAndEstado(efectorId, mes, anio, EstadoFacturacionEnum.PENDIENTE).isEmpty();
+
+                return existeRegularizado && noExistenPendientes;
         }
 
         /**
-     * Suma los montos totales de TODOS los registros mensuales por mes y año
-     */
-    public BigDecimal sumMontosRegistrosMensuales(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
-        List<RegistroMensual> registros = registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
-                efectorId, asistencialId, mes, anio);
-        
-        return registros.stream()
-                .map(rm -> rm.getTotalHoras().getMontoTotal())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+         * Suma los montos totales de TODOS los registros mensuales por mes y año
+         */
+        public BigDecimal sumMontosRegistrosMensuales(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+                List<RegistroMensual> registros = registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
+                                efectorId, asistencialId, mes, anio);
 
-    /**
-     * Busca TODOS los registros mensuales por efector, asistencial, mes y año
-     */
-    public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnio(
-            Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
-        return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
-                efectorId, asistencialId, mes, anio);
-    }
+                return registros.stream()
+                                .map(rm -> rm.getTotalHoras().getMontoTotal())
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
 
-    /**
-     * Busca registros por quincena específica
-     */
-    public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
-            Long efectorId, Long asistencialId, MesesEnum mes, int anio, QuincenaEnum quincena) {
-        return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
-                efectorId, asistencialId, mes, anio, quincena);
-    }
+        /**
+         * Busca TODOS los registros mensuales por efector, asistencial, mes y año
+         */
+        public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnio(
+                        Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+                return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
+                                efectorId, asistencialId, mes, anio);
+        }
 
-    /**
-     * Busca registros pendientes
-     */
-    public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
-        return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio, EstadoFacturacionEnum.PENDIENTE);
-    }
+        /**
+         * Busca registros por quincena específica
+         */
+        public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                        Long efectorId, Long asistencialId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+                return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                                efectorId, asistencialId, mes, anio, quincena);
+        }
 
-
-   
+        /**
+         * Busca registros pendientes
+         */
+        public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes,
+                        int anio) {
+                return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio,
+                                EstadoFacturacionEnum.PENDIENTE);
+        }
 
 }
