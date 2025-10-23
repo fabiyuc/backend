@@ -181,7 +181,7 @@ public class CronogramaDefinitivoService {
         // según tipo de quincena
         if (dto.getQuincena() == QuincenaEnum.PRIMERA) {
             return processPrimeraQuincena(dto);
-        } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA) {
+        } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA || dto.getQuincena() == QuincenaEnum.FUERA_DE_TERMINO) {
             return processCompleto(dto);
         } else {
             throw new IllegalArgumentException("Tipo de quincena no válido: " + dto.getQuincena());
