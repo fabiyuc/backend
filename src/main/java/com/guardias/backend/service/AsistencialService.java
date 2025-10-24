@@ -471,6 +471,26 @@ public class AsistencialService {
         return filterAsistencialesByEfector(asistenciales);
     }
 
+    public List<AsistencialDetailDto> getAsistencialesDetailByEfector(Long efectorId) {
+        List<Asistencial> asistenciales = asistencialRepository.findDetailByEfectorAndActivoTrue(efectorId);
+        return filterAsistencialesDetailByEfector(asistenciales);
+    }
+
+    public List<AsistencialDetailDto> filterAsistencialesDetailByEfector(List<Asistencial> asistenciales) {
+        List<AsistencialDetailDto> EfectorList = new ArrayList<>();
+
+        for (Asistencial asistencial : asistenciales) {
+            AsistencialDetailDto dto = new AsistencialDetailDto(
+                    asistencial.getId(),
+                    asistencial.getNombre(),
+                    asistencial.getApellido(),
+                    asistencial.getCuil());
+
+            EfectorList.add(dto);
+        }
+        return EfectorList;
+    }
+
     public List<AsistencialEfectorRegistroActividadDto> filterAsistencialesByEfectorAndRegistroActividad(
             List<Asistencial> asistenciales) {
         List<AsistencialEfectorRegistroActividadDto> EfectorList = new ArrayList<>();

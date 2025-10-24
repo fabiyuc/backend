@@ -78,7 +78,7 @@ public class PersonService {
     public boolean existsByDniAndActivoTrue(int dni) {
         boolean exists = asistencialRepository.existsByDniAndActivoTrue(dni);
         if (!exists)
-            exists = noAsistencialRepository.existsByDni(dni);
+            exists = noAsistencialRepository.existsByDniAndActivoTrue(dni);
         return exists;
     }
 

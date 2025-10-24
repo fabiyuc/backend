@@ -3,6 +3,7 @@ package com.guardias.backend.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -144,14 +145,14 @@ public class FacturaService {
         if (quincenaRegistro == QuincenaEnum.PRIMERA) {
             LocalDate limitePrimera = LocalDate.of(anioRegistro, mesRegistro, 21);
             if (fechaSistema.isBefore(limitePrimera)) {
-                System.out.println("✅ Periodo carga: PRIMERA (en término)");
+                System.out.println("Periodo carga: PRIMERA (en término)");
                 return QuincenaEnum.PRIMERA;
             }
         } else if (quincenaRegistro == QuincenaEnum.SEGUNDA) {
             LocalDate primerDiaMesSiguiente = LocalDate.of(anioRegistro, mesRegistro, 1).plusMonths(1);
-            LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(5);
+            LocalDate limiteSegunda = primerDiaMesSiguiente.withDayOfMonth(6);
             if (fechaSistema.isBefore(limiteSegunda)) {
-                System.out.println("✅ Periodo carga: SEGUNDA (en término)");
+                System.out.println("Periodo carga: SEGUNDA (en término)");
                 return QuincenaEnum.SEGUNDA;
             }
         }
@@ -510,22 +511,39 @@ public class FacturaService {
         return facturaRepository.existsById(id);
     }
 
-    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes,
-            int anio) {
-        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial, idEfector, quincena, mes,
-                anio);
+    public BigDecimal getMontoByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena, MesesEnum mes, int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorQuincenaMesAnio(idAsistencial, idEfector, quincena, mes, anio);
     }
-    public BigDecimal getMonto(Long idAsistencial, Long idEfector, MesesEnum mes,
-            int anio) {
-        return facturaRepository.sumMontoByAsistencialEfectorMesAnio(idAsistencial, idEfector, mes,
-                anio);
+    public BigDecimal getMonto(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+        return facturaRepository.sumMontoByAsistencialEfectorMesAnio(idAsistencial, idEfector, mes, anio);
     }
 
-    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes,
-            QuincenaEnum quincena) {
+    public BigDecimal getMontoFueraTermino(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+        // Lista de estados que queremos buscar
+            List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
+        return facturaRepository.sumMontoByAsistencialEfectorMesAnioEstadoFacturacion(idAsistencial, idEfector, mes, anio, estadosBuscados);
+    }
+
+    public List<FacturaSummaryDto> getFacturasByAnioMesQuincena(int idEfector, int anio, MesesEnum mes, QuincenaEnum quincena) {
         List<Factura> facturas = facturaRepository.findByAnioMesQuincena(idEfector, anio, mes, quincena);
         return facturas.stream()
                 .map(this::convertToSummaryDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FacturaSummaryDto> getFacturasByAnioMes(int idEfector, int anio, MesesEnum mes) {
+        List<Factura> facturas = facturaRepository.findByAnioMes(idEfector, anio, mes);
+        return facturas.stream()
+                .map(this::convertToSummaryDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<FacturaDetailDto> getFacturasByAsistencialSinQuincena(int idEfector, int anio, MesesEnum mes, int idAsistencial) {
+        List<Factura> facturas = facturaRepository.findByAsistencialYfiltros(idEfector, anio, mes, idAsistencial);
+        return facturas.stream()
+                .map(this::convertToDetailDto)
                 .collect(Collectors.toList());
     }
 

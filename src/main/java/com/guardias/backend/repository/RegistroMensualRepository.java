@@ -91,6 +91,36 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio);
 
+        @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
+                        "JOIN rm.totalHoras sh " +
+                        "WHERE rm.activo = true " +
+                        "AND rm.asistencial.id = :asistencialId " +
+                        "AND rm.efector.id = :efectorId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND sh.activo = true")
+        BigDecimal findMontoTotalHorasByFiltrosSinQuincena(
+                        @Param("asistencialId") Long asistencialId,
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio);
+        
+        @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
+                        "JOIN rm.totalHoras sh " +
+                        "WHERE rm.activo = true " +
+                        "AND rm.asistencial.id = :asistencialId " +
+                        "AND rm.efector.id = :efectorId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND rm.estadoFacturacion IN :estados " +
+                        "AND sh.activo = true")
+        BigDecimal findMontoTotalByFiltros(
+                        @Param("asistencialId") Long asistencialId,
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("estados") List<EstadoFacturacionEnum> estados);
+
         @Query("SELECT rm.totalHoras.montoTotal FROM registrosMensuales rm " +
                         "WHERE rm.id = :id " +
                         "AND rm.activo = true")
@@ -134,6 +164,30 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio,
                         @Param("quincena") QuincenaEnum quincena,
+                        @Param("estado") EstadoFacturacionEnum estado);
+
+        @Query("SELECT rm FROM registrosMensuales rm " +
+                        "WHERE rm.efector.id = :efectorId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND rm.estadoFacturacion = :estado " +
+                        "AND rm.activo = true")
+        List<RegistroMensual> findRegistrosRegularizados(
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
+                        @Param("estado") EstadoFacturacionEnum estado);
+
+        @Query("SELECT rm FROM registrosMensuales rm " +
+                        "WHERE rm.efector.id = :efectorId " +
+                        "AND rm.mes = :mes " +
+                        "AND rm.anio = :anio " +
+                        "AND rm.estadoFacturacion = :estado " +
+                        "AND rm.activo = true")
+        List<RegistroMensual> findRegistrosByEfectorAndMesAndAnioAndEstado(
+                        @Param("efectorId") Long efectorId,
+                        @Param("mes") MesesEnum mes,
+                        @Param("anio") int anio,
                         @Param("estado") EstadoFacturacionEnum estado);
 
         /**

@@ -414,6 +414,48 @@ public class RegistroMensualController {
         }
     }
 
+    @GetMapping("/getMontoTotal/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<?> getMontoTotal(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+        try {
+            BigDecimal monto = registroMensualService.getMontoTotal(idAsistencial, idEfector,
+                    mesEnum, anio);
+
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/getMontoTotalFueraTermino/{idAsistencial}/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<?> getMontoTotalFueraTermino(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("idEfector") Long idEfector,
+            @PathVariable("mes") String mes,
+            @PathVariable("anio") int anio) {
+
+        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+
+        try {
+            BigDecimal monto = registroMensualService.getMontoTotalFueraTermino(idAsistencial, idEfector, mesEnum, anio);
+            return new ResponseEntity<>(monto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/incompletos/{idEfector}/{mes}/{anio}/{quincena}")
     public ResponseEntity<List<RegistroMensualListDto>> getRegistrosIncompletos(
             @PathVariable Long idEfector,
@@ -434,6 +476,7 @@ public class RegistroMensualController {
         }
     }
 
+    //obtiene RM con estado de facturacion PENDIENTE o REGULARIZADO
     @GetMapping("/fuera-de-termino/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
             @PathVariable Long idEfector,
@@ -452,6 +495,45 @@ public class RegistroMensualController {
         }
     }
 
+    //obtiene RM AGRUPADOS POR MES con estado de facturacion PENDIENTE o REGULARIZADO
+    @GetMapping("/fuera-de-termino-agrupados/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTerminoAgrupados(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoAgrupados(idEfector,
+                    mesEnum, anio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
+    //obtiene RM AGRUPADOS POR MES y servicio con estado de facturacion PENDIENTE o REGULARIZADO
+    @GetMapping("/fuera-de-termino-agrupados-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTerminoAgrupadosServicio(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable Long idServicio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoAgrupadosServicio(idEfector,
+                    mesEnum, anio,idServicio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
     @GetMapping("/fuera-de-termino-por-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
     public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
             @PathVariable Long idEfector,
@@ -461,7 +543,8 @@ public class RegistroMensualController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoPorServicio(idEfector,
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoPorServicio(
+                    idEfector,
                     mesEnum, anio, idServicio);
 
             return ResponseEntity.ok(registros);
@@ -478,7 +561,7 @@ public class RegistroMensualController {
             @PathVariable int anio) {
 
         try {
-             MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
             boolean existen = registroMensualService.existenRegistrosFueraDeTermino(idEfector, mesEnum, anio);
             return ResponseEntity.ok(existen);
 
@@ -490,7 +573,7 @@ public class RegistroMensualController {
     @GetMapping("/existen-completos/{idEfector}/{mes}/{anio}/{quincena}")
     public ResponseEntity<Boolean> existenAutorizados(
             @PathVariable Long idEfector,
-             @PathVariable String mes,
+            @PathVariable String mes,
             @PathVariable int anio,
             @PathVariable String quincena) {
 
@@ -499,6 +582,38 @@ public class RegistroMensualController {
             QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             boolean existen = registroMensualService.existenCompletos(idEfector, mesEnum, anio, quincenaEnum);
             return ResponseEntity.ok(existen);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    @GetMapping("/existen-regularizados/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existenRegularizados(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            boolean existen = registroMensualService.existenRegularizados(idEfector, mesEnum, anio);
+            return ResponseEntity.ok(existen);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
+    }
+
+    @GetMapping("/existen-regularizados-sin-pendientes/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<Boolean> existenRegularizadosSinPendientes(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            boolean cumplenCondiciones = registroMensualService.existenRegularizadosSinPendientes(idEfector, mesEnum, anio);
+            return ResponseEntity.ok(cumplenCondiciones);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);

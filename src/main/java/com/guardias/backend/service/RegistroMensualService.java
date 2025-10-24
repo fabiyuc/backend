@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -495,8 +497,9 @@ public class RegistroMensualService {
         }
 
         public RegistroActividad setRegistroMensualSinHoras(RegistroActividad registroActividad) {
-                // Misma lógica de búsqueda/creación que setRegistroMensual pero SIN acumular horas
-                
+                // Misma lógica de búsqueda/creación que setRegistroMensual pero SIN acumular
+                // horas
+
                 // 1. Determinar si aplica quincena
                 boolean aplicaQuincena = registroActividad.getTipoGuardia() != null
                                 && registroActividad.getTipoGuardia().getNombre() == TipoGuardiaEnum.CONTRAFACTURA;
@@ -943,6 +946,21 @@ public class RegistroMensualService {
                                 anio);
         }
 
+        public BigDecimal getMontoTotal(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+                return registroMensualRepository.findMontoTotalHorasByFiltrosSinQuincena(idAsistencial, idEfector, mes,
+                                anio);
+        }
+
+        public BigDecimal getMontoTotalFueraTermino(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
+                // Lista de estados que queremos buscar
+                List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
+
+                return registroMensualRepository.findMontoTotalByFiltros(idAsistencial, idEfector, mes, anio,
+                                estadosBuscados);
+        }
+
         public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio,
                         QuincenaEnum quincena) {
 
@@ -955,9 +973,9 @@ public class RegistroMensualService {
                                         // Filtrar actividades (CF)
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                                        .filter(actividad -> actividad.isActivo() && (actividad
+                                                                        .getTipoGuardia()
+                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
                                                         .collect(Collectors.toList());
 
                                         // Convertir a DTO
@@ -983,17 +1001,194 @@ public class RegistroMensualService {
                                 .map(rm -> {
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
+                                                        .filter(actividad -> actividad.isActivo() && (actividad
+                                                                        .getTipoGuardia()
+                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA))
                                                         .collect(Collectors.toList());
 
                                         // Convertir a DTO usando tu método existente
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
                                 })
-                                // Si quieres excluir DTOs sin actividades, mantén esta línea:
+                                // Excluimos DTOs vacios
                                 .filter(dto -> !dto.getRegistroActividad().isEmpty())
                                 .collect(Collectors.toList());
+        }
+
+        public List<RegistroMensualListDto> findRegistrosFueraDeTerminoAgrupados(Long efectorId, MesesEnum mes,
+                        int anio) {
+
+                // Lista de estados que queremos buscar
+                List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
+
+                // Buscar registros con los estados especificados (todas las quincenas)
+                List<RegistroMensual> registrosMensuales = registroMensualRepository
+                                .findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
+
+                // Agrupar por asistencial y consolidar
+                Map<Long, List<RegistroMensual>> registrosPorAsistencial = registrosMensuales.stream()
+                                .filter(RegistroMensual::isActivo)
+                                .filter(rm -> rm.getAsistencial() != null)
+                                .collect(Collectors.groupingBy(rm -> rm.getAsistencial().getId()));
+
+                // Consolidar registros por asistencial
+                return registrosPorAsistencial.values().stream()
+                                .map(registrosDelMismoAsistencial -> {
+                                        // Consolidar todas las actividades de contrafactura del mes
+                                        List<RegistroActividad> todasActividadesConsolidadas = registrosDelMismoAsistencial
+                                                        .stream()
+                                                        .flatMap(rm -> rm.getRegistroActividad() != null
+                                                                        ? rm.getRegistroActividad().stream()
+                                                                        : Stream.<RegistroActividad>empty())
+                                                        .filter(actividad -> actividad.isActivo() &&
+                                                                        actividad.getTipoGuardia() != null &&
+                                                                        actividad.getTipoGuardia()
+                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                                        .collect(Collectors.toList());
+
+                                        if (todasActividadesConsolidadas.isEmpty()) {
+                                                return null;
+                                        }
+
+                                        // Usar el primer registro mensual como base
+                                        RegistroMensual registroBase = registrosDelMismoAsistencial.get(0);
+
+                                        // Consolidar facturas de todas las quincenas - CORREGIDO
+                                        List<Factura> todasFacturasConsolidadas = registrosDelMismoAsistencial.stream()
+                                                        .flatMap(rm -> rm.getFacturas() != null
+                                                                        ? rm.getFacturas().stream()
+                                                                        : Stream.<Factura>empty())
+                                                        .filter(Factura::isActivo)
+                                                        .collect(Collectors.toList());
+
+                                        // Consolidar DDJJs de todas las quincenas - CORREGIDO
+                                        List<Ddjj> todasDdjjsConsolidadas = registrosDelMismoAsistencial.stream()
+                                                        .flatMap(rm -> rm.getDdjjs() != null ? rm.getDdjjs().stream()
+                                                                        : Stream.<Ddjj>empty())
+                                                        .collect(Collectors.toList());
+
+                                        // Crear un registro consolidado
+                                        RegistroMensual registroConsolidado = new RegistroMensual();
+                                        registroConsolidado.setId(registroBase.getId());
+                                        registroConsolidado.setMes(registroBase.getMes());
+                                        registroConsolidado.setAnio(registroBase.getAnio());
+                                        registroConsolidado.setAsistencial(registroBase.getAsistencial());
+                                        registroConsolidado.setEfector(registroBase.getEfector());
+                                        registroConsolidado.setActivo(true);
+                                        registroConsolidado.setQuincena(null); // Quincena null indica consolidado
+                                                                               // mensual
+                                        registroConsolidado.setEstadoFacturacion(
+                                                        determinarEstadoConsolidado(registrosDelMismoAsistencial));
+
+                                        // Establecer las colecciones consolidadas
+                                        registroConsolidado.setRegistroActividad(todasActividadesConsolidadas);
+                                        registroConsolidado.setFacturas(todasFacturasConsolidadas);
+                                        registroConsolidado.setDdjjs(todasDdjjsConsolidadas);
+
+                                        return convertirARegistroMensualCompletoDTO(registroConsolidado,
+                                                        todasActividadesConsolidadas);
+                                })
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
+        }
+        public List<RegistroMensualListDto> findRegistrosFueraDeTerminoAgrupadosServicio(Long efectorId, MesesEnum mes,
+                        int anio, long idServicio) {
+
+                // Lista de estados que queremos buscar
+                List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
+                                EstadoFacturacionEnum.PENDIENTE,
+                                EstadoFacturacionEnum.REGULARIZADO);
+
+                // Buscar registros con los estados especificados (todas las quincenas)
+                List<RegistroMensual> registrosMensuales = registroMensualRepository
+                                .findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
+
+                // Agrupar por asistencial y consolidar
+                Map<Long, List<RegistroMensual>> registrosPorAsistencial = registrosMensuales.stream()
+                                .filter(RegistroMensual::isActivo)
+                                .filter(rm -> rm.getAsistencial() != null)
+                                .collect(Collectors.groupingBy(rm -> rm.getAsistencial().getId()));
+
+                // Consolidar registros por asistencial
+                return registrosPorAsistencial.values().stream()
+                                .map(registrosDelMismoAsistencial -> {
+                                        // Consolidar todas las actividades de contrafactura del mes
+                                        List<RegistroActividad> todasActividadesConsolidadas = registrosDelMismoAsistencial
+                                                        .stream()
+                                                        .flatMap(rm -> rm.getRegistroActividad() != null
+                                                                        ? rm.getRegistroActividad().stream()
+                                                                        : Stream.<RegistroActividad>empty())
+                                                        .filter(actividad -> actividad.isActivo() &&
+                                                                        actividad.getTipoGuardia() != null &&
+                                                                        actividad.getTipoGuardia()
+                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA && actividad.getServicio().getId()
+                                                                                        .equals(idServicio))
+                                                        .collect(Collectors.toList());
+
+                                        if (todasActividadesConsolidadas.isEmpty()) {
+                                                return null;
+                                        }
+
+                                        // Usar el primer registro mensual como base
+                                        RegistroMensual registroBase = registrosDelMismoAsistencial.get(0);
+
+                                        // Consolidar facturas de todas las quincenas - CORREGIDO
+                                        List<Factura> todasFacturasConsolidadas = registrosDelMismoAsistencial.stream()
+                                                        .flatMap(rm -> rm.getFacturas() != null
+                                                                        ? rm.getFacturas().stream()
+                                                                        : Stream.<Factura>empty())
+                                                        .filter(Factura::isActivo)
+                                                        .collect(Collectors.toList());
+
+                                        // Consolidar DDJJs de todas las quincenas - CORREGIDO
+                                        List<Ddjj> todasDdjjsConsolidadas = registrosDelMismoAsistencial.stream()
+                                                        .flatMap(rm -> rm.getDdjjs() != null ? rm.getDdjjs().stream()
+                                                                        : Stream.<Ddjj>empty())
+                                                        .collect(Collectors.toList());
+
+                                        // Crear un registro consolidado
+                                        RegistroMensual registroConsolidado = new RegistroMensual();
+                                        registroConsolidado.setId(registroBase.getId());
+                                        registroConsolidado.setMes(registroBase.getMes());
+                                        registroConsolidado.setAnio(registroBase.getAnio());
+                                        registroConsolidado.setAsistencial(registroBase.getAsistencial());
+                                        registroConsolidado.setEfector(registroBase.getEfector());
+                                        registroConsolidado.setActivo(true);
+                                        registroConsolidado.setQuincena(null); // Quincena null indica consolidado
+                                                                               // mensual
+                                        registroConsolidado.setEstadoFacturacion(
+                                                        determinarEstadoConsolidado(registrosDelMismoAsistencial));
+
+                                        // Establecer las colecciones consolidadas
+                                        registroConsolidado.setRegistroActividad(todasActividadesConsolidadas);
+                                        registroConsolidado.setFacturas(todasFacturasConsolidadas);
+                                        registroConsolidado.setDdjjs(todasDdjjsConsolidadas);
+
+                                        return convertirARegistroMensualCompletoDTO(registroConsolidado,
+                                                        todasActividadesConsolidadas);
+                                })
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
+        }
+
+        // Método auxiliar para determinar el estado consolidado
+        private EstadoFacturacionEnum determinarEstadoConsolidado(List<RegistroMensual> registros) {
+                boolean tienePendiente = registros.stream()
+                                .anyMatch(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.PENDIENTE);
+
+                boolean tieneRegularizado = registros.stream()
+                                .anyMatch(rm -> rm.getEstadoFacturacion() == EstadoFacturacionEnum.REGULARIZADO);
+
+                // Si hay algún pendiente, el consolidado se considera PENDIENTE
+                // Solo es REGULARIZADO si todos los registros están regularizados
+                if (tienePendiente) {
+                        return EstadoFacturacionEnum.PENDIENTE;
+                } else if (tieneRegularizado) {
+                        return EstadoFacturacionEnum.REGULARIZADO;
+                } else {
+                        return EstadoFacturacionEnum.PENDIENTE; // Default
+                }
         }
 
         public List<RegistroMensualListDto> findRegistrosFueraDeTerminoPorServicio(Long efectorId, MesesEnum mes,
@@ -1013,9 +1208,9 @@ public class RegistroMensualService {
                                 .map(rm -> {
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> actividad.isActivo()
-                                                                        && (actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
+                                                        .filter(actividad -> actividad.isActivo() && (actividad
+                                                                        .getTipoGuardia()
+                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA)
                                                                         && actividad.getServicio().getId()
                                                                                         .equals(idServicio))
                                                         .collect(Collectors.toList());
@@ -1028,69 +1223,85 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public boolean existenRegistrosFueraDeTermino(Long efectorId, MesesEnum mes,
-                        int anio) {
+        public boolean existenRegistrosFueraDeTermino(Long efectorId, MesesEnum mes, int anio) {
 
                 // Lista de estados que queremos buscar
                 List<EstadoFacturacionEnum> estadosBuscados = Arrays.asList(
                                 EstadoFacturacionEnum.PENDIENTE,
                                 EstadoFacturacionEnum.REGULARIZADO);
 
-                List<RegistroMensual> lista = registroMensualRepository
-                                .findRegistrosFueraDeTermino(efectorId, mes, anio, estadosBuscados);
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosFueraDeTermino(efectorId, mes,
+                                anio, estadosBuscados);
 
                 return !lista.isEmpty();
-
         }
 
         public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
 
-                List<RegistroMensual> lista = registroMensualRepository
-                                .findRegistrosCompletos(efectorId, mes, anio, quincena,
-                                                EstadoFacturacionEnum.COMPLETADO);
-
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosCompletos(efectorId, mes, anio,
+                                quincena, EstadoFacturacionEnum.COMPLETADO);
                 return !lista.isEmpty();
+        }
 
+        public boolean existenRegularizados(Long efectorId, MesesEnum mes, int anio) {
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosRegularizados(efectorId, mes, anio,
+                                EstadoFacturacionEnum.REGULARIZADO);
+                return !lista.isEmpty();
+        }
+
+        public boolean existenRegularizadosSinPendientes(Long efectorId, MesesEnum mes, int anio) {
+                // Verificar que existe al menos 1 registro regularizado
+                boolean existeRegularizado = !registroMensualRepository
+                                .findRegistrosByEfectorAndMesAndAnioAndEstado(efectorId, mes, anio,
+                                                EstadoFacturacionEnum.REGULARIZADO)
+                                .isEmpty();
+
+                // Verificar que NO existe ningún registro pendiente
+                boolean noExistenPendientes = registroMensualRepository
+                                .findRegistrosByEfectorAndMesAndAnioAndEstado(efectorId, mes, anio,
+                                                EstadoFacturacionEnum.PENDIENTE)
+                                .isEmpty();
+
+                return existeRegularizado && noExistenPendientes;
         }
 
         /**
-     * Suma los montos totales de TODOS los registros mensuales por mes y año
-     */
-    public BigDecimal sumMontosRegistrosMensuales(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
-        List<RegistroMensual> registros = registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
-                efectorId, asistencialId, mes, anio);
-        
-        return registros.stream()
-                .map(rm -> rm.getTotalHoras().getMontoTotal())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+         * Suma los montos totales de TODOS los registros mensuales por mes y año
+         */
+        public BigDecimal sumMontosRegistrosMensuales(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+                List<RegistroMensual> registros = registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
+                                efectorId, asistencialId, mes, anio);
 
-    /**
-     * Busca TODOS los registros mensuales por efector, asistencial, mes y año
-     */
-    public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnio(
-            Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
-        return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
-                efectorId, asistencialId, mes, anio);
-    }
+                return registros.stream()
+                                .map(rm -> rm.getTotalHoras().getMontoTotal())
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
 
-    /**
-     * Busca registros por quincena específica
-     */
-    public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
-            Long efectorId, Long asistencialId, MesesEnum mes, int anio, QuincenaEnum quincena) {
-        return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
-                efectorId, asistencialId, mes, anio, quincena);
-    }
+        /**
+         * Busca TODOS los registros mensuales por efector, asistencial, mes y año
+         */
+        public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnio(
+                        Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
+                return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnio(
+                                efectorId, asistencialId, mes, anio);
+        }
 
-    /**
-     * Busca registros pendientes
-     */
-    public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes, int anio) {
-        return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio, EstadoFacturacionEnum.PENDIENTE);
-    }
+        /**
+         * Busca registros por quincena específica
+         */
+        public List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                        Long efectorId, Long asistencialId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+                return registroMensualRepository.findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
+                                efectorId, asistencialId, mes, anio, quincena);
+        }
 
-
-   
+        /**
+         * Busca registros pendientes
+         */
+        public List<RegistroMensual> findRegistrosPendientes(Long efectorId, Long asistencialId, MesesEnum mes,
+                        int anio) {
+                return registroMensualRepository.findRegistrosPendientes(efectorId, asistencialId, mes, anio,
+                                EstadoFacturacionEnum.PENDIENTE);
+        }
 
 }

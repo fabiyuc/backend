@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.caps.CapsNameDto;
 import com.guardias.backend.dto.efector.EfectorHospitalDto;
+import com.guardias.backend.dto.efector.EfectorRegionDto;
 import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.dto.servicio.ServicioSummaryDto;
 import com.guardias.backend.entity.Hospital;
@@ -150,4 +151,9 @@ public class HospitalService {
         return sb.toString();
     }
 
+    public List<EfectorRegionDto> findHospitalesPorRegion(Long regionId) {
+        if (regionId == null)
+            return new ArrayList<>();
+        return hospitalRepository.findSummaryByRegionId(regionId);
+    }
 }
