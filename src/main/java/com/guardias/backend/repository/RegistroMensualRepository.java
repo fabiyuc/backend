@@ -104,8 +104,9 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("efectorId") Long efectorId,
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio);
-        
-        @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
+
+        // @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
+        @Query("SELECT COALESCE(SUM(sh.montoTotal), 0) FROM registrosMensuales rm " +
                         "JOIN rm.totalHoras sh " +
                         "WHERE rm.activo = true " +
                         "AND rm.asistencial.id = :asistencialId " +
