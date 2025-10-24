@@ -514,6 +514,26 @@ public class RegistroMensualController {
         }
     }
 
+    //obtiene RM AGRUPADOS POR MES y servicio con estado de facturacion PENDIENTE o REGULARIZADO
+    @GetMapping("/fuera-de-termino-agrupados-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
+    public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTerminoAgrupadosServicio(
+            @PathVariable Long idEfector,
+            @PathVariable String mes,
+            @PathVariable int anio,
+            @PathVariable Long idServicio) {
+
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes);
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoAgrupadosServicio(idEfector,
+                    mesEnum, anio,idServicio);
+
+            return ResponseEntity.ok(registros);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ArrayList<>());
+        }
+    }
+
     @GetMapping("/fuera-de-termino-por-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
     public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
             @PathVariable Long idEfector,
