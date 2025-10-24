@@ -926,13 +926,20 @@ public class RegistroMensualService {
 
                 return registros.stream()
                                 .map(rm -> {
-                                        // Filtra actividades por tipoGuardia si está presente
+                                        // Cuando idTipoGuardia = 1, mostrar TODAS las actividades (tipo 1 y 2)
+                                        // Cuando idTipoGuardia = 2, mostrar solo actividades tipo 2
+                                        // Cuando idTipoGuardia = null, mostrar todas
                                         List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
                                                         .stream()
-                                                        .filter(actividad -> idTipoGuardia == null || (actividad
-                                                                        .getTipoGuardia() != null
-                                                                        && actividad.getTipoGuardia().getId()
-                                                                                        .equals(idTipoGuardia)))
+                                                        .filter(actividad -> idTipoGuardia == null ||
+                                                                        (actividad.getTipoGuardia() != null &&
+                                                                                        (actividad.getTipoGuardia()
+                                                                                                        .getId()
+                                                                                                        .equals(idTipoGuardia)
+                                                                                                        ||
+                                                                                                        (idTipoGuardia == 1L
+                                                                                                                        && actividad.getTipoGuardia()
+                                                                                                                                        .getId() == 2L))))
                                                         .collect(Collectors.toList());
 
                                         return convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
@@ -1092,6 +1099,7 @@ public class RegistroMensualService {
                                 .filter(Objects::nonNull)
                                 .collect(Collectors.toList());
         }
+
         public List<RegistroMensualListDto> findRegistrosFueraDeTerminoAgrupadosServicio(Long efectorId, MesesEnum mes,
                         int anio, long idServicio) {
 
@@ -1122,7 +1130,8 @@ public class RegistroMensualService {
                                                         .filter(actividad -> actividad.isActivo() &&
                                                                         actividad.getTipoGuardia() != null &&
                                                                         actividad.getTipoGuardia()
-                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA && actividad.getServicio().getId()
+                                                                                        .getNombre() == TipoGuardiaEnum.CONTRAFACTURA
+                                                                        && actividad.getServicio().getId()
                                                                                         .equals(idServicio))
                                                         .collect(Collectors.toList());
 

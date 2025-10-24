@@ -25,6 +25,7 @@ import com.guardias.backend.dto.ddjj.DdjjListDto;
 import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
+import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.QuincenaEnum;
@@ -204,7 +205,7 @@ public class CronogramaDefinitivoService {
         return createNewCronograma(dto);
     }
 
-    private CronogramaDefinitivo processSegundaQuincena (CronogramaDefinitivoDto dto) {
+    private CronogramaDefinitivo processSegundaQuincena(CronogramaDefinitivoDto dto) {
         // Buscar primera quincena existente
         Optional<CronogramaDefinitivo> primeraQuincenaOpt = cronogramaDefinitivoRepository
                 .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
@@ -212,13 +213,14 @@ public class CronogramaDefinitivoService {
 
         if (primeraQuincenaOpt.isPresent()) {
             // Fusionar en cronograma SEGUNDA
-            CronogramaDefinitivo cronogramaSegunda  = createCronogramaFusionado(primeraQuincenaOpt.get(), dto, QuincenaEnum.SEGUNDA);
+            CronogramaDefinitivo cronogramaSegunda = createCronogramaFusionado(primeraQuincenaOpt.get(), dto,
+                    QuincenaEnum.SEGUNDA);
 
             // Desactivar primera quincena
             primeraQuincenaOpt.get().setActivo(false);
             cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
 
-            return cronogramaSegunda ;
+            return cronogramaSegunda;
         } else {
             // Crear con estado SEGUNDA(sin fusion)
             return createNewCronograma(dto);
@@ -252,66 +254,66 @@ public class CronogramaDefinitivoService {
     }
 
     private CronogramaDefinitivo processFueraDeTermino(CronogramaDefinitivoDto dto) {
-        //Busco en orden: SEGUNDA -> PRIMERA (el más reciente primero)
+        // Busco en orden: SEGUNDA -> PRIMERA (el más reciente primero)
 
-        //1. Buscar SEGUNDA quincena (que ya incluye PRIMERA si existía)
-        Optional<CronogramaDefinitivo> segundaQuincenaOpt  = cronogramaDefinitivoRepository
+        // 1. Buscar SEGUNDA quincena (que ya incluye PRIMERA si existía)
+        Optional<CronogramaDefinitivo> segundaQuincenaOpt = cronogramaDefinitivoRepository
                 .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
                         dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.SEGUNDA);
 
-        if (segundaQuincenaOpt .isPresent()) {
+        if (segundaQuincenaOpt.isPresent()) {
             // Fusionar SEGUNDA en FUERA_DE_TERMINO
             CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
-                    segundaQuincenaOpt .get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
+                    segundaQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
 
             // Desactivar SEGUNDA quincena
-            segundaQuincenaOpt .get().setActivo(false);
-            cronogramaDefinitivoRepository.save(segundaQuincenaOpt .get());
+            segundaQuincenaOpt.get().setActivo(false);
+            cronogramaDefinitivoRepository.save(segundaQuincenaOpt.get());
 
             return cronogramaFueraTermino;
-        } 
+        }
         // 2. Si no existe SEGUNDA, buscar PRIMERA quincena
         Optional<CronogramaDefinitivo> primeraQuincenaOpt = cronogramaDefinitivoRepository
-            .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
-                    dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
 
-    if (primeraQuincenaOpt.isPresent()) {
-        // Fusionar PRIMERA en FUERA_DE_TERMINO
-        CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
-                primeraQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
+        if (primeraQuincenaOpt.isPresent()) {
+            // Fusionar PRIMERA en FUERA_DE_TERMINO
+            CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
+                    primeraQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
 
-        // Desactivar PRIMERA quincena
-        primeraQuincenaOpt.get().setActivo(false);
-        cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
+            // Desactivar PRIMERA quincena
+            primeraQuincenaOpt.get().setActivo(false);
+            cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
 
-        return cronogramaFueraTermino;
-    }
-    
-    // 3. Si no existe ninguno, crear directamente FUERA_DE_TERMINO
-    return createNewCronograma(dto);
-}
+            return cronogramaFueraTermino;
+        }
 
-// Método genérico para fusionar cronogramas
-private CronogramaDefinitivo createCronogramaFusionado(CronogramaDefinitivo cronogramaAnterior,
-        CronogramaDefinitivoDto nuevoDto, QuincenaEnum nuevoEstado) {
-    CronogramaDefinitivo fusionado = new CronogramaDefinitivo();
-
-    // Configurar datos base usando el método existente createUpdate
-    fusionado = createUpdate(fusionado, nuevoDto);
-    fusionado.setQuincena(nuevoEstado);
-
-    // Combinar DDJJs del cronograma anterior con las nuevas
-    Set<Ddjj> todasDdjjs = new HashSet<>(cronogramaAnterior.getDdjjs());
-
-    for (Long idDdjj : nuevoDto.getIdDdjjs()) {
-        Ddjj ddjj = ddjjRepository.findById(idDdjj)
-                .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
-        todasDdjjs.add(ddjj);
+        // 3. Si no existe ninguno, crear directamente FUERA_DE_TERMINO
+        return createNewCronograma(dto);
     }
 
-    fusionado.setDdjjs(new ArrayList<>(todasDdjjs));
-    return fusionado;
-}
+    // Método genérico para fusionar cronogramas
+    private CronogramaDefinitivo createCronogramaFusionado(CronogramaDefinitivo cronogramaAnterior,
+            CronogramaDefinitivoDto nuevoDto, QuincenaEnum nuevoEstado) {
+        CronogramaDefinitivo fusionado = new CronogramaDefinitivo();
+
+        // Configurar datos base usando el método existente createUpdate
+        fusionado = createUpdate(fusionado, nuevoDto);
+        fusionado.setQuincena(nuevoEstado);
+
+        // Combinar DDJJs del cronograma anterior con las nuevas
+        Set<Ddjj> todasDdjjs = new HashSet<>(cronogramaAnterior.getDdjjs());
+
+        for (Long idDdjj : nuevoDto.getIdDdjjs()) {
+            Ddjj ddjj = ddjjRepository.findById(idDdjj)
+                    .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
+            todasDdjjs.add(ddjj);
+        }
+
+        fusionado.setDdjjs(new ArrayList<>(todasDdjjs));
+        return fusionado;
+    }
 
     private CronogramaDefinitivo createCronogramaFueraDeTermino(CronogramaDefinitivo cronogramaAnterior,
             CronogramaDefinitivoDto nuevoDto) {
@@ -353,27 +355,159 @@ private CronogramaDefinitivo createCronogramaFusionado(CronogramaDefinitivo cron
         }
     }
 
+    /*
+     * public List<CronogramaDefinitivoListDto>
+     * findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
+     * int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
+     * 
+     * List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
+     * .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
+     * 
+     * return cronogramas.stream()
+     * .map(cronograma -> {
+     * // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos
+     * ambos
+     * // tipos (1 y 2))
+     * List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
+     * .filter(ddjj -> idTipoGuardia == null ||
+     * (ddjj.getTipoGuardia() != null &&
+     * (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) ||
+     * (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L))))
+     * .map(ddjj -> {
+     * // Aplicamos filtro adicional para tipoGuardia == 1
+     * List<RegistroMensualListDto> registros = idTipoGuardia != null &&
+     * idTipoGuardia == 1L
+     * ? filtrarRegistrosConNovedades(ddjj.getRegistrosMensuales())
+     * : registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(),
+     * idTipoGuardia);
+     * 
+     * return new DdjjListDto(
+     * ddjj.getId(),
+     * ddjj.getMes(),
+     * ddjj.getAnio(),
+     * registros,
+     * ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
+     * ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
+     * ddjj.getEstadoDdjjDirector(),
+     * ddjj.getEstadoDdjjDirectorDPH(),
+     * ddjj.getEnPosesionDirector(),
+     * ddjj.getEnPosesionDirectorDPH(),
+     * ddjj.getMotivoDirector(),
+     * ddjj.getMotivoDirectorDPH(),
+     * ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null);
+     * })
+     * .collect(Collectors.toList());
+     * 
+     * return new CronogramaDefinitivoListDto(
+     * cronograma.getId(),
+     * cronograma.getMes(),
+     * cronograma.getAnio(),
+     * ddjjsFiltradas);
+     * })
+     * .collect(Collectors.toList());
+     * }
+     */
+
     public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
             int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
 
         List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
                 .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
 
+        System.out.println("=== INICIO findByAnioMesIdEfectorTipoGuardiaAndActivoTrue ===");
+        System.out.println("Parámetros - anio: " + anio + ", mes: " + mes + ", idEfector: " + idEfector
+                + ", idTipoGuardia: " + idTipoGuardia);
+        System.out.println("Total cronogramas encontrados: " + cronogramas.size());
+
         return cronogramas.stream()
                 .map(cronograma -> {
+                    System.out.println("\n--- Procesando Cronograma ID: " + cronograma.getId() + " ---");
+                    System.out.println("Total DDJJs en cronograma: " + cronograma.getDdjjs().size());
+
                     // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos ambos
                     // tipos (1 y 2))
                     List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
-                            .filter(ddjj -> idTipoGuardia == null ||
-                                    (ddjj.getTipoGuardia() != null &&
-                                            (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) ||
-                                                    (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L))))
+                            .filter(ddjj -> {
+                                boolean pasaFiltro = idTipoGuardia == null ||
+                                        (ddjj.getTipoGuardia() != null &&
+                                                (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) ||
+                                                        (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L)));
+
+                                System.out.println("🔍 FILTRO DDJJ - ID: " + ddjj.getId() +
+                                        ", TipoGuardia: "
+                                        + (ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : "null") +
+                                        ", Pasa filtro: " + pasaFiltro);
+
+                                return pasaFiltro;
+                            })
                             .map(ddjj -> {
+                                System.out.println("\n  🗂️  Procesando DDJJ ID: " + ddjj.getId() +
+                                        ", TipoGuardia: "
+                                        + (ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : "null"));
+                                System.out.println(
+                                        "  Total RegistrosMensuales en DDJJ: " + ddjj.getRegistrosMensuales().size());
+
                                 // Aplicamos filtro adicional para tipoGuardia == 1
                                 List<RegistroMensualListDto> registros = idTipoGuardia != null && idTipoGuardia == 1L
                                         ? filtrarRegistrosConNovedades(ddjj.getRegistrosMensuales())
                                         : registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(),
                                                 idTipoGuardia);
+
+                                System.out.println(
+                                        "  Total RegistrosMensuales después del procesamiento: " + registros.size());
+
+                                // Verificar si los registros tienen actividades
+                                registros.forEach(registro -> {
+                                    System.out.println("    📊 RegistroMensual ID: " + registro.getId() +
+                                            ", Total actividades: "
+                                            + (registro.getRegistroActividad() != null
+                                                    ? registro.getRegistroActividad().size()
+                                                    : 0));
+                                });
+
+                                return new DdjjListDto(
+                                        ddjj.getId(),
+                                        ddjj.getMes(),
+                                        ddjj.getAnio(),
+                                        registros,
+                                        ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
+                                        ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
+                                        ddjj.getEstadoDdjjDirector(),
+                                        ddjj.getEstadoDdjjDirectorDPH(),
+                                        ddjj.getEnPosesionDirector(),
+                                        ddjj.getEnPosesionDirectorDPH(),
+                                        ddjj.getMotivoDirector(),
+                                        ddjj.getMotivoDirectorDPH(),
+                                        ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null);
+                            })
+                            .collect(Collectors.toList());
+
+                    System.out.println("DDJJs después del filtro: " + ddjjsFiltradas.size());
+
+                    return new CronogramaDefinitivoListDto(
+                            cronograma.getId(),
+                            cronograma.getMes(),
+                            cronograma.getAnio(),
+                            ddjjsFiltradas);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorAndActivoTrue(
+            int anio, MesesEnum mes, Long idEfector) {
+
+        List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
+                .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
+
+        return cronogramas.stream()
+                .map(cronograma -> {
+                    // Sin filtro por tipoGuardia - mostramos todas las DDJJs
+                    List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
+                            .map(ddjj -> {
+                                // Para todas las DDJJs, mostrar todos los registros sin filtro adicional
+                                List<RegistroMensualListDto> registros = registroMensualService
+                                        .mapToDtoList(ddjj.getRegistrosMensuales(), null); // null = sin filtro por
+                                                                                           // tipoGuardia
 
                                 return new DdjjListDto(
                                         ddjj.getId(),
@@ -401,14 +535,35 @@ private CronogramaDefinitivo createCronogramaFusionado(CronogramaDefinitivo cron
                 .collect(Collectors.toList());
     }
 
+    /*
+     * private List<RegistroMensualListDto>
+     * filtrarRegistrosConNovedades(List<RegistroMensual> registros) {
+     * return registros.stream()
+     * .filter(rm -> !tieneNovedadCompensatoriaOLAO(rm))
+     * .map(rm -> registroMensualService.convertirARegistroMensualCompletoDTO(
+     * rm,
+     * rm.getRegistroActividad().stream()
+     * .filter(act -> act.getTipoGuardia() != null && act.getTipoGuardia().getId()
+     * == 1L)
+     * .collect(Collectors.toList())))
+     * .collect(Collectors.toList());
+     * }
+     */
+
     private List<RegistroMensualListDto> filtrarRegistrosConNovedades(List<RegistroMensual> registros) {
         return registros.stream()
                 .filter(rm -> !tieneNovedadCompensatoriaOLAO(rm))
-                .map(rm -> registroMensualService.convertirARegistroMensualCompletoDTO(
-                        rm,
-                        rm.getRegistroActividad().stream()
-                                .filter(act -> act.getTipoGuardia() != null && act.getTipoGuardia().getId() == 1L)
-                                .collect(Collectors.toList())))
+                .map(rm -> {
+                    // Usar la misma lógica de filtrado que en mapToDtoList
+                    List<RegistroActividad> actividadesFiltradas = rm.getRegistroActividad()
+                            .stream()
+                            .filter(actividad -> actividad.getTipoGuardia() != null &&
+                                    (actividad.getTipoGuardia().getId().equals(1L) ||
+                                            actividad.getTipoGuardia().getId().equals(2L)))
+                            .collect(Collectors.toList());
+
+                    return registroMensualService.convertirARegistroMensualCompletoDTO(rm, actividadesFiltradas);
+                })
                 .collect(Collectors.toList());
     }
 
