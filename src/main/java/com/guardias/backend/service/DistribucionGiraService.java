@@ -9,8 +9,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.DistribucionGiraDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionGira;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.DistribucionGiraRepository;
 
@@ -28,6 +30,8 @@ public class DistribucionGiraService {
 
     @Autowired
     PersonService personService;
+    @Autowired
+    DistribucionHorariaService distribucionHorariaService;
 
     public Optional<List<DistribucionGira>> findByActivoTrue() {
         return distribucionGiraRepository.findByActivoTrue();
@@ -95,6 +99,30 @@ public class DistribucionGiraService {
 
     public void deleteById(Long id) {
         distribucionGiraRepository.deleteById(id);
+    }
+
+    public DistribucionGira createUpdate(DistribucionGira distribucionGira,
+            DistribucionGiraDto distribucionGiraDto) {
+        DistribucionHoraria distribucionHoraria = distribucionHorariaService.createUpdate(distribucionGira,
+                distribucionGiraDto);
+        distribucionGira = (DistribucionGira) distribucionHoraria;
+
+        if (distribucionGiraDto.getPuestoSalud() != distribucionGira.getPuestoSalud()
+                && distribucionGiraDto.getPuestoSalud() != null)
+            distribucionGira.setPuestoSalud(distribucionGiraDto.getPuestoSalud());
+
+        /*
+         * if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
+         * && distribucionGiraDto.getDestino() != null)
+         * distribucionGira.setDestino(distribucionGiraDto.getDestino());
+         * if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
+         * && distribucionGiraDto.getDescripcion() != null)
+         * distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
+         */
+
+        distribucionGira.setActivo(true);
+
+        return distribucionGira;
     }
 
     public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {

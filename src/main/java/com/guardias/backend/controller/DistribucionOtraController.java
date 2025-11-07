@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.DistribucionOtraDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
-import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.DistribucionOtra;
+import com.guardias.backend.service.DistribucionHorariaService;
 import com.guardias.backend.service.DistribucionOtraService;
 
 @RestController
@@ -33,7 +33,7 @@ public class DistribucionOtraController {
     @Autowired
     DistribucionOtraService distribucionOtraService;
     @Autowired
-    DistribucionHorariaController distribucionHorariaController;
+    DistribucionHorariaService distribucionHorariaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionOtra>> list() {
@@ -148,36 +148,13 @@ public class DistribucionOtraController {
         return ResponseEntity.ok(distribucionOtraActivas);
     }
 
-    DistribucionOtra createUpdate(DistribucionOtra distribucionOtra,
-            DistribucionOtraDto distribucionOtraDto) {
-        DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionOtra,
-                distribucionOtraDto);
-        distribucionOtra = (DistribucionOtra) distribucionHoraria;
-
-        if (distribucionOtraDto.getDescripcion() != (distribucionOtra.getDescripcion())
-                && distribucionOtraDto.getDescripcion() != null)
-            distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
-
-        if (distribucionOtraDto.getLugar() != (distribucionOtra.getLugar())
-                && distribucionOtraDto.getLugar() != null)
-            distribucionOtra.setLugar(distribucionOtraDto.getLugar());
-
-        if (distribucionOtraDto.getTipo() != (distribucionOtra.getTipo())
-                && distribucionOtraDto.getTipo() != null)
-            distribucionOtra.setTipo(distribucionOtraDto.getTipo());
-
-        distribucionOtra.setActivo(true);
-
-        return distribucionOtra;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionOtraDto distribucionOtraDto) {
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionOtraDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionOtraDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionOtra distribucionOtra = createUpdate(new DistribucionOtra(),
+            DistribucionOtra distribucionOtra = distribucionOtraService.createUpdate(new DistribucionOtra(),
                     distribucionOtraDto);
             distribucionOtraService.save(distribucionOtra);
             return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
@@ -194,10 +171,10 @@ public class DistribucionOtraController {
         if (!distribucionOtraService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionOtraDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionOtraDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionOtra distribucionOtra = createUpdate(
+            DistribucionOtra distribucionOtra = distribucionOtraService.createUpdate(
                     distribucionOtraService.findById(id).get(),
                     distribucionOtraDto);
             distribucionOtraService.save(distribucionOtra);

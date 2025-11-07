@@ -3,7 +3,6 @@ package com.guardias.backend.controller;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,9 @@ import com.guardias.backend.dto.cronogramaTentativo.ValidacionCronogramaResponse
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
 import com.guardias.backend.dto.novedadPersonal.ConsultaLicenciaCompensatorioDto;
 import com.guardias.backend.entity.DistribucionGuardia;
-import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.service.DistribucionGuardiaService;
-import com.guardias.backend.service.ServicioService;
+import com.guardias.backend.service.DistribucionHorariaService;
 
 @RestController
 @RequestMapping("/distribucionGuardia")
@@ -39,9 +37,7 @@ public class DistribucionGuardiaController {
     @Autowired
     DistribucionGuardiaService distribucionGuardiaService;
     @Autowired
-    DistribucionHorariaController distribucionHorariaController;
-    @Autowired
-    ServicioService servicioService;
+    DistribucionHorariaService distribucionHorariaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGuardia>> list() {
@@ -143,36 +139,15 @@ public class DistribucionGuardiaController {
         return ResponseEntity.ok(distribucionGuardiaActivas);
     }
 
-    DistribucionGuardia createUpdate(DistribucionGuardia distribucionGuardia,
-            DistribucionGuardiaDto distribucionGuardiaDto) {
-
-        DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionGuardia,
-                distribucionGuardiaDto);
-        distribucionGuardia = (DistribucionGuardia) distribucionHoraria;
-
-        if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
-                && distribucionGuardiaDto.getTipoGuardia() != null)
-            distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
-
-        if (distribucionGuardia.getServicio() == null ||
-                (distribucionGuardiaDto.getIdServicio() != null &&
-                        !Objects.equals(distribucionGuardia.getServicio().getId(),
-                                distribucionGuardiaDto.getIdServicio()))) {
-            distribucionGuardia.setServicio(servicioService.findById(distribucionGuardiaDto.getIdServicio()).get());
-        }
-
-        distribucionGuardia.setActivo(true);
-
-        return distribucionGuardia;
-    }
+    
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGuardiaDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionGuardiaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionGuardia distribucionGuardia = createUpdate(new DistribucionGuardia(),
+            DistribucionGuardia distribucionGuardia = distribucionGuardiaService.createUpdate(new DistribucionGuardia(),
                     distribucionGuardiaDto);
             distribucionGuardiaService.save(distribucionGuardia);
             return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
@@ -189,10 +164,10 @@ public class DistribucionGuardiaController {
         if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGuardiaDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionGuardiaDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionGuardia distribucionGuardia = createUpdate(
+            DistribucionGuardia distribucionGuardia = distribucionGuardiaService.createUpdate(
                     distribucionGuardiaService.findById(id).get(),
                     distribucionGuardiaDto);
             distribucionGuardiaService.save(distribucionGuardia);
