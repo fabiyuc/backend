@@ -32,7 +32,9 @@ import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.service.MinisterioService;
+import com.guardias.backend.service.ServicioService;
 
 @Controller
 @RequestMapping("/ministerio")
@@ -46,6 +48,9 @@ public class MinisterioController {
     MinisterioService ministerioService;
     @Autowired
     EfectorController efectorController;
+
+    @Autowired
+    ServicioService servicioService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Ministerio>> list() {
@@ -153,9 +158,25 @@ public class MinisterioController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(new Ministerio(), ministerioDto);
-            ministerio.setId(58L);
             ministerioService.save(ministerio);
-            return new ResponseEntity(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
+
+            // 🔗 Actualizar el lado propietario (Servicio) después de guardar el ministerio
+            if (ministerio.getServicios() != null) {
+                for (Servicio s : ministerio.getServicios()) {
+                    Servicio servicio = servicioService.findById(s.getId()).get();
+                    if (servicio != null) {
+                        if (servicio.getEfectores() == null) {
+                            servicio.setEfectores(new java.util.ArrayList<>());
+                        }
+                        if (!servicio.getEfectores().contains(ministerio)) {
+                            servicio.getEfectores().add(ministerio);
+                            servicioService.save(servicio);
+                        }
+                    }
+                }
+            }
+
+            return new ResponseEntity<>(ministerio, HttpStatus.OK);
         } else {
             return respuestaValidaciones;
         }
@@ -171,6 +192,23 @@ public class MinisterioController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Ministerio ministerio = createUpdate(ministerioService.findById(id).get(), ministerioDto);
             ministerioService.save(ministerio);
+
+            // 🔗 Actualizar el lado propietario (Servicio) después de guardar el ministerio
+            if (ministerio.getServicios() != null) {
+                for (Servicio s : ministerio.getServicios()) {
+                    Servicio servicio = servicioService.findById(s.getId()).get();
+                    if (servicio != null) {
+                        if (servicio.getEfectores() == null) {
+                            servicio.setEfectores(new java.util.ArrayList<>());
+                        }
+                        if (!servicio.getEfectores().contains(ministerio)) {
+                            servicio.getEfectores().add(ministerio);
+                            servicioService.save(servicio);
+                        }
+                    }
+                }
+            }
+
             return new ResponseEntity(new Mensaje("Ministerio creado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

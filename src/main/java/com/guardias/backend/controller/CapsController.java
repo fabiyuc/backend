@@ -33,8 +33,10 @@ import com.guardias.backend.dto.efector.EfectorSummaryDto;
 import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
+import com.guardias.backend.service.ServicioService;
 
 @Controller
 @RequestMapping("/caps")
@@ -48,6 +50,9 @@ public class CapsController {
     HospitalService hospitalService;
     @Autowired
     CapsService capsService;
+
+    @Autowired
+    ServicioService servicioService;
 
     @Autowired
     EfectorController efectorController;
@@ -153,6 +158,18 @@ public class CapsController {
             Caps caps = createUpdate(new Caps(), capsDto);
             caps.setActivo(true);
             capsService.save(caps);
+
+            // 🔗 Actualizar el lado propietario (Servicio) después de guardar el hospital
+            if (caps.getServicios() != null) {
+                for (Servicio s : caps.getServicios()) {
+                    Servicio servicio = servicioService.findById(s.getId()).get();
+                    if (servicio != null && !servicio.getEfectores().contains(caps)) {
+                        servicio.getEfectores().add(caps);
+                        servicioService.save(servicio);
+                    }
+                }
+            }
+
             return new ResponseEntity<>(caps, HttpStatus.OK);
         } else {
             return respuestaValidaciones;
@@ -169,6 +186,18 @@ public class CapsController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Caps caps = createUpdate(capsService.findById(id).get(), capsDto);
             capsService.save(caps);
+
+            // 🔗 Actualizar el lado propietario (Servicio) después de guardar el hospital
+            if (caps.getServicios() != null) {
+                for (Servicio s : caps.getServicios()) {
+                    Servicio servicio = servicioService.findById(s.getId()).get();
+                    if (servicio != null && !servicio.getEfectores().contains(caps)) {
+                        servicio.getEfectores().add(caps);
+                        servicioService.save(servicio);
+                    }
+                }
+            }
+
             return new ResponseEntity(new Mensaje("Caps creado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

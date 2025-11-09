@@ -386,4 +386,9 @@ public class AsistencialController {
         return new ResponseEntity<>(tiposGuardias, HttpStatus.OK);
     }
 
+    @GetMapping("/tieneCf/{idAsistencial}")
+    public boolean tieneCf(@PathVariable Long idAsistencial) {
+        return asistencialService.tieneCf(idAsistencial);
+    }
+
 }
