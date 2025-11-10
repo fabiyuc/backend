@@ -40,7 +40,7 @@ public class DistribucionHorariaService {
 
     public ResponseEntity<?> validations(DistribucionHorariaDto distribucionHorariaDto) {
         if (distribucionHorariaDto.getDia() == null)
-            return new ResponseEntity(new Mensaje("El dia es obligatorio"),
+            return new ResponseEntity(new Mensaje("El dia es obligatorio fabiana"),
                     HttpStatus.BAD_REQUEST);
 
         if (distribucionHorariaDto.getCantidadHoras() == null)

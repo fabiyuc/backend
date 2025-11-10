@@ -37,6 +37,10 @@ public class TipoGuardiaService {
         return tipoGuardiaRepository.findByNombre(nombreEnum);
     }
 
+    public Optional<TipoGuardia> findByNombre(TipoGuardiaEnum nombre) {
+        return tipoGuardiaRepository.findByNombre(nombre);
+    }
+
     public boolean existsByNombre(String nombre) {
         TipoGuardiaEnum nombreEnum = TipoGuardiaEnum.valueOf(nombre.toUpperCase());
         return tipoGuardiaRepository.existsByNombre(nombreEnum);
