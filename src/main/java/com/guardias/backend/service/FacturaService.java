@@ -268,8 +268,15 @@ public class FacturaService {
                 }
             }
 
-            // Validar que no exceda
+            // Validar que no exceda considerando margen de ±0.10
             BigDecimal sumaTotal = montoFacturasExistentes.add(facturaDto.getMonto());
+            BigDecimal margenPermitido = new BigDecimal("0.10");
+
+            // Calcular la diferencia absoluta
+            BigDecimal diferencia = sumaTotal.subtract(montoRegistro).abs();
+            
+            // Calcular la diferencia absoluta para la validación
+            BigDecimal diferenciaAbsoluta = diferencia.abs();
 
             System.out.println("=== DEBUG VALIDACIÓN MONTOS ===");
             System.out.println("Periodo carga: " + periodoCarga);
@@ -277,11 +284,15 @@ public class FacturaService {
             System.out.println("Monto nueva factura: " + facturaDto.getMonto());
             System.out.println("Monto registro(s): " + montoRegistro);
             System.out.println("Suma total: " + sumaTotal);
+            System.out.println("Diferencia: " + diferencia);
+            System.out.println("Diferencia absoluta: " + diferenciaAbsoluta);
+            System.out.println("Margen permitido: " + margenPermitido);
 
-            if (sumaTotal.compareTo(montoRegistro) > 0) {
+            // Validar si la diferencia absoluta es mayor al margen permitido (0.10)
+            if (diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
                 String mensajeError = String.format(
-                        "Monto excedido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s",
-                        periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal);
+                    "Monto fuera del rango permitido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s, Diferencia: %s (Margen permitido: ±%s)",
+                    periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal, diferencia, margenPermitido);
                 return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
             }
 
