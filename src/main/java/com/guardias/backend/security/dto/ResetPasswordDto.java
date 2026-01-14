@@ -14,6 +14,6 @@ public class ResetPasswordDto {
     private String nombreUsuario;
     
     @NotBlank
-    @Size(min = 6)
+    @Size(min = 4)
     private String nuevaPassword;
 }
