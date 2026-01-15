@@ -7,11 +7,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.DistribucionGuardiaDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.cronogramaTentativo.ValidacionCronogramaResponseDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
@@ -46,6 +48,10 @@ public class DistribucionGuardiaService {
     PersonService personService;
     @Autowired
     AsistencialRepository asistencialRepository;
+    @Autowired
+    DistribucionHorariaService distribucionHorariaService;
+    @Autowired
+    ServicioService servicioService;
 
     public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
@@ -113,6 +119,29 @@ public class DistribucionGuardiaService {
 
     public void deleteById(Long id) {
         distribucionGuardiaRepository.deleteById(id);
+    }
+
+    public DistribucionGuardia createUpdate(DistribucionGuardia distribucionGuardia,
+            DistribucionGuardiaDto distribucionGuardiaDto) {
+
+        DistribucionHoraria distribucionHoraria = distribucionHorariaService.createUpdate(distribucionGuardia,
+                distribucionGuardiaDto);
+        distribucionGuardia = (DistribucionGuardia) distribucionHoraria;
+
+        if (distribucionGuardiaDto.getTipoGuardia() != distribucionGuardia.getTipoGuardia()
+                && distribucionGuardiaDto.getTipoGuardia() != null)
+            distribucionGuardia.setTipoGuardia(distribucionGuardiaDto.getTipoGuardia());
+
+        if (distribucionGuardia.getServicio() == null ||
+                (distribucionGuardiaDto.getIdServicio() != null &&
+                        !Objects.equals(distribucionGuardia.getServicio().getId(),
+                                distribucionGuardiaDto.getIdServicio()))) {
+            distribucionGuardia.setServicio(servicioService.findById(distribucionGuardiaDto.getIdServicio()).get());
+        }
+
+        distribucionGuardia.setActivo(true);
+
+        return distribucionGuardia;
     }
 
     public boolean existDistribucion(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {

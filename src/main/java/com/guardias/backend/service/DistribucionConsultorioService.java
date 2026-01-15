@@ -4,13 +4,16 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 
@@ -22,12 +25,14 @@ public class DistribucionConsultorioService {
 
     @Autowired
     DistribucionConsultorioRepository distribucionConsultorioRepository;
-
     @Autowired
     EfectorService efectorService;
-
     @Autowired
     PersonService personService;
+    @Autowired
+    ServicioService servicioService;
+    @Autowired
+    DistribucionHorariaService distribucionHorariaService;
 
     public Optional<List<DistribucionConsultorio>> findByActivoTrue() {
         return distribucionConsultorioRepository.findByActivoTrue();
@@ -96,6 +101,45 @@ public class DistribucionConsultorioService {
     public void deleteById(Long id) {
         distribucionConsultorioRepository.deleteById(id);
     }
+
+    public DistribucionConsultorio createUpdate(DistribucionConsultorio distribucionConsultorio,
+            DistribucionConsultorioDto distribucionConsultorioDto) {
+        DistribucionHoraria distribucionHoraria = distribucionHorariaService.createUpdate(distribucionConsultorio,
+                distribucionConsultorioDto);
+
+        distribucionConsultorio = (DistribucionConsultorio) distribucionHoraria;
+
+        if (distribucionConsultorio.getServicio() == null ||
+                (distribucionConsultorioDto.getIdServicio() != null &&
+                        !Objects.equals(distribucionConsultorio.getServicio().getId(),
+                                distribucionConsultorioDto.getIdServicio()))) {
+            distribucionConsultorio
+                    .setServicio(servicioService.findById(distribucionConsultorioDto.getIdServicio()).get());
+        }
+
+        if (distribucionConsultorioDto.getTipoConsultorio() != distribucionConsultorio.getTipoConsultorio()
+                && distribucionConsultorioDto.getTipoConsultorio() != null)
+            distribucionConsultorio.setTipoConsultorio(distribucionConsultorioDto.getTipoConsultorio());
+
+        if (distribucionConsultorioDto.getLugar() != distribucionConsultorio.getLugar()
+                && distribucionConsultorioDto.getLugar() != null)
+            distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
+
+        /*
+         * if (distribucionConsultorioDto.getEspecialidad() !=
+         * distribucionConsultorio.getEspecialidad()
+         * && distribucionConsultorioDto.getEspecialidad() != null)
+         * distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.
+         * getEspecialidad());
+         * if (distribucionConsultorioDto.getCantidadTurnos() !=
+         * distribucionConsultorio.getCantidadTurnos())
+         * distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.
+         * getCantidadTurnos());
+         */
+        distribucionConsultorio.setActivo(true);
+        return distribucionConsultorio;
+    }
+
 
     public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
         if (dto == null) {
