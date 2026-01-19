@@ -35,8 +35,6 @@ public class PersonDto {
     private Boolean esAsistencial;
     private boolean activo;
 
-    private boolean validado; 
-
     private List<Long> idNovedadesPersonales;
     // private List<Long> idSuplentes;
     private List<Long> idDistribucionesHorarias;

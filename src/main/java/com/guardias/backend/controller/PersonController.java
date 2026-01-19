@@ -246,8 +246,6 @@ public class PersonController {
             }
         }
 
-        person.setValidado(false);
-
         return person;
     }
 

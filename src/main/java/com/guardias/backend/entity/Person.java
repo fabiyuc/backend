@@ -56,9 +56,6 @@ public abstract class Person {
     private boolean esAsistencial;
     @Column(columnDefinition = "BIT DEFAULT 1")
     private boolean activo;
-    
-    @Column(columnDefinition = "BIT DEFAULT 0")
-    private boolean validado;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "persona", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFinal", "matriculaNacional",
