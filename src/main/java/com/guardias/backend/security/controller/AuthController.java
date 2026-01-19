@@ -366,8 +366,8 @@ public class AuthController {
 
     @PostMapping("/cambiar-password")
     public ResponseEntity<?> cambiarPassword(@Valid @RequestBody CambioPasswordDto cambioPasswordDto,
-            BindingResult bindingResult,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            BindingResult bindingResult/* ,
+            @AuthenticationPrincipal UserDetails userDetails */) {
 
         if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(new Mensaje("Datos inválidos"), HttpStatus.BAD_REQUEST);
@@ -380,9 +380,17 @@ public class AuthController {
 
         try {
             // Obtener usuario actual
-            String nombreUsuario = userDetails.getUsername();
+            /* String nombreUsuario = userDetails.getUsername();
             Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado")); */
+            
+            // CAMBIO IMPORTANTE:
+            // En lugar de sacar el nombre del token (que podría ser el del Hospital),
+            // lo sacamos del DTO que envía el front (que será el del Médico).
+            String nombreUsuario = cambioPasswordDto.getNombreUsuario();
+        
+            Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
             // Verificar password actual
             if (!passwordEncoder.matches(cambioPasswordDto.getPasswordActual(), usuario.getPassword())) {
