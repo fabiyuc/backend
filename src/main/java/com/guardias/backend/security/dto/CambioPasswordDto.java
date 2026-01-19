@@ -10,11 +10,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CambioPasswordDto {
+
+    @NotBlank
+    private String nombreUsuario;
+    
     @NotBlank
     private String passwordActual;
     
     @NotBlank
-    @Size(min = 6, message = "La nueva contraseña debe tener al menos 6 caracteres")
+    @Size(min = 4, message = "La nueva contraseña debe tener al menos 4 caracteres")
     private String nuevaPassword;
     
     @NotBlank
