@@ -34,4 +34,6 @@ public class ObservacionDdjjDto {
     @NotBlank
     private LocalTime horaCreacion;
 
+    private String documentoRespaldo;
+
 }
