@@ -55,28 +55,28 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector);
 
-        @Query(nativeQuery = true, value = """
-                        SELECT *
-                        FROM distribuciones_guardias d
-                        WHERE d.id_persona = :idAsistencial
-                        AND d.id_efector = :idEfector
-                        AND d.tipo_guardia = :tipoGuardia
-                        AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                        AND CAST(:horaIngreso AS TIME) = CAST(d.hora_ingreso AS TIME)
-                        AND CAST(:horaEgreso AS TIME) = DATEADD(HOUR, d.cantidad_horas, CAST(d.hora_ingreso AS TIME))
-                        AND d.activo = 1
-                        AND d.dia =
-                                CASE DATEPART(WEEKDAY, :fechaIngreso)
-                                        WHEN 1 THEN 'LUNES'
-                                        WHEN 2 THEN 'MARTES'
-                                        WHEN 3 THEN 'MIERCOLES'
-                                        WHEN 4 THEN 'JUEVES'
-                                        WHEN 5 THEN 'VIERNES'
-                                        WHEN 6 THEN 'SABADO'
-                                        WHEN 7 THEN 'DOMINGO'
-                                END
-                        """)
-        Optional<DistribucionGuardia> findValidDistribucion(
+                                @Query(nativeQuery = true, value = """
+                                SELECT *
+                                FROM distribuciones_guardias d
+                                WHERE d.id_persona = :idAsistencial
+                                AND d.id_efector = :idEfector
+                                AND d.tipo_guardia = :tipoGuardia
+                                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                                AND TIME(:horaIngreso) = d.hora_ingreso
+                                AND TIME(:horaEgreso) = ADDTIME(d.hora_ingreso, SEC_TO_TIME(d.cantidad_horas * 3600))
+                                AND d.activo = 1
+                                AND d.dia =
+                                        CASE WEEKDAY(:fechaIngreso)
+                                        WHEN 0 THEN 'LUNES'
+                                        WHEN 1 THEN 'MARTES'
+                                        WHEN 2 THEN 'MIERCOLES'
+                                        WHEN 3 THEN 'JUEVES'
+                                        WHEN 4 THEN 'VIERNES'
+                                        WHEN 5 THEN 'SABADO'
+                                        WHEN 6 THEN 'DOMINGO'
+                                        END
+                                """)
+                                Optional<DistribucionGuardia> findValidDistribucion(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("tipoGuardia") String tipoGuardia,
@@ -84,21 +84,24 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("horaIngreso") String horaIngreso,
                         @Param("horaEgreso") String horaEgreso);
 
-        @Query(nativeQuery = true, value = """
-                        SELECT CAST(CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS BIT)
-                        FROM distribuciones_guardias d
-                        WHERE d.id_persona = :idAsistencial
-                        AND d.id_efector = :idEfector
-                        AND d.tipo_guardia = :tipoGuardia
-                        AND MONTH(d.fecha_inicio) = :mes
-                        AND YEAR(d.fecha_inicio) = :anio
-                        AND d.activo = 1""")
-        boolean existsByPersonaAndEfectorAndTipoInMonth(
-                        @Param("idAsistencial") Long idAsistencial,
-                        @Param("idEfector") Long idEfector,
-                        @Param("tipoGuardia") String tipoGuardia,
-                        @Param("mes") int mes,
-                        @Param("anio") int anio);
+                        @Query(nativeQuery = true, value = """
+                        SELECT EXISTS(
+                                SELECT 1
+                                FROM distribuciones_guardias d
+                                WHERE d.id_persona = :idAsistencial
+                                AND d.id_efector = :idEfector
+                                AND d.tipo_guardia = :tipoGuardia
+                                AND MONTH(d.fecha_inicio) = :mes
+                                AND YEAR(d.fecha_inicio) = :anio
+                                AND d.activo = 1
+                        )
+                        """)
+                        boolean existsByPersonaAndEfectorAndTipoInMonth(
+                                @Param("idAsistencial") Long idAsistencial,
+                                @Param("idEfector") Long idEfector,
+                                @Param("tipoGuardia") String tipoGuardia,
+                                @Param("mes") int mes,
+                                @Param("anio") int anio);
 
         @Query("SELECT dg FROM distribucionesGuardias dg WHERE dg.activo = true AND dg.persona.id = :idPersona " +
                         "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
