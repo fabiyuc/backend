@@ -1,6 +1,8 @@
 package com.guardias.backend.service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -75,7 +79,7 @@ public class ObservacionDdjjService {
         if (observacionDdjjDto.getIdDdjj() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar el id de la ddjj"),
                     HttpStatus.BAD_REQUEST);
-        
+
         if (observacionDdjjDto.getFechaCreacion() == null)
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la fecha de creacion"),
                     HttpStatus.BAD_REQUEST);
@@ -106,7 +110,7 @@ public class ObservacionDdjjService {
 
         if (observacionDdjj.getFechaCreacion() != observacionDdjjDto.getFechaCreacion())
             observacionDdjj.setFechaCreacion(observacionDdjjDto.getFechaCreacion());
-        
+
         if (observacionDdjj.getHoraCreacion() != observacionDdjjDto.getHoraCreacion())
             observacionDdjj.setHoraCreacion(observacionDdjjDto.getHoraCreacion());
         observacionDdjj.setActivo(true);
@@ -169,7 +173,8 @@ public class ObservacionDdjjService {
                 nombre,
                 apellido,
                 observacion.getFechaCreacion(),
-                observacion.getHoraCreacion());
+                observacion.getHoraCreacion(),
+                observacion.getDocumentoRespaldo());
 
         return dto;
     }
@@ -198,18 +203,19 @@ public class ObservacionDdjjService {
 
         // 2. Lógica del archivo
         if (archivo != null && !archivo.isEmpty()) {
-            
+
             // A. Validaciones específicas (PDF / Excel)
             validarFormatoArchivo(archivo);
             if (archivo.getSize() > 10 * 1024 * 1024) { // 10MB limite por ejemplo
-                 throw new IOException("El archivo es demasiado grande (Máx 10MB)");
+                throw new IOException("El archivo es demasiado grande (Máx 10MB)");
             }
 
-            // B. Preparar carpetas (Estilo de tu ejemplo: Carpeta por ID de DDJJ para ordenar)
+            // B. Preparar carpetas (Estilo de tu ejemplo: Carpeta por ID de DDJJ para
+            // ordenar)
             // Usamos el ID de la DDJJ para agrupar los archivos de rechazo de esa DDJJ
-            String nombreCarpeta = "ddjj_" + dto.getIdDdjj(); 
+            String nombreCarpeta = "ddjj_" + dto.getIdDdjj();
             Path rutaCarpeta = Paths.get(rootUploadDir, nombreCarpeta);
-            
+
             if (!Files.exists(rutaCarpeta)) {
                 Files.createDirectories(rutaCarpeta);
             }
@@ -217,7 +223,7 @@ public class ObservacionDdjjService {
             // C. Generar nombre seguro (Mezcla de tu ejemplo + UUID)
             String nombreOriginalLimpios = archivo.getOriginalFilename()
                     .replaceAll("[^a-zA-Z0-9\\.\\-]", "_"); // Solo letras, numeros, puntos y guiones
-            
+
             // Agregamos UUID para evitar colisiones si suben dos veces "archivo.pdf"
             String nombreFinal = UUID.randomUUID().toString().substring(0, 8) + "_" + nombreOriginalLimpios;
 
@@ -239,14 +245,31 @@ public class ObservacionDdjjService {
     private void validarFormatoArchivo(MultipartFile archivo) throws IOException {
         String contentType = archivo.getContentType();
         String nombre = archivo.getOriginalFilename();
-        
+
         // Validación robusta: Chequear extensión Y Content-Type
         boolean esPdf = contentType.equals("application/pdf") || nombre.endsWith(".pdf");
-        boolean esExcel = contentType.contains("excel") || contentType.contains("spreadsheet") || nombre.endsWith(".xls") || nombre.endsWith(".xlsx");
+        boolean esExcel = contentType.contains("excel") || contentType.contains("spreadsheet")
+                || nombre.endsWith(".xls") || nombre.endsWith(".xlsx");
 
         if (!esPdf && !esExcel) {
             throw new IOException("Formato no válido. Solo se permiten PDF o Excel.");
         }
     }
-    
+
+    // Este método carga el archivo físico como un recurso descargable
+    public Resource cargarArchivoComoRecurso(String rutaRelativa) throws FileNotFoundException, MalformedURLException {
+        // 1. Construimos la ruta completa: "uploads/ddjj_10/archivo.pdf"
+        Path rutaArchivo = Paths.get(rootUploadDir).resolve(rutaRelativa).normalize();
+
+        // 2. Convertimos a recurso (UrlResource)
+        Resource recurso = new UrlResource(rutaArchivo.toUri());
+
+        // 3. Verificamos si existe y es legible
+        if (recurso.exists() && recurso.isReadable()) {
+            return recurso;
+        } else {
+            throw new FileNotFoundException("No se pudo encontrar o leer el archivo: " + rutaRelativa);
+        }
+    }
+
 }
