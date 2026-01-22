@@ -2,6 +2,7 @@ package com.guardias.backend.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
@@ -82,8 +84,6 @@ public class ValorGuardiaCargoYagrupService {
         // 2. Buscar valor genérico (sin hospitales asignados)
         return valorGuardiaCargoYagrupRepository.findByActivoTrueAndHospitalesIsEmpty();
     }
-
-
 
     /* Crea registros de ValorGuardiaCargoYagrup basados en el ValorGmi activo */
 
@@ -334,12 +334,11 @@ public class ValorGuardiaCargoYagrupService {
      * }
      */
 
-
-      public void inicializarValoresGuardia() {
+    public void inicializarValoresGuardia() {
         // Eliminar valores existentes para evitar duplicados
-     
-        //  cargoYagrupRepository.deleteAll();
-        //extrayCFRepository.deleteAll();
+
+        // cargoYagrupRepository.deleteAll();
+        // extrayCFRepository.deleteAll();
 
         // Fecha de inicio fija para abril 2025
         LocalDate fechaInicio = LocalDate.of(2025, 4, 1);
@@ -354,137 +353,125 @@ public class ValorGuardiaCargoYagrupService {
     private void cargarValoresCargoYAgrupacion(LocalDate fechaInicio) {
         // Servicios Críticos + SAME
         crearValorCargoYAgrupacion(
-            Arrays.asList("SAME"),
-            4,
-            new BigDecimal("166794.12"), // L-V (Total)
-            new BigDecimal("183473.53"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAME"),
+                4,
+                new BigDecimal("166794.12"), // L-V (Total)
+                new BigDecimal("183473.53"), // S-D-F (Total)
+                fechaInicio);
 
         // Tercer Nivel - Materno, Soria
         crearValorCargoYAgrupacion(
-            Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
-            3,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
+                3,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - Jorge Uro
         crearValorCargoYAgrupacion(
-            Arrays.asList("JORGE URO"),
-            2,
-            new BigDecimal("269986.48"), // L-V (Total)
-            new BigDecimal("296985.13"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("JORGE URO"),
+                2,
+                new BigDecimal("269986.48"), // L-V (Total)
+                new BigDecimal("296985.13"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - San Roque, Orias, Paterson
         crearValorCargoYAgrupacion(
-            Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
-            2,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
+                2,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Susques
         crearValorCargoYAgrupacion(
-            Arrays.asList("SUSQUES"),
-            1,
-            new BigDecimal("299984.98"), // L-V (Total)
-            new BigDecimal("329983.48"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SUSQUES"),
+                1,
+                new BigDecimal("299984.98"), // L-V (Total)
+                new BigDecimal("329983.48"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Rosario, Aguilar, Yuto, Talar, P.Sola
         crearValorCargoYAgrupacion(
-            Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
-            1,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR",
+                        "NUESTRA SEÑORA DEL VALLE"),
+                1,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
 
         // Resto de Primer Nivel
         crearValorCargoYAgrupacion(
-            null,
-            1,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                null,
+                1,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
     }
 
     private void cargarValoresExtraYCF(LocalDate fechaInicio) {
         // Servicios Críticos + SAME
         crearValorExtraYCF(
-            Arrays.asList("SAME"),
-            4,
-            new BigDecimal("228139.28"), // L-V (Total)
-            new BigDecimal("250953.20"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAME"),
+                4,
+                new BigDecimal("228139.28"), // L-V (Total)
+                new BigDecimal("250953.20"), // S-D-F (Total)
+                fechaInicio);
 
         // Tercer Nivel - Materno, Soria
         crearValorExtraYCF(
-            Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
-            3,
-            new BigDecimal("232366.03"), // L-V (Total)
-            new BigDecimal("255602.63"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
+                3,
+                new BigDecimal("232366.03"), // L-V (Total)
+                new BigDecimal("255602.63"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - Jorge Uro
         crearValorExtraYCF(
-            Arrays.asList("JORGE URO"),
-            2,
-            new BigDecimal("280233.71"), // L-V (Total)
-            new BigDecimal("308257.09"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("JORGE URO"),
+                2,
+                new BigDecimal("280233.71"), // L-V (Total)
+                new BigDecimal("308257.09"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - San Roque, Orias, Paterson
         crearValorExtraYCF(
-            Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
-            2,
-            new BigDecimal("215564.40"), // L-V (Total)
-            new BigDecimal("237120.84"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
+                2,
+                new BigDecimal("215564.40"), // L-V (Total)
+                new BigDecimal("237120.84"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Susques
         crearValorExtraYCF(
-            Arrays.asList("SUSQUES"),
-            1,
-            new BigDecimal("301790.16"), // L-V (Total)
-            new BigDecimal("331969.17"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SUSQUES"),
+                1,
+                new BigDecimal("301790.16"), // L-V (Total)
+                new BigDecimal("331969.17"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Rosario, Aguilar, Yuto, Talar, P.Sola
         crearValorExtraYCF(
-            Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
-            1,
-            new BigDecimal("258677.28"), // L-V (Total)
-            new BigDecimal("284545.01"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR",
+                        "NUESTRA SEÑORA DEL VALLE"),
+                1,
+                new BigDecimal("258677.28"), // L-V (Total)
+                new BigDecimal("284545.01"), // S-D-F (Total)
+                fechaInicio);
 
         // Resto de Primer Nivel
         crearValorExtraYCF(
-            null,
-            1,
-            new BigDecimal("215564.40"), // L-V (Total)
-            new BigDecimal("237120.84"), // S-D-F (Total)
-            fechaInicio
-        );
+                null,
+                1,
+                new BigDecimal("215564.40"), // L-V (Total)
+                new BigDecimal("237120.84"), // S-D-F (Total)
+                fechaInicio);
     }
 
-    private void crearValorCargoYAgrupacion(List<String> nombresHospitales, int nivel, 
-                                          BigDecimal totalLav, BigDecimal totalSdf,
-                                          LocalDate fechaInicio) {
-        
+    private void crearValorCargoYAgrupacion(List<String> nombresHospitales, int nivel,
+            BigDecimal totalLav, BigDecimal totalSdf,
+            LocalDate fechaInicio) {
+
         ValorGuardiaCargoYagrup valor = new ValorGuardiaCargoYagrup();
         valor.setTipoGuardia(TipoGuardiaEnum.CARGO); // También aplica para AGRUPACION
         valor.setNivelComplejidad(nivel);
@@ -492,20 +479,20 @@ public class ValorGuardiaCargoYagrupService {
         valor.setTotalSdf(totalSdf);
         valor.setFechaInicio(fechaInicio);
         valor.setActivo(true);
-        
+
         // Asignar SOLO los hospitales específicamente listados
         if (nombresHospitales != null && !nombresHospitales.isEmpty()) {
             List<Hospital> hospitales = hospitalRepository.findByNombreIn(nombresHospitales);
             valor.setHospitales(hospitales);
         }
-        
+
         valorGuardiaCargoYagrupRepository.save(valor);
     }
 
     private void crearValorExtraYCF(List<String> nombresHospitales, int nivel,
-                                   BigDecimal totalLav, BigDecimal totalSdf,
-                                   LocalDate fechaInicio) {
-        
+            BigDecimal totalLav, BigDecimal totalSdf,
+            LocalDate fechaInicio) {
+
         ValorGuardiaExtrayCF valor = new ValorGuardiaExtrayCF();
         valor.setTipoGuardia(TipoGuardiaEnum.EXTRA); // También aplica para CONTRAFACTURA
         valor.setNivelComplejidad(nivel);
@@ -513,14 +500,61 @@ public class ValorGuardiaCargoYagrupService {
         valor.setTotalSdf(totalSdf);
         valor.setFechaInicio(fechaInicio);
         valor.setActivo(true);
-        
+
         // Asignar SOLO los hospitales específicamente listados
         if (nombresHospitales != null && !nombresHospitales.isEmpty()) {
             List<Hospital> hospitales = hospitalRepository.findByNombreIn(nombresHospitales);
             valor.setHospitales(hospitales);
         }
-        
+
         valorGuardiaExtraYcfRepository.save(valor);
     }
 
+    public void guardarCargaManual(List<ValorGuardiaManualDto> listaValores) {
+
+        for (ValorGuardiaManualDto dto : listaValores) {
+
+            // Buscamos los hospitales si vienen IDs
+            List<Hospital> hospitales = new ArrayList<>();
+            if (dto.getIdsHospitales() != null && !dto.getIdsHospitales().isEmpty()) {
+                hospitales = hospitalRepository.findAllById(dto.getIdsHospitales());
+            }
+
+            // Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
+            if (dto.getTipoGuardia() == TipoGuardiaEnum.CARGO || dto.getTipoGuardia() == TipoGuardiaEnum.AGRUPACION) {
+
+                ValorGuardiaCargoYagrup valor = new ValorGuardiaCargoYagrup();
+                valor.setTipoGuardia(dto.getTipoGuardia());
+                valor.setNivelComplejidad(dto.getNivelComplejidad());
+                valor.setTotalLav(dto.getTotalLav());
+                valor.setTotalSdf(dto.getTotalSdf());
+                valor.setFechaInicio(dto.getFechaInicio());
+                valor.setActivo(true);
+
+                if (!hospitales.isEmpty()) {
+                    valor.setHospitales(hospitales);
+                }
+
+                valorGuardiaCargoYagrupRepository.save(valor);
+
+            } else if (dto.getTipoGuardia() == TipoGuardiaEnum.EXTRA
+                    || dto.getTipoGuardia() == TipoGuardiaEnum.CONTRAFACTURA) {
+
+                ValorGuardiaExtrayCF valor = new ValorGuardiaExtrayCF();
+                valor.setTipoGuardia(dto.getTipoGuardia());
+                valor.setNivelComplejidad(dto.getNivelComplejidad());
+                valor.setTotalLav(dto.getTotalLav());
+                valor.setTotalSdf(dto.getTotalSdf());
+                valor.setFechaInicio(dto.getFechaInicio());
+                valor.setActivo(true);
+
+                if (!hospitales.isEmpty()) {
+                    valor.setHospitales(hospitales);
+                }
+
+                valorGuardiaExtraYcfRepository.save(valor);
+            }
+        }
     }
+
+}
