@@ -1,15 +1,24 @@
 package com.guardias.backend.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ObservacionDdjjDto;
 import com.guardias.backend.dto.ObservacionDdjj.ObservacionDdjjUltimoDto;
@@ -22,6 +31,9 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ObservacionDdjjService {
+
+    @Value("${app.upload.dir:uploads/ddjj_observaciones}") // Configurable en properties
+    private String rootUploadDir;
 
     @Autowired
     ObservacionDdjjRepository observacionDdjjRepository;
@@ -178,4 +190,63 @@ public class ObservacionDdjjService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
+    public ObservacionDdjj crearConAdjunto(ObservacionDdjjDto dto, MultipartFile archivo) throws IOException {
+        // 1. Crear la entidad base (sin guardar aún o guardando lo básico)
+        ObservacionDdjj nuevaObservacion = new ObservacionDdjj();
+        nuevaObservacion = this.createUpdate(nuevaObservacion, dto); // Tu método existente de mapeo
+
+        // 2. Lógica del archivo
+        if (archivo != null && !archivo.isEmpty()) {
+            
+            // A. Validaciones específicas (PDF / Excel)
+            validarFormatoArchivo(archivo);
+            if (archivo.getSize() > 10 * 1024 * 1024) { // 10MB limite por ejemplo
+                 throw new IOException("El archivo es demasiado grande (Máx 10MB)");
+            }
+
+            // B. Preparar carpetas (Estilo de tu ejemplo: Carpeta por ID de DDJJ para ordenar)
+            // Usamos el ID de la DDJJ para agrupar los archivos de rechazo de esa DDJJ
+            String nombreCarpeta = "ddjj_" + dto.getIdDdjj(); 
+            Path rutaCarpeta = Paths.get(rootUploadDir, nombreCarpeta);
+            
+            if (!Files.exists(rutaCarpeta)) {
+                Files.createDirectories(rutaCarpeta);
+            }
+
+            // C. Generar nombre seguro (Mezcla de tu ejemplo + UUID)
+            String nombreOriginalLimpios = archivo.getOriginalFilename()
+                    .replaceAll("[^a-zA-Z0-9\\.\\-]", "_"); // Solo letras, numeros, puntos y guiones
+            
+            // Agregamos UUID para evitar colisiones si suben dos veces "archivo.pdf"
+            String nombreFinal = UUID.randomUUID().toString().substring(0, 8) + "_" + nombreOriginalLimpios;
+
+            // D. Guardar Físicamente
+            Path rutaArchivo = rutaCarpeta.resolve(nombreFinal);
+            Files.copy(archivo.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("💾 Archivo guardado en: " + rutaArchivo.toString());
+
+            // E. Guardar la ruta relativa en la BD (para que sea portátil)
+            // Guardamos: "ddjj_123/a1b2c3d4_rechazo.pdf"
+            nuevaObservacion.setDocumentoRespaldo(nombreCarpeta + "/" + nombreFinal);
+        }
+
+        // 3. Guardar cambios finales en BD
+        return observacionDdjjRepository.save(nuevaObservacion);
+    }
+
+    private void validarFormatoArchivo(MultipartFile archivo) throws IOException {
+        String contentType = archivo.getContentType();
+        String nombre = archivo.getOriginalFilename();
+        
+        // Validación robusta: Chequear extensión Y Content-Type
+        boolean esPdf = contentType.equals("application/pdf") || nombre.endsWith(".pdf");
+        boolean esExcel = contentType.contains("excel") || contentType.contains("spreadsheet") || nombre.endsWith(".xls") || nombre.endsWith(".xlsx");
+
+        if (!esPdf && !esExcel) {
+            throw new IOException("Formato no válido. Solo se permiten PDF o Excel.");
+        }
+    }
+    
 }
