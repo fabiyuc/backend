@@ -18,5 +18,6 @@ public class ObservacionDdjjUltimoDto {
     private String apellidoUsuario;
     private LocalDate fechaCreacion;
     private LocalTime horaCreacion;
+    private String documentoRespaldo;
 
 }
