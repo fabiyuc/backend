@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -514,47 +517,111 @@ public class ValorGuardiaCargoYagrupService {
 
         for (ValorGuardiaManualDto dto : listaValores) {
 
-            // Buscamos los hospitales si vienen IDs
-            List<Hospital> hospitales = new ArrayList<>();
+            // 1. Resolver los hospitales nuevos (ordenados por ID para facilitar comparación)
+            List<Hospital> hospitalesNuevos = new ArrayList<>();
             if (dto.getIdsHospitales() != null && !dto.getIdsHospitales().isEmpty()) {
-                hospitales = hospitalRepository.findAllById(dto.getIdsHospitales());
+                hospitalesNuevos = hospitalRepository.findAllById(dto.getIdsHospitales());
+                // Ordenamos para que la comparación de listas sea consistente
+                hospitalesNuevos.sort(Comparator.comparing(Hospital::getId));
             }
+            // Si la lista está VACÍA (el else implícito), NO se asignan hospitales específicos.
+            // En base de datos, la tabla de relación quedará vacía para este registro.
 
-            // Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
-            if (dto.getTipoGuardia() == TipoGuardiaEnum.CARGO || dto.getTipoGuardia() == TipoGuardiaEnum.AGRUPACION) {
-
-                ValorGuardiaCargoYagrup valor = new ValorGuardiaCargoYagrup();
-                valor.setTipoGuardia(dto.getTipoGuardia());
-                valor.setNivelComplejidad(dto.getNivelComplejidad());
-                valor.setTotalLav(dto.getTotalLav());
-                valor.setTotalSdf(dto.getTotalSdf());
-                valor.setFechaInicio(dto.getFechaInicio());
-                valor.setActivo(true);
-
-                if (!hospitales.isEmpty()) {
-                    valor.setHospitales(hospitales);
-                }
-
-                valorGuardiaCargoYagrupRepository.save(valor);
-
-            } else if (dto.getTipoGuardia() == TipoGuardiaEnum.EXTRA
-                    || dto.getTipoGuardia() == TipoGuardiaEnum.CONTRAFACTURA) {
-
-                ValorGuardiaExtrayCF valor = new ValorGuardiaExtrayCF();
-                valor.setTipoGuardia(dto.getTipoGuardia());
-                valor.setNivelComplejidad(dto.getNivelComplejidad());
-                valor.setTotalLav(dto.getTotalLav());
-                valor.setTotalSdf(dto.getTotalSdf());
-                valor.setFechaInicio(dto.getFechaInicio());
-                valor.setActivo(true);
-
-                if (!hospitales.isEmpty()) {
-                    valor.setHospitales(hospitales);
-                }
-
-                valorGuardiaExtraYcfRepository.save(valor);
+            // 2. Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
+            if (esGuardiaCargo(dto.getTipoGuardia())) {
+                procesarGuardiaCargo(dto, hospitalesNuevos);
+            } else if (esGuardiaExtra(dto.getTipoGuardia())) {
+                procesarGuardiaExtra(dto, hospitalesNuevos);
             }
         }
+    }
+
+    private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
+        // A. Buscar candidatos vigentes (Activos y del mismo Nivel/Tipo)
+        List<ValorGuardiaCargoYagrup> vigentes = valorGuardiaCargoYagrupRepository
+                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+
+        // B. Verificar si alguno coincide exactamente con los hospitales del DTO
+        for (ValorGuardiaCargoYagrup viejo : vigentes) {
+            if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
+                
+                // C. Lógica de Cierre: Si el nuevo inicia DESPUÉS, cerramos el viejo ayer.
+                if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
+                    viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
+                    valorGuardiaCargoYagrupRepository.save(viejo);
+                }
+            }
+        }
+
+        // D. Guardar el NUEVO registro
+        ValorGuardiaCargoYagrup nuevo = new ValorGuardiaCargoYagrup();
+        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setNivelComplejidad(dto.getNivelComplejidad());
+        nuevo.setTotalLav(dto.getTotalLav());
+        nuevo.setTotalSdf(dto.getTotalSdf());
+        nuevo.setFechaInicio(dto.getFechaInicio());
+        nuevo.setActivo(true);
+
+        if (!hospitalesNuevos.isEmpty()) {
+            nuevo.setHospitales(hospitalesNuevos);
+        }
+        valorGuardiaCargoYagrupRepository.save(nuevo);
+    }
+
+    private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
+        // Misma lógica pero con el repositorio y entidad de Extra/CF
+        List<ValorGuardiaExtrayCF> vigentes = valorGuardiaExtraYcfRepository
+                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+
+        for (ValorGuardiaExtrayCF viejo : vigentes) {
+            if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
+                
+                if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
+                    viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
+                    valorGuardiaExtraYcfRepository.save(viejo);
+                }
+            }
+        }
+
+        ValorGuardiaExtrayCF nuevo = new ValorGuardiaExtrayCF();
+        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setNivelComplejidad(dto.getNivelComplejidad());
+        nuevo.setTotalLav(dto.getTotalLav());
+        nuevo.setTotalSdf(dto.getTotalSdf());
+        nuevo.setFechaInicio(dto.getFechaInicio());
+        nuevo.setActivo(true);
+
+        if (!hospitalesNuevos.isEmpty()) {
+            nuevo.setHospitales(hospitalesNuevos);
+        }
+        valorGuardiaExtraYcfRepository.save(nuevo);
+    }
+
+   
+    /**
+     * Compara si dos listas de hospitales contienen exactamente los mismos IDs.
+     * Maneja listas nulas o vacías.
+     */
+    private boolean sonLosMismosHospitales(List<Hospital> listaA, List<Hospital> listaB) {
+        // Normalizar nulos a vacíos
+        List<Hospital> a = (listaA == null) ? Collections.emptyList() : listaA;
+        List<Hospital> b = (listaB == null) ? Collections.emptyList() : listaB;
+
+        if (a.size() != b.size()) return false;
+
+        // Extraer IDs, ordenar y comparar
+        List<Long> idsA = a.stream().map(Hospital::getId).sorted().collect(Collectors.toList());
+        List<Long> idsB = b.stream().map(Hospital::getId).sorted().collect(Collectors.toList());
+
+        return idsA.equals(idsB);
+    }
+
+    private boolean esGuardiaCargo(TipoGuardiaEnum tipo) {
+        return tipo == TipoGuardiaEnum.CARGO || tipo == TipoGuardiaEnum.AGRUPACION;
+    }
+
+    private boolean esGuardiaExtra(TipoGuardiaEnum tipo) {
+        return tipo == TipoGuardiaEnum.EXTRA || tipo == TipoGuardiaEnum.CONTRAFACTURA;
     }
 
 }
