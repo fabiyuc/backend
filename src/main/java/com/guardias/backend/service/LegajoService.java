@@ -366,6 +366,10 @@ public class LegajoService {
         if (legajoDto.getMotivoBaja() != null && legajo.getMotivoBaja() != legajoDto.getMotivoBaja())
             legajo.setMotivoBaja(legajoDto.getMotivoBaja());
 
+        if (legajoDto.getMotivoModificacion() != null
+                && legajo.getMotivoModificacion() != legajoDto.getMotivoModificacion())
+            legajo.setMotivoModificacion(legajoDto.getMotivoModificacion());
+
         boolean esAsistencial = personService.activoById(legajoDto.getIdPersona())
                 && asistencialService.existsById(legajoDto.getIdPersona());
 
