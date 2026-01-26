@@ -9,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
@@ -52,12 +55,22 @@ public class ValorGuardiaCargoYagrupController {
     // Buscar el valor activo para este hospital
     @GetMapping("/valorByEfector/{idHospital}")
     public ResponseEntity<ValorGuardiaCargoYagrup> valorByEfector(@PathVariable("idHospital") Long idHospital) {
-        
+
         return valorGuardiaCargoYagrupService
-            .obtenerValorGuardiaCargoPorHospital(idHospital)
-            .map(valor -> ResponseEntity.ok(valor))
-            .orElseGet(() -> ResponseEntity.noContent().build());
+                .obtenerValorGuardiaCargoPorHospital(idHospital)
+                .map(valor -> ResponseEntity.ok(valor))
+                .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
-   
+    @PostMapping("/cargar-manual")
+    public ResponseEntity<?> cargarValoresManual(@RequestBody List<ValorGuardiaManualDto> listaValores) {
+        try {
+            valorGuardiaCargoYagrupService.guardarCargaManual(listaValores);
+            return new ResponseEntity<>(new Mensaje("Valores de guardia cargados correctamente"), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al cargar valores: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

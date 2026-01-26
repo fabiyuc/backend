@@ -13,31 +13,57 @@ import com.guardias.backend.entity.Legajo;
 @Repository
 public interface LegajoRepository extends JpaRepository<Legajo, Long> {
 
-    List<Legajo> findByActivoTrue();
+  List<Legajo> findByActivoTrue();
 
-    Optional<Legajo> findById(Long id);
+  List<Legajo> findByActivoFalse();
 
-    boolean existsById(Long id);
+  Optional<Legajo> findById(Long id);
 
-    boolean existsByMatriculaProvincialAndActivoTrue(String matriculaProvincial);
+  boolean existsById(Long id);
 
-    Optional<Legajo> findByMatriculaProvincialAndActivoTrue(String matriculaProvincial);
+  boolean existsByMatriculaProvincialAndActivoTrue(String matriculaProvincial);
 
-    Optional<Legajo> findByPersonaIdAndActivoTrue(Long personaId);
+  Optional<Legajo> findByMatriculaProvincialAndActivoTrue(String matriculaProvincial);
 
-    List<Legajo> findByActivo(boolean activo);
+  Optional<Legajo> findByPersonaIdAndActivoTrue(Long personaId);
 
-    boolean existsByPersonaIdAndActivoTrue(Long personaId);
+  List<Legajo> findByActivo(boolean activo);
 
-    @Query("SELECT l FROM legajos l " +
-            "WHERE l.persona.id = :id " +
-            "AND l.activo = true " +
-            "AND l.esAutoridad = false")
-    List<Legajo> findLegajosByPersonaId(@Param("id") Long id);
+  boolean existsByPersonaIdAndActivoTrue(Long personaId);
 
-    @Query("SELECT l FROM legajos l " +
-            "WHERE l.persona.id = :id " +
-            "AND l.activo = true " +
-            "AND l.esAutoridad = true")
-    Optional<Legajo> findLegajoAutoridadByPersonaId(@Param("id") Long id);
+  @Query("SELECT l FROM legajos l " +
+      "WHERE l.persona.id = :id " +
+      "AND l.activo = true " +
+      "AND l.esAutoridad = false")
+  List<Legajo> findLegajosByPersonaId(@Param("id") Long id);
+
+  @Query("SELECT l FROM legajos l " +
+      "WHERE l.persona.id = :id " +
+      "AND l.activo = true " +
+      "AND l.esAutoridad = true")
+  Optional<Legajo> findLegajoAutoridadByPersonaId(@Param("id") Long id);
+
+  @Query("""
+      SELECT l
+      FROM legajos l
+      WHERE l.persona.id = :idPersona
+        AND l.activo = false
+        AND l.motivoModificacion IS NOT NULL
+        AND TRIM(l.motivoModificacion) <> ''
+      """)
+  List<Legajo> findAllByPersonaIdWithMotivoModificacion(@Param("idPersona") Long idPersona);
+
+  @Query("""
+      SELECT l
+      FROM legajos l
+      WHERE l.persona.id = :idPersona
+        AND l.activo = false
+        AND l.motivoBaja IS NOT NULL
+        AND TRIM(l.motivoBaja) <> ''
+      """)
+  List<Legajo> findAllByPersonaIdWithMotivoBaja(@Param("idPersona") Long idPersona);
+
+  List<Legajo> findAllByPersonaId(Long personaId);
+
+  List<Legajo> findAllByPersonaIdAndActivo(Long personaId, boolean activo);
 }

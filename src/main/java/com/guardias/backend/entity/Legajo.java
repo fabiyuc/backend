@@ -51,6 +51,9 @@ public class Legajo {
   @Column(columnDefinition = "VARCHAR(50)")
   private String motivoBaja;
 
+  @Column(columnDefinition = "VARCHAR(255)")
+  private String motivoModificacion;
+
   @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_suspencion")
   @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "descripcion", "fechaInicio", "activo", "fechaFin",

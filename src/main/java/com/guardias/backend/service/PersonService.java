@@ -156,4 +156,18 @@ public class PersonService {
 
         return dto;
     }
+
+    // Método de compatibilidad usado por controladores
+    public boolean activo(Long id) {
+        return activoById(id);
+    }
+
+    // Devuelve el CUIL de la persona (si está activa), o cadena vacía si no existe
+    public String findCuilById(Long id) {
+        Person persona = findById(id);
+        if (persona == null) {
+            return "";
+        }
+        return persona.getCuil();
+    }
 }
