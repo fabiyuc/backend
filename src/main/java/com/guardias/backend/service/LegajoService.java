@@ -4,9 +4,11 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,6 +75,10 @@ public class LegajoService {
 
     public List<Legajo> findByActivoTrue() {
         return legajoRepository.findByActivoTrue();
+    }
+
+    public List<Legajo> findAllByActivoFalse() {
+        return legajoRepository.findByActivoFalse();
     }
 
     public List<Legajo> findAll() {
@@ -342,10 +348,68 @@ public class LegajoService {
 
         }
 
+        // Si es una actualización (id != 0), impedir la modificación de campos
+        // inmutables
+        if (id != null && id != 0L && this.existsById(id)) {
+            Optional<Legajo> optLegajo = this.findById(id);
+            if (optLegajo.isPresent()) {
+                Legajo existente = optLegajo.get();
+
+                // persona
+                if (legajoDto.getIdPersona() != null && existente.getPersona() != null
+                        && !Objects.equals(existente.getPersona().getId(), legajoDto.getIdPersona())) {
+                    return new ResponseEntity<>(new Mensaje("La persona no puede modificarse en una actualización"),
+                            HttpStatus.BAD_REQUEST);
+                }
+
+                // profesion
+                Long dtoProf = legajoDto.getIdProfesion();
+                Long existProf = existente.getProfesion() != null ? existente.getProfesion().getId() : null;
+                if (dtoProf != null && existProf != null && !Objects.equals(dtoProf, existProf)) {
+                    return new ResponseEntity<>(new Mensaje("La profesión no puede modificarse en una actualización"),
+                            HttpStatus.BAD_REQUEST);
+                }
+                if (dtoProf != null && existProf == null) {
+                    return new ResponseEntity<>(new Mensaje("La profesión no puede agregarse en una actualización"),
+                            HttpStatus.BAD_REQUEST);
+                }
+
+                // matriculas
+                if (legajoDto.getMatriculaNacional() != null && existente.getMatriculaNacional() != null
+                        && !Objects.equals(legajoDto.getMatriculaNacional(), existente.getMatriculaNacional())) {
+                    return new ResponseEntity<>(
+                            new Mensaje("La matrícula nacional no puede modificarse en una actualización"),
+                            HttpStatus.BAD_REQUEST);
+                }
+                if (legajoDto.getMatriculaProvincial() != null && existente.getMatriculaProvincial() != null
+                        && !Objects.equals(legajoDto.getMatriculaProvincial(), existente.getMatriculaProvincial())) {
+                    return new ResponseEntity<>(
+                            new Mensaje("La matrícula provincial no puede modificarse en una actualización"),
+                            HttpStatus.BAD_REQUEST);
+                }
+
+                // especialidades (comparar sets de ids)
+                Set<Long> existEspIds = new HashSet<>();
+                if (existente.getEspecialidades() != null) {
+                    existente.getEspecialidades().forEach(e -> existEspIds.add(e.getId()));
+                }
+                Set<Long> dtoEspIds = new HashSet<>();
+                if (legajoDto.getIdEspecialidades() != null) {
+                    dtoEspIds.addAll(legajoDto.getIdEspecialidades());
+                }
+                if (!existEspIds.isEmpty() && !dtoEspIds.equals(existEspIds)) {
+                    return new ResponseEntity<>(
+                            new Mensaje("Las especialidades no pueden modificarse en una actualización"),
+                            HttpStatus.BAD_REQUEST);
+                }
+            }
+        }
+
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public Legajo createUpdate(Legajo legajo, LegajoDto legajoDto) {
+        boolean isNew = (legajo.getId() == null);
 
         if (legajo.getFechaInicio() != legajoDto.getFechaInicio())
             legajo.setFechaInicio(legajoDto.getFechaInicio());
@@ -360,8 +424,14 @@ public class LegajoService {
         if (legajo.getMatriculaProvincial() != legajoDto.getMatriculaProvincial())
             legajo.setMatriculaProvincial(legajoDto.getMatriculaProvincial());
 
-        if (legajo.getPersona() == null || !Objects.equals(legajo.getPersona().getId(), legajoDto.getIdPersona()))
-            legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+        // persona sólo se asigna en creación
+        if (isNew) {
+            if (legajo.getPersona() == null
+                    || !Objects.equals(legajo.getPersona() != null ? legajo.getPersona().getId() : null,
+                            legajoDto.getIdPersona())) {
+                legajo.setPersona(personService.findById(legajoDto.getIdPersona()));
+            }
+        }
 
         if (legajoDto.getMotivoBaja() != null && legajo.getMotivoBaja() != legajoDto.getMotivoBaja())
             legajo.setMotivoBaja(legajoDto.getMotivoBaja());
@@ -757,4 +827,45 @@ public class LegajoService {
         return sb.toString();
     }
 
+    public List<Legajo> findAllByModificacion(Long idPersona) {
+        if (idPersona == null) {
+            throw new IllegalArgumentException("El idPersona no puede ser nulo");
+        }
+        return legajoRepository.findAllByPersonaIdWithMotivoModificacion(idPersona);
+    }
+
+    public List<Legajo> findAllByBaja(Long idPersona) {
+        if (idPersona == null) {
+            throw new IllegalArgumentException("El idPersona no puede ser nulo");
+        }
+        return legajoRepository.findAllByPersonaIdWithMotivoBaja(idPersona);
+    }
+
+    public List<Legajo> findAllByPersonaIdAndActivo(Long idPersona, boolean activo) {
+        if (idPersona == null) {
+            throw new IllegalArgumentException("El idPersona no puede ser nulo");
+        }
+        return legajoRepository.findAllByPersonaIdAndActivo(idPersona, activo);
+    }
+
+    public List<Legajo> findAllByPersonaId(Long idPersona) {
+        if (idPersona == null) {
+            throw new IllegalArgumentException("El idPersona no puede ser nulo");
+        }
+        return legajoRepository.findAllByPersonaId(idPersona);
+    }
+
+    /*
+     * public List<Legajo> findInactivosBypersonaAndEfector(Long idPersona, Long
+     * idEfector) {
+     * if (idPersona == null) {
+     * throw new IllegalArgumentException("El idPersona no puede ser nulo");
+     * }
+     * if (idEfector == null) {
+     * throw new IllegalArgumentException("El idEfector no puede ser nulo");
+     * }
+     * return legajoRepository.findInactivosBypersonaAndEfector(idPersona,
+     * idEfector);
+     * }
+     */
 }

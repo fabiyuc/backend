@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,6 +61,65 @@ public class LegajoController {
     @GetMapping("/listAll")
     public ResponseEntity<List<Legajo>> listAll() {
         List<Legajo> list = legajoService.findAll();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAllByActivoFalse")
+    public ResponseEntity<List<Legajo>> listAllByActivoFalse() {
+        List<Legajo> list = legajoService.findAllByActivoFalse();
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAllByModificacion/{idPersona}")
+    public ResponseEntity<List<Legajo>> listAllByModificacion(@PathVariable("idPersona") Long idPersona) {
+        List<Legajo> list = legajoService.findAllByModificacion(idPersona);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listAllByBaja/{idPersona}")
+    public ResponseEntity<List<Legajo>> listAllByBaja(@PathVariable("idPersona") Long idPersona) {
+        List<Legajo> list = legajoService.findAllByBaja(idPersona);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    /*
+     * @GetMapping("/listInactivosBypersonaAndEfector/{idPersona}/{idEfector}")
+     * public ResponseEntity<List<Legajo>> listInactivosBypersonaAndEfector(
+     * 
+     * @PathVariable("idPersona") Long idPersona,
+     * 
+     * @PathVariable("idEfector") Long idEfector) {
+     * List<Legajo> list = legajoService.findInactivosBypersonaAndEfector(idPersona,
+     * idEfector);
+     * return new ResponseEntity<>(list, HttpStatus.OK);
+     * }
+     */
+
+    @GetMapping("/listAllByPerson/{idPersona}")
+    public ResponseEntity<List<Legajo>> listAllByPerson(
+            @PathVariable("idPersona") Long idPersona,
+            @RequestParam(value = "activo", required = false) Boolean activo) {
+
+        if (idPersona == null) {
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.BAD_REQUEST);
+        }
+
+        // opcional: mantener misma lógica que ya usás en otros endpoints
+        if (!personService.activoById(idPersona)) {
+            return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NOT_FOUND);
+        }
+
+        List<Legajo> list = (activo == null)
+                ? legajoService.findAllByPersonaId(idPersona) // todos (activos e inactivos)
+                : legajoService.findAllByPersonaIdAndActivo(idPersona, activo); // filtrado
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @GetMapping("/listByPersonAndActivo/{idPersona}")
+    public ResponseEntity<List<Legajo>> listByPersonAndActivo(@PathVariable("idPersona") Long idPersona,
+            @RequestParam("activo") boolean activo) {
+        List<Legajo> list = legajoService.findAllByPersonaIdAndActivo(idPersona, activo);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
