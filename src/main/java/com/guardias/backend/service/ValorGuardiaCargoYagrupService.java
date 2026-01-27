@@ -577,8 +577,8 @@ public class ValorGuardiaCargoYagrupService {
         /* if (bonoUti != null) {
             nuevo.setBonoUti(bonoUti);
         } */
-        nuevo.setValorBonoUtiLav(dto.getValorBonoUtiLav());
-        nuevo.setValorBonoUtiSdf(dto.getValorBonoUtiSdf());
+        nuevo.setValorBonoUtiLav(dto.getBono1580Lav());
+        nuevo.setValorBonoUtiSdf(dto.getBono1580Sdf());
 
         nuevo.setDecreto1178Lav(dto.getDecreto1178Lav());
         nuevo.setDecreto1178Sdf(dto.getDecreto1178Sdf());
@@ -619,8 +619,8 @@ public class ValorGuardiaCargoYagrupService {
             nuevo.setBonoUti(bonoUti);
         } */
 
-        nuevo.setValorBonoUtiLav(dto.getValorBonoUtiLav());
-        nuevo.setValorBonoUtiSdf(dto.getValorBonoUtiSdf());
+        nuevo.setValorBonoUtiLav(dto.getBono1580Lav());
+        nuevo.setValorBonoUtiSdf(dto.getBono1580Sdf());
 
         nuevo.setResolucion2575Lav(dto.getResolucion2575Lav());
         nuevo.setResolucion2575Sdf(dto.getResolucion2575Sdf());

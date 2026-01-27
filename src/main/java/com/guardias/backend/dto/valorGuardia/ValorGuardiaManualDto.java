@@ -35,6 +35,6 @@ public class ValorGuardiaManualDto {
     private BigDecimal resolucion2575Lav;
     private BigDecimal resolucion2575Sdf;
 
-    private BigDecimal valorBonoUtiLav; 
-    private BigDecimal valorBonoUtiSdf;
+    private BigDecimal bono1580Lav; 
+    private BigDecimal bono1580Sdf;
 }
