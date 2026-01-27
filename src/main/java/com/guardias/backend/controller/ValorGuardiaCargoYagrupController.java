@@ -68,6 +68,7 @@ public class ValorGuardiaCargoYagrupController {
             valorGuardiaCargoYagrupService.guardarCargaManual(listaValores);
             return new ResponseEntity<>(new Mensaje("Valores de guardia cargados correctamente"), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(new Mensaje("Error al cargar valores: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

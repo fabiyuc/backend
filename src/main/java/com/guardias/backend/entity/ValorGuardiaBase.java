@@ -77,6 +77,12 @@ public abstract class ValorGuardiaBase {
     @Column(precision = 20, scale = 2)
     private BigDecimal totalSdf;
 
+    @Column(precision = 20, scale = 2)
+    private BigDecimal valorBonoUtiLav; 
+
+    @Column(precision = 20, scale = 2)
+    private BigDecimal valorBonoUtiSdf;
+
     /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGuardia", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private List<SumaHoras> sumaHoras = new ArrayList<>(); */

@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
+import com.guardias.backend.entity.BonoUti;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.repository.BonoUtiRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
@@ -34,6 +36,8 @@ public class ValorGuardiaCargoYagrupService {
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
     HospitalRepository hospitalRepository;
+    @Autowired
+    BonoUtiRepository bonoUtiRepository;
 
     public Optional<List<ValorGuardiaCargoYagrup>> findByActivoTrue() {
         return valorGuardiaCargoYagrupRepository.findByActivoTrue();
@@ -527,16 +531,23 @@ public class ValorGuardiaCargoYagrupService {
             // Si la lista está VACÍA (el else implícito), NO se asignan hospitales específicos.
             // En base de datos, la tabla de relación quedará vacía para este registro.
 
-            // 2. Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
+            // 2. --- NUEVO: BUSCAR EL BONO UTI (Si viene el ID) ---
+            BonoUti bonoUti = null;
+            if (dto.getIdBonoUti() != null) {
+                // Buscamos la entidad para poder relacionarla
+                bonoUti = bonoUtiRepository.findById(dto.getIdBonoUti()).orElse(null);
+            }
+
+            // 3. Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
             if (esGuardiaCargo(dto.getTipoGuardia())) {
-                procesarGuardiaCargo(dto, hospitalesNuevos);
+                procesarGuardiaCargo(dto, hospitalesNuevos,bonoUti);
             } else if (esGuardiaExtra(dto.getTipoGuardia())) {
-                procesarGuardiaExtra(dto, hospitalesNuevos);
+                procesarGuardiaExtra(dto, hospitalesNuevos, bonoUti);
             }
         }
     }
 
-    private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
+    private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos, BonoUti bonoUti) {
         // A. Buscar candidatos vigentes (Activos y del mismo Nivel/Tipo)
         List<ValorGuardiaCargoYagrup> vigentes = valorGuardiaCargoYagrupRepository
                 .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
@@ -553,7 +564,7 @@ public class ValorGuardiaCargoYagrupService {
             }
         }
 
-        // D. Guardar el NUEVO registro
+        // C. Guardar el NUEVO registro
         ValorGuardiaCargoYagrup nuevo = new ValorGuardiaCargoYagrup();
         nuevo.setTipoGuardia(dto.getTipoGuardia());
         nuevo.setNivelComplejidad(dto.getNivelComplejidad());
@@ -565,10 +576,22 @@ public class ValorGuardiaCargoYagrupService {
         if (!hospitalesNuevos.isEmpty()) {
             nuevo.setHospitales(hospitalesNuevos);
         }
+        if (bonoUti != null) {
+            nuevo.setBonoUti(bonoUti);
+        }
+        nuevo.setValorBonoUtiLav(dto.getValorBonoUtiLav());
+        nuevo.setValorBonoUtiSdf(dto.getValorBonoUtiSdf());
+
+        nuevo.setDecreto1178Lav(dto.getDecreto1178Lav());
+        nuevo.setDecreto1178Sdf(dto.getDecreto1178Sdf());
+
+        nuevo.setDecreto1657Lav(dto.getDecreto1657Lav());
+        nuevo.setDecreto1657Sdf(dto.getDecreto1657Sdf());
+
         valorGuardiaCargoYagrupRepository.save(nuevo);
     }
 
-    private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
+    private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos, BonoUti bonoUti) {
         // Misma lógica pero con el repositorio y entidad de Extra/CF
         List<ValorGuardiaExtrayCF> vigentes = valorGuardiaExtraYcfRepository
                 .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
@@ -594,6 +617,16 @@ public class ValorGuardiaCargoYagrupService {
         if (!hospitalesNuevos.isEmpty()) {
             nuevo.setHospitales(hospitalesNuevos);
         }
+        if (bonoUti != null) {
+            nuevo.setBonoUti(bonoUti);
+        }
+
+        nuevo.setValorBonoUtiLav(dto.getValorBonoUtiLav());
+        nuevo.setValorBonoUtiSdf(dto.getValorBonoUtiSdf());
+
+        nuevo.setResolucion2575Lav(dto.getResolucion2575Lav());
+        nuevo.setResolucion2575Sdf(dto.getResolucion2575Sdf());
+        
         valorGuardiaExtraYcfRepository.save(nuevo);
     }
 

@@ -24,4 +24,17 @@ public class ValorGuardiaManualDto {
     // Lista de IDs de hospitales a los que aplica este valor.
     // Si la lista está vacía o es null, se asume que es "Resto de nivel"
     private List<Long> idsHospitales;
+
+    private Long idBonoUti;
+
+    private BigDecimal decreto1178Lav;
+    private BigDecimal decreto1178Sdf;
+    private BigDecimal decreto1657Lav; 
+    private BigDecimal decreto1657Sdf;
+
+    private BigDecimal resolucion2575Lav;
+    private BigDecimal resolucion2575Sdf;
+
+    private BigDecimal valorBonoUtiLav; 
+    private BigDecimal valorBonoUtiSdf;
 }
