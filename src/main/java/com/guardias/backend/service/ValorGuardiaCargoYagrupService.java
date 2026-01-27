@@ -14,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
-import com.guardias.backend.entity.BonoUti;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.TipoGuardiaEnum;
-import com.guardias.backend.repository.BonoUtiRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
@@ -36,8 +34,8 @@ public class ValorGuardiaCargoYagrupService {
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
     HospitalRepository hospitalRepository;
-    @Autowired
-    BonoUtiRepository bonoUtiRepository;
+    /* @Autowired
+    BonoUtiRepository bonoUtiRepository; */
 
     public Optional<List<ValorGuardiaCargoYagrup>> findByActivoTrue() {
         return valorGuardiaCargoYagrupRepository.findByActivoTrue();
@@ -532,22 +530,22 @@ public class ValorGuardiaCargoYagrupService {
             // En base de datos, la tabla de relación quedará vacía para este registro.
 
             // 2. --- NUEVO: BUSCAR EL BONO UTI (Si viene el ID) ---
-            BonoUti bonoUti = null;
+           /*  BonoUti bonoUti = null;
             if (dto.getIdBonoUti() != null) {
                 // Buscamos la entidad para poder relacionarla
                 bonoUti = bonoUtiRepository.findById(dto.getIdBonoUti()).orElse(null);
-            }
+            } */
 
             // 3. Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
             if (esGuardiaCargo(dto.getTipoGuardia())) {
-                procesarGuardiaCargo(dto, hospitalesNuevos,bonoUti);
+                procesarGuardiaCargo(dto, hospitalesNuevos);
             } else if (esGuardiaExtra(dto.getTipoGuardia())) {
-                procesarGuardiaExtra(dto, hospitalesNuevos, bonoUti);
+                procesarGuardiaExtra(dto, hospitalesNuevos);
             }
         }
     }
 
-    private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos, BonoUti bonoUti) {
+    private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
         // A. Buscar candidatos vigentes (Activos y del mismo Nivel/Tipo)
         List<ValorGuardiaCargoYagrup> vigentes = valorGuardiaCargoYagrupRepository
                 .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
@@ -576,9 +574,9 @@ public class ValorGuardiaCargoYagrupService {
         if (!hospitalesNuevos.isEmpty()) {
             nuevo.setHospitales(hospitalesNuevos);
         }
-        if (bonoUti != null) {
+        /* if (bonoUti != null) {
             nuevo.setBonoUti(bonoUti);
-        }
+        } */
         nuevo.setValorBonoUtiLav(dto.getValorBonoUtiLav());
         nuevo.setValorBonoUtiSdf(dto.getValorBonoUtiSdf());
 
@@ -591,7 +589,7 @@ public class ValorGuardiaCargoYagrupService {
         valorGuardiaCargoYagrupRepository.save(nuevo);
     }
 
-    private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos, BonoUti bonoUti) {
+    private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
         // Misma lógica pero con el repositorio y entidad de Extra/CF
         List<ValorGuardiaExtrayCF> vigentes = valorGuardiaExtraYcfRepository
                 .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
@@ -617,9 +615,9 @@ public class ValorGuardiaCargoYagrupService {
         if (!hospitalesNuevos.isEmpty()) {
             nuevo.setHospitales(hospitalesNuevos);
         }
-        if (bonoUti != null) {
+        /* if (bonoUti != null) {
             nuevo.setBonoUti(bonoUti);
-        }
+        } */
 
         nuevo.setValorBonoUtiLav(dto.getValorBonoUtiLav());
         nuevo.setValorBonoUtiSdf(dto.getValorBonoUtiSdf());

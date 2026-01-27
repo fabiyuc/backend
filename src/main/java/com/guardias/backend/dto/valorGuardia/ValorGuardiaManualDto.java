@@ -25,7 +25,7 @@ public class ValorGuardiaManualDto {
     // Si la lista está vacía o es null, se asume que es "Resto de nivel"
     private List<Long> idsHospitales;
 
-    private Long idBonoUti;
+    //private Long idBonoUti;
 
     private BigDecimal decreto1178Lav;
     private BigDecimal decreto1178Sdf;
