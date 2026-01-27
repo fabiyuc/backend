@@ -1,9 +1,11 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,9 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.repository.HospitalRepository;
@@ -72,6 +76,13 @@ public class ValorGuardiaCargoYagrupController {
             return new ResponseEntity<>(new Mensaje("Error al cargar valores: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/grilla-completa/{fecha}")
+    public ResponseEntity<List<GrillaValorGuardiaCompletaDto>> getGrillaCompleta(@PathVariable("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+    
+        List<GrillaValorGuardiaCompletaDto> grilla = valorGuardiaCargoYagrupService.obtenerGrillaJerarquica(fecha);
+        return ResponseEntity.ok(grilla);
     }
 
 }

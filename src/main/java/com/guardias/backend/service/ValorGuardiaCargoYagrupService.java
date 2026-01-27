@@ -6,14 +6,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.valorGuardia.ColumnaGrillaDto;
+import com.guardias.backend.dto.valorGuardia.DetalleValoresDto;
+import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
+import com.guardias.backend.dto.valorGuardia.MontoDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
+import com.guardias.backend.dto.valorGuardia.ValorGuardiaResponseDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
@@ -653,6 +660,153 @@ public class ValorGuardiaCargoYagrupService {
 
     private boolean esGuardiaExtra(TipoGuardiaEnum tipo) {
         return tipo == TipoGuardiaEnum.EXTRA || tipo == TipoGuardiaEnum.CONTRAFACTURA;
+    }
+
+    public List<GrillaValorGuardiaCompletaDto> obtenerGrillaJerarquica(LocalDate fecha) {
+        
+        // 1. Traer datos crudos de la BD
+        List<ValorGuardiaCargoYagrup> cargos = valorGuardiaCargoYagrupRepository.buscarVigentes(fecha);
+        List<ValorGuardiaExtrayCF> extras = valorGuardiaExtraYcfRepository.buscarVigentes(fecha);
+
+        // 2. Estructura temporal para agrupar:
+        // Map<Nivel (Integer), Map<KeyGrupo (String), ObjetoUnificado>>
+        Map<Integer, Map<String, DetalleValoresDto>> agrupador = new HashMap<>();
+        
+        // Map auxiliar para guardar el Título de cada columna y no perderlo
+        Map<String, String> titulosMap = new HashMap<>();
+
+        // --- PROCESAR CARGOS ---
+        for (ValorGuardiaCargoYagrup c : cargos) {
+            String keyGrupo = generarKey(c.getHospitales());
+            String titulo = generarTitulo(c.getHospitales(), c.getNivelComplejidad());
+            titulosMap.put(keyGrupo, titulo);
+
+            // Inicializar mapas si no existen
+            agrupador.putIfAbsent(c.getNivelComplejidad(), new HashMap<>());
+            Map<String, DetalleValoresDto> nivelMap = agrupador.get(c.getNivelComplejidad());
+            
+            // Obtener o crear el detalle
+            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
+            
+            // Mapear y asignar CARGO
+            detalle.setCargo(mapearCargo(c));
+            
+            nivelMap.put(keyGrupo, detalle);
+        }
+
+        // --- PROCESAR EXTRAS (Unimos en el mismo mapa) ---
+        for (ValorGuardiaExtrayCF e : extras) {
+            String keyGrupo = generarKey(e.getHospitales());
+            
+            // Si no estaba el título (porque solo hay extra y no cargo), lo generamos
+            if (!titulosMap.containsKey(keyGrupo)) {
+                titulosMap.put(keyGrupo, generarTitulo(e.getHospitales(), e.getNivelComplejidad()));
+            }
+
+            agrupador.putIfAbsent(e.getNivelComplejidad(), new HashMap<>());
+            Map<String, DetalleValoresDto> nivelMap = agrupador.get(e.getNivelComplejidad());
+            
+            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
+            
+            // Mapear y asignar EXTRA
+            detalle.setExtra(mapearExtra(e));
+            
+            nivelMap.put(keyGrupo, detalle);
+        }
+
+        // 3. Transformar el Map a la Lista final de DTOs
+        List<GrillaValorGuardiaCompletaDto> respuestaFinal = new ArrayList<>();
+
+        for (Map.Entry<Integer, Map<String, DetalleValoresDto>> entryNivel : agrupador.entrySet()) {
+            Integer nivel = entryNivel.getKey();
+            Map<String, DetalleValoresDto> columnasDelNivel = entryNivel.getValue();
+
+            GrillaValorGuardiaCompletaDto nivelDto = new GrillaValorGuardiaCompletaDto();
+            nivelDto.setNumeroNivel(nivel);
+            nivelDto.setNombreNivel(obtenerNombreNivel(nivel)); // Ej: "NIVEL 4 (CRITICOS)"
+
+            for (Map.Entry<String, DetalleValoresDto> entryColumna : columnasDelNivel.entrySet()) {
+                ColumnaGrillaDto columna = new ColumnaGrillaDto();
+                columna.setTitulo(titulosMap.get(entryColumna.getKey())); // Recuperamos el título bonito
+                columna.setValores(entryColumna.getValue());
+                
+                nivelDto.getColumnas().add(columna);
+            }
+            // Opcional: Ordenar columnas alfabéticamente por título o por ID dentro del nivel
+            // nivelDto.getColumnas().sort(Comparator.comparing(ColumnaGrillaDto::getTitulo));
+            
+            respuestaFinal.add(nivelDto);
+        }
+
+        // 4. Ordenar Niveles descendente (4, 3, 2, 1) para que salga igual a la foto
+        respuestaFinal.sort((a, b) -> b.getNumeroNivel() - a.getNumeroNivel());
+
+        return respuestaFinal;
+    }
+
+    // --- MAPPERS (Entidad -> DTO) ---
+
+    private ValorGuardiaResponseDto mapearCargo(ValorGuardiaCargoYagrup entidad) {
+        ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
+        
+        dto.setDecreto1178(new MontoDto(entidad.getDecreto1178Lav(), entidad.getDecreto1178Sdf()));
+        dto.setDecreto1657(new MontoDto(entidad.getDecreto1657Lav(), entidad.getDecreto1657Sdf()));
+        
+        // Mapeamos el bono1580 usando los campos de la entidad (que en BD se llaman valorBonoUti...)
+        dto.setBono1580(new MontoDto(entidad.getValorBonoUtiLav(), entidad.getValorBonoUtiSdf()));
+        
+        dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        
+        // Campos de Extra nulos
+        dto.setResolucion2575(null);
+        return dto;
+    }
+
+    private ValorGuardiaResponseDto mapearExtra(ValorGuardiaExtrayCF entidad) {
+        ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
+        
+        dto.setResolucion2575(new MontoDto(entidad.getResolucion2575Lav(), entidad.getResolucion2575Sdf()));
+        
+        // Mapeamos el bono1580
+        dto.setBono1580(new MontoDto(entidad.getValorBonoUtiLav(), entidad.getValorBonoUtiSdf()));
+        
+        dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        
+        // Campos de Cargo nulos
+        dto.setDecreto1178(null);
+        dto.setDecreto1657(null);
+        return dto;
+    }
+
+    // --- HELPERS (Utilidades) ---
+
+    private String generarKey(List<Hospital> hospitales) {
+        if (hospitales == null || hospitales.isEmpty()) return "RESTO";
+        // Genera un ID único ordenando los IDs de hospitales: "10-25-30"
+        return hospitales.stream()
+                .map(h -> h.getId().toString())
+                .sorted()
+                .collect(Collectors.joining("-"));
+    }
+
+    private String generarTitulo(List<Hospital> hospitales, int nivel) {
+        if (hospitales == null || hospitales.isEmpty()) {
+            return "RESTO PRIMER NIVEL"; // O lógica según nivel si hay resto en otros niveles
+        }
+        // Genera: "MATERNO, SORIA"
+        return hospitales.stream()
+                .map(Hospital::getNombre) // Asumo que Hospital tiene getNombre()
+                .collect(Collectors.joining(", "));
+    }
+
+    private String obtenerNombreNivel(int nivel) {
+        switch (nivel) {
+            case 4: return "NIVEL 4 (SERVICIOS CRÍTICOS + SAME)";
+            case 3: return "NIVEL 3 (TERCER NIVEL)";
+            case 2: return "NIVEL 2 (SEGUNDO NIVEL)";
+            case 1: return "NIVEL 1 (PRIMER NIVEL)";
+            default: return "NIVEL " + nivel;
+        }
     }
 
 }
