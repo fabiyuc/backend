@@ -377,6 +377,18 @@ public class CronogramaTentativoService {
         return Optional.of(dtos);
     }
 
+    public Optional<List<CronogramaTentativoListAtorizadoDto>> findByAsistencialIdAndAutorizado(Long asistencialId,
+            AutorizadoTentativoEnum autorizado) {
+        List<CronogramaTentativo> tentativos = cronogramaTentativoRepository
+                .findByAsistencialIdAndAutorizado(asistencialId, autorizado).orElse(Collections.emptyList());
+
+        List<CronogramaTentativoListAtorizadoDto> dtos = tentativos.stream()
+                .map(this::convertToDtoAutorizados)
+                .collect(Collectors.toList());
+
+        return Optional.of(dtos);
+    }
+
     public CronogramaTentativoListAtorizadoDto convertToDtoAutorizados(CronogramaTentativo tentativo) {
         CronogramaTentativoListAtorizadoDto dto = new CronogramaTentativoListAtorizadoDto();
 
@@ -408,6 +420,12 @@ public class CronogramaTentativoService {
     public Long countPendientesByEfectorId(Long idEfector) {
         return cronogramaTentativoRepository.countByEfectorIdAndEstado(
                 idEfector,
+                AutorizadoTentativoEnum.PENDIENTE);
+    }
+
+    public Long countPendientesByAsistencialId(Long idAsistencial) {
+        return cronogramaTentativoRepository.countByAsistencialIdAndEstado(
+                idAsistencial,
                 AutorizadoTentativoEnum.PENDIENTE);
     }
 

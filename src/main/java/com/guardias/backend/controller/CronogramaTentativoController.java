@@ -283,11 +283,36 @@ public class CronogramaTentativoController {
         return new ResponseEntity<>(cronogramas, HttpStatus.OK);
     }
 
+    @GetMapping("/listByAsistencialAndAutorizado/{idAsistencial}/{autorizado}")
+    public ResponseEntity<List<CronogramaTentativoListAtorizadoDto>> listByAsistencialAndAutorizado(
+            @PathVariable("idAsistencial") Long idAsistencial,
+            @PathVariable("autorizado") AutorizadoTentativoEnum autorizado) {
+
+        List<CronogramaTentativoListAtorizadoDto> cronogramas = cronogramaTentativoService
+                .findByAsistencialIdAndAutorizado(idAsistencial, autorizado)
+                .orElse(new ArrayList<>());
+
+        if (cronogramas.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(cronogramas, HttpStatus.OK);
+    }
+
     @GetMapping("/countPendientesByEfector/{idEfector}")
     public ResponseEntity<Long> countPendientesByEfector(
             @PathVariable("idEfector") Long idEfector) {
 
         Long count = cronogramaTentativoService.countPendientesByEfectorId(idEfector);
+
+        return new ResponseEntity<>(count, HttpStatus.OK);
+    }
+
+    @GetMapping("/countPendientesByAsistencial/{idAsistencial}")
+    public ResponseEntity<Long> countPendientesByAsistencial(
+            @PathVariable("idAsistencial") Long idAsistencial) {
+
+        Long count = cronogramaTentativoService.countPendientesByAsistencialId(idAsistencial);
 
         return new ResponseEntity<>(count, HttpStatus.OK);
     }

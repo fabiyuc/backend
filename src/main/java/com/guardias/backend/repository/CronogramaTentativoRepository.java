@@ -129,6 +129,10 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
         @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
         Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId,
                         @Param("autorizado") AutorizadoTentativoEnum autorizado);
+        
+        @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.asistencial.id = :asistencialId AND ct.activo = true AND ct.autorizado = :autorizado")
+        Optional<List<CronogramaTentativo>> findByAsistencialIdAndAutorizado(@Param("asistencialId") Long asistencialId,
+                        @Param("autorizado") AutorizadoTentativoEnum autorizado);
 
         @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId  AND ct.autorizado = :autorizado")
         Optional<List<CronogramaTentativo>> findByEfectorIdAndAnulado(@Param("efectorId") Long efectorId,
@@ -140,6 +144,14 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         "AND ct.activo = true")
         Long countByEfectorIdAndEstado(
                         @Param("idEfector") Long idEfector,
+                        @Param("estado") AutorizadoTentativoEnum estado);
+       
+        @Query("SELECT COUNT(ct) FROM cronogramasTentativos ct " +
+                        "WHERE ct.asistencial.id = :idAsistencial " +
+                        "AND ct.autorizado = :estado " +
+                        "AND ct.activo = true")
+        Long countByAsistencialIdAndEstado(
+                        @Param("idAsistencial") Long idAsistencial,
                         @Param("estado") AutorizadoTentativoEnum estado);
 
         @Query("""
