@@ -78,10 +78,10 @@ public abstract class ValorGuardiaBase {
     private BigDecimal totalSdf;
 
     @Column(precision = 20, scale = 2)
-    private BigDecimal valorBonoUtiLav; 
+    private BigDecimal bono1580Lav; 
 
     @Column(precision = 20, scale = 2)
-    private BigDecimal valorBonoUtiSdf;
+    private BigDecimal bono1580Sdf;
 
     /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGuardia", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })

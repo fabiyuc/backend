@@ -584,8 +584,8 @@ public class ValorGuardiaCargoYagrupService {
         /* if (bonoUti != null) {
             nuevo.setBonoUti(bonoUti);
         } */
-        nuevo.setValorBonoUtiLav(dto.getBono1580Lav());
-        nuevo.setValorBonoUtiSdf(dto.getBono1580Sdf());
+        nuevo.setBono1580Lav(dto.getBono1580Lav());
+        nuevo.setBono1580Sdf(dto.getBono1580Sdf());
 
         nuevo.setDecreto1178Lav(dto.getDecreto1178Lav());
         nuevo.setDecreto1178Sdf(dto.getDecreto1178Sdf());
@@ -626,8 +626,8 @@ public class ValorGuardiaCargoYagrupService {
             nuevo.setBonoUti(bonoUti);
         } */
 
-        nuevo.setValorBonoUtiLav(dto.getBono1580Lav());
-        nuevo.setValorBonoUtiSdf(dto.getBono1580Sdf());
+        nuevo.setBono1580Lav(dto.getBono1580Lav());
+        nuevo.setBono1580Sdf(dto.getBono1580Sdf());
 
         nuevo.setResolucion2575Lav(dto.getResolucion2575Lav());
         nuevo.setResolucion2575Sdf(dto.getResolucion2575Sdf());
@@ -753,7 +753,7 @@ public class ValorGuardiaCargoYagrupService {
         dto.setDecreto1657(new MontoDto(entidad.getDecreto1657Lav(), entidad.getDecreto1657Sdf()));
         
         // Mapeamos el bono1580 usando los campos de la entidad (que en BD se llaman valorBonoUti...)
-        dto.setBono1580(new MontoDto(entidad.getValorBonoUtiLav(), entidad.getValorBonoUtiSdf()));
+        dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
         
         dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
         
@@ -768,7 +768,7 @@ public class ValorGuardiaCargoYagrupService {
         dto.setResolucion2575(new MontoDto(entidad.getResolucion2575Lav(), entidad.getResolucion2575Sdf()));
         
         // Mapeamos el bono1580
-        dto.setBono1580(new MontoDto(entidad.getValorBonoUtiLav(), entidad.getValorBonoUtiSdf()));
+        dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
         
         dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
         
@@ -782,7 +782,7 @@ public class ValorGuardiaCargoYagrupService {
 
     private String generarKey(List<Hospital> hospitales) {
         if (hospitales == null || hospitales.isEmpty()) return "RESTO";
-        // Genera un ID único ordenando los IDs de hospitales: "10-25-30"
+        // Genera un ID único ordenando los IDs de hospitales: "96-97-98"
         return hospitales.stream()
                 .map(h -> h.getId().toString())
                 .sorted()
@@ -791,11 +791,11 @@ public class ValorGuardiaCargoYagrupService {
 
     private String generarTitulo(List<Hospital> hospitales, int nivel) {
         if (hospitales == null || hospitales.isEmpty()) {
-            return "RESTO PRIMER NIVEL"; // O lógica según nivel si hay resto en otros niveles
+            return "RESTO PRIMER NIVEL";
         }
         // Genera: "MATERNO, SORIA"
         return hospitales.stream()
-                .map(Hospital::getNombre) // Asumo que Hospital tiene getNombre()
+                .map(Hospital::getNombre) 
                 .collect(Collectors.joining(", "));
     }
 
