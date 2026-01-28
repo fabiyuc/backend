@@ -51,7 +51,7 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                                     > TIMESTAMP(:fechaIngreso, :horaIngreso)
                             )
                         """, nativeQuery = true)
-                        boolean existsByCronogramaTentativo(
+                        int existsByCronogramaTentativo(
                                 @Param("fechaIngreso") LocalDate fechaIngreso,
                                 @Param("fechaEgreso") LocalDate fechaEgreso,
                                 @Param("horaIngreso") LocalTime horaIngreso,

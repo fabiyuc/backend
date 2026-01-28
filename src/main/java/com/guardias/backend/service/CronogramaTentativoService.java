@@ -249,7 +249,7 @@ public class CronogramaTentativoService {
         // proporcionados
         return cronogramaTentativoRepository.existsByCronogramaTentativo(
                 dto.getFechaIngreso(), dto.getFechaEgreso(), dto.getHoraIngreso(), dto.getHoraEgreso(),
-                dto.getIdAsistencial(), dto.getIdEfector());
+                dto.getIdAsistencial(), dto.getIdEfector()) == 1;
     }
 
     public List<Long> efectoresConCronogramaSuperpuesto(CronogramaTentativoDto dto) {
