@@ -303,12 +303,14 @@ public class CronogramaTentativoService {
                 autorizadoUpdateDto.getMotivoPendiente() != null)
             cronogramaTentativo.setMotivoPendiente(autorizadoUpdateDto.getMotivoPendiente());
 
-        if (cronogramaTentativo.getAutoridad() == null ||
-                (autorizadoUpdateDto.getIdAutoridad() != null &&
-                        !Objects.equals(cronogramaTentativo.getAutoridad().getId(),
-                                autorizadoUpdateDto.getIdAutoridad()))) {
-            cronogramaTentativo
-                    .setAutoridad(autoridadService.findById(autorizadoUpdateDto.getIdAutoridad()).get());
+        Long idNuevaAutoridad = autorizadoUpdateDto.getIdAutoridad();
+        // Solo entramos si el ID autoridad del DTO no es nulo
+        if (idNuevaAutoridad != null) {
+            if (cronogramaTentativo.getAutoridad() == null ||
+                !Objects.equals(cronogramaTentativo.getAutoridad().getId(), idNuevaAutoridad)) {
+                cronogramaTentativo.setAutoridad(autoridadService.findById(idNuevaAutoridad)
+                .orElseThrow(() -> new EntityNotFoundException("Autoridad no encontrada")));
+            }
         }
 
         cronogramaTentativo.setAutorizado(nuevoEstado);
