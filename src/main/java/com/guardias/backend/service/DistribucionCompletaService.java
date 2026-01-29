@@ -190,7 +190,14 @@ public class DistribucionCompletaService {
 
         // Estado por defecto
         dto.setAceptado(false);
-        dto.setAutorizado(AutorizadoTentativoEnum.PENDIENTE);
+
+        // Si es CARGO o AGRUPACION -> CONFIRMADO, sino -> PENDIENTE
+        if (guardia.getTipoGuardia() == TipoGuardiaEnum.CARGO || guardia.getTipoGuardia() == TipoGuardiaEnum.AGRUPACION) {
+            dto.setAutorizado(AutorizadoTentativoEnum.CONFIRMADO);
+        } else {
+            dto.setAutorizado(AutorizadoTentativoEnum.PENDIENTE);
+        }
+
         dto.setActivo(true);
 
         return dto;
