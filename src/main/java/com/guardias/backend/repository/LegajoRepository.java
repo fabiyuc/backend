@@ -15,7 +15,19 @@ public interface LegajoRepository extends JpaRepository<Legajo, Long> {
 
   List<Legajo> findByActivoTrue();
 
-  List<Legajo> findByActivoFalse();
+  @Query("""
+      SELECT DISTINCT l
+      FROM legajos l
+      LEFT JOIN l.efectores e
+      WHERE l.persona.id = :idPersona
+        AND l.activo = false
+        AND (
+              e.id = :idEfector
+              OR (l.udo IS NOT NULL AND l.udo.id = :idEfector)
+            )
+      """)
+  List<Legajo> findByActivoFalseByPersonAndEfector(@Param("idPersona") Long idPersona,
+                                                   @Param("idEfector") Long idEfector);
 
   Optional<Legajo> findById(Long id);
 

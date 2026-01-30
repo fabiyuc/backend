@@ -77,8 +77,14 @@ public class LegajoService {
         return legajoRepository.findByActivoTrue();
     }
 
-    public List<Legajo> findAllByActivoFalse() {
-        return legajoRepository.findByActivoFalse();
+    public List<Legajo> findAllByActivoFalseByPersonAndEfector(Long idPersona, Long idEfector) {
+        if (idPersona == null) {
+            throw new IllegalArgumentException("El idPersona no puede ser nulo");
+        }
+        if (idEfector == null) {
+            throw new IllegalArgumentException("El idEfector no puede ser nulo");
+        }
+        return legajoRepository.findByActivoFalseByPersonAndEfector(idPersona, idEfector);
     }
 
     public List<Legajo> findAll() {
