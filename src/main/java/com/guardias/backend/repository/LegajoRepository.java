@@ -27,7 +27,7 @@ public interface LegajoRepository extends JpaRepository<Legajo, Long> {
             )
       """)
   List<Legajo> findByActivoFalseByPersonAndEfector(@Param("idPersona") Long idPersona,
-                                                   @Param("idEfector") Long idEfector);
+      @Param("idEfector") Long idEfector);
 
   Optional<Legajo> findById(Long id);
 
