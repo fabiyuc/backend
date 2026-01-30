@@ -59,31 +59,22 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                                 @Param("idAsistencial") Long idAsistencial,
                                 @Param("idEfector") Long idEfector);
 
-                        @Query(value = """
-                            SELECT DISTINCT c.id_efector
-                            FROM cronogramas_tentativos c
-                            WHERE c.id_asistencial = :idAsistencial
-                              AND c.activo = 1
-                              AND (
-                                DATETIMEFROMPARTS(YEAR(c.fecha_ingreso), MONTH(c.fecha_ingreso), DAY(c.fecha_ingreso),
-                                                  DATEPART(HOUR, c.hora_ingreso), DATEPART(MINUTE, c.hora_ingreso), 0, 0)
-                                <
-                                DATETIMEFROMPARTS(YEAR(:fechaEgreso), MONTH(:fechaEgreso), DAY(:fechaEgreso),
-                                                  DATEPART(HOUR, :horaEgreso), DATEPART(MINUTE, :horaEgreso), 0, 0)
-                                AND
-                                DATETIMEFROMPARTS(YEAR(c.fecha_egreso), MONTH(c.fecha_egreso), DAY(c.fecha_egreso),
-                                                  DATEPART(HOUR, c.hora_egreso), DATEPART(MINUTE, c.hora_egreso), 0, 0)
-                                >
-                                DATETIMEFROMPARTS(YEAR(:fechaIngreso), MONTH(:fechaIngreso), DAY(:fechaIngreso),
-                                                  DATEPART(HOUR, :horaIngreso), DATEPART(MINUTE, :horaIngreso), 0, 0)
-                              )
-                        """, nativeQuery = true)
+        @Query(value = """
+            SELECT DISTINCT c.id_efector
+            FROM cronogramas_tentativos c
+            WHERE c.id_asistencial = :idAsistencial
+            AND c.activo = 1
+            AND TIMESTAMP(c.fecha_ingreso, c.hora_ingreso)
+                < TIMESTAMP(:fechaEgreso, :horaEgreso)
+            AND TIMESTAMP(c.fecha_egreso, c.hora_egreso)
+                > TIMESTAMP(:fechaIngreso, :horaIngreso)
+        """, nativeQuery = true)
         List<Long> findEfectoresConCronogramaSuperpuesto(
-                        @Param("fechaIngreso") LocalDate fechaIngreso,
-                        @Param("fechaEgreso") LocalDate fechaEgreso,
-                        @Param("horaIngreso") LocalTime horaIngreso,
-                        @Param("horaEgreso") LocalTime horaEgreso,
-                        @Param("idAsistencial") Long idAsistencial);
+                @Param("fechaIngreso") LocalDate fechaIngreso,
+                @Param("fechaEgreso") LocalDate fechaEgreso,
+                @Param("horaIngreso") LocalTime horaIngreso,
+                @Param("horaEgreso") LocalTime horaEgreso,
+                @Param("idAsistencial") Long idAsistencial);
 
         Optional<List<CronogramaTentativo>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector);
 
@@ -106,25 +97,25 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         @Param("fechaIngreso") LocalDate fechaIngreso,
                         @Param("horaIngreso") LocalTime horaIngreso);
 
-        @Query(value = """
-                        SELECT ct.* FROM cronogramas_tentativos ct
-                        WHERE ct.id_asistencial = :idAsistencial
-                        AND ct.id_efector = :idEfector
-                        AND ct.id_tipo_guardia = :idTipoGuardia
-                        AND ct.id_servicio = :idServicio
-                        AND ct.fecha_ingreso = :fechaIngreso
-                        AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso  -- No antes de la hora programada
-                        AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 60  -- Máximo 60 min después
-                        AND ct.activo = 1
-                        AND ct.autorizado = 'CONFIRMADO'
+                        @Query(value = """
+                            SELECT ct.*
+                            FROM cronogramas_tentativos ct
+                            WHERE ct.id_asistencial = :idAsistencial
+                            AND ct.id_efector = :idEfector
+                            AND ct.id_tipo_guardia = :idTipoGuardia
+                            AND ct.id_servicio = :idServicio
+                            AND ct.fecha_ingreso = :fechaIngreso
+                            AND TIMESTAMPDIFF(MINUTE, ct.hora_ingreso, :horaIngreso) BETWEEN 0 AND 60
+                            AND ct.activo = 1
+                            AND ct.autorizado = 'CONFIRMADO'
                         """, nativeQuery = true)
-        List<CronogramaTentativo> findCronogramaParaRegistroConRetraso(
-                        @Param("idAsistencial") Long idAsistencial,
-                        @Param("idEfector") Long idEfector,
-                        @Param("idTipoGuardia") Long idTipoGuardia,
-                        @Param("idServicio") Long idServicio,
-                        @Param("fechaIngreso") LocalDate fechaIngreso,
-                        @Param("horaIngreso") LocalTime horaIngreso);
+                        List<CronogramaTentativo> findCronogramaParaRegistroConRetraso(
+                                @Param("idAsistencial") Long idAsistencial,
+                                @Param("idEfector") Long idEfector,
+                                @Param("idTipoGuardia") Long idTipoGuardia,
+                                @Param("idServicio") Long idServicio,
+                                @Param("fechaIngreso") LocalDate fechaIngreso,
+                                @Param("horaIngreso") LocalTime horaIngreso);
 
         @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
         Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId,
