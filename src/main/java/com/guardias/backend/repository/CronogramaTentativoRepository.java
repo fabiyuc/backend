@@ -59,31 +59,28 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                                 @Param("idAsistencial") Long idAsistencial,
                                 @Param("idEfector") Long idEfector);
 
-                        @Query(value = """
-                            SELECT DISTINCT c.id_efector
-                            FROM cronogramas_tentativos c
-                            WHERE c.id_asistencial = :idAsistencial
-                              AND c.activo = 1
-                              AND (
-                                DATETIMEFROMPARTS(YEAR(c.fecha_ingreso), MONTH(c.fecha_ingreso), DAY(c.fecha_ingreso),
-                                                  DATEPART(HOUR, c.hora_ingreso), DATEPART(MINUTE, c.hora_ingreso), 0, 0)
-                                <
-                                DATETIMEFROMPARTS(YEAR(:fechaEgreso), MONTH(:fechaEgreso), DAY(:fechaEgreso),
-                                                  DATEPART(HOUR, :horaEgreso), DATEPART(MINUTE, :horaEgreso), 0, 0)
-                                AND
-                                DATETIMEFROMPARTS(YEAR(c.fecha_egreso), MONTH(c.fecha_egreso), DAY(c.fecha_egreso),
-                                                  DATEPART(HOUR, c.hora_egreso), DATEPART(MINUTE, c.hora_egreso), 0, 0)
-                                >
-                                DATETIMEFROMPARTS(YEAR(:fechaIngreso), MONTH(:fechaIngreso), DAY(:fechaIngreso),
-                                                  DATEPART(HOUR, :horaIngreso), DATEPART(MINUTE, :horaIngreso), 0, 0)
-                              )
-                        """, nativeQuery = true)
-        List<Long> findEfectoresConCronogramaSuperpuesto(
-                        @Param("fechaIngreso") LocalDate fechaIngreso,
-                        @Param("fechaEgreso") LocalDate fechaEgreso,
-                        @Param("horaIngreso") LocalTime horaIngreso,
-                        @Param("horaEgreso") LocalTime horaEgreso,
-                        @Param("idAsistencial") Long idAsistencial);
+                                @Query(value = """
+                                    SELECT DISTINCT c.id_efector
+                                    FROM cronogramas_tentativos c
+                                    WHERE c.id_asistencial = :idAsistencial
+                                    AND c.activo = 1
+                                    AND (
+                                        TIMESTAMP(c.fecha_ingreso, c.hora_ingreso)
+                                        <
+                                        TIMESTAMP(:fechaEgreso, :horaEgreso)
+                                        AND
+                                        TIMESTAMP(c.fecha_egreso, c.hora_egreso)
+                                        >
+                                        TIMESTAMP(:fechaIngreso, :horaIngreso)
+                                    )
+                                """, nativeQuery = true)
+                                List<Long> findEfectoresConCronogramaSuperpuesto(
+                                        @Param("fechaIngreso") LocalDate fechaIngreso,
+                                        @Param("fechaEgreso") LocalDate fechaEgreso,
+                                        @Param("horaIngreso") LocalTime horaIngreso,
+                                        @Param("horaEgreso") LocalTime horaEgreso,
+                                        @Param("idAsistencial") Long idAsistencial
+                                );
 
         Optional<List<CronogramaTentativo>> findByEfectorIdAndActivoTrueAndAutorizadoFalse(Long idEfector);
 
