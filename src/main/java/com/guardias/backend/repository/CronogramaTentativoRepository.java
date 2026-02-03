@@ -191,17 +191,17 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         @Param("idEfector") Long idEfector,
                         @Param("autorizado") AutorizadoTentativoEnum autorizado);
 
-        @Query(value = """
-                        SELECT ct.* FROM cronogramas_tentativos ct
-                        WHERE ct.id_asistencial = :idAsistencial
-                        AND ct.id_efector = :idEfector
-                        AND ct.fecha_ingreso = :fechaIngreso
-                        AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso
-                        AND DATEDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 120
-                        """, nativeQuery = true)
-        Optional<CronogramaTentativo> obtenerIdsCronograma(
-                        @Param("idAsistencial") Long idAsistencial,
-                        @Param("idEfector") Long idEfector,
-                        @Param("fechaIngreso") LocalDate fechaIngreso,
-                        @Param("horaIngreso") LocalTime horaIngreso);
+            @Query(value = """
+                SELECT ct.* FROM cronogramas_tentativos ct
+                WHERE ct.id_asistencial = :idAsistencial
+                AND ct.id_efector = :idEfector
+                AND ct.fecha_ingreso = :fechaIngreso
+                AND CAST(:horaIngreso AS TIME) >= ct.hora_ingreso
+                AND TIMESTAMPDIFF(MINUTE, ct.hora_ingreso, CAST(:horaIngreso AS TIME)) <= 120
+            """, nativeQuery = true)
+            Optional<CronogramaTentativo> obtenerIdsCronograma(
+                    @Param("idAsistencial") Long idAsistencial,
+                    @Param("idEfector") Long idEfector,
+                    @Param("fechaIngreso") LocalDate fechaIngreso,
+                    @Param("horaIngreso") LocalTime horaIngreso);
 }
