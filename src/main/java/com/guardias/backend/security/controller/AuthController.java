@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,9 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.person.PersonBasicPanelDto;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.security.dto.CambioPasswordDto;
 import com.guardias.backend.security.dto.JwtDto;
+import com.guardias.backend.security.dto.LoginResponseDto;
 import com.guardias.backend.security.dto.LoginUsuario;
 import com.guardias.backend.security.dto.NuevoUsuario;
+import com.guardias.backend.security.dto.ResetPasswordDto;
 import com.guardias.backend.security.entity.Rol;
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.enums.RolNombre;
@@ -67,24 +71,6 @@ public class AuthController {
         if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
             return new ResponseEntity(new Mensaje("el nombre de usuario ya existe"), HttpStatus.BAD_REQUEST);
 
-        /*
-         * // Verificar si ya existe un usuario activo para la persona asociada
-         * if (nuevoUsuario.getIdPerson() != null
-         * && usuarioService.existeUsuarioActivoParaPersona(nuevoUsuario.getIdPerson()))
-         * {
-         * return new ResponseEntity<>(new
-         * Mensaje("La persona ya tiene un usuario activo"),
-         * HttpStatus.BAD_REQUEST);
-         * }
-         * 
-         * // Verificar si la persona tiene un legajo activo
-         * if (nuevoUsuario.getIdPerson() != null &&
-         * !usuarioService.puedeCrearUsuario(nuevoUsuario.getIdPerson())) {
-         * return new ResponseEntity<>(new
-         * Mensaje("La persona no tiene un legajo activo"), HttpStatus.BAD_REQUEST);
-         * }
-         */
-
         Usuario usuario = new Usuario();
 
         usuario.setNombreUsuario(nuevoUsuario.getNombreUsuario());
@@ -120,6 +106,7 @@ public class AuthController {
         }
 
         usuario.setActivo(true);
+        usuario.setPrimerLogueo(true);
         usuarioService.save(usuario);
         return new ResponseEntity(new Mensaje("Nuevo usuario guardado"), HttpStatus.CREATED);
     }
@@ -236,12 +223,21 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // Obtener el usuario para verificar primerLogueo
+        Usuario usuario = usuarioService.findByNombreUsuario(loginUsuario.getNombreUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Crear JwtDto
         JwtDto jwtDto = new JwtDto(jwt, userDetails.getUsername(), userDetails.getAuthorities());
-        return new ResponseEntity(jwtDto, HttpStatus.OK);
+
+        // Crear respuesta de login con primerLogueo
+        LoginResponseDto loginResponse = new LoginResponseDto(jwtDto, usuario.getPrimerLogueo());
+        return new ResponseEntity(loginResponse, HttpStatus.OK);
 
     }
 
-    //devuelve true o false segun validacion de Password
+    // devuelve true o false segun validacion de Password
     @PostMapping("/validate-password")
     public ResponseEntity<Boolean> validatePasswordSimple(@Valid @RequestBody LoginUsuario loginUsuario,
             BindingResult bindingResult) {
@@ -368,4 +364,79 @@ public class AuthController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @PostMapping("/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(@Valid @RequestBody CambioPasswordDto cambioPasswordDto,
+            BindingResult bindingResult/* ,
+            @AuthenticationPrincipal UserDetails userDetails */) {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(new Mensaje("Datos inválidos"), HttpStatus.BAD_REQUEST);
+        }
+
+        // Validar que las nuevas contraseñas coincidan
+        if (!cambioPasswordDto.getNuevaPassword().equals(cambioPasswordDto.getConfirmacionPassword())) {
+            return new ResponseEntity<>(new Mensaje("Las contraseñas nuevas no coinciden"), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            // Obtener usuario actual
+            /* String nombreUsuario = userDetails.getUsername();
+            Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado")); */
+            
+            // CAMBIO IMPORTANTE:
+            // En lugar de sacar el nombre del token (que podría ser el del Hospital),
+            // lo sacamos del DTO que envía el front (que será el del Médico).
+            String nombreUsuario = cambioPasswordDto.getNombreUsuario();
+        
+            Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            // Verificar password actual
+            if (!passwordEncoder.matches(cambioPasswordDto.getPasswordActual(), usuario.getPassword())) {
+                return new ResponseEntity<>(new Mensaje("Contraseña actual incorrecta"), HttpStatus.BAD_REQUEST);
+            }
+
+            // Verificar que la nueva contraseña sea diferente a la actual
+            if (passwordEncoder.matches(cambioPasswordDto.getNuevaPassword(), usuario.getPassword())) {
+                return new ResponseEntity<>(new Mensaje("La nueva contraseña debe ser diferente a la actual"),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            // Actualizar password y cambiar estado de primerLogueo
+            usuario.setPassword(passwordEncoder.encode(cambioPasswordDto.getNuevaPassword()));
+            usuario.setPrimerLogueo(false);
+
+            usuarioService.save(usuario);
+
+            return new ResponseEntity<>(new Mensaje("Contraseña cambiada exitosamente"), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al cambiar la contraseña"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDto resetDto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>(new Mensaje("Datos inválidos"), HttpStatus.BAD_REQUEST);
+        }
+
+        Usuario usuario = usuarioService.findByNombreUsuario(resetDto.getNombreUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Encriptar nueva contraseña
+        usuario.setPassword(passwordEncoder.encode(resetDto.getNuevaPassword()));
+        // IMPORTANTE: Forzar cambio en próximo login
+        usuario.setPrimerLogueo(true);
+
+        usuarioService.save(usuario);
+
+        return new ResponseEntity<>(
+                new Mensaje("Contraseña restablecida. El usuario deberá cambiarla en el próximo login."),
+                HttpStatus.OK);
+    }
 }

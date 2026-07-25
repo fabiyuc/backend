@@ -1,9 +1,14 @@
 package com.guardias.backend.controller;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,8 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ObservacionDdjjDto;
 import com.guardias.backend.dto.ObservacionDdjj.ObservacionDdjjUltimoDto;
@@ -50,17 +60,53 @@ public class ObservacionDdjjController {
         return new ResponseEntity(observacionDdjj, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody ObservacionDdjjDto observacionDdjjDto) {
-        ResponseEntity<?> respuestaValidaciones = observacionDdjjService.validations(observacionDdjjDto, 0L);
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            ObservacionDdjj observacionDdjj = observacionDdjjService.createUpdate(new ObservacionDdjj(),
-                    observacionDdjjDto);
-            observacionDdjjService.save(observacionDdjj);
+    /*
+     * @PostMapping("/create")
+     * public ResponseEntity<?> create(@RequestBody ObservacionDdjjDto
+     * observacionDdjjDto) {
+     * ResponseEntity<?> respuestaValidaciones =
+     * observacionDdjjService.validations(observacionDdjjDto, 0L);
+     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+     * ObservacionDdjj observacionDdjj = observacionDdjjService.createUpdate(new
+     * ObservacionDdjj(),
+     * observacionDdjjDto);
+     * observacionDdjjService.save(observacionDdjj);
+     * 
+     * return new ResponseEntity(new Mensaje("Observacion de ddjj creada"),
+     * HttpStatus.OK);
+     * } else {
+     * return respuestaValidaciones;
+     * }
+     * }
+     */
 
-            return new ResponseEntity(new Mensaje("Observacion de ddjj creada"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
+    @PostMapping(value = "/create", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<?> create(
+            @RequestPart("observacion") String observacionStr,
+            @RequestPart(value = "archivo", required = false) MultipartFile archivo) {
+
+        try {
+            // 1. Convertir JSON a DTO
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            ObservacionDdjjDto dto = mapper.readValue(observacionStr, ObservacionDdjjDto.class);
+
+            // 2. Validaciones básicas de negocio (campos obligatorios)
+            ResponseEntity<?> respuestaValidaciones = observacionDdjjService.validations(dto, 0L);
+            if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+                return respuestaValidaciones;
+            }
+
+            // 3. Llamar al servicio que hace TODO el trabajo duro
+            ObservacionDdjj observacion = observacionDdjjService.crearConAdjunto(dto, archivo);
+
+            return new ResponseEntity<>(new Mensaje("Observación creada con éxito"), HttpStatus.OK);
+
+        } catch (IOException e) {
+            return new ResponseEntity<>(new Mensaje("Error al procesar el archivo: " + e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error inesperado: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -130,6 +176,33 @@ public class ObservacionDdjjController {
                 .getAllObservacionesActivasByDdjjAndTipoDph(idDdjj, tipoDph);
 
         return ResponseEntity.ok(observaciones);
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("path") String path) {
+        try {
+            // 1. Obtener el archivo (puede lanzar FileNotFoundException)
+            Resource recurso = observacionDdjjService.cargarArchivoComoRecurso(path);
+
+            // 2. Determinar tipo de archivo (Opción simplificada y segura)
+            String contentType = "application/octet-stream";
+
+            // 3. Devolver respuesta exitosa (200 OK)
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
+                    .body(recurso);
+
+        } catch (FileNotFoundException e) {
+            // CASO A: El archivo no existe -> Devolvemos 404 (Not Found)
+            // Esto es correcto tanto en Desarrollo como en Producción
+            return ResponseEntity.notFound().build();
+
+        } catch (Exception e) {
+            // CASO B: Error inesperado (ej: fallo de disco, memoria) -> Devolvemos 500
+            e.printStackTrace(); // Muestra el error en la consola para que tú lo veas
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

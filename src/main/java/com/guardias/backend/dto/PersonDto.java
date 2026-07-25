@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,14 +24,14 @@ public class PersonDto {
     private int dni;
     @NotBlank
     private String cuil;
-    @NotBlank
+
     private LocalDate fechaNacimiento;
     private String sexo;
     private String telefono;
     @NotBlank
     private String email;
     private String domicilio;
-    @NotBlank
+    @NotNull
     private Boolean esAsistencial;
     private boolean activo;
 

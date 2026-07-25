@@ -1,9 +1,12 @@
 package com.guardias.backend.controller;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +24,9 @@ import com.guardias.backend.dto.HabilitacionesGuardiasDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asistencial.AsistencialListNombreTGDto;
 import com.guardias.backend.dto.asistencial.AsistencialSummaryDto;
+import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.HabilitacionesGuardia;
+import com.guardias.backend.entity.Ministerio;
 import com.guardias.backend.service.HabilitacionesGuardiasService;
 
 @RestController
@@ -97,18 +102,40 @@ public class HabilitacionesGuardiasController {
 
     @GetMapping("/detailAsistencial/{idAsistencial}")
     public ResponseEntity<?> getByAsistencial(@PathVariable("idAsistencial") Long idAsistencial) {
-        // Obtén la habilitación activa
         Optional<HabilitacionesGuardia> habilitacionActiva = habilitacionesGuardiasService
                 .findActivoByAsistencial(idAsistencial);
 
-        // Si no hay habilitación activa, responde con un mensaje de error
-        if (habilitacionActiva.isEmpty()) {
-            return new ResponseEntity<>(new Mensaje("No existe una habilitación activa para este asistencial"),
+        List<Efector> efectoresLegajo = habilitacionesGuardiasService.getEfectoresFromLegajosActivos(idAsistencial);
+
+        HabilitacionesGuardia hg = habilitacionActiva.orElseGet(HabilitacionesGuardia::new);
+
+        Map<Long, Efector> merged = new LinkedHashMap<>();
+
+        if (hg.getEfectores() != null) {
+            for (Efector e : hg.getEfectores()) {
+                if (e != null && e.getId() != null && !isMinisterio(e))
+                    merged.putIfAbsent(e.getId(), e);
+            }
+        }
+        if (efectoresLegajo != null) {
+            for (Efector e : efectoresLegajo) {
+                if (e != null && e.getId() != null && !isMinisterio(e))
+                    merged.putIfAbsent(e.getId(), e);
+            }
+        }
+
+        if (habilitacionActiva.isEmpty() && merged.isEmpty()) {
+            return new ResponseEntity<>(
+                    new Mensaje("No existe una habilitación activa para este asistencial"),
                     HttpStatus.NOT_FOUND);
         }
 
-        // Si hay habilitación activa, devuelve la habilitación
-        return new ResponseEntity<>(habilitacionActiva.get(), HttpStatus.OK);
+        hg.setEfectores(new ArrayList<>(merged.values()));
+        return new ResponseEntity<>(hg, HttpStatus.OK);
+    }
+
+    private boolean isMinisterio(Efector e) {
+        return e != null && Hibernate.getClass(e).equals(Ministerio.class);
     }
 
     @PostMapping("/create")

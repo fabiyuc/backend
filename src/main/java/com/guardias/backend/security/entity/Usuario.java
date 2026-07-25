@@ -42,6 +42,8 @@ public class Usuario {
 
     private Boolean activo;
 
+    private Boolean primerLogueo = true; // Valor por defecto
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id"))
     private Set<Rol> roles = new HashSet<>();

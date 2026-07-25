@@ -245,6 +245,7 @@ public class PersonController {
                 usuarioService.findById(id).get().setPerson(person);
             }
         }
+
         return person;
     }
 

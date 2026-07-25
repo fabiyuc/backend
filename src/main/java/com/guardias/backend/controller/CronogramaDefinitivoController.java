@@ -50,41 +50,46 @@ public class CronogramaDefinitivoController {
         return new ResponseEntity(cronogramaDefinitivo, HttpStatus.OK);
     }
 
-    /* @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
-        ResponseEntity<?> respuestaValidaciones = cronogramaDefinitivoService.validations(cronogramaDefinitivoDto);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-
-            CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
-                    .createUpdate(new CronogramaDefinitivo(), cronogramaDefinitivoDto);
-            cronogramaDefinitivoService.save(cronogramaDefinitivo);
-            return new ResponseEntity(new Mensaje("Cronograma definitivo creado"), HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
-    } */
+    /*
+     * @PostMapping("/create")
+     * public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto
+     * cronogramaDefinitivoDto) {
+     * ResponseEntity<?> respuestaValidaciones =
+     * cronogramaDefinitivoService.validations(cronogramaDefinitivoDto);
+     * 
+     * if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
+     * 
+     * CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
+     * .createUpdate(new CronogramaDefinitivo(), cronogramaDefinitivoDto);
+     * cronogramaDefinitivoService.save(cronogramaDefinitivo);
+     * return new ResponseEntity(new Mensaje("Cronograma definitivo creado"),
+     * HttpStatus.OK);
+     * } else {
+     * return respuestaValidaciones;
+     * }
+     * }
+     */
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
         try {
-        
+
             ResponseEntity<?> respuestaValidaciones = cronogramaDefinitivoService.validations(cronogramaDefinitivoDto);
             if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
                 return respuestaValidaciones;
             }
 
             CronogramaDefinitivo cronogramaDefinitivo = cronogramaDefinitivoService
-                .createUpdateDefinitivo(cronogramaDefinitivoDto);
-        
+                    .createUpdateDefinitivo(cronogramaDefinitivoDto);
+
             cronogramaDefinitivoService.save(cronogramaDefinitivo);
             return new ResponseEntity(new Mensaje("Cronograma definitivo creado"), HttpStatus.OK);
-        
+
         } catch (IllegalArgumentException e) {
             return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity(new Mensaje("Error al crear cronograma: " + e.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -127,16 +132,38 @@ public class CronogramaDefinitivoController {
         return new ResponseEntity<>(new Mensaje("cronograma definitivo eliminado FISICAMENTEE"), HttpStatus.OK);
     }
 
+    /*
+     * @GetMapping("/listCronogramaByAnioMesEfector/{anio}/{mes}/{idEfector}")
+     * public ResponseEntity<List<CronogramaDefinitivoListDto>> listCronograma(
+     * 
+     * @PathVariable int anio,
+     * 
+     * @PathVariable String mes,
+     * 
+     * @PathVariable Long idEfector) {
+     * MesesEnum mesEnum = MesesEnum.valueOf(mes);
+     * try {
+     * List<CronogramaDefinitivoListDto> cronogramasDto =
+     * cronogramaDefinitivoService
+     * .findByAnioMesIdEfectorAndActivoTrueDto(anio, mesEnum, idEfector);
+     * return new ResponseEntity<>(cronogramasDto, HttpStatus.OK);
+     * } catch (IllegalArgumentException e) {
+     * return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+     * }
+     * }
+     */
+
     @GetMapping("/listCronogramaByAnioMesEfector/{anio}/{mes}/{idEfector}")
-    public ResponseEntity<List<CronogramaDefinitivoListDto>> listCronograma(
+    public ResponseEntity<List<CronogramaDefinitivoListDto>> listByAnioMesEfector(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector) {
+
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
         try {
-            List<CronogramaDefinitivoListDto> cronogramasDto = cronogramaDefinitivoService
-                    .findByAnioMesIdEfectorAndActivoTrueDto(anio, mesEnum, idEfector);
-            return new ResponseEntity<>(cronogramasDto, HttpStatus.OK);
+            List<CronogramaDefinitivoListDto> cronogramas = cronogramaDefinitivoService
+                    .findByAnioMesIdEfectorAndActivoTrue(anio, mesEnum, idEfector);
+            return new ResponseEntity<>(cronogramas, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

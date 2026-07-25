@@ -23,9 +23,8 @@ import com.guardias.backend.dto.DistribucionConsultorioDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
-import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionConsultorioService;
-import com.guardias.backend.service.ServicioService;
+import com.guardias.backend.service.DistribucionHorariaService;
 
 @RestController
 @RequestMapping("/distribucionConsultorio")
@@ -33,13 +32,10 @@ import com.guardias.backend.service.ServicioService;
 public class DistribucionConsultorioController {
 
     @Autowired
-    DistribucionHorariaController distribucionHorariaController;
+    DistribucionHorariaService distribucionHorariaService;
 
     @Autowired
     DistribucionConsultorioService distribucionConsultorioService;
-
-    @Autowired
-    ServicioService servicioService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionConsultorio>> list() {
@@ -157,51 +153,13 @@ public class DistribucionConsultorioController {
         return ResponseEntity.ok(distribucionConsultorioActivas);
     }
 
-    DistribucionConsultorio createUpdate(DistribucionConsultorio distribucionConsultorio,
-            DistribucionConsultorioDto distribucionConsultorioDto) {
-        DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionConsultorio,
-                distribucionConsultorioDto);
-
-        distribucionConsultorio = (DistribucionConsultorio) distribucionHoraria;
-
-        if (distribucionConsultorio.getServicio() == null ||
-                (distribucionConsultorioDto.getIdServicio() != null &&
-                        !Objects.equals(distribucionConsultorio.getServicio().getId(),
-                                distribucionConsultorioDto.getIdServicio()))) {
-            distribucionConsultorio
-                    .setServicio(servicioService.findById(distribucionConsultorioDto.getIdServicio()).get());
-        }
-
-        if (distribucionConsultorioDto.getTipoConsultorio() != distribucionConsultorio.getTipoConsultorio()
-                && distribucionConsultorioDto.getTipoConsultorio() != null)
-            distribucionConsultorio.setTipoConsultorio(distribucionConsultorioDto.getTipoConsultorio());
-
-        if (distribucionConsultorioDto.getLugar() != distribucionConsultorio.getLugar()
-                && distribucionConsultorioDto.getLugar() != null)
-            distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
-
-        /*
-         * if (distribucionConsultorioDto.getEspecialidad() !=
-         * distribucionConsultorio.getEspecialidad()
-         * && distribucionConsultorioDto.getEspecialidad() != null)
-         * distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.
-         * getEspecialidad());
-         * if (distribucionConsultorioDto.getCantidadTurnos() !=
-         * distribucionConsultorio.getCantidadTurnos())
-         * distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.
-         * getCantidadTurnos());
-         */
-        distribucionConsultorio.setActivo(true);
-        return distribucionConsultorio;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionConsultorioDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionConsultorioDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionConsultorio distribucionConsultorio = createUpdate(new DistribucionConsultorio(),
+            DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.createUpdate(new DistribucionConsultorio(),
                     distribucionConsultorioDto);
             distribucionConsultorioService.save(distribucionConsultorio);
             return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
@@ -218,10 +176,10 @@ public class DistribucionConsultorioController {
         if (!distribucionConsultorioService.existsById(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionConsultorioDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionConsultorioDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionConsultorio distribucionConsultorio = createUpdate(
+            DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.createUpdate(
                     distribucionConsultorioService.findById(id).get(),
                     distribucionConsultorioDto);
             distribucionConsultorioService.save(distribucionConsultorio);

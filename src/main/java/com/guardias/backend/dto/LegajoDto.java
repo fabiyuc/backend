@@ -62,6 +62,7 @@ public class LegajoDto {
 
     private LocationEnum tipoUdo;
 
+    private String motivoModificacion;
 }
 
 // genera el json

@@ -1,7 +1,9 @@
 package com.guardias.backend.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -227,7 +229,7 @@ public class HabilitacionesGuardiasService {
         List<Asistencial> asistenciales = habilitacionesGuardiasRepository.findByEfectorAndActivoTrueAndTG(idEfector,
                 tipoGuardiaEnum);
         List<AsistencialSummaryDto> dtoList = new ArrayList<>();
-        
+
         for (Asistencial asistencial : asistenciales) {
             // Obtiene el legajo activo
             Optional<Legajo> legajoActivo = asistencial.getLegajos().stream()
@@ -242,8 +244,8 @@ public class HabilitacionesGuardiasService {
 
             // Obtiene el idEfector del legajo no autoridad
             Long idEfectorLegajo = legajoActivo
-                .map(legajo -> legajo.getEfectores().isEmpty() ? null : legajo.getEfectores().get(0).getId())
-                .orElse(null);
+                    .map(legajo -> legajo.getEfectores().isEmpty() ? null : legajo.getEfectores().get(0).getId())
+                    .orElse(null);
 
             // Mapea los nombres de los tipos de guardia
             List<String> nombresTiposGuardias = asistencial.getLegajos().stream()
@@ -305,6 +307,33 @@ public class HabilitacionesGuardiasService {
 
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public List<Efector> getEfectoresFromLegajosActivos(Long idAsistencial) {
+        if (idAsistencial == null || idAsistencial <= 0) {
+            throw new IllegalArgumentException("El idAsistencial no es válido.");
+        }
+
+        Asistencial asistencial = asistencialService.findById(idAsistencial)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "El asistencial con ID " + idAsistencial + " no existe."));
+
+        if (asistencial.getLegajos() == null) {
+            return new ArrayList<>();
+        }
+
+        Map<Long, Efector> unique = new LinkedHashMap<>();
+        asistencial.getLegajos().stream()
+                .filter(l -> l.getFechaFinal() == null) // legajo activo
+                .filter(l -> l.getEfectores() != null)
+                .flatMap(l -> l.getEfectores().stream())
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+                    if (e.getId() != null)
+                        unique.putIfAbsent(e.getId(), e);
+                });
+
+        return new ArrayList<>(unique.values());
     }
 
 }

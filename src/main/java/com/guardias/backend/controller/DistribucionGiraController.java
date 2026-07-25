@@ -22,8 +22,8 @@ import com.guardias.backend.dto.DistribucionGiraDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionGira;
-import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.service.DistribucionGiraService;
+import com.guardias.backend.service.DistribucionHorariaService;
 
 @RestController
 @RequestMapping("/distribucionGira")
@@ -33,7 +33,7 @@ public class DistribucionGiraController {
     @Autowired
     DistribucionGiraService distribucionGiraService;
     @Autowired
-    DistribucionHorariaController distribucionHorariaController;
+    DistribucionHorariaService distribucionHorariaService;
 
     @GetMapping("/list")
     public ResponseEntity<List<DistribucionGira>> list() {
@@ -148,37 +148,13 @@ public class DistribucionGiraController {
         return ResponseEntity.ok(distribucionGiraActivas);
     }
 
-    DistribucionGira createUpdate(DistribucionGira distribucionGira,
-            DistribucionGiraDto distribucionGiraDto) {
-        DistribucionHoraria distribucionHoraria = distribucionHorariaController.createUpdate(distribucionGira,
-                distribucionGiraDto);
-        distribucionGira = (DistribucionGira) distribucionHoraria;
-
-        if (distribucionGiraDto.getPuestoSalud() != distribucionGira.getPuestoSalud()
-                && distribucionGiraDto.getPuestoSalud() != null)
-            distribucionGira.setPuestoSalud(distribucionGiraDto.getPuestoSalud());
-
-        /*
-         * if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
-         * && distribucionGiraDto.getDestino() != null)
-         * distribucionGira.setDestino(distribucionGiraDto.getDestino());
-         * if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
-         * && distribucionGiraDto.getDescripcion() != null)
-         * distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
-         */
-
-        distribucionGira.setActivo(true);
-
-        return distribucionGira;
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody DistribucionGiraDto distribucionGiraDto) {
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGiraDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionGiraDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionGira distribucionGira = createUpdate(new DistribucionGira(),
+            DistribucionGira distribucionGira = distribucionGiraService.createUpdate(new DistribucionGira(),
                     distribucionGiraDto);
             distribucionGiraService.save(distribucionGira);
             return new ResponseEntity(new Mensaje("Distribucion horaria creada"),
@@ -195,10 +171,10 @@ public class DistribucionGiraController {
         if (!distribucionGiraService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaController.validations(distribucionGiraDto);
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionGiraDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionGira distribucionGira = createUpdate(
+            DistribucionGira distribucionGira = distribucionGiraService.createUpdate(
                     distribucionGiraService.findById(id).get(),
                     distribucionGiraDto);
             distribucionGiraService.save(distribucionGira);

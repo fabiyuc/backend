@@ -143,6 +143,15 @@ public class EfectorController {
         efectorDto.setObservacion(efector.getObservacion());
         efectorDto.setIdRegion(efector.getRegion().getId());
         efectorDto.setIdLocalidad(efector.getLocalidad().getId());
+        if (efector.getServicios() != null) {
+            List<Long> serviciosIds = new ArrayList<>();
+            for (Servicio servicio : efector.getServicios()) {
+                serviciosIds.add(servicio.getId());
+            }
+            efectorDto.setIdServicios(serviciosIds);
+        } else {
+            efectorDto.setIdServicios(new ArrayList<>());
+        }
 
         /*
          * // Retorna el mensaje y el objeto
@@ -300,7 +309,10 @@ public class EfectorController {
                     Servicio servicioToAdd = servicioService.findById(id).get();
                     if (servicioToAdd != null) {
                         efector.getServicios().add(servicioToAdd);
-                        servicioToAdd.getEfectores().add(efector);
+                        // No actualizar aquí servicioToAdd.getEfectores().add(efector)
+                        // porque el efector puede ser nuevo (transient) y provocaría
+                        // TransientObjectException al flush. El lado dueño debe actualizarse
+                        // después de persistir el efector (ver HospitalController).
                     } else {
                         throw new RuntimeException("No se encontró el servicio con ID: " + id);
                     }

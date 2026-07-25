@@ -705,6 +705,21 @@ public class AsistencialService {
                         tipoGuardia.getNombre() == TipoGuardiaEnum.AGRUPACION);
     }
 
+    // Nuevo: verifica si el asistencial tiene en alguno de sus legajos activos el
+    // tipo CONTRAFACTURA (CF)
+    public boolean tieneCf(Long idAsistencial) {
+        // Buscar el asistencial por ID (solo si está activo)
+        Asistencial asistencial = asistencialRepository.findByIdAndActivoTrue(idAsistencial)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Asistencial activo no encontrado con ID: " + idAsistencial));
+
+        // Verificar si tiene legajos activos con el tipo de guardia CONTRAFACTURA
+        return asistencial.getLegajos().stream()
+                .filter(Legajo::isActivo)
+                .flatMap(legajo -> legajo.getTipoGuardias().stream()) // Obtengo todos los tipos de guardia
+                .anyMatch(tipoGuardia -> tipoGuardia.getNombre() == TipoGuardiaEnum.CONTRAFACTURA);
+    }
+
     // Método para obtener la lista de Asistenciales y convertirlos a
     // AsistencialSummaryDto
     public List<AsistencialSummaryDto> getAsistencialSummaryListTG() {

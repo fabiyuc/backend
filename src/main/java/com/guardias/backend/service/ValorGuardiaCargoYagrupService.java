@@ -2,13 +2,25 @@ package com.guardias.backend.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.valorGuardia.ColumnaGrillaDto;
+import com.guardias.backend.dto.valorGuardia.DetalleValoresDto;
+import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
+import com.guardias.backend.dto.valorGuardia.MontoDto;
+import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
+import com.guardias.backend.dto.valorGuardia.ValorGuardiaResponseDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
@@ -29,6 +41,8 @@ public class ValorGuardiaCargoYagrupService {
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
     HospitalRepository hospitalRepository;
+    /* @Autowired
+    BonoUtiRepository bonoUtiRepository; */
 
     public Optional<List<ValorGuardiaCargoYagrup>> findByActivoTrue() {
         return valorGuardiaCargoYagrupRepository.findByActivoTrue();
@@ -82,8 +96,6 @@ public class ValorGuardiaCargoYagrupService {
         // 2. Buscar valor genérico (sin hospitales asignados)
         return valorGuardiaCargoYagrupRepository.findByActivoTrueAndHospitalesIsEmpty();
     }
-
-
 
     /* Crea registros de ValorGuardiaCargoYagrup basados en el ValorGmi activo */
 
@@ -334,12 +346,11 @@ public class ValorGuardiaCargoYagrupService {
      * }
      */
 
-
-      public void inicializarValoresGuardia() {
+    public void inicializarValoresGuardia() {
         // Eliminar valores existentes para evitar duplicados
-     
-        //  cargoYagrupRepository.deleteAll();
-        //extrayCFRepository.deleteAll();
+
+        // cargoYagrupRepository.deleteAll();
+        // extrayCFRepository.deleteAll();
 
         // Fecha de inicio fija para abril 2025
         LocalDate fechaInicio = LocalDate.of(2025, 4, 1);
@@ -354,137 +365,125 @@ public class ValorGuardiaCargoYagrupService {
     private void cargarValoresCargoYAgrupacion(LocalDate fechaInicio) {
         // Servicios Críticos + SAME
         crearValorCargoYAgrupacion(
-            Arrays.asList("SAME"),
-            4,
-            new BigDecimal("166794.12"), // L-V (Total)
-            new BigDecimal("183473.53"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAME"),
+                4,
+                new BigDecimal("166794.12"), // L-V (Total)
+                new BigDecimal("183473.53"), // S-D-F (Total)
+                fechaInicio);
 
         // Tercer Nivel - Materno, Soria
         crearValorCargoYAgrupacion(
-            Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
-            3,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
+                3,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - Jorge Uro
         crearValorCargoYAgrupacion(
-            Arrays.asList("JORGE URO"),
-            2,
-            new BigDecimal("269986.48"), // L-V (Total)
-            new BigDecimal("296985.13"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("JORGE URO"),
+                2,
+                new BigDecimal("269986.48"), // L-V (Total)
+                new BigDecimal("296985.13"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - San Roque, Orias, Paterson
         crearValorCargoYAgrupacion(
-            Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
-            2,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
+                2,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Susques
         crearValorCargoYAgrupacion(
-            Arrays.asList("SUSQUES"),
-            1,
-            new BigDecimal("299984.98"), // L-V (Total)
-            new BigDecimal("329983.48"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SUSQUES"),
+                1,
+                new BigDecimal("299984.98"), // L-V (Total)
+                new BigDecimal("329983.48"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Rosario, Aguilar, Yuto, Talar, P.Sola
         crearValorCargoYAgrupacion(
-            Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
-            1,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR",
+                        "NUESTRA SEÑORA DEL VALLE"),
+                1,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
 
         // Resto de Primer Nivel
         crearValorCargoYAgrupacion(
-            null,
-            1,
-            new BigDecimal("149992.49"), // L-V (Total)
-            new BigDecimal("164991.74"), // S-D-F (Total)
-            fechaInicio
-        );
+                null,
+                1,
+                new BigDecimal("149992.49"), // L-V (Total)
+                new BigDecimal("164991.74"), // S-D-F (Total)
+                fechaInicio);
     }
 
     private void cargarValoresExtraYCF(LocalDate fechaInicio) {
         // Servicios Críticos + SAME
         crearValorExtraYCF(
-            Arrays.asList("SAME"),
-            4,
-            new BigDecimal("228139.28"), // L-V (Total)
-            new BigDecimal("250953.20"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAME"),
+                4,
+                new BigDecimal("228139.28"), // L-V (Total)
+                new BigDecimal("250953.20"), // S-D-F (Total)
+                fechaInicio);
 
         // Tercer Nivel - Materno, Soria
         crearValorExtraYCF(
-            Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
-            3,
-            new BigDecimal("232366.03"), // L-V (Total)
-            new BigDecimal("255602.63"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("MATERNO INFANTIL DR. HECTOR QUINTANA", "PABLO SORIA"),
+                3,
+                new BigDecimal("232366.03"), // L-V (Total)
+                new BigDecimal("255602.63"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - Jorge Uro
         crearValorExtraYCF(
-            Arrays.asList("JORGE URO"),
-            2,
-            new BigDecimal("280233.71"), // L-V (Total)
-            new BigDecimal("308257.09"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("JORGE URO"),
+                2,
+                new BigDecimal("280233.71"), // L-V (Total)
+                new BigDecimal("308257.09"), // S-D-F (Total)
+                fechaInicio);
 
         // Segundo Nivel - San Roque, Orias, Paterson
         crearValorExtraYCF(
-            Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
-            2,
-            new BigDecimal("215564.40"), // L-V (Total)
-            new BigDecimal("237120.84"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SAN ROQUE", "DR. OSCAR ORIAS", "DR. GUILLERMO PATERSON"),
+                2,
+                new BigDecimal("215564.40"), // L-V (Total)
+                new BigDecimal("237120.84"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Susques
         crearValorExtraYCF(
-            Arrays.asList("SUSQUES"),
-            1,
-            new BigDecimal("301790.16"), // L-V (Total)
-            new BigDecimal("331969.17"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("SUSQUES"),
+                1,
+                new BigDecimal("301790.16"), // L-V (Total)
+                new BigDecimal("331969.17"), // S-D-F (Total)
+                fechaInicio);
 
         // Primer Nivel - Rosario, Aguilar, Yuto, Talar, P.Sola
         crearValorExtraYCF(
-            Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR", "NUESTRA SEÑORA DEL VALLE"),
-            1,
-            new BigDecimal("258677.28"), // L-V (Total)
-            new BigDecimal("284545.01"), // S-D-F (Total)
-            fechaInicio
-        );
+                Arrays.asList("NUESTRA SEÑORA DEL ROSARIO", "EL AGUILAR", "SAN MIGUEL DE YUTO", "TALAR",
+                        "NUESTRA SEÑORA DEL VALLE"),
+                1,
+                new BigDecimal("258677.28"), // L-V (Total)
+                new BigDecimal("284545.01"), // S-D-F (Total)
+                fechaInicio);
 
         // Resto de Primer Nivel
         crearValorExtraYCF(
-            null,
-            1,
-            new BigDecimal("215564.40"), // L-V (Total)
-            new BigDecimal("237120.84"), // S-D-F (Total)
-            fechaInicio
-        );
+                null,
+                1,
+                new BigDecimal("215564.40"), // L-V (Total)
+                new BigDecimal("237120.84"), // S-D-F (Total)
+                fechaInicio);
     }
 
-    private void crearValorCargoYAgrupacion(List<String> nombresHospitales, int nivel, 
-                                          BigDecimal totalLav, BigDecimal totalSdf,
-                                          LocalDate fechaInicio) {
-        
+    private void crearValorCargoYAgrupacion(List<String> nombresHospitales, int nivel,
+            BigDecimal totalLav, BigDecimal totalSdf,
+            LocalDate fechaInicio) {
+
         ValorGuardiaCargoYagrup valor = new ValorGuardiaCargoYagrup();
         valor.setTipoGuardia(TipoGuardiaEnum.CARGO); // También aplica para AGRUPACION
         valor.setNivelComplejidad(nivel);
@@ -492,20 +491,20 @@ public class ValorGuardiaCargoYagrupService {
         valor.setTotalSdf(totalSdf);
         valor.setFechaInicio(fechaInicio);
         valor.setActivo(true);
-        
+
         // Asignar SOLO los hospitales específicamente listados
         if (nombresHospitales != null && !nombresHospitales.isEmpty()) {
             List<Hospital> hospitales = hospitalRepository.findByNombreIn(nombresHospitales);
             valor.setHospitales(hospitales);
         }
-        
+
         valorGuardiaCargoYagrupRepository.save(valor);
     }
 
     private void crearValorExtraYCF(List<String> nombresHospitales, int nivel,
-                                   BigDecimal totalLav, BigDecimal totalSdf,
-                                   LocalDate fechaInicio) {
-        
+            BigDecimal totalLav, BigDecimal totalSdf,
+            LocalDate fechaInicio) {
+
         ValorGuardiaExtrayCF valor = new ValorGuardiaExtrayCF();
         valor.setTipoGuardia(TipoGuardiaEnum.EXTRA); // También aplica para CONTRAFACTURA
         valor.setNivelComplejidad(nivel);
@@ -513,14 +512,301 @@ public class ValorGuardiaCargoYagrupService {
         valor.setTotalSdf(totalSdf);
         valor.setFechaInicio(fechaInicio);
         valor.setActivo(true);
-        
+
         // Asignar SOLO los hospitales específicamente listados
         if (nombresHospitales != null && !nombresHospitales.isEmpty()) {
             List<Hospital> hospitales = hospitalRepository.findByNombreIn(nombresHospitales);
             valor.setHospitales(hospitales);
         }
-        
+
         valorGuardiaExtraYcfRepository.save(valor);
     }
 
+    public void guardarCargaManual(List<ValorGuardiaManualDto> listaValores) {
+
+        for (ValorGuardiaManualDto dto : listaValores) {
+
+            // 1. Resolver los hospitales nuevos (ordenados por ID para facilitar comparación)
+            List<Hospital> hospitalesNuevos = new ArrayList<>();
+            if (dto.getIdsHospitales() != null && !dto.getIdsHospitales().isEmpty()) {
+                hospitalesNuevos = hospitalRepository.findAllById(dto.getIdsHospitales());
+                // Ordenamos para que la comparación de listas sea consistente
+                hospitalesNuevos.sort(Comparator.comparing(Hospital::getId));
+            }
+            // Si la lista está VACÍA (el else implícito), NO se asignan hospitales específicos.
+            // En base de datos, la tabla de relación quedará vacía para este registro.
+
+            // 2. --- NUEVO: BUSCAR EL BONO UTI (Si viene el ID) ---
+           /*  BonoUti bonoUti = null;
+            if (dto.getIdBonoUti() != null) {
+                // Buscamos la entidad para poder relacionarla
+                bonoUti = bonoUtiRepository.findById(dto.getIdBonoUti()).orElse(null);
+            } */
+
+            // 3. Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
+            if (esGuardiaCargo(dto.getTipoGuardia())) {
+                procesarGuardiaCargo(dto, hospitalesNuevos);
+            } else if (esGuardiaExtra(dto.getTipoGuardia())) {
+                procesarGuardiaExtra(dto, hospitalesNuevos);
+            }
+        }
     }
+
+    private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
+        // A. Buscar candidatos vigentes (Activos y del mismo Nivel/Tipo)
+        List<ValorGuardiaCargoYagrup> vigentes = valorGuardiaCargoYagrupRepository
+                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+
+        // B. Verificar si alguno coincide exactamente con los hospitales del DTO
+        for (ValorGuardiaCargoYagrup viejo : vigentes) {
+            if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
+                
+                // C. Lógica de Cierre: Si el nuevo inicia DESPUÉS, cerramos el viejo ayer.
+                if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
+                    viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
+                    valorGuardiaCargoYagrupRepository.save(viejo);
+                }
+            }
+        }
+
+        // C. Guardar el NUEVO registro
+        ValorGuardiaCargoYagrup nuevo = new ValorGuardiaCargoYagrup();
+        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setNivelComplejidad(dto.getNivelComplejidad());
+        nuevo.setTotalLav(dto.getTotalLav());
+        nuevo.setTotalSdf(dto.getTotalSdf());
+        nuevo.setFechaInicio(dto.getFechaInicio());
+        nuevo.setActivo(true);
+
+        if (!hospitalesNuevos.isEmpty()) {
+            nuevo.setHospitales(hospitalesNuevos);
+        }
+        /* if (bonoUti != null) {
+            nuevo.setBonoUti(bonoUti);
+        } */
+        nuevo.setBono1580Lav(dto.getBono1580Lav());
+        nuevo.setBono1580Sdf(dto.getBono1580Sdf());
+
+        nuevo.setDecreto1178Lav(dto.getDecreto1178Lav());
+        nuevo.setDecreto1178Sdf(dto.getDecreto1178Sdf());
+
+        nuevo.setDecreto1657Lav(dto.getDecreto1657Lav());
+        nuevo.setDecreto1657Sdf(dto.getDecreto1657Sdf());
+
+        valorGuardiaCargoYagrupRepository.save(nuevo);
+    }
+
+    private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
+        // Misma lógica pero con el repositorio y entidad de Extra/CF
+        List<ValorGuardiaExtrayCF> vigentes = valorGuardiaExtraYcfRepository
+                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+
+        for (ValorGuardiaExtrayCF viejo : vigentes) {
+            if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
+                
+                if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
+                    viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
+                    valorGuardiaExtraYcfRepository.save(viejo);
+                }
+            }
+        }
+
+        ValorGuardiaExtrayCF nuevo = new ValorGuardiaExtrayCF();
+        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setNivelComplejidad(dto.getNivelComplejidad());
+        nuevo.setTotalLav(dto.getTotalLav());
+        nuevo.setTotalSdf(dto.getTotalSdf());
+        nuevo.setFechaInicio(dto.getFechaInicio());
+        nuevo.setActivo(true);
+
+        if (!hospitalesNuevos.isEmpty()) {
+            nuevo.setHospitales(hospitalesNuevos);
+        }
+        /* if (bonoUti != null) {
+            nuevo.setBonoUti(bonoUti);
+        } */
+
+        nuevo.setBono1580Lav(dto.getBono1580Lav());
+        nuevo.setBono1580Sdf(dto.getBono1580Sdf());
+
+        nuevo.setResolucion2575Lav(dto.getResolucion2575Lav());
+        nuevo.setResolucion2575Sdf(dto.getResolucion2575Sdf());
+        
+        valorGuardiaExtraYcfRepository.save(nuevo);
+    }
+
+   
+    /**
+     * Compara si dos listas de hospitales contienen exactamente los mismos IDs.
+     * Maneja listas nulas o vacías.
+     */
+    private boolean sonLosMismosHospitales(List<Hospital> listaA, List<Hospital> listaB) {
+        // Normalizar nulos a vacíos
+        List<Hospital> a = (listaA == null) ? Collections.emptyList() : listaA;
+        List<Hospital> b = (listaB == null) ? Collections.emptyList() : listaB;
+
+        if (a.size() != b.size()) return false;
+
+        // Extraer IDs, ordenar y comparar
+        List<Long> idsA = a.stream().map(Hospital::getId).sorted().collect(Collectors.toList());
+        List<Long> idsB = b.stream().map(Hospital::getId).sorted().collect(Collectors.toList());
+
+        return idsA.equals(idsB);
+    }
+
+    private boolean esGuardiaCargo(TipoGuardiaEnum tipo) {
+        return tipo == TipoGuardiaEnum.CARGO || tipo == TipoGuardiaEnum.AGRUPACION;
+    }
+
+    private boolean esGuardiaExtra(TipoGuardiaEnum tipo) {
+        return tipo == TipoGuardiaEnum.EXTRA || tipo == TipoGuardiaEnum.CONTRAFACTURA;
+    }
+
+    public List<GrillaValorGuardiaCompletaDto> obtenerGrillaJerarquica(LocalDate fecha) {
+        
+        // 1. Traer datos crudos de la BD
+        List<ValorGuardiaCargoYagrup> cargos = valorGuardiaCargoYagrupRepository.buscarVigentes(fecha);
+        List<ValorGuardiaExtrayCF> extras = valorGuardiaExtraYcfRepository.buscarVigentes(fecha);
+
+        // 2. Estructura temporal para agrupar:
+        // Map<Nivel (Integer), Map<KeyGrupo (String), ObjetoUnificado>>
+        Map<Integer, Map<String, DetalleValoresDto>> agrupador = new HashMap<>();
+        
+        // Map auxiliar para guardar el Título de cada columna y no perderlo
+        Map<String, String> titulosMap = new HashMap<>();
+
+        // --- PROCESAR CARGOS ---
+        for (ValorGuardiaCargoYagrup c : cargos) {
+            String keyGrupo = generarKey(c.getHospitales());
+            String titulo = generarTitulo(c.getHospitales(), c.getNivelComplejidad());
+            titulosMap.put(keyGrupo, titulo);
+
+            // Inicializar mapas si no existen
+            agrupador.putIfAbsent(c.getNivelComplejidad(), new HashMap<>());
+            Map<String, DetalleValoresDto> nivelMap = agrupador.get(c.getNivelComplejidad());
+            
+            // Obtener o crear el detalle
+            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
+            
+            // Mapear y asignar CARGO
+            detalle.setCargo(mapearCargo(c));
+            
+            nivelMap.put(keyGrupo, detalle);
+        }
+
+        // --- PROCESAR EXTRAS (Unimos en el mismo mapa) ---
+        for (ValorGuardiaExtrayCF e : extras) {
+            String keyGrupo = generarKey(e.getHospitales());
+            
+            // Si no estaba el título (porque solo hay extra y no cargo), lo generamos
+            if (!titulosMap.containsKey(keyGrupo)) {
+                titulosMap.put(keyGrupo, generarTitulo(e.getHospitales(), e.getNivelComplejidad()));
+            }
+
+            agrupador.putIfAbsent(e.getNivelComplejidad(), new HashMap<>());
+            Map<String, DetalleValoresDto> nivelMap = agrupador.get(e.getNivelComplejidad());
+            
+            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
+            
+            // Mapear y asignar EXTRA
+            detalle.setExtra(mapearExtra(e));
+            
+            nivelMap.put(keyGrupo, detalle);
+        }
+
+        // 3. Transformar el Map a la Lista final de DTOs
+        List<GrillaValorGuardiaCompletaDto> respuestaFinal = new ArrayList<>();
+
+        for (Map.Entry<Integer, Map<String, DetalleValoresDto>> entryNivel : agrupador.entrySet()) {
+            Integer nivel = entryNivel.getKey();
+            Map<String, DetalleValoresDto> columnasDelNivel = entryNivel.getValue();
+
+            GrillaValorGuardiaCompletaDto nivelDto = new GrillaValorGuardiaCompletaDto();
+            nivelDto.setNumeroNivel(nivel);
+            nivelDto.setNombreNivel(obtenerNombreNivel(nivel)); // Ej: "NIVEL 4 (CRITICOS)"
+
+            for (Map.Entry<String, DetalleValoresDto> entryColumna : columnasDelNivel.entrySet()) {
+                ColumnaGrillaDto columna = new ColumnaGrillaDto();
+                columna.setTitulo(titulosMap.get(entryColumna.getKey())); // Recuperamos el título bonito
+                columna.setValores(entryColumna.getValue());
+                
+                nivelDto.getColumnas().add(columna);
+            }
+            // Opcional: Ordenar columnas alfabéticamente por título o por ID dentro del nivel
+            // nivelDto.getColumnas().sort(Comparator.comparing(ColumnaGrillaDto::getTitulo));
+            
+            respuestaFinal.add(nivelDto);
+        }
+
+        // 4. Ordenar Niveles descendente (4, 3, 2, 1) para que salga igual a la foto
+        respuestaFinal.sort((a, b) -> b.getNumeroNivel() - a.getNumeroNivel());
+
+        return respuestaFinal;
+    }
+
+    // --- MAPPERS (Entidad -> DTO) ---
+
+    private ValorGuardiaResponseDto mapearCargo(ValorGuardiaCargoYagrup entidad) {
+        ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
+        
+        dto.setDecreto1178(new MontoDto(entidad.getDecreto1178Lav(), entidad.getDecreto1178Sdf()));
+        dto.setDecreto1657(new MontoDto(entidad.getDecreto1657Lav(), entidad.getDecreto1657Sdf()));
+        
+        // Mapeamos el bono1580 usando los campos de la entidad (que en BD se llaman valorBonoUti...)
+        dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
+        
+        dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        
+        // Campos de Extra nulos
+        dto.setResolucion2575(null);
+        return dto;
+    }
+
+    private ValorGuardiaResponseDto mapearExtra(ValorGuardiaExtrayCF entidad) {
+        ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
+        
+        dto.setResolucion2575(new MontoDto(entidad.getResolucion2575Lav(), entidad.getResolucion2575Sdf()));
+        
+        // Mapeamos el bono1580
+        dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
+        
+        dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        
+        // Campos de Cargo nulos
+        dto.setDecreto1178(null);
+        dto.setDecreto1657(null);
+        return dto;
+    }
+
+    // --- HELPERS (Utilidades) ---
+
+    private String generarKey(List<Hospital> hospitales) {
+        if (hospitales == null || hospitales.isEmpty()) return "RESTO";
+        // Genera un ID único ordenando los IDs de hospitales: "96-97-98"
+        return hospitales.stream()
+                .map(h -> h.getId().toString())
+                .sorted()
+                .collect(Collectors.joining("-"));
+    }
+
+    private String generarTitulo(List<Hospital> hospitales, int nivel) {
+        if (hospitales == null || hospitales.isEmpty()) {
+            return "RESTO PRIMER NIVEL";
+        }
+        // Genera: "MATERNO, SORIA"
+        return hospitales.stream()
+                .map(Hospital::getNombre) 
+                .collect(Collectors.joining(", "));
+    }
+
+    private String obtenerNombreNivel(int nivel) {
+        switch (nivel) {
+            case 4: return "NIVEL 4 (SERVICIOS CRÍTICOS + SAME)";
+            case 3: return "NIVEL 3 (TERCER NIVEL)";
+            case 2: return "NIVEL 2 (SEGUNDO NIVEL)";
+            case 1: return "NIVEL 1 (PRIMER NIVEL)";
+            default: return "NIVEL " + nivel;
+        }
+    }
+
+}

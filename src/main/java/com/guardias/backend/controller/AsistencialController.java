@@ -31,6 +31,7 @@ import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.EfectorService;
+import com.guardias.backend.service.PersonService;
 import com.guardias.backend.service.RegistrosPendientesService;
 
 import jakarta.validation.constraints.Max;
@@ -47,6 +48,8 @@ public class AsistencialController {
     EfectorService efectorService;
     @Autowired
     RegistrosPendientesService registrosPendientesService;
+    @Autowired
+    PersonService personService;
 
     @GetMapping("/list")
     public ResponseEntity<List<Asistencial>> list() {
@@ -384,6 +387,19 @@ public class AsistencialController {
         List<AsistencialTiposGuardiasDto> tiposGuardias = asistencialService.obtenerTiposGuardia(idAsistencial);
 
         return new ResponseEntity<>(tiposGuardias, HttpStatus.OK);
+    }
+
+    @GetMapping("/tieneCf/{idAsistencial}")
+    public boolean tieneCf(@PathVariable Long idAsistencial) {
+        return asistencialService.tieneCf(idAsistencial);
+    }
+
+    @GetMapping("/getPersonCuil/{id}")
+    public ResponseEntity<String> getPersonCuil(@PathVariable("id") Long id) {
+        if (!personService.activo(id))
+            return new ResponseEntity(new Mensaje("No existe la persona"), HttpStatus.NOT_FOUND);
+        String cuil = personService.findCuilById(id);
+        return new ResponseEntity<String>(cuil, HttpStatus.OK);
     }
 
 }

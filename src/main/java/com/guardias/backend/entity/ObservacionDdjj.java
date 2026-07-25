@@ -59,4 +59,7 @@ public class ObservacionDdjj {
      @Temporal(TemporalType.TIME)
      private LocalTime horaCreacion;
 
+     @Column(name = "documento_respaldo", columnDefinition = "VARCHAR(500)")
+     private String documentoRespaldo;
+
 }

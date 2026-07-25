@@ -36,9 +36,11 @@ import com.guardias.backend.entity.Caps;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.service.CapsService;
 import com.guardias.backend.service.HospitalService;
 import com.guardias.backend.service.RegionService;
+import com.guardias.backend.service.ServicioService;
 
 //@Controller cambio por @RestController
 @RestController
@@ -55,6 +57,9 @@ public class HospitalController {
 
     @Autowired
     CapsService capsService;
+
+    @Autowired
+    ServicioService servicioService;
 
     @Autowired
     EfectorController efectorController;
@@ -193,6 +198,18 @@ public class HospitalController {
 
             // 🔥 GUARDAR Y DEVOLVER EL HOSPITAL CREADO CON SU ID
             hospitalService.save(hospital);
+
+            // 🔗 Actualizar el lado propietario (Servicio) después de guardar el hospital
+            if (hospital.getServicios() != null) {
+                for (Servicio s : hospital.getServicios()) {
+                    Servicio servicio = servicioService.findById(s.getId()).get();
+                    if (servicio != null && !servicio.getEfectores().contains(hospital)) {
+                        servicio.getEfectores().add(hospital);
+                        servicioService.save(servicio);
+                    }
+                }
+            }
+
             return new ResponseEntity<>(hospital, HttpStatus.OK);
         } else {
             return respuestaValidaciones;
@@ -209,6 +226,18 @@ public class HospitalController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
             Hospital hospital = createUpdate(hospitalService.findById(id).get(), hospitalDto);
             hospitalService.save(hospital);
+
+            // 🔗 Actualizar el lado propietario (Servicio) después de guardar el hospital
+            if (hospital.getServicios() != null) {
+                for (Servicio s : hospital.getServicios()) {
+                    Servicio servicio = servicioService.findById(s.getId()).get();
+                    if (servicio != null && !servicio.getEfectores().contains(hospital)) {
+                        servicio.getEfectores().add(hospital);
+                        servicioService.save(servicio);
+                    }
+                }
+            }
+
             return new ResponseEntity(new Mensaje("Hospital modificado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;

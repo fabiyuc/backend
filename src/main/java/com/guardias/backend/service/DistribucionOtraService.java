@@ -9,7 +9,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.dto.DistribucionOtraDto;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
+import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.DistribucionOtra;
 import com.guardias.backend.enums.DiasEnum;
 import com.guardias.backend.repository.DistribucionOtraRepository;
@@ -23,16 +25,13 @@ public class DistribucionOtraService {
     @Autowired
     DistribucionOtraRepository distribucionOtraRepository;
 
-    /*
-     * @Autowired
-     * EfectorService efectorRepository;
-     */
-
     @Autowired
     PersonService personService;
 
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    DistribucionHorariaService distribucionHorariaService;
 
     public Optional<List<DistribucionOtra>> findByActivoTrue() {
         return distribucionOtraRepository.findByActivoTrue();
@@ -100,6 +99,29 @@ public class DistribucionOtraService {
 
     public void deleteById(Long id) {
         distribucionOtraRepository.deleteById(id);
+    }
+
+    public DistribucionOtra createUpdate(DistribucionOtra distribucionOtra,
+            DistribucionOtraDto distribucionOtraDto) {
+        DistribucionHoraria distribucionHoraria = distribucionHorariaService.createUpdate(distribucionOtra,
+                distribucionOtraDto);
+        distribucionOtra = (DistribucionOtra) distribucionHoraria;
+
+        if (distribucionOtraDto.getDescripcion() != (distribucionOtra.getDescripcion())
+                && distribucionOtraDto.getDescripcion() != null)
+            distribucionOtra.setDescripcion(distribucionOtraDto.getDescripcion());
+
+        if (distribucionOtraDto.getLugar() != (distribucionOtra.getLugar())
+                && distribucionOtraDto.getLugar() != null)
+            distribucionOtra.setLugar(distribucionOtraDto.getLugar());
+
+        if (distribucionOtraDto.getTipo() != (distribucionOtra.getTipo())
+                && distribucionOtraDto.getTipo() != null)
+            distribucionOtra.setTipo(distribucionOtraDto.getTipo());
+
+        distribucionOtra.setActivo(true);
+
+        return distribucionOtra;
     }
 
     public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
