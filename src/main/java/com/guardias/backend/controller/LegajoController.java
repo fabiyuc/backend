@@ -64,9 +64,11 @@ public class LegajoController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/listAllByActivoFalse")
-    public ResponseEntity<List<Legajo>> listAllByActivoFalse() {
-        List<Legajo> list = legajoService.findAllByActivoFalse();
+    @GetMapping("/listAllByActivoFalseByPersonAndEfector/{idPersona}/{idEfector}")
+    public ResponseEntity<List<Legajo>> listAllByActivoFalseByPersonAndEfector(
+            @PathVariable("idPersona") Long idPersona,
+            @PathVariable("idEfector") Long idEfector) {
+        List<Legajo> list = legajoService.findAllByActivoFalseByPersonAndEfector(idPersona, idEfector);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 

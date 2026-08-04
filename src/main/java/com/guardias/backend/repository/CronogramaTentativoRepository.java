@@ -115,13 +115,13 @@ public interface CronogramaTentativoRepository extends JpaRepository<CronogramaT
                         AND ct.activo = 1
                         AND ct.autorizado = 'CONFIRMADO'
                         """, nativeQuery = true)
-        List<CronogramaTentativo> findCronogramaParaRegistroConRetraso(
-                        @Param("idAsistencial") Long idAsistencial,
-                        @Param("idEfector") Long idEfector,
-                        @Param("idTipoGuardia") Long idTipoGuardia,
-                        @Param("idServicio") Long idServicio,
-                        @Param("fechaIngreso") LocalDate fechaIngreso,
-                        @Param("horaIngreso") LocalTime horaIngreso);
+                        List<CronogramaTentativo> findCronogramaParaRegistroConRetraso(
+                                @Param("idAsistencial") Long idAsistencial,
+                                @Param("idEfector") Long idEfector,
+                                @Param("idTipoGuardia") Long idTipoGuardia,
+                                @Param("idServicio") Long idServicio,
+                                @Param("fechaIngreso") LocalDate fechaIngreso,
+                                @Param("horaIngreso") LocalTime horaIngreso);
 
         @Query("SELECT ct FROM cronogramasTentativos ct WHERE ct.efector.id = :efectorId AND ct.activo = true AND ct.autorizado = :autorizado")
         Optional<List<CronogramaTentativo>> findByEfectorIdAndAutorizado(@Param("efectorId") Long efectorId,
