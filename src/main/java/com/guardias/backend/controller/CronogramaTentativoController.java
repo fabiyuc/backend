@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
@@ -27,6 +28,7 @@ import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioD
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.CronogramaTentativo;
@@ -361,9 +363,19 @@ public class CronogramaTentativoController {
     @PostMapping("/getServicioAndTipoGuardia")
     public ResponseEntity<TentativoIdsResponseDto> getServicioAndTipoGuardia(
             @RequestBody TentativoSearchRequestDto request) {
-        
+
         TentativoIdsResponseDto response = cronogramaTentativoService.obtenerIdsCronograma(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/totalHorasPorDia/{fecha}")
+    public ResponseEntity<TotalHorasResponseDto> calcularTotalHorasPorDia(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) List<Long> idsAsistencial,
+            @RequestParam(required = false) List<Long> idsServicio) {
+        TotalHorasResponseDto result = cronogramaTentativoService.calcularTotalHorasPorDia(fecha, idsAsistencial,
+                idsServicio);
+        return ResponseEntity.ok(result);
     }
 
 }
