@@ -1,5 +1,7 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -149,7 +151,6 @@ public class DistribucionHorariaService {
         return distribucionHoraria;
     }
 
-
     public DistribucionHoraria findById(Long id) {
         DistribucionHoraria distribucionHoraria = distribucionConsultorioRepository.findById(id).orElse(null);
 
@@ -164,4 +165,24 @@ public class DistribucionHorariaService {
 
         return distribucionHoraria;
     }
+
+    public BigDecimal sumarHorasCargadas(Long idPersona, Long idEfector, LocalDate fechaInicio, LocalDate fechaFin) {
+        BigDecimal total = BigDecimal.ZERO;
+
+        total = total.add(sumarOZero(distribucionGuardiaRepository
+                .sumCantidadHorasByPersonaIdAndEfectorIdAndRango(idPersona, idEfector, fechaInicio, fechaFin)));
+        total = total.add(sumarOZero(distribucionConsultorioRepository
+                .sumCantidadHorasByPersonaIdAndEfectorIdAndRango(idPersona, idEfector, fechaInicio, fechaFin)));
+        total = total.add(sumarOZero(distribucionGiraRepository
+                .sumCantidadHorasByPersonaIdAndEfectorIdAndRango(idPersona, idEfector, fechaInicio, fechaFin)));
+        total = total.add(sumarOZero(distribucionOtraRepository
+                .sumCantidadHorasByPersonaIdAndEfectorIdAndRango(idPersona, idEfector, fechaInicio, fechaFin)));
+
+        return total;
+    }
+
+    private BigDecimal sumarOZero(BigDecimal valor) {
+        return valor != null ? valor : BigDecimal.ZERO;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.guardias.backend.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -76,4 +77,12 @@ public interface DistribucionGiraRepository extends JpaRepository<DistribucionGi
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("fechaIngreso") LocalDate fechaInicio);
+
+        @Query("SELECT SUM(d.cantidadHoras) FROM distribucionesGiras d " +
+                        "WHERE d.persona.id = :idPersona AND d.efector.id = :idEfector AND d.activo = true " +
+                        "AND d.fechaInicio <= :fechaFin AND d.fechaFinalizacion >= :fechaInicio")
+        BigDecimal sumCantidadHorasByPersonaIdAndEfectorIdAndRango(@Param("idPersona") Long idPersona,
+                        @Param("idEfector") Long idEfector,
+                        @Param("fechaInicio") LocalDate fechaInicio,
+                        @Param("fechaFin") LocalDate fechaFin);
 }

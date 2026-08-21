@@ -2,7 +2,6 @@ package com.guardias.backend.repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,28 +54,28 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector);
 
-                                @Query(nativeQuery = true, value = """
-                                SELECT *
-                                FROM distribuciones_guardias d
-                                WHERE d.id_persona = :idAsistencial
-                                AND d.id_efector = :idEfector
-                                AND d.tipo_guardia = :tipoGuardia
-                                AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
-                                AND TIME(:horaIngreso) = d.hora_ingreso
-                                AND TIME(:horaEgreso) = ADDTIME(d.hora_ingreso, SEC_TO_TIME(d.cantidad_horas * 3600))
-                                AND d.activo = 1
-                                AND d.dia =
-                                        CASE WEEKDAY(:fechaIngreso)
-                                        WHEN 0 THEN 'LUNES'
-                                        WHEN 1 THEN 'MARTES'
-                                        WHEN 2 THEN 'MIERCOLES'
-                                        WHEN 3 THEN 'JUEVES'
-                                        WHEN 4 THEN 'VIERNES'
-                                        WHEN 5 THEN 'SABADO'
-                                        WHEN 6 THEN 'DOMINGO'
-                                        END
-                                """)
-                                Optional<DistribucionGuardia> findValidDistribucion(
+        @Query(nativeQuery = true, value = """
+                        SELECT *
+                        FROM distribuciones_guardias d
+                        WHERE d.id_persona = :idAsistencial
+                        AND d.id_efector = :idEfector
+                        AND d.tipo_guardia = :tipoGuardia
+                        AND :fechaIngreso BETWEEN d.fecha_inicio AND d.fecha_finalizacion
+                        AND TIME(:horaIngreso) = d.hora_ingreso
+                        AND TIME(:horaEgreso) = ADDTIME(d.hora_ingreso, SEC_TO_TIME(d.cantidad_horas * 3600))
+                        AND d.activo = 1
+                        AND d.dia =
+                                CASE WEEKDAY(:fechaIngreso)
+                                WHEN 0 THEN 'LUNES'
+                                WHEN 1 THEN 'MARTES'
+                                WHEN 2 THEN 'MIERCOLES'
+                                WHEN 3 THEN 'JUEVES'
+                                WHEN 4 THEN 'VIERNES'
+                                WHEN 5 THEN 'SABADO'
+                                WHEN 6 THEN 'DOMINGO'
+                                END
+                        """)
+        Optional<DistribucionGuardia> findValidDistribucion(
                         @Param("idAsistencial") Long idAsistencial,
                         @Param("idEfector") Long idEfector,
                         @Param("tipoGuardia") String tipoGuardia,
@@ -84,7 +83,7 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                         @Param("horaIngreso") String horaIngreso,
                         @Param("horaEgreso") String horaEgreso);
 
-                        @Query(nativeQuery = true, value = """
+        @Query(nativeQuery = true, value = """
                         SELECT EXISTS(
                                 SELECT 1
                                 FROM distribuciones_guardias d
@@ -96,12 +95,12 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
                                 AND d.activo = 1
                         )
                         """)
-                        boolean existsByPersonaAndEfectorAndTipoInMonth(
-                                @Param("idAsistencial") Long idAsistencial,
-                                @Param("idEfector") Long idEfector,
-                                @Param("tipoGuardia") String tipoGuardia,
-                                @Param("mes") int mes,
-                                @Param("anio") int anio);
+        boolean existsByPersonaAndEfectorAndTipoInMonth(
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector,
+                        @Param("tipoGuardia") String tipoGuardia,
+                        @Param("mes") int mes,
+                        @Param("anio") int anio);
 
         @Query("SELECT dg FROM distribucionesGuardias dg WHERE dg.activo = true AND dg.persona.id = :idPersona " +
                         "AND FUNCTION('MONTH', dg.fechaInicio) = :mes " +
@@ -125,51 +124,56 @@ public interface DistribucionGuardiaRepository extends JpaRepository<Distribucio
         boolean existsByPersonaIdAndActivoTrue(Long idPersona);
 
         @Query("""
-                SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
-                FROM distribucionesGuardias d
-                WHERE d.persona.id = :idAsistencial
-                AND d.efector.id = :idEfector
-                AND d.tipoGuardia = :tipoGuardia
-                AND d.activo = true
-                AND (
-                        (d.fechaInicio BETWEEN :inicioSemana AND :finSemana)
-                        OR (d.fechaFinalizacion BETWEEN :inicioSemana AND :finSemana)
-                        OR (:inicioSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
-                        OR (:finSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
-                        )
-                """)
+                        SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+                        FROM distribucionesGuardias d
+                        WHERE d.persona.id = :idAsistencial
+                        AND d.efector.id = :idEfector
+                        AND d.tipoGuardia = :tipoGuardia
+                        AND d.activo = true
+                        AND (
+                                (d.fechaInicio BETWEEN :inicioSemana AND :finSemana)
+                                OR (d.fechaFinalizacion BETWEEN :inicioSemana AND :finSemana)
+                                OR (:inicioSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
+                                OR (:finSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
+                                )
+                        """)
         boolean existsDistribucionParcialSemanal(
-                @Param("idAsistencial") Long idAsistencial,
-                @Param("idEfector") Long idEfector,
-                @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
-                @Param("inicioSemana") LocalDate inicioSemana,
-                @Param("finSemana") LocalDate finSemana);
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector,
+                        @Param("tipoGuardia") TipoGuardiaEnum tipoGuardia,
+                        @Param("inicioSemana") LocalDate inicioSemana,
+                        @Param("finSemana") LocalDate finSemana);
 
         @Query("""
-                SELECT d
-                FROM distribucionesGuardias d
-                WHERE d.persona.id = :idAsistencial
-                AND d.efector.id = :idEfector
-                AND d.activo = true
-                AND (
-                        (d.fechaInicio BETWEEN :inicioSemana AND :finSemana)
-                        OR (d.fechaFinalizacion BETWEEN :inicioSemana AND :finSemana)
-                        OR (:inicioSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
-                        OR (:finSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
-                            )
-        """)
+                                SELECT d
+                                FROM distribucionesGuardias d
+                                WHERE d.persona.id = :idAsistencial
+                                AND d.efector.id = :idEfector
+                                AND d.activo = true
+                                AND (
+                                        (d.fechaInicio BETWEEN :inicioSemana AND :finSemana)
+                                        OR (d.fechaFinalizacion BETWEEN :inicioSemana AND :finSemana)
+                                        OR (:inicioSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
+                                        OR (:finSemana BETWEEN d.fechaInicio AND d.fechaFinalizacion)
+                                            )
+                        """)
         List<DistribucionGuardia> findDistribucionesInWeek(
-                @Param("idAsistencial") Long idAsistencial,
-                @Param("idEfector") Long idEfector,
-                @Param("inicioSemana") LocalDate inicioSemana,
-                @Param("finSemana") LocalDate finSemana);
+                        @Param("idAsistencial") Long idAsistencial,
+                        @Param("idEfector") Long idEfector,
+                        @Param("inicioSemana") LocalDate inicioSemana,
+                        @Param("finSemana") LocalDate finSemana);
 
         List<DistribucionGuardia> findByPersonaIdAndTipoGuardiaAndCantidadHorasAndActivoIsTrue(
-            Long personaId,
-            TipoGuardiaEnum tipoGuardia,
-            BigDecimal cantidadHoras
-        );
+                        Long personaId,
+                        TipoGuardiaEnum tipoGuardia,
+                        BigDecimal cantidadHoras);
 
-
+        @Query("SELECT SUM(d.cantidadHoras) FROM distribucionesGuardias d " +
+                        "WHERE d.persona.id = :idPersona AND d.efector.id = :idEfector AND d.activo = true " +
+                        "AND d.fechaInicio <= :fechaFin AND d.fechaFinalizacion >= :fechaInicio")
+        BigDecimal sumCantidadHorasByPersonaIdAndEfectorIdAndRango(@Param("idPersona") Long idPersona,
+                        @Param("idEfector") Long idEfector,
+                        @Param("fechaInicio") LocalDate fechaInicio,
+                        @Param("fechaFin") LocalDate fechaFin);
 
 }
