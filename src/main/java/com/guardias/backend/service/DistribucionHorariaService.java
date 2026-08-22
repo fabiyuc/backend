@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 import com.guardias.backend.dto.DistribucionHorariaDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.asignacionHorasEfector.HorasDisponiblesEfectorDto;
+import com.guardias.backend.entity.AsignacionHorasEfector;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.entity.Person;
+import com.guardias.backend.repository.AsignacionHorasEfectorRepository;
 import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGiraRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
@@ -41,7 +43,7 @@ public class DistribucionHorariaService {
     @Autowired
     PersonService personService;
     @Autowired
-    AsignacionHorasEfectorService asignacionHorasEfectorService;
+    AsignacionHorasEfectorRepository asignacionHorasEfectorRepository;
 
     public ResponseEntity<?> validations(DistribucionHorariaDto distribucionHorariaDto) {
         if (distribucionHorariaDto.getDia() == null)
@@ -92,18 +94,28 @@ public class DistribucionHorariaService {
 
         Integer anio = distribucionHorariaDto.getFechaInicio().getYear();
         Integer mes = distribucionHorariaDto.getFechaInicio().getMonthValue();
+        LocalDate inicioMes = LocalDate.of(anio, mes, 1);
+        LocalDate finMes = inicioMes.withDayOfMonth(inicioMes.lengthOfMonth());
 
-        HorasDisponiblesEfectorDto disponible;
-        try {
-            disponible = asignacionHorasEfectorService.horasDisponiblesEfector(
-                    legajoValido.getId(), distribucionHorariaDto.getIdEfector(), anio, mes);
-        } catch (IllegalArgumentException e) {
+        AsignacionHorasEfector asignacion = asignacionHorasEfectorRepository
+                .findSolapadasMismoEfector(legajoValido.getId(), distribucionHorariaDto.getIdEfector(), inicioMes,
+                        finMes)
+                .stream()
+                .findFirst()
+                .orElse(null);
+
+        if (asignacion == null) {
             return new ResponseEntity(new Mensaje(
                     "Este efector no tiene horas asignadas para este profesional en este período"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        if (distribucionHorariaDto.getCantidadHoras().compareTo(disponible.getHorasDisponibles()) > 0) {
+        BigDecimal horasCargadas = sumarHorasCargadas(
+                legajoValido.getPersona().getId(), distribucionHorariaDto.getIdEfector(), inicioMes, finMes);
+
+        BigDecimal horasDisponibles = asignacion.getHorasAsignadas().subtract(horasCargadas);
+
+        if (distribucionHorariaDto.getCantidadHoras().compareTo(horasDisponibles) > 0) {
             return new ResponseEntity(new Mensaje(
                     "La cantidad de horas supera lo disponible para este efector en el período"),
                     HttpStatus.BAD_REQUEST);
