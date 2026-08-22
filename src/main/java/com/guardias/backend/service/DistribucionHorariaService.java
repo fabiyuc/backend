@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.DistribucionHorariaDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.asignacionHorasEfector.HorasDisponiblesEfectorDto;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Legajo;
@@ -39,6 +40,8 @@ public class DistribucionHorariaService {
     EfectorService efectorService;
     @Autowired
     PersonService personService;
+    @Autowired
+    AsignacionHorasEfectorService asignacionHorasEfectorService;
 
     public ResponseEntity<?> validations(DistribucionHorariaDto distribucionHorariaDto) {
         if (distribucionHorariaDto.getDia() == null)
@@ -65,6 +68,46 @@ public class DistribucionHorariaService {
             return new ResponseEntity(new Mensaje("la hora de ingreso es obligatoria"),
                     HttpStatus.BAD_REQUEST);
 
+        // --- NUEVO: validación de tope de horas contra AsignacionHorasEfector ---
+
+        Person persona = personService.findById(distribucionHorariaDto.getIdPersona());
+        if (persona == null) {
+            return new ResponseEntity(new Mensaje("La persona indicada no existe"), HttpStatus.BAD_REQUEST);
+        }
+
+        List<Legajo> legajosPersona = persona.getLegajos();
+        if (legajosPersona == null || legajosPersona.isEmpty()) {
+            return new ResponseEntity(new Mensaje("La persona no tiene legajos registrados"), HttpStatus.BAD_REQUEST);
+        }
+
+        Legajo legajoValido = legajosPersona.stream()
+                .filter(legajo -> Boolean.FALSE.equals(legajo.getEsAutoridad()))
+                .findFirst()
+                .orElse(null);
+
+        if (legajoValido == null) {
+            return new ResponseEntity(new Mensaje("La persona no tiene un legajo válido (no es autoridad)"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        Integer anio = distribucionHorariaDto.getFechaInicio().getYear();
+        Integer mes = distribucionHorariaDto.getFechaInicio().getMonthValue();
+
+        HorasDisponiblesEfectorDto disponible;
+        try {
+            disponible = asignacionHorasEfectorService.horasDisponiblesEfector(
+                    legajoValido.getId(), distribucionHorariaDto.getIdEfector(), anio, mes);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity(new Mensaje(
+                    "Este efector no tiene horas asignadas para este profesional en este período"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        if (distribucionHorariaDto.getCantidadHoras().compareTo(disponible.getHorasDisponibles()) > 0) {
+            return new ResponseEntity(new Mensaje(
+                    "La cantidad de horas supera lo disponible para este efector en el período"),
+                    HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
