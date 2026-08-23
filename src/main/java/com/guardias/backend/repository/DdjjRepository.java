@@ -216,8 +216,8 @@ public interface DdjjRepository extends JpaRepository<Ddjj, Long> {
                         int anio, MesesEnum mes, Long efectorId, Long tipoGuardiaId);
 
        
-        boolean existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndQuincenaAndActivoTrue(
-        int anio, MesesEnum mes, Long efectorId, Long tipoGuardiaId, QuincenaEnum quincena);
+        /* boolean existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndQuincenaAndActivoTrue(
+        int anio, MesesEnum mes, Long efectorId, Long tipoGuardiaId, QuincenaEnum quincena); */
 
         boolean existsByAnioAndMesAndEfectorIdAndTipoGuardiaIdAndCondicionDdjjAndActivoTrue(
         int anio, MesesEnum mes, Long efectorId, Long tipoGuardiaId, CondicionDdjjEnum condicionDdjj);

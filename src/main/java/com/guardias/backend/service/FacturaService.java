@@ -623,7 +623,7 @@ public class FacturaService {
         return facturaRepository.existsByAsistencialAndEfectorAndAnioMes(idAsistencial, idEfector, anio, mes);
     }
 
-    public boolean existenDosFacturasByFiltros(Long idAsistencial, Long idEfector, int anio,
+   /*  public boolean existenDosFacturasByFiltros(Long idAsistencial, Long idEfector, int anio,
             MesesEnum mes, QuincenaEnum quincena) {
 
         // Contar facturas activas para el asistencial en el efector, mes, año y
@@ -633,7 +633,7 @@ public class FacturaService {
 
         // Devolver true si hay exactamente 2 facturas
         return cantidadFacturas == 2;
-    }
+    } */
 
     public boolean existeFacturaByFiltrosSinQuincena(Long idAsistencial, Long idEfector, int anio, MesesEnum mes) {
         return facturaRepository.existsByAsistencialAndEfectorAndAnioMes(idAsistencial, idEfector, anio, mes);

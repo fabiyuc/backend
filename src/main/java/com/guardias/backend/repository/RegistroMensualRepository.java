@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 
 @Repository
 public interface RegistroMensualRepository extends JpaRepository<RegistroMensual, Long> {
@@ -27,22 +26,10 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("mes") MesesEnum mes,
                         @Param("idEfector") Long idEfector);
 
-        @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND rm.quincena = :quincena")
-        List<RegistroMensual> findByAnioMesEfectorAndQuincena(
-                        @Param("anio") int anio,
-                        @Param("mes") MesesEnum mes,
-                        @Param("idEfector") Long idEfector,
-                        @Param("quincena") QuincenaEnum quincena);
 
         Optional<RegistroMensual> findByAsistencialIdAndEfectorIdAndMesAndAnio(Long asistencialId, Long efectorId,
                         MesesEnum mes, int anio);
 
-        /*
-         * Optional<RegistroMensual>
-         * findByAsistencialIdAndEfectorIdAndMesAndAnioAndQuincena(Long asistencialId,
-         * Long efectorId,
-         * MesesEnum mes, int anio, QuincenaEnum quincena);
-         */
 
         Optional<List<RegistroMensual>> findByActivoTrue();
 
@@ -66,33 +53,17 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("idServicio") Long idServicio);
 
         @Query("SELECT DISTINCT rm FROM registrosMensuales rm JOIN rm.registroActividad ra "
-                        + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector AND rm.quincena = :quincena "
+                        + "WHERE rm.anio = :anio AND rm.mes = :mes AND rm.efector.id = :idEfector "
                         + "AND ra.servicio.id = :idServicio")
-        List<RegistroMensual> findByAnioMesEfectorServicioAndQuincena(
+        List<RegistroMensual> findByAnioMesEfectorServicio(
                         @Param("anio") int anio,
                         @Param("mes") MesesEnum mes,
                         @Param("idEfector") Long idEfector,
-                        @Param("idServicio") Long idServicio,
-                        @Param("quincena") QuincenaEnum quincena);
+                        @Param("idServicio") Long idServicio);
 
         @Query("SELECT r.id FROM registrosMensuales r WHERE r.id IN :ids")
         List<Long> findExistingIds(@Param("ids") List<Long> ids);
 
-        @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
-                        "JOIN rm.totalHoras sh " +
-                        "WHERE rm.activo = true " +
-                        "AND rm.asistencial.id = :asistencialId " +
-                        "AND rm.efector.id = :efectorId " +
-                        "AND rm.quincena = :quincena " +
-                        "AND rm.mes = :mes " +
-                        "AND rm.anio = :anio " +
-                        "AND sh.activo = true")
-        BigDecimal findMontoTotalHorasByFiltros(
-                        @Param("asistencialId") Long asistencialId,
-                        @Param("efectorId") Long efectorId,
-                        @Param("quincena") QuincenaEnum quincena,
-                        @Param("mes") MesesEnum mes,
-                        @Param("anio") int anio);
 
         @Query("SELECT sh.montoTotal FROM registrosMensuales rm " +
                         "JOIN rm.totalHoras sh " +
@@ -134,14 +105,12 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         "WHERE rm.efector.id = :efectorId " +
                         "AND rm.mes = :mes " +
                         "AND rm.anio = :anio " +
-                        "AND rm.quincena = :quincena " +
                         "AND rm.estadoFacturacion = :estado " +
                         "AND rm.activo = true")
         List<RegistroMensual> findRegistrosIncompletos(
                         @Param("efectorId") Long efectorId,
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio,
-                        @Param("quincena") QuincenaEnum quincena,
                         @Param("estado") EstadoFacturacionEnum estado);
 
         @Query("SELECT rm FROM registrosMensuales rm " +
@@ -160,14 +129,12 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         "WHERE rm.efector.id = :efectorId " +
                         "AND rm.mes = :mes " +
                         "AND rm.anio = :anio " +
-                        "AND rm.quincena = :quincena " +
                         "AND rm.estadoFacturacion = :estado " +
                         "AND rm.activo = true")
         List<RegistroMensual> findRegistrosCompletos(
                         @Param("efectorId") Long efectorId,
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio,
-                        @Param("quincena") QuincenaEnum quincena,
                         @Param("estado") EstadoFacturacionEnum estado);
 
         @Query("SELECT rm FROM registrosMensuales rm " +
@@ -210,30 +177,7 @@ public interface RegistroMensualRepository extends JpaRepository<RegistroMensual
                         @Param("mes") MesesEnum mes,
                         @Param("anio") int anio);
 
-        /**
-         * Busca registros por quincena específica
-         */
-        /*
-         * @Query("SELECT rm FROM registrosMensuales rm " +
-         * "WHERE rm.efector.id = :efectorId " +
-         * "AND rm.asistencial.id = :asistencialId " +
-         * "AND rm.mes = :mes " +
-         * "AND rm.anio = :anio " +
-         * "AND rm.quincena = :quincena " +
-         * "AND rm.activo = true")
-         * List<RegistroMensual> findByEfectorAndAsistencialAndMesAndAnioAndQuincena(
-         * 
-         * @Param("efectorId") Long efectorId,
-         * 
-         * @Param("asistencialId") Long asistencialId,
-         * 
-         * @Param("mes") MesesEnum mes,
-         * 
-         * @Param("anio") int anio,
-         * 
-         * @Param("quincena") QuincenaEnum quincena);
-         */
-
+       
         /**
          * Busca registros pendientes (estado NULL o PENDIENTE)
          */

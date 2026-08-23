@@ -149,14 +149,13 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("mes") MesesEnum mes);
 
       // Método para contar facturas por filtros
-      @Query("SELECT COUNT(f) FROM facturas f " +
+      /* @Query("SELECT COUNT(f) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "JOIN rm.efector e " +
                   "WHERE f.asistencial.id = :idAsistencial " +
                   "AND e.id = :idEfector " +
                   "AND rm.anio = :anio " +
                   "AND rm.mes = :mes " +
-                  "AND rm.quincena = :quincena " +
                   "AND rm.activo = true " +
                   "AND f.activo = true")
       long countByAsistencialAndEfectorAndPeriodo(
@@ -164,7 +163,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("idEfector") Long idEfector,
                   @Param("anio") int anio,
                   @Param("mes") MesesEnum mes,
-                  @Param("quincena") QuincenaEnum quincena);
+                  @Param("quincena") QuincenaEnum quincena); */
 
       @Query("SELECT rm.id FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +

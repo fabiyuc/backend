@@ -722,13 +722,13 @@ public class RegistroMensualService {
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCfAndServicio(
-                        int anio, MesesEnum mes, Long idEfector, Long idServicio, QuincenaEnum quincena) {
+                        int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
                 System.out.println("Iniciando consulta para año: {}, mes: {}, efector: {}, servicio: {}, quincena: {}"
                                 + anio + mes
-                                + idEfector + idServicio + quincena);
+                                + idEfector + idServicio);
                 List<RegistroMensual> registrosMensuales = registroMensualRepository
-                                .findByAnioMesEfectorServicioAndQuincena(anio, mes, idEfector, idServicio, quincena);
+                                .findByAnioMesEfectorServicio(anio, mes, idEfector, idServicio);
 
                 System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
                 return registrosMensuales.stream()
@@ -752,12 +752,11 @@ public class RegistroMensualService {
         }
 
         public List<RegistroMensualListDto> findByTipoGuardiaCf(
-                        int anio, MesesEnum mes, Long idEfector, QuincenaEnum quincena) {
+                        int anio, MesesEnum mes, Long idEfector) {
 
-                System.out.println("Iniciando consulta para año: " + anio + ", mes: " + mes + ", efector: " + idEfector
-                                + ", quincena: " + quincena);
+                System.out.println("Iniciando consulta para año: " + anio + ", mes: " + mes + ", efector: " + idEfector);
                 List<RegistroMensual> registrosMensuales = registroMensualRepository
-                                .findByAnioMesEfectorAndQuincena(anio, mes, idEfector, quincena);
+                                .findByAnioMesEfector(anio, mes, idEfector);
 
                 System.out.println("Registros encontrados en BD: {} " + registrosMensuales.size());
                 return registrosMensuales.stream()
@@ -965,11 +964,11 @@ public class RegistroMensualService {
                                 .collect(Collectors.toList());
         }
 
-        public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena,
+       /*  public BigDecimal getMontoTotalByQuincena(Long idAsistencial, Long idEfector, QuincenaEnum quincena,
                         MesesEnum mes, int anio) {
                 return registroMensualRepository.findMontoTotalHorasByFiltros(idAsistencial, idEfector, quincena, mes,
                                 anio);
-        }
+        } */
 
         public BigDecimal getMontoTotal(Long idAsistencial, Long idEfector, MesesEnum mes, int anio) {
                 return registroMensualRepository.findMontoTotalHorasByFiltrosSinQuincena(idAsistencial, idEfector, mes,
@@ -986,11 +985,10 @@ public class RegistroMensualService {
                                 estadosBuscados);
         }
 
-        public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio,
-                        QuincenaEnum quincena) {
+        public List<RegistroMensualListDto> findRegistrosIncompletos(Long efectorId, MesesEnum mes, int anio) {
 
                 List<RegistroMensual> registrosMensuales = registroMensualRepository.findRegistrosIncompletos(efectorId,
-                                mes, anio, quincena, EstadoFacturacionEnum.PENDIENTE);
+                                mes, anio, EstadoFacturacionEnum.PENDIENTE);
 
                 return registrosMensuales.stream()
                                 .filter(RegistroMensual::isActivo)
@@ -1262,10 +1260,9 @@ public class RegistroMensualService {
                 return !lista.isEmpty();
         }
 
-        public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena) {
+        public boolean existenCompletos(Long efectorId, MesesEnum mes, int anio) {
 
-                List<RegistroMensual> lista = registroMensualRepository.findRegistrosCompletos(efectorId, mes, anio,
-                                quincena, EstadoFacturacionEnum.COMPLETADO);
+                List<RegistroMensual> lista = registroMensualRepository.findRegistrosCompletos(efectorId, mes, anio, EstadoFacturacionEnum.COMPLETADO);
                 return !lista.isEmpty();
         }
 

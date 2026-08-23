@@ -345,21 +345,20 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/listCfAndServicio/{anio}/{mes}/{idEfector}/{idServicio}/{quincena}")
+    @GetMapping("/listCfAndServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCfAndServicio(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
             @PathVariable("idEfector") Long idEfector,
-            @PathVariable("idServicio") Long idServicio,
-            @PathVariable("quincena") String quincena) {
+            @PathVariable("idServicio") Long idServicio) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
                     .findByTipoGuardiaCfAndServicio(anio, mesEnum, idEfector,
-                            idServicio, quincenaEnum);
+                            idServicio);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -369,19 +368,18 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
+    @GetMapping("/listCf/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<RegistroMensualListDto>> listByTipoGuardiaCf(
             @PathVariable("anio") int anio,
             @PathVariable("mes") String mes,
-            @PathVariable("idEfector") Long idEfector,
-            @PathVariable("quincena") String quincena) {
+            @PathVariable("idEfector") Long idEfector) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
-                    .findByTipoGuardiaCf(anio, mesEnum, idEfector, quincenaEnum);
+                    .findByTipoGuardiaCf(anio, mesEnum, idEfector);
 
             return new ResponseEntity<>(registros, HttpStatus.OK);
         } catch (Exception e) {
@@ -390,7 +388,7 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
+    /* @GetMapping("/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
     public ResponseEntity<?> getMontoTotalByQuincena(
             @PathVariable("idAsistencial") Long idAsistencial,
             @PathVariable("idEfector") Long idEfector,
@@ -413,7 +411,7 @@ public class RegistroMensualController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+ */
     @GetMapping("/getMontoTotal/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<?> getMontoTotal(
             @PathVariable("idAsistencial") Long idAsistencial,
@@ -456,18 +454,17 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/incompletos/{idEfector}/{mes}/{anio}/{quincena}")
+    @GetMapping("/incompletos/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegistroMensualListDto>> getRegistrosIncompletos(
             @PathVariable Long idEfector,
             @PathVariable String mes,
-            @PathVariable int anio,
-            @PathVariable String quincena) {
+            @PathVariable int anio) {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum,
-                    anio, quincenaEnum);
+                    anio);
 
             return ResponseEntity.ok(registros);
 
@@ -570,7 +567,7 @@ public class RegistroMensualController {
         }
     }
 
-    @GetMapping("/existen-completos/{idEfector}/{mes}/{anio}/{quincena}")
+    @GetMapping("/existen-completos/{idEfector}/{mes}/{anio}")
     public ResponseEntity<Boolean> existenAutorizados(
             @PathVariable Long idEfector,
             @PathVariable String mes,
@@ -579,8 +576,8 @@ public class RegistroMensualController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-            boolean existen = registroMensualService.existenCompletos(idEfector, mesEnum, anio, quincenaEnum);
+            //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            boolean existen = registroMensualService.existenCompletos(idEfector, mesEnum, anio);
             return ResponseEntity.ok(existen);
 
         } catch (Exception e) {

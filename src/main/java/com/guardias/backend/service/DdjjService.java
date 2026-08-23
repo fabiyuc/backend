@@ -657,7 +657,7 @@ public class DdjjService {
         return false;
     }
 
-    public boolean existsByAnioMesEfectorAndQuincenaCf(
+    /* public boolean existsByAnioMesEfectorAndQuincenaCf(
             int anio, MesesEnum mes, Long idEfector, QuincenaEnum quincena) {
 
         System.out.println("=== INICIO existsByAnioMesEfectorAndQuincenaCf ===");
@@ -687,7 +687,7 @@ public class DdjjService {
 
         return result;
     }
-
+ */
     public boolean existsByAnioMesAndEfectorCf(
             int anio, MesesEnum mes, Long idEfector) {
 

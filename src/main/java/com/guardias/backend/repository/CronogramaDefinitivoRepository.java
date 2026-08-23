@@ -34,7 +34,7 @@ public interface CronogramaDefinitivoRepository extends JpaRepository<Cronograma
     @Query("SELECT DISTINCT c FROM cronogramasDefinitivos c LEFT JOIN FETCH c.ddjjs WHERE c.id = :id")
     Optional<CronogramaDefinitivo> findByIdWithDdjjs(@Param("id") Long id);
 
-    Optional<CronogramaDefinitivo> findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
-        Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena);
+   /*  Optional<CronogramaDefinitivo> findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+        Long efectorId, MesesEnum mes, int anio, QuincenaEnum quincena); */
 
 }

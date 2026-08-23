@@ -368,7 +368,7 @@ public class FacturaController {
         }
     }
 
-    @GetMapping("/existenDosFacturas/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    /* @GetMapping("/existenDosFacturas/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
     public ResponseEntity<?> existenDosFacturas(
             @PathVariable Long idAsistencial,
             @PathVariable Long idEfector,
@@ -392,7 +392,7 @@ public class FacturaController {
             return ResponseEntity.internalServerError()
                     .body(new Mensaje("Error al verificar facturas: " + e.getMessage()));
         }
-    }
+    } */
 
     /* @GetMapping("/existeFacturaSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
     public ResponseEntity<?> existeFacturaSinQuincena(
