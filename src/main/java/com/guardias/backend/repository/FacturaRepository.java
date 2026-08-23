@@ -23,21 +23,28 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
 
       Optional<Factura> findByAsistencialId(Long asistencialId);
 
-      @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
-                  "JOIN f.registrosMensuales rm " +
-                  "WHERE f.activo = true " +
-                  "AND f.asistencial.id = :asistencialId " +
-                  "AND rm.efector.id = :efectorId " +
-                  "AND rm.quincena = :quincena " +
-                  "AND rm.mes = :mes " +
-                  "AND rm.activo = true " +
-                  "AND rm.anio = :anio")
-      BigDecimal sumMontoByAsistencialEfectorQuincenaMesAnio(
-                  @Param("asistencialId") Long asistencialId,
-                  @Param("efectorId") Long efectorId,
-                  @Param("quincena") QuincenaEnum quincena,
-                  @Param("mes") MesesEnum mes,
-                  @Param("anio") int anio);
+      /*
+       * @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
+       * "JOIN f.registrosMensuales rm " +
+       * "WHERE f.activo = true " +
+       * "AND f.asistencial.id = :asistencialId " +
+       * "AND rm.efector.id = :efectorId " +
+       * "AND rm.quincena = :quincena " +
+       * "AND rm.mes = :mes " +
+       * "AND rm.activo = true " +
+       * "AND rm.anio = :anio")
+       * BigDecimal sumMontoByAsistencialEfectorQuincenaMesAnio(
+       * 
+       * @Param("asistencialId") Long asistencialId,
+       * 
+       * @Param("efectorId") Long efectorId,
+       * 
+       * @Param("quincena") QuincenaEnum quincena,
+       * 
+       * @Param("mes") MesesEnum mes,
+       * 
+       * @Param("anio") int anio);
+       */
 
       @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
@@ -52,8 +59,8 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("efectorId") Long efectorId,
                   @Param("mes") MesesEnum mes,
                   @Param("anio") int anio);
-      
-                  @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
+
+      @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE f.activo = true " +
                   "AND f.asistencial.id = :asistencialId " +
@@ -69,20 +76,26 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("anio") int anio,
                   @Param("estados") List<EstadoFacturacionEnum> estados);
 
-      @Query("SELECT DISTINCT f FROM facturas f " +
-                  "JOIN f.registrosMensuales rm " +
-                  "WHERE f.activo = true " +
-                  "AND rm.efector.id = :idEfector " +
-                  "AND rm.anio = :anio " +
-                  "AND rm.mes = :mes " +
-                  "AND rm.activo = true " +
-                  "AND rm.quincena = :quincena")
-      List<Factura> findByAnioMesQuincena(
-                  @Param("idEfector") int idEfector,
-                  @Param("anio") int anio,
-                  @Param("mes") MesesEnum mes,
-                  @Param("quincena") QuincenaEnum quincena);
-      
+      /*
+       * @Query("SELECT DISTINCT f FROM facturas f " +
+       * "JOIN f.registrosMensuales rm " +
+       * "WHERE f.activo = true " +
+       * "AND rm.efector.id = :idEfector " +
+       * "AND rm.anio = :anio " +
+       * "AND rm.mes = :mes " +
+       * "AND rm.activo = true " +
+       * "AND rm.quincena = :quincena")
+       * List<Factura> findByAnioMesQuincena(
+       * 
+       * @Param("idEfector") int idEfector,
+       * 
+       * @Param("anio") int anio,
+       * 
+       * @Param("mes") MesesEnum mes,
+       * 
+       * @Param("quincena") QuincenaEnum quincena);
+       */
+
       @Query("SELECT DISTINCT f FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE f.activo = true " +
@@ -94,7 +107,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("idEfector") int idEfector,
                   @Param("anio") int anio,
                   @Param("mes") MesesEnum mes);
-      
+
       @Query("SELECT DISTINCT f FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE f.activo = true " +
@@ -115,14 +128,12 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   "AND rm.asistencial.id = :idAsistencial " +
                   "AND rm.efector.id = :idEfector " +
                   "AND rm.anio = :anio " +
-                  "AND rm.mes = :mes " +
-                  "AND rm.quincena = :quincena")
+                  "AND rm.mes = :mes ")
       List<Factura> findByFiltros(
                   @Param("idAsistencial") Long idAsistencial,
                   @Param("idEfector") Long idEfector,
                   @Param("anio") int anio,
-                  @Param("mes") MesesEnum mes,
-                  @Param("quincena") QuincenaEnum quincena);
+                  @Param("mes") MesesEnum mes);
 
       @Query("SELECT COUNT(f) > 0 FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
@@ -130,14 +141,12 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   "AND f.asistencial.id = :idAsistencial " +
                   "AND rm.efector.id = :idEfector " +
                   "AND rm.anio = :anio " +
-                  "AND rm.mes = :mes " +
-                  "AND rm.quincena = :quincena")
-      boolean existsByAsistencialAndEfectorAndAnioMesQuincena(
+                  "AND rm.mes = :mes ")
+      boolean existsByAsistencialAndEfectorAndAnioMes(
                   @Param("idAsistencial") Long idAsistencial,
                   @Param("idEfector") Long idEfector,
                   @Param("anio") int anio,
-                  @Param("mes") MesesEnum mes,
-                  @Param("quincena") QuincenaEnum quincena);
+                  @Param("mes") MesesEnum mes);
 
       // Método para contar facturas por filtros
       @Query("SELECT COUNT(f) FROM facturas f " +
@@ -163,19 +172,39 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   "AND rm.activo = true")
       Optional<Long> findRegistroMensualActivoIdByFacturaId(@Param("facturaId") Long facturaId);
 
+      /*
+       * @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
+       * "JOIN f.registrosMensuales rm " +
+       * "WHERE rm.efector.id = :efectorId " +
+       * "AND rm.asistencial.id = :asistencialId " +
+       * "AND f.activo = true " +
+       * "AND rm.mes = :mes " +
+       * "AND rm.quincena = :quincena " +
+       * "AND rm.anio = :anio")
+       * BigDecimal sumMontoFacturasExistentes(
+       * 
+       * @Param("efectorId") Long efectorId,
+       * 
+       * @Param("asistencialId") Long asistencialId,
+       * 
+       * @Param("mes") MesesEnum mes,
+       * 
+       * @Param("quincena") QuincenaEnum quincena,
+       * 
+       * @Param("anio") int anio);
+       */
+
       @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE rm.efector.id = :efectorId " +
                   "AND rm.asistencial.id = :asistencialId " +
                   "AND f.activo = true " +
                   "AND rm.mes = :mes " +
-                  "AND rm.quincena = :quincena " +
                   "AND rm.anio = :anio")
-      BigDecimal sumMontoFacturasExistentes(
+      BigDecimal sumMontoFacturasExistentesPorPeriodo(
                   @Param("efectorId") Long efectorId,
                   @Param("asistencialId") Long asistencialId,
                   @Param("mes") MesesEnum mes,
-                  @Param("quincena") QuincenaEnum quincena,
                   @Param("anio") int anio);
 
       /**
@@ -213,20 +242,44 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
       /**
        * Cuenta facturas por quincena específica (PRIMERA o SEGUNDA)
        */
+      /*
+       * @Query("SELECT COUNT(DISTINCT f) FROM facturas f " +
+       * "JOIN f.registrosMensuales rm " +
+       * "WHERE rm.efector.id = :efectorId " +
+       * "AND rm.asistencial.id = :asistencialId " +
+       * "AND f.activo = true " +
+       * "AND rm.mes = :mes " +
+       * "AND rm.anio = :anio " +
+       * "AND rm.quincena = :quincena")
+       * int countFacturasPorQuincena(
+       * 
+       * @Param("efectorId") Long efectorId,
+       * 
+       * @Param("asistencialId") Long asistencialId,
+       * 
+       * @Param("mes") MesesEnum mes,
+       * 
+       * @Param("anio") int anio,
+       * 
+       * @Param("quincena") QuincenaEnum quincena);
+       */
+
+      /**
+       * Cuenta facturas activas para un mes/año completo (reemplaza
+       * countFacturasPorQuincena)
+       */
       @Query("SELECT COUNT(DISTINCT f) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE rm.efector.id = :efectorId " +
                   "AND rm.asistencial.id = :asistencialId " +
                   "AND f.activo = true " +
                   "AND rm.mes = :mes " +
-                  "AND rm.anio = :anio " +
-                  "AND rm.quincena = :quincena")
-      int countFacturasPorQuincena(
+                  "AND rm.anio = :anio")
+      int countFacturasPorPeriodo(
                   @Param("efectorId") Long efectorId,
                   @Param("asistencialId") Long asistencialId,
                   @Param("mes") MesesEnum mes,
-                  @Param("anio") int anio,
-                  @Param("quincena") QuincenaEnum quincena);
+                  @Param("anio") int anio);
 
       /**
        * Cuenta facturas para registros pendientes (FUERA_DE_TERMINO)
@@ -249,20 +302,40 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
       /**
        * Suma montos de facturas por quincena específica
        */
+      /*
+       * @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
+       * "JOIN f.registrosMensuales rm " +
+       * "WHERE rm.efector.id = :efectorId " +
+       * "AND rm.asistencial.id = :asistencialId " +
+       * "AND f.activo = true " +
+       * "AND rm.mes = :mes " +
+       * "AND rm.anio = :anio " +
+       * "AND rm.quincena = :quincena")
+       * BigDecimal sumMontosFacturasPorQuincena(
+       * 
+       * @Param("efectorId") Long efectorId,
+       * 
+       * @Param("asistencialId") Long asistencialId,
+       * 
+       * @Param("mes") MesesEnum mes,
+       * 
+       * @Param("anio") int anio,
+       * 
+       * @Param("quincena") QuincenaEnum quincena);
+       */
+
       @Query("SELECT COALESCE(SUM(f.monto), 0) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "WHERE rm.efector.id = :efectorId " +
                   "AND rm.asistencial.id = :asistencialId " +
                   "AND f.activo = true " +
                   "AND rm.mes = :mes " +
-                  "AND rm.anio = :anio " +
-                  "AND rm.quincena = :quincena")
-      BigDecimal sumMontosFacturasPorQuincena(
+                  "AND rm.anio = :anio")
+      BigDecimal sumMontosFacturasPorPeriodo(
                   @Param("efectorId") Long efectorId,
                   @Param("asistencialId") Long asistencialId,
                   @Param("mes") MesesEnum mes,
-                  @Param("anio") int anio,
-                  @Param("quincena") QuincenaEnum quincena);
+                  @Param("anio") int anio);
 
       /**
        * Suma montos de facturas para registros pendientes
@@ -284,20 +357,7 @@ public interface FacturaRepository extends JpaRepository<Factura, Long> {
                   @Param("estadoFacturacion") EstadoFacturacionEnum estadoFacturacion);
 
 
- @Query("SELECT COUNT(f) > 0 FROM facturas f " +
-                  "JOIN f.registrosMensuales rm " +
-                  "WHERE f.activo = true " +
-                  "AND f.asistencial.id = :idAsistencial " +
-                  "AND rm.efector.id = :idEfector " +
-                  "AND rm.anio = :anio " +
-                  "AND rm.mes = :mes " )
-      boolean existsByAsistencialAndEfectorAndAnioMes(
-                  @Param("idAsistencial") Long idAsistencial,
-                  @Param("idEfector") Long idEfector,
-                  @Param("anio") int anio,
-                  @Param("mes") MesesEnum mes);
-
-// Método para contar facturas por filtros
+      // Método para contar facturas por filtros
       @Query("SELECT COUNT(f) FROM facturas f " +
                   "JOIN f.registrosMensuales rm " +
                   "JOIN rm.efector e " +

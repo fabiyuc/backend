@@ -6,7 +6,6 @@ import java.util.List;
 import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -57,7 +56,7 @@ public class DdjjDto {
 
     private List<Long> idCronogramasDefinitivos;
 
-    private QuincenaEnum quincena;
+    //private QuincenaEnum quincena;
 
     private CondicionDdjjEnum condicionDdjj;
 

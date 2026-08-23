@@ -82,9 +82,9 @@ public class RegistroMensual {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registroMensual" })
     private SumaHoras totalHoras;
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+    /* @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
-    private QuincenaEnum quincena;
+    private QuincenaEnum quincena; */
 
     @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)

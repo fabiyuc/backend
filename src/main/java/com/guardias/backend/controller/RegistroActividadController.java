@@ -199,7 +199,7 @@ public class RegistroActividadController {
     }
 
     //toma el id de la ddjj 1ra quincena de CF
-    @GetMapping("/obtener-ddjjCf-primeraQ-aprobada/{idEfector}/{mes}/{anio}")
+    /* @GetMapping("/obtener-ddjjCf-primeraQ-aprobada/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<Long>> obtenerDdjjAprobadasCf(
             @PathVariable Long idEfector,
             @PathVariable int mes,
@@ -215,19 +215,9 @@ public class RegistroActividadController {
         System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
         
         return new ResponseEntity<>(ddjjAprobada, HttpStatus.OK);
-    }
+    } */
 
-    @GetMapping("/validar-precondiciones-cronograma/{idEfector}/{mes}/{anio}")
-    public ResponseEntity<Boolean> checkCompleteDdjjSet(
-            @PathVariable Long idEfector,
-            @PathVariable int mes,
-            @PathVariable int anio) {
-
-        boolean existsCompleteSet = registroActividadService.validarPrecondicionesCronograma(idEfector, mes, anio);
-        return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
-    }
-
-    //toma los id de las ddjj de todos los tipos de guardia incluyendo solo de la 2da quincena de CF
+     //toma los id de las ddjj de todos los tipos de guardia 
     @GetMapping("/obtener-ddjj-aprobadas/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<Long>> obtenerDdjjAprobadas(
             @PathVariable Long idEfector,
@@ -246,6 +236,17 @@ public class RegistroActividadController {
         return new ResponseEntity<>(ddjjAprobadas, HttpStatus.OK);
     }
 
+    @GetMapping("/validar-precondiciones-cronograma/{idEfector}/{mes}/{anio}")
+    public ResponseEntity<Boolean> checkCompleteDdjjSet(
+            @PathVariable Long idEfector,
+            @PathVariable int mes,
+            @PathVariable int anio) {
+
+        boolean existsCompleteSet = registroActividadService.validarPrecondicionesCronograma(idEfector, mes, anio);
+        return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
+    }
+
+   
     @GetMapping("/listAsistenciaByProfesionalEfectorMesAnio/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegActivAsistenciaDto>> listAsistenciaByProfesionalEfectorMesAnio(
             @PathVariable Long idAsistencial,

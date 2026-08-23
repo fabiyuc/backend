@@ -31,7 +31,7 @@ public class RegistroMensualDto {
     private Long idSumaHoras;
     private boolean activo;
 
-    private QuincenaEnum quincena; 
+    //private QuincenaEnum quincena; 
 
     private EstadoFacturacionEnum estadoFacturacion;
 

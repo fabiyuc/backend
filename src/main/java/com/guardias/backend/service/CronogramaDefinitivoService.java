@@ -355,59 +355,6 @@ public class CronogramaDefinitivoService {
         }
     }
 
-    /*
-     * public List<CronogramaDefinitivoListDto>
-     * findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
-     * int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
-     * 
-     * List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
-     * .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
-     * 
-     * return cronogramas.stream()
-     * .map(cronograma -> {
-     * // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos
-     * ambos
-     * // tipos (1 y 2))
-     * List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
-     * .filter(ddjj -> idTipoGuardia == null ||
-     * (ddjj.getTipoGuardia() != null &&
-     * (ddjj.getTipoGuardia().getId().equals(idTipoGuardia) ||
-     * (idTipoGuardia == 1L && ddjj.getTipoGuardia().getId() == 2L))))
-     * .map(ddjj -> {
-     * // Aplicamos filtro adicional para tipoGuardia == 1
-     * List<RegistroMensualListDto> registros = idTipoGuardia != null &&
-     * idTipoGuardia == 1L
-     * ? filtrarRegistrosConNovedades(ddjj.getRegistrosMensuales())
-     * : registroMensualService.mapToDtoList(ddjj.getRegistrosMensuales(),
-     * idTipoGuardia);
-     * 
-     * return new DdjjListDto(
-     * ddjj.getId(),
-     * ddjj.getMes(),
-     * ddjj.getAnio(),
-     * registros,
-     * ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
-     * ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
-     * ddjj.getEstadoDdjjDirector(),
-     * ddjj.getEstadoDdjjDirectorDPH(),
-     * ddjj.getEnPosesionDirector(),
-     * ddjj.getEnPosesionDirectorDPH(),
-     * ddjj.getMotivoDirector(),
-     * ddjj.getMotivoDirectorDPH(),
-     * ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null);
-     * })
-     * .collect(Collectors.toList());
-     * 
-     * return new CronogramaDefinitivoListDto(
-     * cronograma.getId(),
-     * cronograma.getMes(),
-     * cronograma.getAnio(),
-     * ddjjsFiltradas);
-     * })
-     * .collect(Collectors.toList());
-     * }
-     */
-
     public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
             int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
 
