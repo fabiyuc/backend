@@ -1,3 +1,4 @@
+//dto/DistribucionHorariaDto
 package com.guardias.backend.dto;
 
 import java.math.BigDecimal;

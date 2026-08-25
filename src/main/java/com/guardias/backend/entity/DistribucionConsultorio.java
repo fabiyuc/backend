@@ -1,3 +1,4 @@
+//entity/DistribucionConsultorio
 package com.guardias.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

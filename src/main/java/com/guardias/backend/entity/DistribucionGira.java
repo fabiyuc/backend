@@ -1,3 +1,4 @@
+//entity/DistribucionGira
 package com.guardias.backend.entity;
 
 import jakarta.persistence.Column;
