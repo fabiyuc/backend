@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioD
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
-import com.guardias.backend.dto.cronogramaTentativo.TotalHorasResponseDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasDiaDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.CronogramaTentativo;
@@ -368,13 +369,21 @@ public class CronogramaTentativoController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/totalHorasPorDia/{fecha}")
-    public ResponseEntity<TotalHorasResponseDto> calcularTotalHorasPorDia(
-            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+    @GetMapping("/totalHorasPorMes/{mes}")
+    public ResponseEntity<List<TotalHorasDiaDto>> calcularTotalHorasPorMes(
+            @PathVariable String mes,
+            @RequestParam Long idEfector,
             @RequestParam(required = false) List<Long> idsAsistencial,
             @RequestParam(required = false) List<Long> idsServicio) {
-        TotalHorasResponseDto result = cronogramaTentativoService.calcularTotalHorasPorDia(fecha, idsAsistencial,
+
+        YearMonth yearMonth = YearMonth.parse(mes);
+
+        List<TotalHorasDiaDto> result = cronogramaTentativoService.calcularTotalHorasPorMes(
+                yearMonth,
+                idEfector,
+                idsAsistencial,
                 idsServicio);
+
         return ResponseEntity.ok(result);
     }
 

@@ -3,8 +3,10 @@ package com.guardias.backend.service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioD
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasDiaDto;
 import com.guardias.backend.dto.cronogramaTentativo.TotalHorasDto;
 import com.guardias.backend.dto.cronogramaTentativo.TotalHorasResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
@@ -441,16 +444,22 @@ public class CronogramaTentativoService {
                 idAsistencial, idEfector);
     }
 
-    public TotalHorasResponseDto calcularTotalHorasPorDia(LocalDate fecha, List<Long> idsAsistencial,
+    public TotalHorasResponseDto calcularTotalHorasPorDia(LocalDate fecha, Long idEfector, List<Long> idsAsistencial,
             List<Long> idsServicio) {
         List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findByFechaIngresoAndActivoTrue(fecha);
 
-        // Filter
+        // Filter by Efector (Mandatory)
+        cronogramas = cronogramas.stream()
+                .filter(c -> c.getEfector().getId().equals(idEfector))
+                .collect(Collectors.toList());
+
+        // Filter by Asistencial
         if (idsAsistencial != null && !idsAsistencial.isEmpty()) {
             cronogramas = cronogramas.stream()
                     .filter(c -> idsAsistencial.contains(c.getAsistencial().getId()))
                     .collect(Collectors.toList());
         }
+        // Filter by Servicio
         if (idsServicio != null && !idsServicio.isEmpty()) {
             cronogramas = cronogramas.stream()
                     .filter(c -> idsServicio.contains(c.getServicio().getId()))
@@ -484,6 +493,65 @@ public class CronogramaTentativoService {
             detalles.add(dto);
         }
         return new TotalHorasResponseDto(detalles, totalGeneral);
+    }
+
+    public List<TotalHorasDiaDto> calcularTotalHorasPorMes(
+            YearMonth mes,
+            Long idEfector,
+            List<Long> idsAsistencial,
+            List<Long> idsServicio) {
+
+        LocalDate fechaInicio = mes.atDay(1);
+        LocalDate fechaEgreso = mes.atEndOfMonth();
+
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository
+                .findByFechaIngresoBetweenAndActivoTrue(
+                        fechaInicio,
+                        fechaEgreso);
+
+        cronogramas = cronogramas.stream()
+                .filter(c -> c.getEfector().getId().equals(idEfector))
+                .filter(c -> idsAsistencial == null
+                        || idsAsistencial.isEmpty()
+                        || idsAsistencial.contains(c.getAsistencial().getId()))
+                .filter(c -> idsServicio == null
+                        || idsServicio.isEmpty()
+                        || idsServicio.contains(c.getServicio().getId()))
+                .collect(Collectors.toList());
+
+        Map<LocalDate, Double> totales = new LinkedHashMap<>();
+
+        for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaEgreso); fecha = fecha.plusDays(1)) {
+
+            totales.put(fecha, 0.0);
+        }
+
+        for (CronogramaTentativo c : cronogramas) {
+
+            LocalDateTime inicio = LocalDateTime.of(
+                    c.getFechaIngreso(),
+                    c.getHoraIngreso());
+
+            LocalDateTime fin = LocalDateTime.of(
+                    c.getFechaEgreso(),
+                    c.getHoraEgreso());
+
+            double horas = Duration
+                    .between(inicio, fin)
+                    .toMinutes() / 60.0;
+
+            totales.merge(
+                    c.getFechaIngreso(),
+                    horas,
+                    Double::sum);
+        }
+
+        return totales.entrySet()
+                .stream()
+                .map(e -> new TotalHorasDiaDto(
+                        e.getKey(),
+                        e.getValue()))
+                .collect(Collectors.toList());
     }
 
     public boolean updateCronogramasDesdeFecha(LocalDate fechaInicio, Long idAsistencial, Long idEfector) {
