@@ -8,7 +8,6 @@ import com.guardias.backend.dto.registroActividad.RegActivListDto;
 import com.guardias.backend.dto.sumaHoras.SumaHorasListDto;
 import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +25,7 @@ public class RegistroMensualListDto {
     private List<RegActivListDto> registroActividad;
     private SumaHorasListDto totalHoras;
     private List<Long> idDdjjs;
-    private QuincenaEnum quincena;
+    //private QuincenaEnum quincena;
 
     private EstadoFacturacionEnum estadoFacturacion;
     private List<FacturaDetailDto> facturas;

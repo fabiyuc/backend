@@ -489,7 +489,7 @@ public class RegistroActividadService {
         }
 
         if (tieneContrafactura) {
-            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistenteCfSegunda(idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA, QuincenaEnum.SEGUNDA);
+            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
             System.out.println(" - DDJJ CONTRAFACTURA aprobada: " + ddjjContrafacturaAprobada);
             if (!ddjjContrafacturaAprobada) {
                 System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para CONTRAFACTURA");
@@ -514,7 +514,7 @@ public class RegistroActividadService {
         return exists;
     }
 
-    private boolean ddjjPreAprobadaExistenteCfSegunda(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo, QuincenaEnum quincena) {
+    /* private boolean ddjjPreAprobadaExistenteCfSegunda(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo, QuincenaEnum quincena) {
 
         // Convertir int a MesesEnum
         MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
@@ -525,9 +525,9 @@ public class RegistroActividadService {
 
         System.out.println(" - Resultado búsqueda DDJJ: " + exists);
         return exists;
-    }
+    } */
 
-    public List<Long> obtenerIdDdjjAprobadaCf(Long idEfector, int mes, int anio) {
+    /* public List<Long> obtenerIdDdjjAprobadaCf(Long idEfector, int mes, int anio) {
         System.out.println("=== INICIO obtenerIdDdjjAprobadaCf ===");
         System.out.println("Parámetros - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
 
@@ -562,7 +562,7 @@ public class RegistroActividadService {
         System.out.println("Lista de IDs encontrados: " + idDdjjAprobada);
         System.out.println("=== FIN obtenerIdsDdjjAprobadas ===\n");
         return idDdjjAprobada;
-    }
+    } */
     
     public List<Long> obtenerIdsDdjjAprobadas(Long idEfector, int mes, int anio) {
         System.out.println("=== INICIO obtenerIdsDdjjAprobadas ===");
@@ -623,8 +623,8 @@ public class RegistroActividadService {
         if (tieneContrafactura) {
             System.out.println("Buscando DDJJ CONTRAFACTURA aprobada...");
             Optional<Long> idContrafactura = ddjjRepository
-                    .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorAndQuincena(
-                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO, QuincenaEnum.SEGUNDA);
+                    .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirector(
+                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO);
 
             if (idContrafactura.isPresent()) {
                 System.out.println("DDJJ CONTRAFACTURA encontrada - ID: " + idContrafactura.get());

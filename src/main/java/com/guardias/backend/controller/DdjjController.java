@@ -271,7 +271,7 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/existsDdjjCf/{anio}/{mes}/{idEfector}/{quincena}")
+    /* @GetMapping("/existsDdjjCf/{anio}/{mes}/{idEfector}/{quincena}")
     public ResponseEntity<Boolean> existsDdjjCf(
             @PathVariable int anio,
             @PathVariable String mes,
@@ -306,6 +306,7 @@ public class DdjjController {
             return ResponseEntity.badRequest().body(false);
         }
     }
+     */
     @GetMapping("/existsDdjjCfSinQuincena/{anio}/{mes}/{idEfector}")
     public ResponseEntity<Boolean> existsDdjjCfSinQuincena(
             @PathVariable int anio,
@@ -336,6 +337,7 @@ public class DdjjController {
             return ResponseEntity.badRequest().body(false);
         }
     }
+
     @GetMapping("/existsDdjjCfFueraTermino/{anio}/{mes}/{idEfector}")
     public ResponseEntity<Boolean> existsDdjjCfFueraTermino(
             @PathVariable int anio,
@@ -506,20 +508,19 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}/{quincena}")
+    @GetMapping("/listCfServicio/{anio}/{mes}/{idEfector}/{idServicio}")
     public ResponseEntity<List<DdjjListDto>> listCfAndServicio(
             @PathVariable int anio,
             @PathVariable String mes,
             @PathVariable Long idEfector,
-            @PathVariable Long idServicio,
-            @PathVariable String quincena) {
+            @PathVariable Long idServicio) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<DdjjListDto> ddjjs = ddjjService
-                    .findCfServicio(anio, mesEnum, idEfector, idServicio, quincenaEnum);
+                    .findCfServicio(anio, mesEnum, idEfector, idServicio);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {
@@ -530,19 +531,18 @@ public class DdjjController {
         }
     }
 
-    @GetMapping("/listCf/{anio}/{mes}/{idEfector}/{quincena}")
+    @GetMapping("/listCf/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<DdjjListDto>> listCf(
             @PathVariable int anio,
             @PathVariable String mes,
-            @PathVariable Long idEfector,
-            @PathVariable String quincena) {
+            @PathVariable Long idEfector) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<DdjjListDto> ddjjs = ddjjService
-                    .findCf(anio, mesEnum, idEfector, quincenaEnum);
+                    .findCf(anio, mesEnum, idEfector);
 
             return new ResponseEntity<>(ddjjs, HttpStatus.OK);
         } catch (Exception e) {

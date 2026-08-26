@@ -1,3 +1,4 @@
+//security/enums/RolNombre
 package com.guardias.backend.security.enums;
 
 public enum RolNombre {
@@ -6,7 +7,8 @@ public enum RolNombre {
     ROLE_DPH,
     ROLE_SUPERUSER,
     ROLE_AUTORIDAD,
-    ROLE_HOSPITAL
+    ROLE_HOSPITAL,
+    ROLE_CHUMANO
 }
 
 /*

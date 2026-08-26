@@ -110,9 +110,9 @@ public class Ddjj {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" , "ddjjs"})
     private List<CronogramaDefinitivo> cronogramasDefinitivos = new ArrayList<CronogramaDefinitivo>();
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+   /*  @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
-    private QuincenaEnum quincena;
+    private QuincenaEnum quincena; */
 
     @Column(columnDefinition = "VARCHAR(20)", nullable = true)
     @Enumerated(EnumType.STRING)

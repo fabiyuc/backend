@@ -1,3 +1,4 @@
+//entity/DistribucionOtra
 package com.guardias.backend.entity;
 
 import com.guardias.backend.enums.TipoDistribucionOtraEnum;

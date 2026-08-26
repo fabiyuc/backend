@@ -161,9 +161,9 @@ public class DdjjService {
         // ===== 0. VALIDACIÓN INMEDIATA DE LOS IDs =====
         validateRegistrosMensuales(ddjjDto.getIdRegistrosMensuales());
 
-        // ===== 1. DETERMINAR QUINCENA (NUEVO) =====
+        /* // ===== 1. DETERMINAR QUINCENA (NUEVO) =====
         QuincenaEnum quincena = determinarQuincenaParaDdjj(ddjjDto);
-        ddjj.setQuincena(quincena);
+        ddjj.setQuincena(quincena); */
 
         // ===== 2. MAPEO DE CAMPOS BÁSICOS =====
         mapBasicFields(ddjj, ddjjDto);
@@ -180,7 +180,7 @@ public class DdjjService {
     }
 
     // solo para CONTRAFACTURA sino retorna NULL
-    private QuincenaEnum determinarQuincenaParaDdjj(DdjjDto ddjjDto) {
+   /*  private QuincenaEnum determinarQuincenaParaDdjj(DdjjDto ddjjDto) {
 
         Optional<TipoGuardia> tipoGuardia = tipoGuardiaRepository.findById(ddjjDto.getIdTipoGuardia());
         List<RegistroMensual> registros = registroMensualRepository.findAllById(ddjjDto.getIdRegistrosMensuales());
@@ -191,9 +191,9 @@ public class DdjjService {
         }
         // Para otros tipos de guardia, retorna null
         return null;
-    }
+    } */
 
-    private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<RegistroMensual> registrosMensuales) {
+    /* private QuincenaEnum obtenerQuincenaDeRegistrosMensuales(List<RegistroMensual> registrosMensuales) {
 
         // Verificar si todos los registros tienen la misma quincena
         boolean quincenaConsistente = true;
@@ -232,7 +232,7 @@ public class DdjjService {
         }
         // devuelve fuera de termino para registros con diferente quincena
         return QuincenaEnum.FUERA_DE_TERMINO;
-    }
+    } */
 
     private void validateRegistrosMensuales(List<Long> idsRegistros) {
         if (idsRegistros == null || idsRegistros.isEmpty()) {
@@ -657,7 +657,7 @@ public class DdjjService {
         return false;
     }
 
-    public boolean existsByAnioMesEfectorAndQuincenaCf(
+    /* public boolean existsByAnioMesEfectorAndQuincenaCf(
             int anio, MesesEnum mes, Long idEfector, QuincenaEnum quincena) {
 
         System.out.println("=== INICIO existsByAnioMesEfectorAndQuincenaCf ===");
@@ -687,7 +687,7 @@ public class DdjjService {
 
         return result;
     }
-
+ */
     public boolean existsByAnioMesAndEfectorCf(
             int anio, MesesEnum mes, Long idEfector) {
 
@@ -940,11 +940,10 @@ public class DdjjService {
                 .collect(Collectors.toList());
     }
 
-    public List<DdjjListDto> findCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio,
-            QuincenaEnum quincena) {
+    public List<DdjjListDto> findCfServicio(int anio, MesesEnum mes, Long idEfector, Long idServicio) {
 
-        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardiaAndQuincena(anio, mes,
-                idEfector, idServicio, TipoGuardiaEnum.CONTRAFACTURA, quincena);
+        List<Ddjj> ddjjs = ddjjRepository.findByEfectorIdAndMesAndAnioServicioAndTipoGuardia(anio, mes,
+                idEfector, idServicio, TipoGuardiaEnum.CONTRAFACTURA);
 
         if (ddjjs.isEmpty()) {
             return Collections.emptyList();
@@ -976,10 +975,10 @@ public class DdjjService {
                 .collect(Collectors.toList());
     }
 
-    public List<DdjjListDto> findCf(int anio, MesesEnum mes, Long idEfector, QuincenaEnum quincena) {
+    public List<DdjjListDto> findCf(int anio, MesesEnum mes, Long idEfector) {
 
-        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardiaAndQuincena(
-                anio, mes, idEfector, TipoGuardiaEnum.CONTRAFACTURA, quincena);
+        List<Ddjj> ddjjs = ddjjRepository.findByAnioMesEfectorAndTipoGuardia(
+                anio, mes, idEfector, TipoGuardiaEnum.CONTRAFACTURA);
 
         if (ddjjs.isEmpty()) {
             return Collections.emptyList();

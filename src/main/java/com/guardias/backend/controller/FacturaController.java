@@ -34,6 +34,7 @@ import com.guardias.backend.dto.factura.FacturaSummaryDto;
 import com.guardias.backend.entity.Factura;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
+import com.guardias.backend.enums.PeriodoCargaEnum;
 import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.service.FacturaService;
 import com.guardias.backend.service.RegistroMensualService;
@@ -96,8 +97,8 @@ public class FacturaController {
             }
             System.out.println("✓ Validaciones básicas OK");
 
-            // 2. Determinar periodoCarga (PRIMERA, SEGUNDA o FUERA_DE_TERMINO)
-            QuincenaEnum periodoCarga = facturaService.determinarPeriodoCarga(facturaDto);
+            // 2. Determinar periodoCarga (EN_TERMINO o FUERA_DE_TERMINO)
+            PeriodoCargaEnum periodoCarga = facturaService.determinarPeriodoCarga(facturaDto);
             System.out.println("✓ Periodo carga determinado: " + periodoCarga);
 
             // 3. Validar cantidad de facturas según periodoCarga
@@ -196,7 +197,7 @@ public class FacturaController {
         return new ResponseEntity<>(new Mensaje("factura eliminada FISICAMENTE"), HttpStatus.OK);
     }
 
-    @GetMapping("/getMontoByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
+    /* @GetMapping("/getMontoByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
     public ResponseEntity<?> getMontoByQuincena(
             @PathVariable("idAsistencial") Long idAsistencial,
             @PathVariable("idEfector") Long idEfector,
@@ -217,7 +218,7 @@ public class FacturaController {
             return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    } */
 
     @GetMapping("/getMonto/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<?> getMonto(
@@ -270,7 +271,7 @@ public class FacturaController {
         return new ResponseEntity<Factura>(factura, HttpStatus.OK);
     }
 
-    @GetMapping("/listSummary/{idEfector}/{anio}/{mes}/{quincena}")
+/*     @GetMapping("/listSummary/{idEfector}/{anio}/{mes}/{quincena}")
     public ResponseEntity<?> listSummary(
             @PathVariable("idEfector") int idEfector,
             @PathVariable int anio,
@@ -288,10 +289,10 @@ public class FacturaController {
             return ResponseEntity.internalServerError()
                     .body(new Mensaje("Error al obtener facturas: " + e.getMessage()));
         }
-    }
+    } */
 
-    @GetMapping("/listSummarySinQuincena/{idEfector}/{anio}/{mes}")
-    public ResponseEntity<?> listSummarySinQuincena(
+    @GetMapping("/listSummary/{idEfector}/{anio}/{mes}")
+    public ResponseEntity<?> listSummary(
             @PathVariable("idEfector") int idEfector,
             @PathVariable int anio,
             @PathVariable("mes") String mes) {
@@ -307,8 +308,8 @@ public class FacturaController {
         }
     }
 
-    @GetMapping("/listByAsistencialSinQuincena/{idEfector}/{anio}/{mes}/{idAsistencial}")
-    public ResponseEntity<?> listByAsistencialSinQuincena(
+    @GetMapping("/listByAsistencial/{idEfector}/{anio}/{mes}/{idAsistencial}")
+    public ResponseEntity<?> listByAsistencial(
             @PathVariable("idEfector") int idEfector,
             @PathVariable int anio,
             @PathVariable("mes") String mes,
@@ -316,7 +317,7 @@ public class FacturaController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
-            List<FacturaDetailDto> facturas = facturaService.getFacturasByAsistencialSinQuincena(idEfector, anio, mesEnum, idAsistencial);
+            List<FacturaDetailDto> facturas = facturaService.getFacturasByAsistencial(idEfector, anio, mesEnum, idAsistencial);
             return ResponseEntity.ok(facturas);
 
         } catch (Exception e) {
@@ -325,19 +326,17 @@ public class FacturaController {
         }
     }
 
-    @GetMapping("/getByFiltros/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    @GetMapping("/getByFiltros/{idAsistencial}/{idEfector}/{anio}/{mes}")
     public ResponseEntity<?> getFacturasByFiltros(
             @PathVariable("idAsistencial") Long idAsistencial,
             @PathVariable("idEfector") Long idEfector,
             @PathVariable("anio") int anio,
-            @PathVariable("mes") String mes,
-            @PathVariable("quincena") String quincena) {
+            @PathVariable("mes") String mes) {
 
         try {
-            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
-            List<FacturaDetailDto> facturas = facturaService.getByFiltros(idAsistencial, idEfector, anio, mesEnum,
-                    quincenaEnum);
+            List<FacturaDetailDto> facturas = facturaService.getByFiltros(idAsistencial, idEfector, anio, mesEnum);
             return ResponseEntity.ok(facturas);
 
         } catch (Exception e) {
@@ -351,15 +350,13 @@ public class FacturaController {
             @PathVariable Long idAsistencial,
             @PathVariable Long idEfector,
             @PathVariable int anio,
-            @PathVariable String mes,
-            @PathVariable String quincena) {
+            @PathVariable String mes) {
 
         try {
-            QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
 
-            boolean existe = facturaService.existeFacturaByFiltros(idAsistencial, idEfector, anio, mesEnum,
-                    quincenaEnum);
+            boolean existe = facturaService.existeFacturaByFiltros(idAsistencial, idEfector, anio, mesEnum);
             return ResponseEntity.ok(existe);
 
         } catch (IllegalArgumentException e) {
@@ -371,7 +368,7 @@ public class FacturaController {
         }
     }
 
-    @GetMapping("/existenDosFacturas/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    /* @GetMapping("/existenDosFacturas/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
     public ResponseEntity<?> existenDosFacturas(
             @PathVariable Long idAsistencial,
             @PathVariable Long idEfector,
@@ -395,9 +392,9 @@ public class FacturaController {
             return ResponseEntity.internalServerError()
                     .body(new Mensaje("Error al verificar facturas: " + e.getMessage()));
         }
-    }
+    } */
 
-    @GetMapping("/existeFacturaSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
+    /* @GetMapping("/existeFacturaSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
     public ResponseEntity<?> existeFacturaSinQuincena(
             @PathVariable Long idAsistencial,
             @PathVariable Long idEfector,
@@ -417,7 +414,7 @@ public class FacturaController {
             return ResponseEntity.internalServerError()
                     .body(new Mensaje("Error al verificar factura: " + e.getMessage()));
         }
-    }
+    } */
 
     @GetMapping("/existenDosFacturasSinQuincena/{idAsistencial}/{idEfector}/{anio}/{mes}")
     public ResponseEntity<?> existenDosFacturasSinQuincena(

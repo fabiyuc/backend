@@ -1,3 +1,4 @@
+//enums/TipoDistribucionOtraEnum
 package com.guardias.backend.enums;
 
 public enum TipoDistribucionOtraEnum {

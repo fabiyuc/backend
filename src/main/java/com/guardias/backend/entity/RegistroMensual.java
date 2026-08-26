@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -82,9 +81,9 @@ public class RegistroMensual {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "registroMensual" })
     private SumaHoras totalHoras;
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+    /* @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
-    private QuincenaEnum quincena;
+    private QuincenaEnum quincena; */
 
     @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)

@@ -56,9 +56,9 @@ public class CronogramaDefinitivo {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "cronogramasDefinitivos" })
     private List<Ddjj> ddjjs = new ArrayList<>();
 
-    @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
+   /*  @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
-    private QuincenaEnum quincena;
+    private QuincenaEnum quincena; */
 
     @Override
     public boolean equals(Object obj) {

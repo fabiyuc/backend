@@ -1,3 +1,4 @@
+//entity/DistribucionHoraria
 package com.guardias.backend.entity;
 
 import java.math.BigDecimal;
