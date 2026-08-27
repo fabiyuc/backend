@@ -1,7 +1,6 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +22,6 @@ import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.ddjj.DdjjListDto;
 import com.guardias.backend.dto.ddjj.EstadoDdjjDto;
 import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
-import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.ObservacionDdjj;
 import com.guardias.backend.entity.RegistroActividad;
@@ -33,7 +31,6 @@ import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
 import com.guardias.backend.repository.DdjjRepository;
@@ -327,7 +324,7 @@ public class DdjjService {
                     .setTipoGuardia(tipoGuardiaService.findById(ddjjDto.getIdTipoGuardia()).get());
         }
 
-        if (ddjjDto.getIdCronogramasDefinitivos() != null) {
+       /*  if (ddjjDto.getIdCronogramasDefinitivos() != null) {
             List<Long> idList = new ArrayList<Long>();
             if (ddjj.getCronogramasDefinitivos() != null) {
                 for (CronogramaDefinitivo cronograma : ddjj.getCronogramasDefinitivos()) {
@@ -348,7 +345,7 @@ public class DdjjService {
                 cronogramaDefinitivoService.findById(id).get().getDdjjs().add(ddjj);
             }
         }
-
+ */
         ddjj.setActivo(true);
     }
 

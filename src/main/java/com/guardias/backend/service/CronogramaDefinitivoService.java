@@ -3,13 +3,9 @@ package com.guardias.backend.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +14,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.dto.adicional.AdicionalListDto;
+import com.guardias.backend.dto.asistencial.AsistencialListForRmensualDto;
+import com.guardias.backend.dto.categoria.CategoriaListDto;
 import com.guardias.backend.dto.cronogramaDefinitivo.CronogramaDefinitivoListDto;
-import com.guardias.backend.dto.ddjj.DdjjListDto;
+import com.guardias.backend.dto.legajo.LegajoListDto;
+import com.guardias.backend.dto.novedadPersonal.NovedadPersonalListDto;
+import com.guardias.backend.dto.registroActividad.RegistroActividadListDto;
 import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
+import com.guardias.backend.dto.revista.RevistaListDto;
+import com.guardias.backend.dto.tipoLicencia.TipoLicenciaListDto;
+import com.guardias.backend.dto.tipoRevista.TipoRevistaListDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
 import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.repository.CronogramaDefinitivoRepository;
 import com.guardias.backend.repository.DdjjRepository;
 
@@ -44,8 +46,6 @@ public class CronogramaDefinitivoService {
     EfectorService efectorService;
     @Autowired
     DdjjRepository ddjjRepository;
-    @Autowired
-    RegistroActividadService registroActividadService;
     @Autowired
     RegistroMensualService registroMensualService;
 
@@ -87,7 +87,7 @@ public class CronogramaDefinitivoService {
         cronogramaDefinitivoRepository.deleteById(id);
     }
 
-    public ResponseEntity<?> validations(CronogramaDefinitivoDto cronogramaDefinitivoDto) {
+    /* public ResponseEntity<?> validations(CronogramaDefinitivoDto cronogramaDefinitivoDto) {
 
         if (cronogramaDefinitivoDto.getMes() == null)
             return new ResponseEntity(new Mensaje("El mes es obligatorio"), HttpStatus.BAD_REQUEST);
@@ -108,7 +108,7 @@ public class CronogramaDefinitivoService {
             return validacionDdjjs;
         }
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
-    }
+    } */
 
     private ResponseEntity<?> validarCoincidenciaMesAnioDdjjs(List<Long> idDdjjs, MesesEnum mes, int anio) {
         if (idDdjjs == null || idDdjjs.isEmpty()) {
@@ -140,7 +140,7 @@ public class CronogramaDefinitivoService {
         return new ResponseEntity(new Mensaje("DDJJ válidas"), HttpStatus.OK);
     }
 
-    public CronogramaDefinitivo createUpdate(CronogramaDefinitivo cronogramaDefinitivo,
+    /* public CronogramaDefinitivo createUpdate(CronogramaDefinitivo cronogramaDefinitivo,
             CronogramaDefinitivoDto cronogramaDefinitivoDto) {
 
         if (cronogramaDefinitivoDto.getMes() != null
@@ -155,10 +155,6 @@ public class CronogramaDefinitivoService {
                         cronogramaDefinitivoDto.getIdEfector()))) {
             cronogramaDefinitivo.setEfector(efectorService.findById(cronogramaDefinitivoDto.getIdEfector()));
         }
-
-        /* if (cronogramaDefinitivoDto.getQuincena() != null) {
-            cronogramaDefinitivo.setQuincena(cronogramaDefinitivoDto.getQuincena());
-        } */
 
         // Validar si idDdjjs no es null
         if (cronogramaDefinitivoDto.getIdDdjjs() != null) {
@@ -175,171 +171,202 @@ public class CronogramaDefinitivoService {
 
         cronogramaDefinitivo.setActivo(true);
         return cronogramaDefinitivo;
-    }
+    } */
+
+    /*
+     * public CronogramaDefinitivo createUpdateDefinitivo(CronogramaDefinitivoDto
+     * dto) {
+     * 
+     * // según tipo de quincena
+     * if (dto.getQuincena() == QuincenaEnum.PRIMERA) {
+     * return processPrimeraQuincena(dto);
+     * } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA) {
+     * return processSegundaQuincena(dto);
+     * } else if (dto.getQuincena() == QuincenaEnum.FUERA_DE_TERMINO) {
+     * return processFueraDeTermino(dto);
+     * } else {
+     * throw new IllegalArgumentException("Tipo de quincena no válido: " +
+     * dto.getQuincena());
+     * }
+     * }
+     */
 
     /* public CronogramaDefinitivo createUpdateDefinitivo(CronogramaDefinitivoDto dto) {
 
-        // según tipo de quincena
-        if (dto.getQuincena() == QuincenaEnum.PRIMERA) {
-            return processPrimeraQuincena(dto);
-        } else if (dto.getQuincena() == QuincenaEnum.SEGUNDA) {
-            return processSegundaQuincena(dto);
-        } else if (dto.getQuincena() == QuincenaEnum.FUERA_DE_TERMINO) {
-            return processFueraDeTermino(dto);
-        } else {
-            throw new IllegalArgumentException("Tipo de quincena no válido: " + dto.getQuincena());
-        }
-    } */
-
-    public CronogramaDefinitivo createUpdateDefinitivo(CronogramaDefinitivoDto dto) {
-
-        return createNewCronograma(dto);
-    }
-
-    /* private CronogramaDefinitivo processPrimeraQuincena(CronogramaDefinitivoDto dto) {
-        // Verificar si ya existe primera quincena
-        Optional<CronogramaDefinitivo> existente = cronogramaDefinitivoRepository
-                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
-                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
-
-        if (existente.isPresent()) {
-            throw new IllegalArgumentException("Ya existe un cronograma activo para la primera quincena");
-        }
-
-        // Crear nueva primera quincena
         return createNewCronograma(dto);
     } */
 
-    /* private CronogramaDefinitivo processSegundaQuincena(CronogramaDefinitivoDto dto) {
-        // Buscar primera quincena existente
-        Optional<CronogramaDefinitivo> primeraQuincenaOpt = cronogramaDefinitivoRepository
-                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
-                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+    /*
+     * private CronogramaDefinitivo processPrimeraQuincena(CronogramaDefinitivoDto
+     * dto) {
+     * // Verificar si ya existe primera quincena
+     * Optional<CronogramaDefinitivo> existente = cronogramaDefinitivoRepository
+     * .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+     * dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+     * 
+     * if (existente.isPresent()) {
+     * throw new
+     * IllegalArgumentException("Ya existe un cronograma activo para la primera quincena"
+     * );
+     * }
+     * 
+     * // Crear nueva primera quincena
+     * return createNewCronograma(dto);
+     * }
+     */
 
-        if (primeraQuincenaOpt.isPresent()) {
-            // Fusionar en cronograma SEGUNDA
-            CronogramaDefinitivo cronogramaSegunda = createCronogramaFusionado(primeraQuincenaOpt.get(), dto,
-                    QuincenaEnum.SEGUNDA);
+    /*
+     * private CronogramaDefinitivo processSegundaQuincena(CronogramaDefinitivoDto
+     * dto) {
+     * // Buscar primera quincena existente
+     * Optional<CronogramaDefinitivo> primeraQuincenaOpt =
+     * cronogramaDefinitivoRepository
+     * .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+     * dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+     * 
+     * if (primeraQuincenaOpt.isPresent()) {
+     * // Fusionar en cronograma SEGUNDA
+     * CronogramaDefinitivo cronogramaSegunda =
+     * createCronogramaFusionado(primeraQuincenaOpt.get(), dto,
+     * QuincenaEnum.SEGUNDA);
+     * 
+     * // Desactivar primera quincena
+     * primeraQuincenaOpt.get().setActivo(false);
+     * cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
+     * 
+     * return cronogramaSegunda;
+     * } else {
+     * // Crear con estado SEGUNDA(sin fusion)
+     * return createNewCronograma(dto);
+     * }
+     * }
+     */
 
-            // Desactivar primera quincena
-            primeraQuincenaOpt.get().setActivo(false);
-            cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
+    /*
+     * private CronogramaDefinitivo createCronogramaCompleto(CronogramaDefinitivo
+     * primeraQuincena,
+     * CronogramaDefinitivoDto completarDto) {
+     * CronogramaDefinitivo completo = new CronogramaDefinitivo();
+     * 
+     * // Configurar datos base usando el método existente createUpdate
+     * completo = createUpdate(completo, completarDto);
+     * completo.setQuincena(QuincenaEnum.SEGUNDA);
+     * 
+     * // Combinar DDJJs de ambas quincenas
+     * Set<Ddjj> todasDdjjs = new HashSet<>(primeraQuincena.getDdjjs());
+     * 
+     * for (Long idDdjj : completarDto.getIdDdjjs()) {
+     * Ddjj ddjj = ddjjRepository.findById(idDdjj)
+     * .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " +
+     * idDdjj));
+     * todasDdjjs.add(ddjj);
+     * }
+     * 
+     * completo.setDdjjs(new ArrayList<>(todasDdjjs));
+     * return completo;
+     * }
+     */
 
-            return cronogramaSegunda;
-        } else {
-            // Crear con estado SEGUNDA(sin fusion)
-            return createNewCronograma(dto);
-        }
-    } */
-
-    /* private CronogramaDefinitivo createCronogramaCompleto(CronogramaDefinitivo primeraQuincena,
-            CronogramaDefinitivoDto completarDto) {
-        CronogramaDefinitivo completo = new CronogramaDefinitivo();
-
-        // Configurar datos base usando el método existente createUpdate
-        completo = createUpdate(completo, completarDto);
-        completo.setQuincena(QuincenaEnum.SEGUNDA);
-
-        // Combinar DDJJs de ambas quincenas
-        Set<Ddjj> todasDdjjs = new HashSet<>(primeraQuincena.getDdjjs());
-
-        for (Long idDdjj : completarDto.getIdDdjjs()) {
-            Ddjj ddjj = ddjjRepository.findById(idDdjj)
-                    .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
-            todasDdjjs.add(ddjj);
-        }
-
-        completo.setDdjjs(new ArrayList<>(todasDdjjs));
-        return completo;
-    } */
-
-    private CronogramaDefinitivo createNewCronograma(CronogramaDefinitivoDto dto) {
+   /*  private CronogramaDefinitivo createNewCronograma(CronogramaDefinitivoDto dto) {
         CronogramaDefinitivo nuevo = new CronogramaDefinitivo();
         return createUpdate(nuevo, dto);
-    }
-
-    /* private CronogramaDefinitivo processFueraDeTermino(CronogramaDefinitivoDto dto) {
-        // Busco en orden: SEGUNDA -> PRIMERA (el más reciente primero)
-
-        // 1. Buscar SEGUNDA quincena (que ya incluye PRIMERA si existía)
-        Optional<CronogramaDefinitivo> segundaQuincenaOpt = cronogramaDefinitivoRepository
-                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
-                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.SEGUNDA);
-
-        if (segundaQuincenaOpt.isPresent()) {
-            // Fusionar SEGUNDA en FUERA_DE_TERMINO
-            CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
-                    segundaQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
-
-            // Desactivar SEGUNDA quincena
-            segundaQuincenaOpt.get().setActivo(false);
-            cronogramaDefinitivoRepository.save(segundaQuincenaOpt.get());
-
-            return cronogramaFueraTermino;
-        }
-        // 2. Si no existe SEGUNDA, buscar PRIMERA quincena
-        Optional<CronogramaDefinitivo> primeraQuincenaOpt = cronogramaDefinitivoRepository
-                .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
-                        dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
-
-        if (primeraQuincenaOpt.isPresent()) {
-            // Fusionar PRIMERA en FUERA_DE_TERMINO
-            CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
-                    primeraQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
-
-            // Desactivar PRIMERA quincena
-            primeraQuincenaOpt.get().setActivo(false);
-            cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
-
-            return cronogramaFueraTermino;
-        }
-
-        // 3. Si no existe ninguno, crear directamente FUERA_DE_TERMINO
-        return createNewCronograma(dto);
     } */
+
+    /*
+     * private CronogramaDefinitivo processFueraDeTermino(CronogramaDefinitivoDto
+     * dto) {
+     * // Busco en orden: SEGUNDA -> PRIMERA (el más reciente primero)
+     * 
+     * // 1. Buscar SEGUNDA quincena (que ya incluye PRIMERA si existía)
+     * Optional<CronogramaDefinitivo> segundaQuincenaOpt =
+     * cronogramaDefinitivoRepository
+     * .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+     * dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.SEGUNDA);
+     * 
+     * if (segundaQuincenaOpt.isPresent()) {
+     * // Fusionar SEGUNDA en FUERA_DE_TERMINO
+     * CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
+     * segundaQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
+     * 
+     * // Desactivar SEGUNDA quincena
+     * segundaQuincenaOpt.get().setActivo(false);
+     * cronogramaDefinitivoRepository.save(segundaQuincenaOpt.get());
+     * 
+     * return cronogramaFueraTermino;
+     * }
+     * // 2. Si no existe SEGUNDA, buscar PRIMERA quincena
+     * Optional<CronogramaDefinitivo> primeraQuincenaOpt =
+     * cronogramaDefinitivoRepository
+     * .findByEfectorIdAndMesAndAnioAndQuincenaAndActivoTrue(
+     * dto.getIdEfector(), dto.getMes(), dto.getAnio(), QuincenaEnum.PRIMERA);
+     * 
+     * if (primeraQuincenaOpt.isPresent()) {
+     * // Fusionar PRIMERA en FUERA_DE_TERMINO
+     * CronogramaDefinitivo cronogramaFueraTermino = createCronogramaFusionado(
+     * primeraQuincenaOpt.get(), dto, QuincenaEnum.FUERA_DE_TERMINO);
+     * 
+     * // Desactivar PRIMERA quincena
+     * primeraQuincenaOpt.get().setActivo(false);
+     * cronogramaDefinitivoRepository.save(primeraQuincenaOpt.get());
+     * 
+     * return cronogramaFueraTermino;
+     * }
+     * 
+     * // 3. Si no existe ninguno, crear directamente FUERA_DE_TERMINO
+     * return createNewCronograma(dto);
+     * }
+     */
 
     // Método genérico para fusionar cronogramas
-    /* private CronogramaDefinitivo createCronogramaFusionado(CronogramaDefinitivo cronogramaAnterior,
-            CronogramaDefinitivoDto nuevoDto, QuincenaEnum nuevoEstado) {
-        CronogramaDefinitivo fusionado = new CronogramaDefinitivo();
+    /*
+     * private CronogramaDefinitivo createCronogramaFusionado(CronogramaDefinitivo
+     * cronogramaAnterior,
+     * CronogramaDefinitivoDto nuevoDto, QuincenaEnum nuevoEstado) {
+     * CronogramaDefinitivo fusionado = new CronogramaDefinitivo();
+     * 
+     * // Configurar datos base usando el método existente createUpdate
+     * fusionado = createUpdate(fusionado, nuevoDto);
+     * fusionado.setQuincena(nuevoEstado);
+     * 
+     * // Combinar DDJJs del cronograma anterior con las nuevas
+     * Set<Ddjj> todasDdjjs = new HashSet<>(cronogramaAnterior.getDdjjs());
+     * 
+     * for (Long idDdjj : nuevoDto.getIdDdjjs()) {
+     * Ddjj ddjj = ddjjRepository.findById(idDdjj)
+     * .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " +
+     * idDdjj));
+     * todasDdjjs.add(ddjj);
+     * }
+     * 
+     * fusionado.setDdjjs(new ArrayList<>(todasDdjjs));
+     * return fusionado;
+     * }
+     */
 
-        // Configurar datos base usando el método existente createUpdate
-        fusionado = createUpdate(fusionado, nuevoDto);
-        fusionado.setQuincena(nuevoEstado);
-
-        // Combinar DDJJs del cronograma anterior con las nuevas
-        Set<Ddjj> todasDdjjs = new HashSet<>(cronogramaAnterior.getDdjjs());
-
-        for (Long idDdjj : nuevoDto.getIdDdjjs()) {
-            Ddjj ddjj = ddjjRepository.findById(idDdjj)
-                    .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
-            todasDdjjs.add(ddjj);
-        }
-
-        fusionado.setDdjjs(new ArrayList<>(todasDdjjs));
-        return fusionado;
-    } */
-
-    /* private CronogramaDefinitivo createCronogramaFueraDeTermino(CronogramaDefinitivo cronogramaAnterior,
-            CronogramaDefinitivoDto nuevoDto) {
-        CronogramaDefinitivo fueraTermino = new CronogramaDefinitivo();
-
-        // Configurar datos base usando el método existente createUpdate
-        fueraTermino = createUpdate(fueraTermino, nuevoDto);
-        fueraTermino.setQuincena(QuincenaEnum.COMPLETO);
-
-        // Combinar DDJJs del cronograma anterior con las nuevas
-        Set<Ddjj> todasDdjjs = new HashSet<>(cronogramaAnterior.getDdjjs());
-
-        for (Long idDdjj : nuevoDto.getIdDdjjs()) {
-            Ddjj ddjj = ddjjRepository.findById(idDdjj)
-                    .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " + idDdjj));
-            todasDdjjs.add(ddjj);
-        }
-
-        fueraTermino.setDdjjs(new ArrayList<>(todasDdjjs));
-        return fueraTermino;
-    } */
+    /*
+     * private CronogramaDefinitivo
+     * createCronogramaFueraDeTermino(CronogramaDefinitivo cronogramaAnterior,
+     * CronogramaDefinitivoDto nuevoDto) {
+     * CronogramaDefinitivo fueraTermino = new CronogramaDefinitivo();
+     * 
+     * // Configurar datos base usando el método existente createUpdate
+     * fueraTermino = createUpdate(fueraTermino, nuevoDto);
+     * fueraTermino.setQuincena(QuincenaEnum.COMPLETO);
+     * 
+     * // Combinar DDJJs del cronograma anterior con las nuevas
+     * Set<Ddjj> todasDdjjs = new HashSet<>(cronogramaAnterior.getDdjjs());
+     * 
+     * for (Long idDdjj : nuevoDto.getIdDdjjs()) {
+     * Ddjj ddjj = ddjjRepository.findById(idDdjj)
+     * .orElseThrow(() -> new IllegalArgumentException("DDJJ no encontrada: " +
+     * idDdjj));
+     * todasDdjjs.add(ddjj);
+     * }
+     * 
+     * fueraTermino.setDdjjs(new ArrayList<>(todasDdjjs));
+     * return fueraTermino;
+     * }
+     */
 
     public CronogramaDefinitivo createCronogramaDefinitivo(Long idAsistencial, Long idEfector, MesesEnum mesEnum,
             int anio) {
@@ -364,6 +391,16 @@ public class CronogramaDefinitivoService {
             int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
 
         List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
+                .findByAnioAndMesAndEfectorIdAndActivoTrueAndTipoGuardia(anio, mes, idEfector, idTipoGuardia);
+
+        return cronogramas.stream()
+                .map(this::convertirACronogramaDefinitivoListDto)
+                .collect(Collectors.toList());
+    }
+    /* public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorTipoGuardiaAndActivoTrue(
+            int anio, MesesEnum mes, Long idEfector, Long idTipoGuardia) {
+
+        List<CronogramaDefinitivo> cronogramas = cronogramaDefinitivoRepository
                 .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
 
         System.out.println("=== INICIO findByAnioMesIdEfectorTipoGuardiaAndActivoTrue ===");
@@ -373,8 +410,7 @@ public class CronogramaDefinitivoService {
 
         return cronogramas.stream()
                 .map(cronograma -> {
-                    System.out.println("\n--- Procesando Cronograma ID: " + cronograma.getId() + " ---");
-                    System.out.println("Total DDJJs en cronograma: " + cronograma.getDdjjs().size());
+                    System.out.println("\n--- Procesando Cronograma ID: " + cronograma.getId() + " ---");                    
 
                     // Filtramos DDJJs por tipoGuardia (Cuando idTipoGuardia == 1, incluimos ambos
                     // tipos (1 y 2))
@@ -444,7 +480,8 @@ public class CronogramaDefinitivoService {
                 })
                 .collect(Collectors.toList());
     }
-
+ */
+    
     public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorAndActivoTrue(
             int anio, MesesEnum mes, Long idEfector) {
 
@@ -452,39 +489,84 @@ public class CronogramaDefinitivoService {
                 .findByAnioAndMesAndEfectorIdAndActivoTrue(anio, mes, idEfector);
 
         return cronogramas.stream()
-                .map(cronograma -> {
-                    // Sin filtro por tipoGuardia - mostramos todas las DDJJs
-                    List<DdjjListDto> ddjjsFiltradas = cronograma.getDdjjs().stream()
-                            .map(ddjj -> {
-                                // Para todas las DDJJs, mostrar todos los registros sin filtro adicional
-                                List<RegistroMensualListDto> registros = registroMensualService
-                                        .mapToDtoList(ddjj.getRegistrosMensuales(), null); // null = sin filtro por
-                                                                                           // tipoGuardia
-
-                                return new DdjjListDto(
-                                        ddjj.getId(),
-                                        ddjj.getMes(),
-                                        ddjj.getAnio(),
-                                        registros,
-                                        ddjj.getDirector() != null ? ddjj.getDirector().getId() : null,
-                                        ddjj.getDirectorDPH() != null ? ddjj.getDirectorDPH().getId() : null,
-                                        ddjj.getEstadoDdjjDirector(),
-                                        ddjj.getEstadoDdjjDirectorDPH(),
-                                        ddjj.getEnPosesionDirector(),
-                                        ddjj.getEnPosesionDirectorDPH(),
-                                        ddjj.getMotivoDirector(),
-                                        ddjj.getMotivoDirectorDPH(),
-                                        ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null);
-                            })
-                            .collect(Collectors.toList());
-
-                    return new CronogramaDefinitivoListDto(
-                            cronograma.getId(),
-                            cronograma.getMes(),
-                            cronograma.getAnio(),
-                            ddjjsFiltradas);
-                })
+                .map(this::convertirACronogramaDefinitivoListDto)
                 .collect(Collectors.toList());
+    }
+
+    private CronogramaDefinitivoListDto convertirACronogramaDefinitivoListDto(CronogramaDefinitivo cronograma) {
+
+        List<RegistroActividadListDto> registrosDto = cronograma.getRegistrosActividades().stream()
+                .map(this::convertirARegistroActividadListDto)
+                .collect(Collectors.toList());
+
+        return new CronogramaDefinitivoListDto(
+                cronograma.getId(),
+                cronograma.getMes(),
+                cronograma.getAnio(),
+                registrosDto);
+    }
+
+    private RegistroActividadListDto convertirARegistroActividadListDto(RegistroActividad actividad) {
+
+        AsistencialListForRmensualDto asistencialDto = null;
+        if (actividad.getAsistencial() != null) {
+            asistencialDto = new AsistencialListForRmensualDto();
+            asistencialDto.setId(actividad.getAsistencial().getId());
+            asistencialDto.setApellido(actividad.getAsistencial().getApellido());
+            asistencialDto.setNombre(actividad.getAsistencial().getNombre());
+            asistencialDto.setDni(actividad.getAsistencial().getDni());
+            asistencialDto.setCuil(actividad.getAsistencial().getCuil());
+
+            // Legajos (idéntico a como se armaba en convertirARegistroMensualCompletoDTO)
+            asistencialDto.setLegajos(actividad.getAsistencial().getLegajos().stream()
+                    .map(legajo -> {
+                        LegajoListDto legajoDTO = new LegajoListDto();
+                        if (legajo.getRevista() != null) {
+                            RevistaListDto revistaDTO = new RevistaListDto();
+
+                            if (legajo.getRevista().getTipoRevista() != null) {
+                                revistaDTO.setTipoRevista(new TipoRevistaListDto(
+                                        legajo.getRevista().getTipoRevista().getNombre()));
+                            }
+
+                            if (legajo.getRevista().getCategoria() != null) {
+                                revistaDTO.setCategoria(new CategoriaListDto(
+                                        legajo.getRevista().getCategoria().getNombre()));
+                            }
+
+                            if (legajo.getRevista().getAdicional() != null) {
+                                revistaDTO.setAdicional(new AdicionalListDto(
+                                        legajo.getRevista().getAdicional().getNombre()));
+                            }
+
+                            legajoDTO.setRevista(revistaDTO);
+                        }
+                        return legajoDTO;
+                    })
+                    .collect(Collectors.toList()));
+
+            // Novedades (idéntico también)
+            asistencialDto.setNovedadesPersonales(actividad.getAsistencial().getNovedadesPersonales().stream()
+                    .map(novedad -> new NovedadPersonalListDto(
+                            novedad.getId(),
+                            novedad.getFechaInicio(),
+                            novedad.getFechaFinal(),
+                            novedad.getHoraInicio(),
+                            novedad.getHoraFinal(),
+                            new TipoLicenciaListDto(novedad.getTipoLicencia().getId(),
+                                    novedad.getTipoLicencia().getNombre())))
+                    .collect(Collectors.toList()));
+        }
+
+        return new RegistroActividadListDto(
+                actividad.getId(),
+                asistencialDto,
+                actividad.getTipoGuardia() != null ? actividad.getTipoGuardia().getId() : null,
+                actividad.getFechaIngreso(),
+                actividad.getFechaEgreso(),
+                actividad.getHoraIngreso(),
+                actividad.getHoraEgreso(),
+                actividad.getEsGuardiaIncompleta());
     }
 
     /*
@@ -562,15 +644,15 @@ public class CronogramaDefinitivoService {
 
     public List<Long> getTiposGuardia(Long idCronograma) {
         return cronogramaDefinitivoRepository.findByIdAndActivoTrue(idCronograma)
-                .map(cronograma -> cronograma.getDdjjs().stream()
-                        .filter(ddjj -> ddjj.getTipoGuardia() != null)
-                        .map(ddjj -> ddjj.getTipoGuardia().getId())
+                .map(cronograma -> cronograma.getRegistrosActividades().stream()
+                        .filter(ra -> ra.getTipoGuardia() != null)
+                        .map(ra -> ra.getTipoGuardia().getId())
                         .distinct()
                         .collect(Collectors.toList()))
                 .orElse(Collections.emptyList()); // Devuelve lista vacía si no existe
     }
 
-    public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorAndActivoTrueDto(int anio, MesesEnum mes,
+    /* public List<CronogramaDefinitivoListDto> findByAnioMesIdEfectorAndActivoTrueDto(int anio, MesesEnum mes,
             Long idEfector) {
         List<CronogramaDefinitivo> cronogramas = findByAnioAndMesAndIdEfectorAndActivoTrue(anio, mes, idEfector);
         return cronogramas.stream()
@@ -596,6 +678,36 @@ public class CronogramaDefinitivoService {
                                         ddjj.getTipoGuardia() != null ? ddjj.getTipoGuardia().getId() : null))
                                 .collect(Collectors.toList())))
                 .collect(Collectors.toList());
+    }
+ */
+    /**
+     * Busca o crea el CronogramaDefinitivo para efector/mes/año y vincula el
+     * registro de actividad.
+     */
+    public RegistroActividad setCronogramaDefinitivo(RegistroActividad registroActividad) {
+
+        Long idEfector = registroActividad.getEfector().getId();
+        MesesEnum mesEnum = MesesEnum.fromNumeroMes(registroActividad.getFechaIngreso().getMonthValue());
+        int anio = registroActividad.getFechaIngreso().getYear();
+
+        Optional<CronogramaDefinitivo> existente = cronogramaDefinitivoRepository
+                .findByEfectorIdAndMesAndAnioAndActivoTrue(idEfector, mesEnum, anio);
+
+        CronogramaDefinitivo cronogramaDefinitivo;
+
+        if (existente.isPresent()) {
+            cronogramaDefinitivo = existente.get();
+        } else {
+            cronogramaDefinitivo = new CronogramaDefinitivo();
+            cronogramaDefinitivo.setEfector(registroActividad.getEfector());
+            cronogramaDefinitivo.setMes(mesEnum);
+            cronogramaDefinitivo.setAnio(anio);
+            cronogramaDefinitivo.setActivo(true);
+            cronogramaDefinitivoRepository.save(cronogramaDefinitivo);
+        }
+
+        registroActividad.setCronogramaDefinitivo(cronogramaDefinitivo);
+        return registroActividad;
     }
 
 }

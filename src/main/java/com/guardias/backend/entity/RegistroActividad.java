@@ -66,7 +66,8 @@ public class RegistroActividad {
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "id_servicio")
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "nivel", "activo", "registrosActividades",
-                        "distribucionesGuardias", "critico", "efectores", "distribucionesConsultorios", "cronogramasTentativos" })
+                        "distribucionesGuardias", "critico", "efectores", "distribucionesConsultorios",
+                        "cronogramasTentativos" })
         private Servicio servicio;
 
         @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
@@ -89,6 +90,12 @@ public class RegistroActividad {
         @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "fecha", "efector",
                         "registrosActividades" })
         RegistrosPendientes registrosPendientes;
+
+        @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+        @JoinColumn(name = "id_cronograma_definitivo")
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "efector",
+                        "registrosActividades" })
+        private CronogramaDefinitivo cronogramaDefinitivo;
 
         @ManyToOne(fetch = FetchType.EAGER, optional = true, cascade = CascadeType.REMOVE)
         @JoinColumn(name = "usuarioIngreso")
@@ -128,7 +135,6 @@ public class RegistroActividad {
 
         @Column(columnDefinition = "BIT DEFAULT 1")
         private Boolean esGuardiaIncompleta;
-        
 
         @Override
         public boolean equals(Object obj) {
