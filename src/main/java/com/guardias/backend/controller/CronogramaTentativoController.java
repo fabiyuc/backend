@@ -2,6 +2,7 @@ package com.guardias.backend.controller;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.CronogramaTentativoDto;
@@ -27,6 +29,7 @@ import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioD
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasDiaDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.CronogramaTentativo;
@@ -361,9 +364,27 @@ public class CronogramaTentativoController {
     @PostMapping("/getServicioAndTipoGuardia")
     public ResponseEntity<TentativoIdsResponseDto> getServicioAndTipoGuardia(
             @RequestBody TentativoSearchRequestDto request) {
-        
+
         TentativoIdsResponseDto response = cronogramaTentativoService.obtenerIdsCronograma(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/totalHorasPorMes/{mes}")
+    public ResponseEntity<List<TotalHorasDiaDto>> calcularTotalHorasPorMes(
+            @PathVariable String mes,
+            @RequestParam Long idEfector,
+            @RequestParam(required = false) List<Long> idsAsistencial,
+            @RequestParam(required = false) List<Long> idsServicio) {
+
+        YearMonth yearMonth = YearMonth.parse(mes);
+
+        List<TotalHorasDiaDto> result = cronogramaTentativoService.calcularTotalHorasPorMes(
+                yearMonth,
+                idEfector,
+                idsAsistencial,
+                idsServicio);
+
+        return ResponseEntity.ok(result);
     }
 
 }
