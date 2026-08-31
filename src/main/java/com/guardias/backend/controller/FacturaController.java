@@ -345,7 +345,7 @@ public class FacturaController {
         }
     }
 
-    @GetMapping("/existeFactura/{idAsistencial}/{idEfector}/{anio}/{mes}/{quincena}")
+    @GetMapping("/existeFactura/{idAsistencial}/{idEfector}/{anio}/{mes}")
     public ResponseEntity<?> existeFactura(
             @PathVariable Long idAsistencial,
             @PathVariable Long idEfector,

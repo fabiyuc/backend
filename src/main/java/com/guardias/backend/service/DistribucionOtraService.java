@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.DistribucionOtraDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.entity.DistribucionOtra;
@@ -123,6 +126,35 @@ public class DistribucionOtraService {
         distribucionOtra.setActivo(true);
 
         return distribucionOtra;
+    }
+
+    public ResponseEntity<?> update(Long id, DistribucionOtraDto dto) {
+
+        Optional<DistribucionOtra> existenteOpt = distribucionOtraRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("La distribución no existe"), HttpStatus.NOT_FOUND);
+
+        DistribucionOtra existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("No se puede editar una distribución inactiva"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        existente.setActivo(false);
+        distribucionOtraRepository.save(existente);
+
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(dto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            existente.setActivo(true);
+            distribucionOtraRepository.save(existente);
+            return respuestaValidaciones;
+        }
+
+        DistribucionOtra nueva = createUpdate(new DistribucionOtra(), dto);
+        DistribucionOtra guardada = distribucionOtraRepository.save(nueva);
+
+        return new ResponseEntity<>(guardada, HttpStatus.OK);
     }
 
     public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
