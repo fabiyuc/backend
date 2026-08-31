@@ -58,7 +58,7 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{fecha}")
+    @GetMapping("/detailFecha/{fecha}")
     public ResponseEntity<List<Feriado>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
         if (!feriadoService.existsByFecha(fecha))
             return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);

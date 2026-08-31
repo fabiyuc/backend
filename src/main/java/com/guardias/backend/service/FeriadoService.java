@@ -142,4 +142,7 @@ public class FeriadoService {
         return (feriadoRepository.existsById(id) && feriadoRepository.findById(id).get().isActivo());
     }
 
+    public boolean esFeriadoHabil(LocalDate fecha) { 
+        return feriadoRepository.findFeriadoHabilPorFecha(fecha).isPresent(); }
+
 }
