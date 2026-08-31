@@ -212,6 +212,37 @@ public class CronogramaTentativoService {
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
 
+    public ResponseEntity<?> update(Long id, CronogramaTentativoDto dto) {
+
+        Optional<CronogramaTentativo> existenteOpt = cronogramaTentativoRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("No existe el cronograma tentativo indicado"),
+                    HttpStatus.NOT_FOUND);
+
+        CronogramaTentativo existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("No se puede editar un cronograma tentativo inactivo"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        ResponseEntity<?> respuestaValidaciones = validations(dto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            return respuestaValidaciones;
+        }
+
+        // Historizar: dar de baja el existente
+        existente.setActivo(false);
+        existente.setObservacion("Reemplazado por edición el " + LocalDate.now());
+        cronogramaTentativoRepository.save(existente);
+
+        // Crear el nuevo, con los datos actualizados del DTO
+        CronogramaTentativo nuevo = createUpdate(new CronogramaTentativo(), dto);
+        CronogramaTentativo guardado = cronogramaTentativoRepository.save(nuevo);
+
+        return new ResponseEntity<>(guardado, HttpStatus.OK);
+    }
+
     public void logicDelete(Long id, String observacion) {
 
         CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)

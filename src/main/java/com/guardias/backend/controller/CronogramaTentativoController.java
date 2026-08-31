@@ -166,6 +166,11 @@ public class CronogramaTentativoController {
         }
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody CronogramaTentativoDto dto) {
+        return cronogramaTentativoService.update(id, dto);
+    }
+
     @GetMapping("/existenCronogramasDesdeFecha/{fechaInicio}/{idAsistencial}/{idEfector}")
     public ResponseEntity<Boolean> existenCronogramasDesdeFecha(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
@@ -176,6 +181,7 @@ public class CronogramaTentativoController {
         return ResponseEntity.ok(existen);
     }
 
+    /* busca todos los CronogramaTentativo activos de una persona+efector, desde una fecha dada hasta fin de ese mes, y les cambia el estado a ANULADO */
     @PostMapping("/updateCronogramasDesdeFecha/{fechaInicio}/{idAsistencial}/{idEfector}")
     public ResponseEntity<?> updateCronogramasDesdeFecha(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
@@ -192,9 +198,6 @@ public class CronogramaTentativoController {
                     HttpStatus.NOT_FOUND);
         }
     }
-
-    // falta el update, donde tiene que hacer igual que en el create de
-    // valorGmicontroller
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id, @RequestBody String observacion) {
