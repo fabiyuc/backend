@@ -53,9 +53,6 @@ public class DistribucionCompletaService {
     private CronogramaTentativoService cronogramaTentativoService;
 
     @Autowired
-    private TipoGuardiaService tipoGuardiaService;
-
-    @Autowired
     DistribucionHorariaService distribucionHorariaService;
 
     public ResultadoCreacionDto crearDistribucionesConCronogramas(DistribucionesConCronogramasDto dto) {
@@ -78,7 +75,7 @@ public class DistribucionCompletaService {
 
                     // Crear Cronogramas Tentativos SOLO para Guardias
                     if (dto.isCrearCronogramasParaGuardias()) {
-                        List<CronogramaTentativo> cronogramasGuardia = crearCronogramasDesdeGuardia(
+                        List<CronogramaTentativo> cronogramasGuardia = cronogramaTentativoService.crearCronogramasDesdeGuardia(
                                 distribucionGuardia);
                         cronogramasCreados += cronogramasGuardia.size();
                     }
@@ -133,141 +130,6 @@ public class DistribucionCompletaService {
         }
 
         return new ResultadoCreacionDto(distribucionesCreadas, cronogramasCreados);
-    }
-
-    private List<CronogramaTentativo> crearCronogramasDesdeGuardia(DistribucionGuardia guardia) {
-        List<CronogramaTentativo> cronogramas = new ArrayList<>();
-
-        // 1. Calcular todas las fechas específicas para esta distribución
-        List<LocalDate> fechas = calcularFechasParaDistribucion(
-                guardia.getDia(),
-                guardia.getFechaInicio(),
-                guardia.getFechaFinalizacion());
-
-        // 2. Para cada fecha crear un cronograma tentativo
-        for (LocalDate fecha : fechas) {
-            try {
-                // Crear DTO para el cronograma
-                CronogramaTentativoDto cronogramaDto = mapearGuardiaACronogramaDto(guardia, fecha);
-
-                // Validar el cronograma antes de crearlo
-                ResponseEntity<?> validacion = cronogramaTentativoService.validations(cronogramaDto);
-                if (validacion.getStatusCode() == HttpStatus.OK) {
-                    CronogramaTentativo cronograma = cronogramaTentativoService.createUpdate(
-                            new CronogramaTentativo(), cronogramaDto);
-                    cronogramaTentativoService.save(cronograma);
-                    cronogramas.add(cronograma);
-                }
-            } catch (Exception e) {
-                // Log del error pero continuar con las demás fechas
-                System.err.println("Error creando cronograma para fecha " + fecha + ": " + e.getMessage());
-            }
-        }
-
-        return cronogramas;
-    }
-
-    private CronogramaTentativoDto mapearGuardiaACronogramaDto(DistribucionGuardia guardia, LocalDate fecha) {
-        CronogramaTentativoDto dto = new CronogramaTentativoDto();
-
-        // Fechas de ingreso
-        dto.setFechaIngreso(fecha);
-        dto.setHoraIngreso(guardia.getHoraIngreso());
-
-        dto.setFechaEgreso(fecha); // Misma fecha para guardias diarias
-
-        // Calcular fecha y hora de egreso
-        LocalTime horaEgreso = calcularHoraEgreso(guardia.getHoraIngreso(), guardia.getCantidadHoras());
-        LocalDate fechaEgreso = calcularFechaEgreso(fecha, guardia.getHoraIngreso(), guardia.getCantidadHoras());
-
-        dto.setFechaEgreso(fechaEgreso);
-        dto.setHoraEgreso(horaEgreso);
-
-        // Relaciones
-        dto.setIdAsistencial(guardia.getPersona().getId());
-        dto.setIdEfector(guardia.getEfector().getId());
-        dto.setIdServicio(guardia.getServicio().getId());
-        dto.setIdTipoGuardia(obtenerIdTipoGuardia(guardia.getTipoGuardia()));
-
-        // Estado por defecto
-        dto.setAceptado(false);
-
-        // Si es CARGO o AGRUPACION -> CONFIRMADO, sino -> PENDIENTE
-        if (guardia.getTipoGuardia() == TipoGuardiaEnum.CARGO || guardia.getTipoGuardia() == TipoGuardiaEnum.AGRUPACION) {
-            dto.setAutorizado(AutorizadoTentativoEnum.CONFIRMADO);
-        } else {
-            dto.setAutorizado(AutorizadoTentativoEnum.PENDIENTE);
-        }
-
-        dto.setActivo(true);
-
-        return dto;
-    }
-
-    private List<LocalDate> calcularFechasParaDistribucion(DiasEnum diaSemana, LocalDate fechaInicio,
-            LocalDate fechaFinalizacion) {
-        List<LocalDate> fechas = new ArrayList<>();
-
-        DayOfWeek diaTarget = convertirDiasEnumADayOfWeek(diaSemana);
-
-        LocalDate fechaActual = fechaInicio;
-        while (!fechaActual.isAfter(fechaFinalizacion)) {
-            if (fechaActual.getDayOfWeek() == diaTarget) {
-                fechas.add(fechaActual);
-            }
-            fechaActual = fechaActual.plusDays(1);
-        }
-
-        return fechas;
-    }
-
-    private DayOfWeek convertirDiasEnumADayOfWeek(DiasEnum dia) {
-        switch (dia) {
-            case LUNES:
-                return DayOfWeek.MONDAY;
-            case MARTES:
-                return DayOfWeek.TUESDAY;
-            case MIERCOLES:
-                return DayOfWeek.WEDNESDAY;
-            case JUEVES:
-                return DayOfWeek.THURSDAY;
-            case VIERNES:
-                return DayOfWeek.FRIDAY;
-            case SABADO:
-                return DayOfWeek.SATURDAY;
-            case DOMINGO:
-                return DayOfWeek.SUNDAY;
-            default:
-                throw new IllegalArgumentException("Día no válido: " + dia);
-        }
-    }
-
-    private LocalTime calcularHoraEgreso(LocalTime horaIngreso, BigDecimal cantidadHoras) {
-
-        // Convertir BigDecimal a double
-        double horasDecimal = cantidadHoras.doubleValue();
-
-        int horas = (int) horasDecimal;
-        int minutos = (int) ((horasDecimal - horas) * 60);
-        return horaIngreso.plusHours(horas).plusMinutes(minutos);
-    }
-
-    private LocalDate calcularFechaEgreso(LocalDate fechaIngreso, LocalTime horaIngreso, BigDecimal cantidadHoras) {
-        LocalTime horaEgreso = calcularHoraEgreso(horaIngreso, cantidadHoras);
-
-        // Si la hora de egreso es menor que la de ingreso, significa que pasó a otro día
-        if (horaEgreso.isBefore(horaIngreso) || horaEgreso.equals(horaIngreso)) {
-            return fechaIngreso.plusDays(1);
-        } else {
-            return fechaIngreso;
-        }
-    }
-
-    private Long obtenerIdTipoGuardia(TipoGuardiaEnum tipoGuardiaNombre) {
-        // Buscar el TipoGuardia por nombre
-        return tipoGuardiaService.findByNombre(tipoGuardiaNombre)
-                .map(TipoGuardia::getId)
-                .orElseThrow(() -> new RuntimeException("Tipo guardia no encontrado: " + tipoGuardiaNombre));
     }
 
 }

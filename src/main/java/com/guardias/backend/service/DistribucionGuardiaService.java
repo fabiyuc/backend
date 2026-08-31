@@ -60,6 +60,8 @@ public class DistribucionGuardiaService {
     DistribucionHorariaService distribucionHorariaService;
     @Autowired
     ServicioService servicioService;
+    @Autowired
+    CronogramaTentativoService cronogramaTentativoService;
 
     public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
@@ -199,6 +201,9 @@ public class DistribucionGuardiaService {
         // --- Crear la nueva con los datos actualizados ---
         DistribucionGuardia nueva = createUpdate(new DistribucionGuardia(), dto);
         DistribucionGuardia guardada = distribucionGuardiaRepository.save(nueva);
+
+        // Generar los cronogramas tentativos correspondientes a la distribución editada
+        cronogramaTentativoService.crearCronogramasDesdeGuardia(guardada);
 
         return new ResponseEntity<>(guardada, HttpStatus.OK);
     }
