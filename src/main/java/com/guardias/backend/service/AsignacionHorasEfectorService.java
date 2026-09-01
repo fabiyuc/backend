@@ -52,7 +52,7 @@ public class AsignacionHorasEfectorService {
         if (dto.getFechaInicio() == null)
             return new ResponseEntity<>(new Mensaje("La fecha de inicio es obligatoria"), HttpStatus.BAD_REQUEST);
 
-        if (dto.getFechaFinalizacion().isBefore(dto.getFechaInicio()))
+        if (dto.getFechaFinalizacion() != null && dto.getFechaFinalizacion().isBefore(dto.getFechaInicio()))
             return new ResponseEntity<>(new Mensaje("La fecha de fin no puede ser anterior a la de inicio"),
                     HttpStatus.BAD_REQUEST);
 
