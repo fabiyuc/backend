@@ -20,7 +20,7 @@ public interface FeriadoRepository extends JpaRepository<Feriado, Long> {
 
     Optional<Feriado> findById(Long id);
 
-    Optional<Feriado> findByFecha(LocalDate fecha);
+    List<Feriado> findAllByFecha(LocalDate fecha);
 
     boolean existsByMotivo(String motivo);
 
@@ -30,6 +30,14 @@ public interface FeriadoRepository extends JpaRepository<Feriado, Long> {
 
     List<Feriado> findByActivo(boolean activo);
 
-    @Query(" SELECT f FROM Feriados f WHERE f.fecha = :fecha AND f.activo = true AND f.tipoFeriado IN ('NACIONAL', 'PROVINCIAL') ") 
-    Optional<Feriado> findFeriadoHabilPorFecha(@Param("fecha") LocalDate fecha);
+    @Query("""
+        SELECT f
+        FROM feriados f
+        WHERE f.fecha = :fecha
+        AND f.activo = true
+        AND f.tipoFeriado IN ('NACIONAL', 'PROVINCIAL')
+    """)
+    Optional<Feriado> findFeriadoHabilPorFecha(
+        @Param("fecha") LocalDate fecha
+    );
 }
