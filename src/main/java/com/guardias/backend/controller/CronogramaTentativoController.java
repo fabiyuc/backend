@@ -365,5 +365,4 @@ public class CronogramaTentativoController {
         TentativoIdsResponseDto response = cronogramaTentativoService.obtenerIdsCronograma(request);
         return ResponseEntity.ok(response);
     }
-
 }
