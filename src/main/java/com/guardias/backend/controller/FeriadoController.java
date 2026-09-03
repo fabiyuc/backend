@@ -58,13 +58,23 @@ public class FeriadoController {
         return new ResponseEntity(feriado, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{fecha}")
-    public ResponseEntity<List<Feriado>> getByFecha(@PathVariable("fecha") LocalDate fecha) {
-        if (!feriadoService.existsByFecha(fecha))
-            return new ResponseEntity(new Mensaje("Fecha no encontrada"), HttpStatus.NOT_FOUND);
-        Feriado feriado = feriadoService.getByFecha(fecha).get();
-        return new ResponseEntity(feriado, HttpStatus.OK);
+    @GetMapping("/detailFecha/{fecha}")
+public ResponseEntity<List<Feriado>> getByFecha(
+        @PathVariable("fecha") LocalDate fecha) {
+
+    List<Feriado> feriados = feriadoService.getByFecha(fecha);
+
+    if (feriados.isEmpty()) {
+        return new ResponseEntity<>(
+            HttpStatus.NOT_FOUND
+        );
     }
+
+    return new ResponseEntity<>(
+        feriados,
+        HttpStatus.OK
+    );
+}
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody FeriadoDto feriadoDto) {

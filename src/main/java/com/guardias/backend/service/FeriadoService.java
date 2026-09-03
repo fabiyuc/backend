@@ -46,9 +46,9 @@ public class FeriadoService {
         return feriadoRepository.findByMotivo(motivo);
     }
 
-    public Optional<Feriado> getByFecha(LocalDate fecha) {
-        return feriadoRepository.findByFecha(fecha);
-    }
+    public List<Feriado> getByFecha(LocalDate fecha) {
+    return feriadoRepository.findAllByFecha(fecha);
+}
 
     public ResponseEntity<?> validations(FeriadoDto feriadoDto, Long id) {
         if (StringUtils.isBlank(feriadoDto.getMotivo()))
@@ -141,5 +141,8 @@ public class FeriadoService {
     public boolean activo(Long id) {
         return (feriadoRepository.existsById(id) && feriadoRepository.findById(id).get().isActivo());
     }
+
+    public boolean esFeriadoHabil(LocalDate fecha) { 
+        return feriadoRepository.findFeriadoHabilPorFecha(fecha).isPresent(); }
 
 }
