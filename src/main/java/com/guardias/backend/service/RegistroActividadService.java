@@ -29,7 +29,6 @@ import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.DdjjRepository;
 import com.guardias.backend.repository.RegistroActividadRepository;
@@ -66,6 +65,8 @@ public class RegistroActividadService {
     HospitalService hospitalService;
     @Autowired
     DdjjRepository ddjjRepository;
+    @Autowired
+    CronogramaDefinitivoService cronogramaDefinitivoService;
 
     public Optional<List<RegistroActividad>> findByActivoTrue() {
         return registroActividadRepository.findByActivoTrue();
@@ -343,8 +344,7 @@ public class RegistroActividadService {
         registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
-        ResponseEntity<?> respuestaDeletePendiente = null;
-        
+        // Cálculo de horas solo si aplica      
         if (!esGuardiaCorta) {
             /* E. Cálculo de horas y montos */
             SumaHoras horas = calcularHoras(registroActividad);
@@ -355,34 +355,26 @@ public class RegistroActividadService {
             sumaHorasService.save(horas);
             registroActividad.setHorasRealizadas(horas);
 
-            /* F. Gestión de registros pendientes */
-            // elimina el registro de la lista de pendientes
-            respuestaDeletePendiente = registrosPendientesService
-                    .deleteRegistroActividad(registroActividad);
-
-            // si la eliminacion fue exitosa desvincula el reg pendiente
-            if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
-                registroActividad.setRegistrosPendientes(null);
-
-                /* Actualización de registro mensual */
-                registroActividad = registroMensualService.setRegistroMensual(registroActividad);
-            }
         } else {
-            // Guardia incompleta: limpia las horas realizadas y no suma al registro mensual
-            registroActividad.setHorasRealizadas(null);
+                registroActividad.setHorasRealizadas(null);
+        }
 
-            /* Gestión de registros pendientes */
-            // elimina el registro de la lista de pendientes
-            respuestaDeletePendiente = registrosPendientesService
-                    .deleteRegistroActividad(registroActividad);
+        // Gestión de registros pendientes (unificada, antes duplicada en cada rama)
+        ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
+                        .deleteRegistroActividad(registroActividad);
 
-            // si la eliminacion fue exitosa desvincula el reg pendiente
-            if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
+        if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
                 registroActividad.setRegistrosPendientes(null);
 
-                /* Actualización de registro mensual sin horas */
-                registroActividad = registroMensualService.setRegistroMensualSinHoras(registroActividad);
-            }
+                // Acumulación mensual: sigue distinguiendo completa/incompleta
+                if (!esGuardiaCorta) {
+                        registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+                } else {
+                        registroActividad = registroMensualService.setRegistroMensualSinHoras(registroActividad);
+                }
+
+                // Cronograma definitivo: no le importa si es completa o incompleta
+                registroActividad = cronogramaDefinitivoService.setCronogramaDefinitivo(registroActividad);
         }
 
         save(registroActividad);

@@ -169,21 +169,7 @@ public class DistribucionGiraController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionGiraDto distribucionGiraDto) {
 
-        if (!distribucionGiraService.activo(id))
-            return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
-
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionGiraDto);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionGira distribucionGira = distribucionGiraService.createUpdate(
-                    distribucionGiraService.findById(id).get(),
-                    distribucionGiraDto);
-            distribucionGiraService.save(distribucionGira);
-            return new ResponseEntity(new Mensaje("Distribucion horaria modificada correctamente"),
-                    HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
+        return distribucionGiraService.update(id, distribucionGiraDto);
     }
 
     @PutMapping("/delete/{id}")

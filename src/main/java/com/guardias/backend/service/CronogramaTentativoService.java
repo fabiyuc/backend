@@ -1,10 +1,17 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,11 +30,18 @@ import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoServicioD
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoSummaryDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoIdsResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.TentativoSearchRequestDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasDiaDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasDto;
+import com.guardias.backend.dto.cronogramaTentativo.TotalHorasResponseDto;
 import com.guardias.backend.dto.cronogramaTentativo.VerificacionTentativoResponseDto;
 import com.guardias.backend.dto.registroActividad.RegActivRegIngresoDto;
 import com.guardias.backend.entity.Autoridad;
 import com.guardias.backend.entity.CronogramaTentativo;
+import com.guardias.backend.entity.DistribucionGuardia;
+import com.guardias.backend.entity.TipoGuardia;
 import com.guardias.backend.enums.AutorizadoTentativoEnum;
+import com.guardias.backend.enums.DiasEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.AsistencialRepository;
 import com.guardias.backend.repository.AutoridadRepository;
 import com.guardias.backend.repository.CronogramaTentativoRepository;
@@ -205,6 +219,37 @@ public class CronogramaTentativoService {
         cronogramaTentativoRepository.save(cronogramaTentativo);
     }
 
+    public ResponseEntity<?> update(Long id, CronogramaTentativoDto dto) {
+
+        Optional<CronogramaTentativo> existenteOpt = cronogramaTentativoRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("No existe el cronograma tentativo indicado"),
+                    HttpStatus.NOT_FOUND);
+
+        CronogramaTentativo existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("No se puede editar un cronograma tentativo inactivo"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        ResponseEntity<?> respuestaValidaciones = validations(dto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            return respuestaValidaciones;
+        }
+
+        // Historizar: dar de baja el existente
+        existente.setActivo(false);
+        existente.setObservacion("Reemplazado por edición el " + LocalDate.now());
+        cronogramaTentativoRepository.save(existente);
+
+        // Crear el nuevo, con los datos actualizados del DTO
+        CronogramaTentativo nuevo = createUpdate(new CronogramaTentativo(), dto);
+        CronogramaTentativo guardado = cronogramaTentativoRepository.save(nuevo);
+
+        return new ResponseEntity<>(guardado, HttpStatus.OK);
+    }
+
     public void logicDelete(Long id, String observacion) {
 
         CronogramaTentativo cronogramaTentativo = cronogramaTentativoRepository.findById(id)
@@ -307,9 +352,9 @@ public class CronogramaTentativoService {
         // Solo entramos si el ID autoridad del DTO no es nulo
         if (idNuevaAutoridad != null) {
             if (cronogramaTentativo.getAutoridad() == null ||
-                !Objects.equals(cronogramaTentativo.getAutoridad().getId(), idNuevaAutoridad)) {
+                    !Objects.equals(cronogramaTentativo.getAutoridad().getId(), idNuevaAutoridad)) {
                 cronogramaTentativo.setAutoridad(autoridadService.findById(idNuevaAutoridad)
-                .orElseThrow(() -> new EntityNotFoundException("Autoridad no encontrada")));
+                        .orElseThrow(() -> new EntityNotFoundException("Autoridad no encontrada")));
             }
         }
 
@@ -435,6 +480,116 @@ public class CronogramaTentativoService {
         LocalDate finDeMes = fechaInicio.withDayOfMonth(fechaInicio.lengthOfMonth());
         return cronogramaTentativoRepository.existsByFechaIngresoBetweenAndActivoTrue(fechaInicio, finDeMes,
                 idAsistencial, idEfector);
+    }
+
+    public TotalHorasResponseDto calcularTotalHorasPorDia(LocalDate fecha, Long idEfector, List<Long> idsAsistencial,
+            List<Long> idsServicio) {
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository.findByFechaIngresoAndActivoTrue(fecha);
+
+        // Filter by Efector (Mandatory)
+        cronogramas = cronogramas.stream()
+                .filter(c -> c.getEfector().getId().equals(idEfector))
+                .collect(Collectors.toList());
+
+        // Filter by Asistencial
+        if (idsAsistencial != null && !idsAsistencial.isEmpty()) {
+            cronogramas = cronogramas.stream()
+                    .filter(c -> idsAsistencial.contains(c.getAsistencial().getId()))
+                    .collect(Collectors.toList());
+        }
+        // Filter by Servicio
+        if (idsServicio != null && !idsServicio.isEmpty()) {
+            cronogramas = cronogramas.stream()
+                    .filter(c -> idsServicio.contains(c.getServicio().getId()))
+                    .collect(Collectors.toList());
+        }
+
+        Map<String, List<CronogramaTentativo>> grouped = cronogramas.stream()
+                .collect(Collectors.groupingBy(c -> c.getAsistencial().getId() + "-" + c.getServicio().getId()));
+
+        List<TotalHorasDto> detalles = new ArrayList<>();
+        double totalGeneral = 0;
+
+        for (List<CronogramaTentativo> list : grouped.values()) {
+            double totalHoras = 0;
+            for (CronogramaTentativo c : list) {
+                LocalDateTime inicio = LocalDateTime.of(c.getFechaIngreso(), c.getHoraIngreso());
+                LocalDateTime fin = LocalDateTime.of(c.getFechaEgreso(), c.getHoraEgreso());
+                totalHoras += Duration.between(inicio, fin).toMinutes() / 60.0;
+            }
+            totalGeneral += totalHoras;
+
+            CronogramaTentativo first = list.get(0);
+            TotalHorasDto dto = new TotalHorasDto(
+                    fecha,
+                    first.getAsistencial().getId(),
+                    first.getAsistencial().getNombre(),
+                    first.getAsistencial().getApellido(),
+                    first.getServicio().getId(),
+                    first.getServicio().getDescripcion(),
+                    totalHoras);
+            detalles.add(dto);
+        }
+        return new TotalHorasResponseDto(detalles, totalGeneral);
+    }
+
+    public List<TotalHorasDiaDto> calcularTotalHorasPorMes(
+            YearMonth mes,
+            Long idEfector,
+            List<Long> idsAsistencial,
+            List<Long> idsServicio) {
+
+        LocalDate fechaInicio = mes.atDay(1);
+        LocalDate fechaEgreso = mes.atEndOfMonth();
+
+        List<CronogramaTentativo> cronogramas = cronogramaTentativoRepository
+                .findByFechaIngresoBetweenAndActivoTrue(
+                        fechaInicio,
+                        fechaEgreso);
+
+        cronogramas = cronogramas.stream()
+                .filter(c -> c.getEfector().getId().equals(idEfector))
+                .filter(c -> idsAsistencial == null
+                        || idsAsistencial.isEmpty()
+                        || idsAsistencial.contains(c.getAsistencial().getId()))
+                .filter(c -> idsServicio == null
+                        || idsServicio.isEmpty()
+                        || idsServicio.contains(c.getServicio().getId()))
+                .collect(Collectors.toList());
+
+        Map<LocalDate, Double> totales = new LinkedHashMap<>();
+
+        for (LocalDate fecha = fechaInicio; !fecha.isAfter(fechaEgreso); fecha = fecha.plusDays(1)) {
+
+            totales.put(fecha, 0.0);
+        }
+
+        for (CronogramaTentativo c : cronogramas) {
+
+            LocalDateTime inicio = LocalDateTime.of(
+                    c.getFechaIngreso(),
+                    c.getHoraIngreso());
+
+            LocalDateTime fin = LocalDateTime.of(
+                    c.getFechaEgreso(),
+                    c.getHoraEgreso());
+
+            double horas = Duration
+                    .between(inicio, fin)
+                    .toMinutes() / 60.0;
+
+            totales.merge(
+                    c.getFechaIngreso(),
+                    horas,
+                    Double::sum);
+        }
+
+        return totales.entrySet()
+                .stream()
+                .map(e -> new TotalHorasDiaDto(
+                        e.getKey(),
+                        e.getValue()))
+                .collect(Collectors.toList());
     }
 
     public boolean updateCronogramasDesdeFecha(LocalDate fechaInicio, Long idAsistencial, Long idEfector) {
@@ -605,6 +760,141 @@ public class CronogramaTentativoService {
 
         // Si no se encuentra el cronograma, devolvemos un DTO con ambos IDs null
         return new TentativoIdsResponseDto(null, null);
+    }
+
+    public List<CronogramaTentativo> crearCronogramasDesdeGuardia(DistribucionGuardia guardia) {
+        List<CronogramaTentativo> cronogramas = new ArrayList<>();
+
+        // 1. Calcular todas las fechas específicas para esta distribución
+        List<LocalDate> fechas = calcularFechasParaDistribucion(
+                guardia.getDia(),
+                guardia.getFechaInicio(),
+                guardia.getFechaFinalizacion());
+
+        // 2. Para cada fecha crear un cronograma tentativo
+        for (LocalDate fecha : fechas) {
+            try {
+                // Crear DTO para el cronograma
+                CronogramaTentativoDto cronogramaDto = mapearGuardiaACronogramaDto(guardia, fecha);
+
+                // Validar el cronograma antes de crearlo
+                ResponseEntity<?> validacion = validations(cronogramaDto);
+                if (validacion.getStatusCode() == HttpStatus.OK) {
+                    CronogramaTentativo cronograma = createUpdate(
+                            new CronogramaTentativo(), cronogramaDto);
+                    save(cronograma);
+                    cronogramas.add(cronograma);
+                }
+            } catch (Exception e) {
+                // Log del error pero continuar con las demás fechas
+                System.err.println("Error creando cronograma para fecha " + fecha + ": " + e.getMessage());
+            }
+        }
+
+        return cronogramas;
+    }
+
+    private List<LocalDate> calcularFechasParaDistribucion(DiasEnum diaSemana, LocalDate fechaInicio,
+            LocalDate fechaFinalizacion) {
+        List<LocalDate> fechas = new ArrayList<>();
+
+        DayOfWeek diaTarget = convertirDiasEnumADayOfWeek(diaSemana);
+
+        LocalDate fechaActual = fechaInicio;
+        while (!fechaActual.isAfter(fechaFinalizacion)) {
+            if (fechaActual.getDayOfWeek() == diaTarget) {
+                fechas.add(fechaActual);
+            }
+            fechaActual = fechaActual.plusDays(1);
+        }
+
+        return fechas;
+    }
+
+    private DayOfWeek convertirDiasEnumADayOfWeek(DiasEnum dia) {
+        switch (dia) {
+            case LUNES:
+                return DayOfWeek.MONDAY;
+            case MARTES:
+                return DayOfWeek.TUESDAY;
+            case MIERCOLES:
+                return DayOfWeek.WEDNESDAY;
+            case JUEVES:
+                return DayOfWeek.THURSDAY;
+            case VIERNES:
+                return DayOfWeek.FRIDAY;
+            case SABADO:
+                return DayOfWeek.SATURDAY;
+            case DOMINGO:
+                return DayOfWeek.SUNDAY;
+            default:
+                throw new IllegalArgumentException("Día no válido: " + dia);
+        }
+    }
+
+    private CronogramaTentativoDto mapearGuardiaACronogramaDto(DistribucionGuardia guardia, LocalDate fecha) {
+        CronogramaTentativoDto dto = new CronogramaTentativoDto();
+
+        // Fechas de ingreso
+        dto.setFechaIngreso(fecha);
+        dto.setHoraIngreso(guardia.getHoraIngreso());
+
+        dto.setFechaEgreso(fecha); // Misma fecha para guardias diarias
+
+        // Calcular fecha y hora de egreso
+        LocalTime horaEgreso = calcularHoraEgreso(guardia.getHoraIngreso(), guardia.getCantidadHoras());
+        LocalDate fechaEgreso = calcularFechaEgreso(fecha, guardia.getHoraIngreso(), guardia.getCantidadHoras());
+
+        dto.setFechaEgreso(fechaEgreso);
+        dto.setHoraEgreso(horaEgreso);
+
+        // Relaciones
+        dto.setIdAsistencial(guardia.getPersona().getId());
+        dto.setIdEfector(guardia.getEfector().getId());
+        dto.setIdServicio(guardia.getServicio().getId());
+        dto.setIdTipoGuardia(obtenerIdTipoGuardia(guardia.getTipoGuardia()));
+
+        // Estado por defecto
+        dto.setAceptado(false);
+
+        // Si es CARGO o AGRUPACION -> CONFIRMADO, sino -> PENDIENTE
+        if (guardia.getTipoGuardia() == TipoGuardiaEnum.CARGO || guardia.getTipoGuardia() == TipoGuardiaEnum.AGRUPACION) {
+            dto.setAutorizado(AutorizadoTentativoEnum.CONFIRMADO);
+        } else {
+            dto.setAutorizado(AutorizadoTentativoEnum.PENDIENTE);
+        }
+
+        dto.setActivo(true);
+
+        return dto;
+    }
+
+    private LocalTime calcularHoraEgreso(LocalTime horaIngreso, BigDecimal cantidadHoras) {
+
+        // Convertir BigDecimal a double
+        double horasDecimal = cantidadHoras.doubleValue();
+
+        int horas = (int) horasDecimal;
+        int minutos = (int) ((horasDecimal - horas) * 60);
+        return horaIngreso.plusHours(horas).plusMinutes(minutos);
+    }
+
+    private LocalDate calcularFechaEgreso(LocalDate fechaIngreso, LocalTime horaIngreso, BigDecimal cantidadHoras) {
+        LocalTime horaEgreso = calcularHoraEgreso(horaIngreso, cantidadHoras);
+
+        // Si la hora de egreso es menor que la de ingreso, significa que pasó a otro día
+        if (horaEgreso.isBefore(horaIngreso) || horaEgreso.equals(horaIngreso)) {
+            return fechaIngreso.plusDays(1);
+        } else {
+            return fechaIngreso;
+        }
+    }
+
+    private Long obtenerIdTipoGuardia(TipoGuardiaEnum tipoGuardiaNombre) {
+        // Buscar el TipoGuardia por nombre
+        return tipoGuardiaService.findByNombre(tipoGuardiaNombre)
+                .map(TipoGuardia::getId)
+                .orElseThrow(() -> new RuntimeException("Tipo guardia no encontrado: " + tipoGuardiaNombre));
     }
 
 }

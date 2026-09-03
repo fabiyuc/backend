@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.Feriado;
@@ -18,7 +20,7 @@ public interface FeriadoRepository extends JpaRepository<Feriado, Long> {
 
     Optional<Feriado> findById(Long id);
 
-    Optional<Feriado> findByFecha(LocalDate fecha);
+    List<Feriado> findAllByFecha(LocalDate fecha);
 
     boolean existsByMotivo(String motivo);
 
@@ -27,4 +29,15 @@ public interface FeriadoRepository extends JpaRepository<Feriado, Long> {
     boolean existsById(Long id);
 
     List<Feriado> findByActivo(boolean activo);
+
+    @Query("""
+        SELECT f
+        FROM feriados f
+        WHERE f.fecha = :fecha
+        AND f.activo = true
+        AND f.tipoFeriado IN ('NACIONAL', 'PROVINCIAL')
+    """)
+    Optional<Feriado> findFeriadoHabilPorFecha(
+        @Param("fecha") LocalDate fecha
+    );
 }

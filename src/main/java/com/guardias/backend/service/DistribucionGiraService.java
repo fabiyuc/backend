@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.DistribucionGiraDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionGira;
 import com.guardias.backend.entity.DistribucionHoraria;
@@ -112,18 +115,38 @@ public class DistribucionGiraService {
                 && distribucionGiraDto.getPuestoSalud() != null)
             distribucionGira.setPuestoSalud(distribucionGiraDto.getPuestoSalud());
 
-        /*
-         * if (distribucionGiraDto.getDestino() != distribucionGira.getDestino()
-         * && distribucionGiraDto.getDestino() != null)
-         * distribucionGira.setDestino(distribucionGiraDto.getDestino());
-         * if (distribucionGiraDto.getDescripcion() != distribucionGira.getDescripcion()
-         * && distribucionGiraDto.getDescripcion() != null)
-         * distribucionGira.setDescripcion(distribucionGiraDto.getDescripcion());
-         */
-
         distribucionGira.setActivo(true);
 
         return distribucionGira;
+    }
+
+    public ResponseEntity<?> update(Long id, DistribucionGiraDto dto) {
+
+        Optional<DistribucionGira> existenteOpt = distribucionGiraRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("La distribución no existe"), HttpStatus.NOT_FOUND);
+
+        DistribucionGira existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("No se puede editar una distribución inactiva"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        existente.setActivo(false);
+        distribucionGiraRepository.save(existente);
+
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(dto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            existente.setActivo(true);
+            distribucionGiraRepository.save(existente);
+            return respuestaValidaciones;
+        }
+
+        DistribucionGira nueva = createUpdate(new DistribucionGira(), dto);
+        DistribucionGira guardada = distribucionGiraRepository.save(nueva);
+
+        return new ResponseEntity<>(guardada, HttpStatus.OK);
     }
 
     public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {

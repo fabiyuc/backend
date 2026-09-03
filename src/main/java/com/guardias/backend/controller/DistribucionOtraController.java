@@ -118,19 +118,6 @@ public class DistribucionOtraController {
         return new ResponseEntity<>(distribucionOtra, HttpStatus.OK);
     }
 
-    /*
-     * @GetMapping("/detailpersona/{idPersona}")
-     * public ResponseEntity<List<DistribucionOtra>>
-     * getByPersona(@PathVariable("idPersona") Long idPersona) {
-     * if (!distribucionOtraService.existsByPersonaId(idPersona))
-     * return new ResponseEntity(new Mensaje("no existe la carga horaria"),
-     * HttpStatus.NOT_FOUND);
-     * List<DistribucionOtra> distribucionOtra =
-     * distribucionOtraService.findByPersonaId(idPersona).get();
-     * return new ResponseEntity<>(distribucionOtra, HttpStatus.OK);
-     * }
-     */
-
     // Nueva implementación de getByPersona que filtra solo las distribuciones
     // activas
     @GetMapping("/detailpersona/{idPersona}")
@@ -169,21 +156,7 @@ public class DistribucionOtraController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionOtraDto distribucionOtraDto) {
 
-        if (!distribucionOtraService.activo(id))
-            return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
-
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionOtraDto);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionOtra distribucionOtra = distribucionOtraService.createUpdate(
-                    distribucionOtraService.findById(id).get(),
-                    distribucionOtraDto);
-            distribucionOtraService.save(distribucionOtra);
-            return new ResponseEntity(new Mensaje("Distribucion horaria modificada correctamente"),
-                    HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
+        return distribucionOtraService.update(id, distribucionOtraDto);
     }
 
     @PutMapping("/delete/{id}")

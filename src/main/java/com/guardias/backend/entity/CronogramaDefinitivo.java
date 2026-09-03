@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,9 +16,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,10 +49,17 @@ public class CronogramaDefinitivo {
             "areaProgramatica", "tipoCaps", "nivelComplejidad", "cabecera", "ministerios", "registrosActividades", "registroMensual", "ddjjs", "registrosPendientes", "servicios", "cronogramasDefinitivos", "habilitacionesGuardias", "habilitacionesGenerales", "cronogramasTentativos", "feriados" })
     private Efector efector;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cronogramaDefinitivo", cascade = CascadeType.ALL)
+        @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "asistencial", "efector",
+                        "registrosPendientes", "registroMensual", "cronogramaDefinitivo", "usuarioIngreso",
+                        "usuarioEgreso", "fechaRegistroIngreso", "horaRegistroIngreso", "fechaRegistroEgreso",
+                        "horaRegistroEgreso" })
+        private List<RegistroActividad> registrosActividades = new ArrayList<>();
+
+    /* @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cronogramaDefinitivo_ddjj", joinColumns = @JoinColumn(name = "id_cronogramaDefinitivo"), inverseJoinColumns = @JoinColumn(name = "id_ddjj"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "cronogramaDefinitivo", "activo", "mes", "anio", "subtotal", "total", "valorGmi", "efector", "director", "directorDPH", "estadoDdjjDirector", "estadoDdjjDirectorDPH", "enPosesionDirector", "enPosesionDirectorDPH", "motivoDirector", "motivoDirectorDPH", "observacionesDdjj", "cronogramasDefinitivos" })
-    private List<Ddjj> ddjjs = new ArrayList<>();
+    private List<Ddjj> ddjjs = new ArrayList<>(); */
 
    /*  @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)

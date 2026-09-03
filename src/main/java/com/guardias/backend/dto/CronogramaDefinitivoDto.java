@@ -1,6 +1,5 @@
 package com.guardias.backend.dto;
 
-import java.util.List;
 
 import com.guardias.backend.enums.MesesEnum;
 
@@ -24,7 +23,7 @@ public class CronogramaDefinitivoDto {
 
     private Long idEfector;
 
-    private List<Long> idDdjjs;
+    //private List<Long> idDdjjs;
 
     //private QuincenaEnum quincena;
     

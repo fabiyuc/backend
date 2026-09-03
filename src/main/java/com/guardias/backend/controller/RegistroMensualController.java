@@ -23,7 +23,6 @@ import com.guardias.backend.dto.registroMensual.RegistroMensualListDto;
 import com.guardias.backend.entity.RegistroActividad;
 import com.guardias.backend.entity.RegistroMensual;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.service.AsistencialService;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.EfectorService;
@@ -353,7 +352,7 @@ public class RegistroMensualController {
             @PathVariable("idServicio") Long idServicio) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        // QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
@@ -375,7 +374,7 @@ public class RegistroMensualController {
             @PathVariable("idEfector") Long idEfector) {
 
         MesesEnum mesEnum = MesesEnum.valueOf(mes);
-        //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+        // QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
 
         try {
             List<RegistroMensualListDto> registros = registroMensualService
@@ -388,30 +387,40 @@ public class RegistroMensualController {
         }
     }
 
-    /* @GetMapping("/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
-    public ResponseEntity<?> getMontoTotalByQuincena(
-            @PathVariable("idAsistencial") Long idAsistencial,
-            @PathVariable("idEfector") Long idEfector,
-            @PathVariable("quincena") String quincena,
-            @PathVariable("mes") String mes,
-            @PathVariable("anio") int anio) {
-
-        QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
-        MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
-
-        try {
-            BigDecimal monto = registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector, quincenaEnum,
-                    mesEnum, anio);
-
-            return new ResponseEntity<>(monto, HttpStatus.OK);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(new Mensaje("Error al obtener el monto " + e.getMessage()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
- */
+    /*
+     * @GetMapping(
+     * "/getMontoTotalByQuincena/{idAsistencial}/{idEfector}/{quincena}/{mes}/{anio}")
+     * public ResponseEntity<?> getMontoTotalByQuincena(
+     * 
+     * @PathVariable("idAsistencial") Long idAsistencial,
+     * 
+     * @PathVariable("idEfector") Long idEfector,
+     * 
+     * @PathVariable("quincena") String quincena,
+     * 
+     * @PathVariable("mes") String mes,
+     * 
+     * @PathVariable("anio") int anio) {
+     * 
+     * QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+     * MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+     * 
+     * try {
+     * BigDecimal monto =
+     * registroMensualService.getMontoTotalByQuincena(idAsistencial, idEfector,
+     * quincenaEnum,
+     * mesEnum, anio);
+     * 
+     * return new ResponseEntity<>(monto, HttpStatus.OK);
+     * 
+     * } catch (Exception e) {
+     * e.printStackTrace();
+     * return new ResponseEntity<>(new Mensaje("Error al obtener el monto " +
+     * e.getMessage()),
+     * HttpStatus.INTERNAL_SERVER_ERROR);
+     * }
+     * }
+     */
     @GetMapping("/getMontoTotal/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<?> getMontoTotal(
             @PathVariable("idAsistencial") Long idAsistencial,
@@ -444,7 +453,8 @@ public class RegistroMensualController {
         MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
 
         try {
-            BigDecimal monto = registroMensualService.getMontoTotalFueraTermino(idAsistencial, idEfector, mesEnum, anio);
+            BigDecimal monto = registroMensualService.getMontoTotalFueraTermino(idAsistencial, idEfector, mesEnum,
+                    anio);
             return new ResponseEntity<>(monto, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -462,7 +472,7 @@ public class RegistroMensualController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            // QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             List<RegistroMensualListDto> registros = registroMensualService.findRegistrosIncompletos(idEfector, mesEnum,
                     anio);
 
@@ -473,7 +483,7 @@ public class RegistroMensualController {
         }
     }
 
-    //obtiene RM con estado de facturacion PENDIENTE o REGULARIZADO
+    // obtiene RM con estado de facturacion PENDIENTE o REGULARIZADO
     @GetMapping("/fuera-de-termino/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTermino(
             @PathVariable Long idEfector,
@@ -492,7 +502,8 @@ public class RegistroMensualController {
         }
     }
 
-    //obtiene RM AGRUPADOS POR MES con estado de facturacion PENDIENTE o REGULARIZADO
+    // obtiene RM AGRUPADOS POR MES con estado de facturacion PENDIENTE o
+    // REGULARIZADO
     @GetMapping("/fuera-de-termino-agrupados/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTerminoAgrupados(
             @PathVariable Long idEfector,
@@ -501,7 +512,8 @@ public class RegistroMensualController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoAgrupados(idEfector,
+            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoAgrupados(
+                    idEfector,
                     mesEnum, anio);
 
             return ResponseEntity.ok(registros);
@@ -511,7 +523,8 @@ public class RegistroMensualController {
         }
     }
 
-    //obtiene RM AGRUPADOS POR MES y servicio con estado de facturacion PENDIENTE o REGULARIZADO
+    // obtiene RM AGRUPADOS POR MES y servicio con estado de facturacion PENDIENTE o
+    // REGULARIZADO
     @GetMapping("/fuera-de-termino-agrupados-servicio/{idEfector}/{mes}/{anio}/{idServicio}")
     public ResponseEntity<List<RegistroMensualListDto>> listFueraDeTerminoAgrupadosServicio(
             @PathVariable Long idEfector,
@@ -521,8 +534,9 @@ public class RegistroMensualController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            List<RegistroMensualListDto> registros = registroMensualService.findRegistrosFueraDeTerminoAgrupadosServicio(idEfector,
-                    mesEnum, anio,idServicio);
+            List<RegistroMensualListDto> registros = registroMensualService
+                    .findRegistrosFueraDeTerminoAgrupadosServicio(idEfector,
+                            mesEnum, anio, idServicio);
 
             return ResponseEntity.ok(registros);
 
@@ -571,12 +585,15 @@ public class RegistroMensualController {
     public ResponseEntity<Boolean> existenAutorizados(
             @PathVariable Long idEfector,
             @PathVariable String mes,
-            @PathVariable int anio,
-            @PathVariable String quincena) {
+            @PathVariable int anio/*
+                                   * ,
+                                   * 
+                                   * @PathVariable String quincena
+                                   */) {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            //QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
+            // QuincenaEnum quincenaEnum = QuincenaEnum.valueOf(quincena.toUpperCase());
             boolean existen = registroMensualService.existenCompletos(idEfector, mesEnum, anio);
             return ResponseEntity.ok(existen);
 
@@ -609,7 +626,8 @@ public class RegistroMensualController {
 
         try {
             MesesEnum mesEnum = MesesEnum.valueOf(mes);
-            boolean cumplenCondiciones = registroMensualService.existenRegularizadosSinPendientes(idEfector, mesEnum, anio);
+            boolean cumplenCondiciones = registroMensualService.existenRegularizadosSinPendientes(idEfector, mesEnum,
+                    anio);
             return ResponseEntity.ok(cumplenCondiciones);
 
         } catch (Exception e) {

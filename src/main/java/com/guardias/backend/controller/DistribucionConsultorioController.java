@@ -174,21 +174,7 @@ public class DistribucionConsultorioController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionConsultorioDto distribucionConsultorioDto) {
 
-        if (!distribucionConsultorioService.existsById(id))
-            return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
-
-        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(distribucionConsultorioDto);
-
-        if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
-            DistribucionConsultorio distribucionConsultorio = distribucionConsultorioService.createUpdate(
-                    distribucionConsultorioService.findById(id).get(),
-                    distribucionConsultorioDto);
-            distribucionConsultorioService.save(distribucionConsultorio);
-            return new ResponseEntity(new Mensaje("Distribucion horaria modificada correctamente"),
-                    HttpStatus.OK);
-        } else {
-            return respuestaValidaciones;
-        }
+        return distribucionConsultorioService.update(id, distribucionConsultorioDto);
     }
 
     @PutMapping("/delete/{id}")

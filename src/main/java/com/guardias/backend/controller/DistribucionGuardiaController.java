@@ -162,6 +162,12 @@ public class DistribucionGuardiaController {
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
 
+        return distribucionGuardiaService.update(id, distribucionGuardiaDto);
+    }
+    /* @PutMapping(("/update/{id}"))
+    public ResponseEntity<?> update(@PathVariable("id") Long id,
+            @RequestBody DistribucionGuardiaDto distribucionGuardiaDto) {
+
         if (!distribucionGuardiaService.activo(id))
             return new ResponseEntity(new Mensaje("La distribucion no existe"), HttpStatus.NOT_FOUND);
 
@@ -177,17 +183,11 @@ public class DistribucionGuardiaController {
         } else {
             return respuestaValidaciones;
         }
-    }
+    } */
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!distribucionGuardiaService.activo(id))
-            return new ResponseEntity(new Mensaje("no existe la distribucion"), HttpStatus.NOT_FOUND);
-
-        DistribucionGuardia distribucionGuardia = distribucionGuardiaService.findById(id).get();
-        distribucionGuardia.setActivo(false);
-        distribucionGuardiaService.save(distribucionGuardia);
-        return new ResponseEntity(new Mensaje("distribucion eliminada correctamente"), HttpStatus.OK);
+        return distribucionGuardiaService.logicDelete(id);
     }
 
     @DeleteMapping("/fisicdelete/{id}")

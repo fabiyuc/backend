@@ -12,12 +12,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.DistribucionGuardiaDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.dto.cronogramaTentativo.ValidacionCronogramaResponseDto;
 import com.guardias.backend.dto.distribucionGuardia.DistribucionCheckDto;
+import com.guardias.backend.entity.CronogramaTentativo;
 import com.guardias.backend.entity.DistribucionGuardia;
 import com.guardias.backend.entity.DistribucionHoraria;
 import com.guardias.backend.enums.DiasEnum;
@@ -27,6 +31,7 @@ import com.guardias.backend.repository.DistribucionConsultorioRepository;
 import com.guardias.backend.repository.DistribucionGiraRepository;
 import com.guardias.backend.repository.DistribucionGuardiaRepository;
 import com.guardias.backend.repository.DistribucionOtraRepository;
+import com.guardias.backend.repository.CronogramaTentativoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -44,6 +49,8 @@ public class DistribucionGuardiaService {
     @Autowired
     DistribucionOtraRepository distribucionOtraRepository;
     @Autowired
+    CronogramaTentativoRepository cronogramaTentativoRepository;
+    @Autowired
     EfectorService efectorService;
     @Autowired
     PersonService personService;
@@ -53,6 +60,8 @@ public class DistribucionGuardiaService {
     DistribucionHorariaService distribucionHorariaService;
     @Autowired
     ServicioService servicioService;
+    @Autowired
+    CronogramaTentativoService cronogramaTentativoService;
 
     public Optional<List<DistribucionGuardia>> findByActivoTrue() {
         return distribucionGuardiaRepository.findByActivoTrue();
@@ -145,6 +154,92 @@ public class DistribucionGuardiaService {
         return distribucionGuardia;
     }
 
+    public ResponseEntity<?> update(Long id, DistribucionGuardiaDto dto) {
+
+        Optional<DistribucionGuardia> existenteOpt = distribucionGuardiaRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("No existe la distribución de guardia indicada"),
+                    HttpStatus.NOT_FOUND);
+
+        DistribucionGuardia existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("No se puede editar una distribución inactiva"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // bloquear si ya hay cronogramas tentativos activos generados
+        // a partir de esta distribución ---
+        List<CronogramaTentativo> tentativosActivos = cronogramaTentativoRepository.findActivosPorPersonaEfectorYRango(
+                existente.getPersona().getId(),
+                existente.getEfector().getId(),
+                existente.getFechaInicio(),
+                existente.getFechaFinalizacion());
+
+        if (!tentativosActivos.isEmpty()) {
+            return new ResponseEntity<>(
+                    new Mensaje("No se puede editar: existen " + tentativosActivos.size() +
+                            " cronogramas tentativos activos para este período. Debe darlos de baja primero."),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // --- Historizar: dar de baja la vieja ANTES de validar horas, para que no se
+        // cuente a sí misma ---
+        existente.setActivo(false);
+        distribucionGuardiaRepository.save(existente);
+
+        // --- Validaciones estructurales + de tope de horas, ya existentes ---
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(dto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            // Si la validación falla, hay que revertir la baja para no dejar la
+            // distribución huérfana
+            existente.setActivo(true);
+            distribucionGuardiaRepository.save(existente);
+            return respuestaValidaciones;
+        }
+
+        // --- Crear la nueva con los datos actualizados ---
+        DistribucionGuardia nueva = createUpdate(new DistribucionGuardia(), dto);
+        DistribucionGuardia guardada = distribucionGuardiaRepository.save(nueva);
+
+        // Generar los cronogramas tentativos correspondientes a la distribución editada
+        cronogramaTentativoService.crearCronogramasDesdeGuardia(guardada);
+
+        return new ResponseEntity<>(guardada, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> logicDelete(Long id) {
+
+        Optional<DistribucionGuardia> existenteOpt = distribucionGuardiaRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("No existe la distribución de guardia indicada"),
+                    HttpStatus.NOT_FOUND);
+
+        DistribucionGuardia existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("La distribución ya está inactiva"), HttpStatus.BAD_REQUEST);
+        }
+
+        List<CronogramaTentativo> tentativosActivos = cronogramaTentativoRepository.findActivosPorPersonaEfectorYRango(
+                existente.getPersona().getId(),
+                existente.getEfector().getId(),
+                existente.getFechaInicio(),
+                existente.getFechaFinalizacion());
+
+        if (!tentativosActivos.isEmpty()) {
+            return new ResponseEntity<>(
+                    new Mensaje("No se puede eliminar: existen " + tentativosActivos.size() +
+                            " cronogramas tentativos activos para este período. Debe darlos de baja primero."),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        existente.setActivo(false);
+        distribucionGuardiaRepository.save(existente);
+
+        return new ResponseEntity(new Mensaje("Distribución eliminada correctamente"), HttpStatus.OK);
+    }
+
     public boolean existDistribucion(DiasEnum dia, LocalDate fecha, Long idAsistencial, Long idEfector) {
 
         if (dia == null || fecha == null || idAsistencial == null || idEfector == null) {
@@ -181,88 +276,30 @@ public class DistribucionGuardiaService {
     public ValidacionCronogramaResponseDto validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
 
         System.out.println("=== INICIO validarCronogramaEnDistribucion ===");
-    
-    if (dto == null) {
-        System.out.println("ERROR: DTO recibido es nulo");
-        throw new IllegalArgumentException("El DTO no puede ser nulo.");
-    }
 
-    System.out.println("Validando cronograma para: ");
-    System.out.println("  - idAsistencial: " + dto.getIdAsistencial());
-    System.out.println("  - idEfector: " + dto.getIdEfector());
-    System.out.println("  - tipoGuardia: " + dto.getTipoGuardia());
-    System.out.println("  - fechaIngreso: " + dto.getFechaIngreso());
-    System.out.println("  - horaIngreso: " + dto.getHoraIngreso());
-    System.out.println("  - horaEgreso: " + dto.getHoraEgreso());
-
-    // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
-    // entenderlo luego como TIME en la comparacion
-    String horaIngresoString = dto.getHoraIngreso().toString();
-    String horaEgresoString = dto.getHoraEgreso().toString();
-    
-    System.out.println("Hora ingreso convertida: " + horaIngresoString);
-    System.out.println("Hora egreso convertida: " + horaEgresoString);
-
-    // 1. Primero verificamos si hay coincidencia exacta
-    System.out.println("Buscando coincidencia exacta en repository...");
-    boolean coincideExactamente = distribucionGuardiaRepository.findValidDistribucion(
-            dto.getIdAsistencial(),
-            dto.getIdEfector(),
-            dto.getTipoGuardia(),
-            dto.getFechaIngreso(),
-            horaIngresoString,
-            horaEgresoString).isPresent();
-
-    System.out.println("Coincidencia exacta encontrada: " + coincideExactamente);
-
-    if (coincideExactamente) {
-        System.out.println("RETURN: Coincidencia exacta - true, false, false");
-        return new ValidacionCronogramaResponseDto(true, false, false);
-    }
-
-    // 2. Verificación de distribución activa parcial (mismo mes y año)
-    System.out.println("Buscando distribución parcial...");
-    
-    LocalDate fechaIngreso = dto.getFechaIngreso();
-    LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-    LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-    DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
-    
-    System.out.println("Semana analizada: " + inicioSemana + " a " + finSemana);
-    System.out.println("Día tentativo: " + diaTentativo);
-
-    TipoGuardiaEnum tipoGuardiaEnum = TipoGuardiaEnum.valueOf(dto.getTipoGuardia());
-    
-    System.out.println("Tipo guardia enum: " + tipoGuardiaEnum);
-
-    boolean existeDistribucionParcial = distribucionGuardiaRepository.existsDistribucionParcialSemanal(
-            dto.getIdAsistencial(),
-            dto.getIdEfector(),
-            tipoGuardiaEnum,
-            inicioSemana,
-            finSemana);
-
-    System.out.println("Distribución parcial encontrada: " + existeDistribucionParcial);
-
-    // 3. Determinar si no hay ninguna distribución
-    boolean sinDistribucion = !existeDistribucionParcial;
-    
-    System.out.println("Sin distribución: " + sinDistribucion);
-    System.out.println("RETURN: false, " + existeDistribucionParcial + ", " + sinDistribucion);
-    System.out.println("=== FIN validarCronogramaEnDistribucion ===");
-
-    return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
-}
-        /* if (dto == null) {
+        if (dto == null) {
+            System.out.println("ERROR: DTO recibido es nulo");
             throw new IllegalArgumentException("El DTO no puede ser nulo.");
         }
+
+        System.out.println("Validando cronograma para: ");
+        System.out.println("  - idAsistencial: " + dto.getIdAsistencial());
+        System.out.println("  - idEfector: " + dto.getIdEfector());
+        System.out.println("  - tipoGuardia: " + dto.getTipoGuardia());
+        System.out.println("  - fechaIngreso: " + dto.getFechaIngreso());
+        System.out.println("  - horaIngreso: " + dto.getHoraIngreso());
+        System.out.println("  - horaEgreso: " + dto.getHoraEgreso());
 
         // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
         // entenderlo luego como TIME en la comparacion
         String horaIngresoString = dto.getHoraIngreso().toString();
         String horaEgresoString = dto.getHoraEgreso().toString();
 
+        System.out.println("Hora ingreso convertida: " + horaIngresoString);
+        System.out.println("Hora egreso convertida: " + horaEgresoString);
+
         // 1. Primero verificamos si hay coincidencia exacta
+        System.out.println("Buscando coincidencia exacta en repository...");
         boolean coincideExactamente = distribucionGuardiaRepository.findValidDistribucion(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
@@ -271,32 +308,98 @@ public class DistribucionGuardiaService {
                 horaIngresoString,
                 horaEgresoString).isPresent();
 
+        System.out.println("Coincidencia exacta encontrada: " + coincideExactamente);
+
         if (coincideExactamente) {
+            System.out.println("RETURN: Coincidencia exacta - true, false, false");
             return new ValidacionCronogramaResponseDto(true, false, false);
         }
 
         // 2. Verificación de distribución activa parcial (mismo mes y año)
+        System.out.println("Buscando distribución parcial...");
 
         LocalDate fechaIngreso = dto.getFechaIngreso();
         LocalDate inicioSemana = fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate finSemana = fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
 
+        System.out.println("Semana analizada: " + inicioSemana + " a " + finSemana);
+        System.out.println("Día tentativo: " + diaTentativo);
+
         TipoGuardiaEnum tipoGuardiaEnum = TipoGuardiaEnum.valueOf(dto.getTipoGuardia());
+
+        System.out.println("Tipo guardia enum: " + tipoGuardiaEnum);
 
         boolean existeDistribucionParcial = distribucionGuardiaRepository.existsDistribucionParcialSemanal(
                 dto.getIdAsistencial(),
                 dto.getIdEfector(),
                 tipoGuardiaEnum,
                 inicioSemana,
-                finSemana,
-                diaTentativo);
+                finSemana);
+
+        System.out.println("Distribución parcial encontrada: " + existeDistribucionParcial);
 
         // 3. Determinar si no hay ninguna distribución
         boolean sinDistribucion = !existeDistribucionParcial;
 
+        System.out.println("Sin distribución: " + sinDistribucion);
+        System.out.println("RETURN: false, " + existeDistribucionParcial + ", " + sinDistribucion);
+        System.out.println("=== FIN validarCronogramaEnDistribucion ===");
+
         return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial, sinDistribucion);
-    } */
+    }
+    /*
+     * if (dto == null) {
+     * throw new IllegalArgumentException("El DTO no puede ser nulo.");
+     * }
+     * 
+     * // Convierto LocalTime a String antes de enviarlo para que SQL Server pueda
+     * // entenderlo luego como TIME en la comparacion
+     * String horaIngresoString = dto.getHoraIngreso().toString();
+     * String horaEgresoString = dto.getHoraEgreso().toString();
+     * 
+     * // 1. Primero verificamos si hay coincidencia exacta
+     * boolean coincideExactamente =
+     * distribucionGuardiaRepository.findValidDistribucion(
+     * dto.getIdAsistencial(),
+     * dto.getIdEfector(),
+     * dto.getTipoGuardia(),
+     * dto.getFechaIngreso(),
+     * horaIngresoString,
+     * horaEgresoString).isPresent();
+     * 
+     * if (coincideExactamente) {
+     * return new ValidacionCronogramaResponseDto(true, false, false);
+     * }
+     * 
+     * // 2. Verificación de distribución activa parcial (mismo mes y año)
+     * 
+     * LocalDate fechaIngreso = dto.getFechaIngreso();
+     * LocalDate inicioSemana =
+     * fechaIngreso.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+     * LocalDate finSemana =
+     * fechaIngreso.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+     * DiasEnum diaTentativo = obtenerDiaSemana(fechaIngreso);
+     * 
+     * TipoGuardiaEnum tipoGuardiaEnum =
+     * TipoGuardiaEnum.valueOf(dto.getTipoGuardia());
+     * 
+     * boolean existeDistribucionParcial =
+     * distribucionGuardiaRepository.existsDistribucionParcialSemanal(
+     * dto.getIdAsistencial(),
+     * dto.getIdEfector(),
+     * tipoGuardiaEnum,
+     * inicioSemana,
+     * finSemana,
+     * diaTentativo);
+     * 
+     * // 3. Determinar si no hay ninguna distribución
+     * boolean sinDistribucion = !existeDistribucionParcial;
+     * 
+     * return new ValidacionCronogramaResponseDto(false, existeDistribucionParcial,
+     * sinDistribucion);
+     * }
+     */
 
     public DiasEnum obtenerDiaSemana(LocalDate fecha) {
         DayOfWeek dayOfWeek = fecha.getDayOfWeek();

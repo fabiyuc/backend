@@ -54,7 +54,7 @@ public class DdjjDto {
     @NotBlank
     private Long idTipoGuardia;
 
-    private List<Long> idCronogramasDefinitivos;
+    //private List<Long> idCronogramasDefinitivos;
 
     //private QuincenaEnum quincena;
 

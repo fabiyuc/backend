@@ -9,9 +9,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.guardias.backend.dto.DistribucionConsultorioDto;
+import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaTentativo.CronogramaTentativoResquestDto;
 import com.guardias.backend.entity.DistribucionConsultorio;
 import com.guardias.backend.entity.DistribucionHoraria;
@@ -126,21 +129,41 @@ public class DistribucionConsultorioService {
                 && distribucionConsultorioDto.getLugar() != null)
             distribucionConsultorio.setLugar(distribucionConsultorioDto.getLugar());
 
-        /*
-         * if (distribucionConsultorioDto.getEspecialidad() !=
-         * distribucionConsultorio.getEspecialidad()
-         * && distribucionConsultorioDto.getEspecialidad() != null)
-         * distribucionConsultorio.setEspecialidad(distribucionConsultorioDto.
-         * getEspecialidad());
-         * if (distribucionConsultorioDto.getCantidadTurnos() !=
-         * distribucionConsultorio.getCantidadTurnos())
-         * distribucionConsultorio.setCantidadTurnos(distribucionConsultorioDto.
-         * getCantidadTurnos());
-         */
         distribucionConsultorio.setActivo(true);
         return distribucionConsultorio;
     }
 
+    public ResponseEntity<?> update(Long id, DistribucionConsultorioDto dto) {
+
+        Optional<DistribucionConsultorio> existenteOpt = distribucionConsultorioRepository.findById(id);
+        if (existenteOpt.isEmpty())
+            return new ResponseEntity<>(new Mensaje("La distribución no existe"), HttpStatus.NOT_FOUND);
+
+        DistribucionConsultorio existente = existenteOpt.get();
+
+        if (!existente.isActivo()) {
+            return new ResponseEntity<>(new Mensaje("No se puede editar una distribución inactiva"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        // Historizar: dar de baja la vieja ANTES de validar horas, para que no se
+        // cuente a sí misma
+        existente.setActivo(false);
+        distribucionConsultorioRepository.save(existente);
+
+        ResponseEntity<?> respuestaValidaciones = distribucionHorariaService.validations(dto);
+        if (respuestaValidaciones.getStatusCode() != HttpStatus.OK) {
+            // revertir la baja si la validación falla
+            existente.setActivo(true);
+            distribucionConsultorioRepository.save(existente);
+            return respuestaValidaciones;
+        }
+
+        DistribucionConsultorio nueva = createUpdate(new DistribucionConsultorio(), dto);
+        DistribucionConsultorio guardada = distribucionConsultorioRepository.save(nueva);
+
+        return new ResponseEntity<>(guardada, HttpStatus.OK);
+    }
 
     public boolean validarCronogramaEnDistribucion(CronogramaTentativoResquestDto dto) {
         if (dto == null) {

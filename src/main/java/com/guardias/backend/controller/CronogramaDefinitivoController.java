@@ -9,13 +9,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.guardias.backend.dto.CronogramaDefinitivoDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.cronogramaDefinitivo.CronogramaDefinitivoListDto;
 import com.guardias.backend.entity.CronogramaDefinitivo;
@@ -70,7 +66,7 @@ public class CronogramaDefinitivoController {
      * }
      */
 
-    @PostMapping("/create")
+    /* @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
         try {
 
@@ -91,9 +87,9 @@ public class CronogramaDefinitivoController {
             return new ResponseEntity(new Mensaje("Error al crear cronograma: " + e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    } */
 
-    @PutMapping("/update/{id}")
+    /* @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id,
             @RequestBody CronogramaDefinitivoDto cronogramaDefinitivoDto) {
         if (!cronogramaDefinitivoService.activo(id))
@@ -111,7 +107,7 @@ public class CronogramaDefinitivoController {
         } else {
             return respuestaValidaciones;
         }
-    }
+    } */
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
@@ -131,27 +127,6 @@ public class CronogramaDefinitivoController {
         cronogramaDefinitivoService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("cronograma definitivo eliminado FISICAMENTEE"), HttpStatus.OK);
     }
-
-    /*
-     * @GetMapping("/listCronogramaByAnioMesEfector/{anio}/{mes}/{idEfector}")
-     * public ResponseEntity<List<CronogramaDefinitivoListDto>> listCronograma(
-     * 
-     * @PathVariable int anio,
-     * 
-     * @PathVariable String mes,
-     * 
-     * @PathVariable Long idEfector) {
-     * MesesEnum mesEnum = MesesEnum.valueOf(mes);
-     * try {
-     * List<CronogramaDefinitivoListDto> cronogramasDto =
-     * cronogramaDefinitivoService
-     * .findByAnioMesIdEfectorAndActivoTrueDto(anio, mesEnum, idEfector);
-     * return new ResponseEntity<>(cronogramasDto, HttpStatus.OK);
-     * } catch (IllegalArgumentException e) {
-     * return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-     * }
-     * }
-     */
 
     @GetMapping("/listCronogramaByAnioMesEfector/{anio}/{mes}/{idEfector}")
     public ResponseEntity<List<CronogramaDefinitivoListDto>> listByAnioMesEfector(

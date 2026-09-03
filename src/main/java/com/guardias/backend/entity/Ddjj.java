@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.EstadoDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.security.entity.Usuario;
 
 import jakarta.persistence.CascadeType;
@@ -106,9 +105,9 @@ public class Ddjj {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler","asistenciales", "legajos", "activo", "registrosActividades", "cronogramasTentativos", "descripcion", "ddjjs" })
     private TipoGuardia tipoGuardia;
     
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "ddjjs", cascade = CascadeType.ALL)
+    /* @ManyToMany(fetch = FetchType.LAZY, mappedBy = "ddjjs", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" , "ddjjs"})
-    private List<CronogramaDefinitivo> cronogramasDefinitivos = new ArrayList<CronogramaDefinitivo>();
+    private List<CronogramaDefinitivo> cronogramasDefinitivos = new ArrayList<CronogramaDefinitivo>(); */
 
    /*  @Column(columnDefinition = "VARCHAR(20)", nullable = true) //acepta valor null
     @Enumerated(EnumType.STRING)
