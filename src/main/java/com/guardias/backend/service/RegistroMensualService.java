@@ -826,6 +826,9 @@ public class RegistroMensualService {
 
                                                         legajoDTO.setRevista(revistaDTO);
                                                 }
+                                                legajoDTO.setEspecialidades(legajo.getEspecialidades().stream()
+                                                                .map(especialidad -> especialidad.getNombre())
+                                                                .collect(Collectors.toList()));
                                                 return legajoDTO;
                                         })
                                         .collect(Collectors.toList()));

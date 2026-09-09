@@ -22,4 +22,6 @@ public class RegistroActividadListDto {
         private LocalTime horaIngreso;
         private LocalTime horaEgreso;
         private Boolean esGuardiaIncompleta;
+        private Long idServicio;
+        private String descripcionServicio;
 }
