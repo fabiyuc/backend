@@ -541,6 +541,11 @@ public class CronogramaDefinitivoService {
 
                             legajoDTO.setRevista(revistaDTO);
                         }
+                        legajoDTO.setEspecialidades(legajo.getEspecialidades().stream()
+                                .map(especialidad -> especialidad.getNombre())
+                                .collect(Collectors.toList()));
+                        legajoDTO.setActivo(legajo.isActivo());
+                        legajoDTO.setEsAutoridad(legajo.getEsAutoridad());
                         return legajoDTO;
                     })
                     .collect(Collectors.toList()));
@@ -566,7 +571,9 @@ public class CronogramaDefinitivoService {
                 actividad.getFechaEgreso(),
                 actividad.getHoraIngreso(),
                 actividad.getHoraEgreso(),
-                actividad.getEsGuardiaIncompleta());
+                actividad.getEsGuardiaIncompleta(),
+                actividad.getServicio() != null ? actividad.getServicio().getId() : null,
+                actividad.getServicio() != null ? actividad.getServicio().getDescripcion() : null);
     }
 
     /*

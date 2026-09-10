@@ -86,6 +86,7 @@ public class EfectorController {
         EfectorSummaryDto efectorSummaryDto = new EfectorSummaryDto();
         efectorSummaryDto.setId(efector.getId());
         efectorSummaryDto.setNombre(efector.getNombre());
+        efectorSummaryDto.setRegion(efector.getRegion() != null ? efector.getRegion().getNombre() : null);
 
         return new ResponseEntity<>(efectorSummaryDto, HttpStatus.OK);
     }
@@ -152,14 +153,6 @@ public class EfectorController {
         } else {
             efectorDto.setIdServicios(new ArrayList<>());
         }
-
-        /*
-         * // Retorna el mensaje y el objeto
-         * return new ResponseEntity<>(new Object() {
-         * public final String mensaje = "El efector es de tipo: " + tipoEfector;
-         * public final EfectorDto efector = efectorDto;
-         * }, HttpStatus.OK);
-         */
 
         return new ResponseEntity<>(efectorDto, HttpStatus.OK);
     }
