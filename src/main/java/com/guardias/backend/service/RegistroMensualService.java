@@ -829,6 +829,8 @@ public class RegistroMensualService {
                                                 legajoDTO.setEspecialidades(legajo.getEspecialidades().stream()
                                                                 .map(especialidad -> especialidad.getNombre())
                                                                 .collect(Collectors.toList()));
+                                                legajoDTO.setActivo(legajo.isActivo());
+                                                legajoDTO.setEsAutoridad(legajo.getEsAutoridad());
                                                 return legajoDTO;
                                         })
                                         .collect(Collectors.toList()));

@@ -14,4 +14,6 @@ import lombok.NoArgsConstructor;
 public class LegajoListDto {
     private RevistaListDto revista;
     private List<String> especialidades;
+    private Boolean activo;
+    private Boolean esAutoridad;
 }
