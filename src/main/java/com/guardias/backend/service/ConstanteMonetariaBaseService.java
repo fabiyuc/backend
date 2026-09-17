@@ -15,7 +15,6 @@ import com.guardias.backend.dto.ConstanteMonetariaBaseDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
-import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.ConstateMonetariaBaseRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -94,6 +93,9 @@ public class ConstanteMonetariaBaseService {
 
         /* if (constanteMonetariaBaseDto.getTipoGuardia() != null && !constanteMonetariaBaseDto.getTipoGuardia().equals(constanteMonetariaBase.getTipoGuardia()))
             constanteMonetariaBase.setTipoGuardia(constanteMonetariaBaseDto.getTipoGuardia()); */
+
+        if (constanteMonetariaBaseDto.getFamiliaValorBase() != null)
+        constanteMonetariaBase.setFamiliaValorBase(constanteMonetariaBaseDto.getFamiliaValorBase());
         
         if (constanteMonetariaBaseDto.getDocumentoLegal() != null && !constanteMonetariaBaseDto.getDocumentoLegal().equals(constanteMonetariaBase.getDocumentoLegal())
             && !constanteMonetariaBaseDto.getDocumentoLegal().isEmpty())

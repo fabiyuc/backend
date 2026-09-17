@@ -22,7 +22,6 @@ import com.guardias.backend.dto.ConstanteMonetariaBaseDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
-import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.service.ConstanteMonetariaBaseService;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
@@ -30,7 +29,7 @@ import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 @RestController
 @RequestMapping("/valorGmi")
 @CrossOrigin(origins = "http://localhost:4200")
-public class ValorGmiController {
+public class ConstanteMonetariaBaseController {
 
     @Autowired
     ConstanteMonetariaBaseService constanteMonetariaBaseService;

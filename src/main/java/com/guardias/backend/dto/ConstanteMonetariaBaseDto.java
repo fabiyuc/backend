@@ -2,7 +2,8 @@ package com.guardias.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
+
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class ConstanteMonetariaBaseDto {
     private LocalDate fechaFin;
     private BigDecimal monto;
     //private TipoGuardiaEnum tipoGuardia;
-    private String familiaValorBase;
+    private FamiliaValorBaseEnum familiaValorBase;
     private String documentoLegal;
-    private List<Long> idDdjjs;
+    //private List<Long> idDdjjs;
 }
