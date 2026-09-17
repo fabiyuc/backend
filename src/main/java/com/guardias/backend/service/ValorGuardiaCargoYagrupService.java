@@ -24,6 +24,7 @@ import com.guardias.backend.dto.valorGuardia.ValorGuardiaResponseDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
@@ -485,7 +486,7 @@ public class ValorGuardiaCargoYagrupService {
             LocalDate fechaInicio) {
 
         ValorGuardiaCargoYagrup valor = new ValorGuardiaCargoYagrup();
-        valor.setTipoGuardia(TipoGuardiaEnum.CARGO); // También aplica para AGRUPACION
+        valor.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         valor.setNivelComplejidad(nivel);
         valor.setTotalLav(totalLav);
         valor.setTotalSdf(totalSdf);
@@ -506,7 +507,7 @@ public class ValorGuardiaCargoYagrupService {
             LocalDate fechaInicio) {
 
         ValorGuardiaExtrayCF valor = new ValorGuardiaExtrayCF();
-        valor.setTipoGuardia(TipoGuardiaEnum.EXTRA); // También aplica para CONTRAFACTURA
+        valor.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
         valor.setNivelComplejidad(nivel);
         valor.setTotalLav(totalLav);
         valor.setTotalSdf(totalSdf);
@@ -555,7 +556,7 @@ public class ValorGuardiaCargoYagrupService {
     private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
         // A. Buscar candidatos vigentes (Activos y del mismo Nivel/Tipo)
         List<ValorGuardiaCargoYagrup> vigentes = valorGuardiaCargoYagrupRepository
-                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+                .findByFamiliaValorBaseAndNivelComplejidadAndActivoTrue(FamiliaValorBaseEnum.CARGO_AGRUPACION, dto.getNivelComplejidad());
 
         // B. Verificar si alguno coincide exactamente con los hospitales del DTO
         for (ValorGuardiaCargoYagrup viejo : vigentes) {
@@ -572,7 +573,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // C. Guardar el NUEVO registro
         ValorGuardiaCargoYagrup nuevo = new ValorGuardiaCargoYagrup();
-        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         nuevo.setNivelComplejidad(dto.getNivelComplejidad());
         nuevo.setTotalLav(dto.getTotalLav());
         nuevo.setTotalSdf(dto.getTotalSdf());
@@ -600,7 +601,7 @@ public class ValorGuardiaCargoYagrupService {
     private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
         // Misma lógica pero con el repositorio y entidad de Extra/CF
         List<ValorGuardiaExtrayCF> vigentes = valorGuardiaExtraYcfRepository
-                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+                .findByFamiliaValorBaseAndNivelComplejidadAndActivoTrue(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA, dto.getNivelComplejidad());
 
         for (ValorGuardiaExtrayCF viejo : vigentes) {
             if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
@@ -614,7 +615,7 @@ public class ValorGuardiaCargoYagrupService {
         }
 
         ValorGuardiaExtrayCF nuevo = new ValorGuardiaExtrayCF();
-        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
         nuevo.setNivelComplejidad(dto.getNivelComplejidad());
         nuevo.setTotalLav(dto.getTotalLav());
         nuevo.setTotalSdf(dto.getTotalSdf());

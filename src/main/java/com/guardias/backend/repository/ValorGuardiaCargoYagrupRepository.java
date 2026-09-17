@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
-import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 
 @Repository
 public interface ValorGuardiaCargoYagrupRepository extends JpaRepository<ValorGuardiaCargoYagrup, Long> {
@@ -29,8 +29,8 @@ public interface ValorGuardiaCargoYagrupRepository extends JpaRepository<ValorGu
     // Busca valores genéricos (sin hospitales asignados)
     Optional<ValorGuardiaCargoYagrup> findByActivoTrueAndHospitalesIsEmpty();
 
-    List<ValorGuardiaCargoYagrup> findByTipoGuardiaAndNivelComplejidadAndActivoTrue(
-        TipoGuardiaEnum tipoGuardia, 
+    List<ValorGuardiaCargoYagrup> findByFamiliaValorBaseAndNivelComplejidadAndActivoTrue(
+        FamiliaValorBaseEnum familia, 
         int nivelComplejidad
     );
 

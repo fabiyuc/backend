@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,11 +22,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "ValoresGmi")
+@Entity(name = "ConstantesMonetariasBase")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValorGmi {
+public class ConstanteMonetariaBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,22 +40,23 @@ public class ValorGmi {
     @Column(precision = 20, scale = 2)
     private BigDecimal monto;
 
-    private TipoGuardiaEnum tipoGuardia;
+    //private TipoGuardiaEnum tipoGuardia;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(30)")
+    private FamiliaValorBaseEnum familiaValorBase;
 
     private String documentoLegal;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL)
+    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "activo", "mes", "anio", "subtotal",
             "total", "estadoDdjj", "valorGmi",  })
-    private List<Ddjj> ddjjs = new ArrayList<>();
+    private List<Ddjj> ddjjs = new ArrayList<>(); */
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valorGmi", cascade = CascadeType.ALL )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "constanteMonetariaBase", cascade = CascadeType.ALL )
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "valorGmi" ,"activo","fechaInicio","fechaFin","bonoUti","decreto1178Lav","decreto1178Sdf","decreto1657Lav","decreto1657Sdf"})
+            "constanteMonetariaBase" ,"activo","fechaInicio","fechaFin","bonoUti","decreto1178Lav","decreto1178Sdf","decreto1657Lav","decreto1657Sdf"})
     private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
-
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-    // "fechaInicio","fechaFin","monto","tipoGuardia","ddjjs","activo" })
 
     @Override
     public boolean equals(Object obj) {
@@ -63,7 +66,7 @@ public class ValorGmi {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ValorGmi other = (ValorGmi) obj;
+        ConstanteMonetariaBase other = (ConstanteMonetariaBase) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

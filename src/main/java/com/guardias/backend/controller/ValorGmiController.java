@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.guardias.backend.dto.ConstanteMonetariaBaseDto;
 import com.guardias.backend.dto.Mensaje;
-import com.guardias.backend.dto.ValorGmiDto;
-import com.guardias.backend.entity.ValorGmi;
+import com.guardias.backend.entity.ConstanteMonetariaBase;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.service.ConstanteMonetariaBaseService;
 import com.guardias.backend.service.DdjjService;
-import com.guardias.backend.service.ValorGmiService;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 
 @RestController
@@ -32,7 +33,7 @@ import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 public class ValorGmiController {
 
     @Autowired
-    ValorGmiService valorGmiService;
+    ConstanteMonetariaBaseService constanteMonetariaBaseService;
 
     @Autowired 
     ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
@@ -40,58 +41,58 @@ public class ValorGmiController {
     DdjjService ddjjService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<ValorGmi>> list() {
-        List<ValorGmi> list = valorGmiService.findByActivoTrue().get();
-        return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
+    public ResponseEntity<List<ConstanteMonetariaBase>> list() {
+        List<ConstanteMonetariaBase> list = constanteMonetariaBaseService.findByActivoTrue().get();
+        return new ResponseEntity<List<ConstanteMonetariaBase>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/listAll")
-    public ResponseEntity<List<ValorGmi>> listAll() {
-        List<ValorGmi> list = valorGmiService.findAll();
-        return new ResponseEntity<List<ValorGmi>>(list, HttpStatus.OK);
+    public ResponseEntity<List<ConstanteMonetariaBase>> listAll() {
+        List<ConstanteMonetariaBase> list = constanteMonetariaBaseService.findAll();
+        return new ResponseEntity<List<ConstanteMonetariaBase>>(list, HttpStatus.OK);
     }
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<ValorGmi> getById(@PathVariable("id") Long id) {
+    public ResponseEntity<ConstanteMonetariaBase> getById(@PathVariable("id") Long id) {
 
-        if (!valorGmiService.activo(id))
+        if (!constanteMonetariaBaseService.activo(id))
             return new ResponseEntity(new Mensaje("Valor no encontrado"), HttpStatus.NOT_FOUND);
-        ValorGmi valorGmi = valorGmiService.findById(id).get();
+        ConstanteMonetariaBase valorGmi = constanteMonetariaBaseService.findById(id).get();
         return new ResponseEntity(valorGmi, HttpStatus.OK);
     }
 
     @GetMapping("/detailByFechaAndTipoGuardia/{fecha}/{tipoGuardia}")
-    public ResponseEntity<ValorGmi> getByFechaAndTipoGuardia(
+    public ResponseEntity<ConstanteMonetariaBase> getByFechaAndTipoGuardia(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @PathVariable("tipoGuardia") String tipoGuardia) {
-        TipoGuardiaEnum guardia = TipoGuardiaEnum.valueOf(tipoGuardia.toUpperCase());
-        Optional<ValorGmi> valorGmi = valorGmiService.getByFechaAndTipoGuardia(fecha, guardia);
+        FamiliaValorBaseEnum guardia = FamiliaValorBaseEnum.valueOf(tipoGuardia.toUpperCase());
+        Optional<ConstanteMonetariaBase> valorGmi = constanteMonetariaBaseService.getByFechaAndFamilia(fecha, guardia);
         return valorGmi.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/detailByFecha/{fecha}")
-    public ResponseEntity<List<ValorGmi>> getByFecha(
+    public ResponseEntity<List<ConstanteMonetariaBase>> getByFecha(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        Optional<List<ValorGmi>> valorGmi = valorGmiService.getByFecha(fecha);
+        Optional<List<ConstanteMonetariaBase>> valorGmi = constanteMonetariaBaseService.getByFecha(fecha);
         return valorGmi.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody ValorGmiDto valorGmiDto) {
+    public ResponseEntity<?> create(@RequestBody ConstanteMonetariaBaseDto constanteMonetariaBaseDto) {
         /*Valida el DTO recibido */
-        ResponseEntity<?> respuestaValidaciones = valorGmiService.validations(valorGmiDto);
+        ResponseEntity<?> respuestaValidaciones = constanteMonetariaBaseService.validations(constanteMonetariaBaseDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
             /*Crea/actualiza un ValorGmi con los datos del DTO */
-            ValorGmi valorGmi = valorGmiService.createUpdate(new ValorGmi(), valorGmiDto);
-            valorGmiService.save(valorGmi);
+            ConstanteMonetariaBase valorGmi = constanteMonetariaBaseService.createUpdate(new ConstanteMonetariaBase(), constanteMonetariaBaseDto);
+            constanteMonetariaBaseService.save(valorGmi);
 
             /*Genera valores asociados */
             // Llama para crear registros de ValorGuardiaCargoYagrup vinculados al ValorGmi recien creado 
-            //valorGuardiaCargoYagrupService.inicializarValoresGuardia();
+            //constanteMonetariaBaseService.inicializarValoresGuardia();
 
             return new ResponseEntity(new Mensaje("Valor creado correctamente"), HttpStatus.OK);
         } else {
@@ -100,16 +101,16 @@ public class ValorGmiController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ValorGmiDto valorGmiDto) {
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody ConstanteMonetariaBaseDto constanteMonetariaBaseDto) {
 
-        if (!valorGmiService.activo(id))
+        if (!constanteMonetariaBaseService.activo(id))
             return new ResponseEntity(new Mensaje("El valor no existe"), HttpStatus.NOT_FOUND);
-        ResponseEntity<?> respuestaValidaciones = valorGmiService.validations(valorGmiDto);
+        ResponseEntity<?> respuestaValidaciones = constanteMonetariaBaseService.validations(constanteMonetariaBaseDto);
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            ValorGmi valorGmi = valorGmiService.createUpdate(valorGmiService.findById(id).get(), valorGmiDto);
-            valorGmiService.save(valorGmi);
+            ConstanteMonetariaBase valorGmi = constanteMonetariaBaseService.createUpdate(constanteMonetariaBaseService.findById(id).get(), constanteMonetariaBaseDto);
+            constanteMonetariaBaseService.save(valorGmi);
             return new ResponseEntity(new Mensaje("Valor actualizado correctamente"), HttpStatus.OK);
         } else {
             return respuestaValidaciones;
@@ -118,18 +119,18 @@ public class ValorGmiController {
 
     @PutMapping("/delete/{id}")
     public ResponseEntity<?> logicDelete(@PathVariable("id") Long id) {
-        if (!valorGmiService.activo(id))
+        if (!constanteMonetariaBaseService.activo(id))
             return new ResponseEntity(new Mensaje("El valor no existe"), HttpStatus.NOT_FOUND);
 
-        return valorGmiService.logicDelete(id);
+        return constanteMonetariaBaseService.logicDelete(id);
     }
 
     @DeleteMapping("/fisicdelete/{id}")
     public ResponseEntity<?> fisicDelete(@PathVariable("id") long id) {
-        if (!valorGmiService.existsById(id))
+        if (!constanteMonetariaBaseService.existsById(id))
             return new ResponseEntity(new Mensaje("El valor no existe"), HttpStatus.NOT_FOUND);
 
-        valorGmiService.deleteById(id);
+        constanteMonetariaBaseService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Valor eliminado FISICAMENTEE"), HttpStatus.OK);
     }
 }

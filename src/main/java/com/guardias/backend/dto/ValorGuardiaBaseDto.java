@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class ValorGuardiaBaseDto {
     
     private boolean activo;
-    private TipoGuardiaEnum tipoGuardia;
+    private String familiaValorBase;
     private int nivelComplejidad;
     private List<Hospital> hospitales;
     private LocalDate fechaInicio;
