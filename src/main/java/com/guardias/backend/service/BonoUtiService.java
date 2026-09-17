@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ import io.micrometer.common.util.StringUtils;
 public class BonoUtiService {
     @Autowired
     BonoUtiRepository bonoUtiRepository;
-    
+
     public Optional<List<BonoUti>> findByActivoTrue() {
         return bonoUtiRepository.findByActivoTrue();
     }
@@ -60,12 +61,23 @@ public class BonoUtiService {
             return new ResponseEntity(new Mensaje("Monto incorrecto"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(bonoUtiDto.getDocumentoLegal())) {
-            return new ResponseEntity<>(new Mensaje("es obligatorio indicar el documento legal"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("es obligatorio indicar el documento legal"),
+                    HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
     public BonoUti createUpdate(BonoUti bonoUti, BonoUtiDto bonoUtiDto) {
+
+        // Cierre automático: si hay un vigente sin fechaFin y esta carga arranca después, se cierra
+        if (bonoUtiDto.getFechaInicio() != null) {
+            bonoUtiRepository.obtenerVigente(bonoUtiDto.getFechaInicio().minusDays(1)).ifPresent(vigenteAnterior -> {
+                if (!vigenteAnterior.getId().equals(bonoUti.getId()) && vigenteAnterior.getFechaFin() == null) {
+                    vigenteAnterior.setFechaFin(bonoUtiDto.getFechaInicio().minusDays(1));
+                    bonoUtiRepository.save(vigenteAnterior);
+                }
+            });
+        }
 
         if (bonoUtiDto.getFechaInicio() != null && !bonoUtiDto.getFechaInicio().equals(bonoUti.getFechaInicio()))
             bonoUti.setFechaInicio(bonoUtiDto.getFechaInicio());
@@ -75,10 +87,11 @@ public class BonoUtiService {
 
         if (bonoUtiDto.getMonto() != null && !bonoUtiDto.getMonto().equals(bonoUti.getMonto()))
             bonoUti.setMonto(bonoUtiDto.getMonto());
-        
-        if (bonoUtiDto.getDocumentoLegal() != null && !bonoUtiDto.getDocumentoLegal().equals(bonoUti.getDocumentoLegal())
-            && !bonoUtiDto.getDocumentoLegal().isEmpty())
-        bonoUti.setDocumentoLegal(bonoUtiDto.getDocumentoLegal());
+
+        if (bonoUtiDto.getDocumentoLegal() != null
+                && !bonoUtiDto.getDocumentoLegal().equals(bonoUti.getDocumentoLegal())
+                && !bonoUtiDto.getDocumentoLegal().isEmpty())
+            bonoUti.setDocumentoLegal(bonoUtiDto.getDocumentoLegal());
 
         bonoUti.setActivo(true);
         return bonoUti;
@@ -90,4 +103,9 @@ public class BonoUtiService {
         save(bonoUti);
         return new ResponseEntity(new Mensaje("Valor actualizado correctamente"), HttpStatus.OK);
     }
+
+    public Optional<BonoUti> obtenerVigente(LocalDate fecha) {
+        return bonoUtiRepository.obtenerVigente(fecha);
+    }
+
 }

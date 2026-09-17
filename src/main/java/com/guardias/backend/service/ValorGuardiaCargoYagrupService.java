@@ -565,7 +565,7 @@ public class ValorGuardiaCargoYagrupService {
                 // C. Lógica de Cierre: Si el nuevo inicia DESPUÉS, cerramos el viejo ayer.
                 if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
                     viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
-                    viejo.setActivo(false);  
+                    //viejo.setActivo(false); — el registro sigue activo=true, ahora como historial cerrado
                     valorGuardiaCargoYagrupRepository.save(viejo);
                 }
             }
@@ -608,7 +608,7 @@ public class ValorGuardiaCargoYagrupService {
                 
                 if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
                     viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
-                    viejo.setActivo(false); 
+                    //viejo.setActivo(false); — el registro sigue activo=true, ahora como historial cerrado
                     valorGuardiaExtraYcfRepository.save(viejo);
                 }
             }

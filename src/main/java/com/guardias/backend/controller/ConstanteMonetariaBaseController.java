@@ -85,12 +85,12 @@ public class ConstanteMonetariaBaseController {
 
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
-            /*Crea/actualiza un ValorGmi con los datos del DTO */
+            /*Crea/actualiza una constante monetaria con los datos del DTO */
             ConstanteMonetariaBase valorGmi = constanteMonetariaBaseService.createUpdate(new ConstanteMonetariaBase(), constanteMonetariaBaseDto);
             constanteMonetariaBaseService.save(valorGmi);
 
             /*Genera valores asociados */
-            // Llama para crear registros de ValorGuardiaCargoYagrup vinculados al ValorGmi recien creado 
+            // Llama para crear registros de ValorGuardiaCargoYagrup vinculados a la constante monetaria recien creada
             //constanteMonetariaBaseService.inicializarValoresGuardia();
 
             return new ResponseEntity(new Mensaje("Valor creado correctamente"), HttpStatus.OK);

@@ -50,7 +50,8 @@ public class ConstanteMonetariaBaseService {
     }
 
     public boolean activo(Long id) {
-        return (constanteMonetariaBaseRepository.existsById(id) && constanteMonetariaBaseRepository.findById(id).get().isActivo());
+        return (constanteMonetariaBaseRepository.existsById(id)
+                && constanteMonetariaBaseRepository.findById(id).get().isActivo());
     }
 
     public Optional<List<ConstanteMonetariaBase>> getByFecha(LocalDate fecha) {
@@ -69,37 +70,65 @@ public class ConstanteMonetariaBaseService {
         if (constanteMonetariaBaseDto.getMonto().compareTo(BigDecimal.ZERO) < 0)
             return new ResponseEntity(new Mensaje("Monto incorrecto"), HttpStatus.BAD_REQUEST);
 
-       /*  if (constanteMonetariaBaseDto.getTipoGuardia() == null)
-            return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST); */
+        /*
+         * if (constanteMonetariaBaseDto.getTipoGuardia() == null)
+         * return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"),
+         * HttpStatus.BAD_REQUEST);
+         */
         if (constanteMonetariaBaseDto.getFamiliaValorBase() == null)
             return new ResponseEntity(new Mensaje("La familia del valor base es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (StringUtils.isBlank(constanteMonetariaBaseDto.getDocumentoLegal())) {
-            return new ResponseEntity<>(new Mensaje("es obligatorio indicar el documento legal"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Mensaje("es obligatorio indicar el documento legal"),
+                    HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(new Mensaje("valido"), HttpStatus.OK);
     }
 
-    public ConstanteMonetariaBase createUpdate(ConstanteMonetariaBase constanteMonetariaBase, ConstanteMonetariaBaseDto constanteMonetariaBaseDto) {
+    public ConstanteMonetariaBase createUpdate(ConstanteMonetariaBase constanteMonetariaBase,
+            ConstanteMonetariaBaseDto constanteMonetariaBaseDto) {
 
-        if (constanteMonetariaBaseDto.getFechaInicio() != null && !constanteMonetariaBaseDto.getFechaInicio().equals(constanteMonetariaBase.getFechaInicio()))
+        // Cierre automático: si hay un vigente de la misma familia sin fechaFin, se cierra
+        if (constanteMonetariaBaseDto.getFechaInicio() != null
+                && constanteMonetariaBaseDto.getFamiliaValorBase() != null) {
+            constanteMonetariaBaseRepository
+                    .getByFechaAndFamilia(constanteMonetariaBaseDto.getFechaInicio().minusDays(1),
+                            constanteMonetariaBaseDto.getFamiliaValorBase())
+                    .ifPresent(vigenteAnterior -> {
+                        if (!vigenteAnterior.getId().equals(constanteMonetariaBase.getId())
+                                && vigenteAnterior.getFechaFin() == null) {
+                            vigenteAnterior.setFechaFin(constanteMonetariaBaseDto.getFechaInicio().minusDays(1));
+                            constanteMonetariaBaseRepository.save(vigenteAnterior);
+                        }
+                    });
+        }
+        if (constanteMonetariaBaseDto.getFechaInicio() != null
+                && !constanteMonetariaBaseDto.getFechaInicio().equals(constanteMonetariaBase.getFechaInicio()))
             constanteMonetariaBase.setFechaInicio(constanteMonetariaBaseDto.getFechaInicio());
 
-        if (constanteMonetariaBaseDto.getFechaFin() != null && !constanteMonetariaBaseDto.getFechaFin().equals(constanteMonetariaBase.getFechaFin()))
+        if (constanteMonetariaBaseDto.getFechaFin() != null
+                && !constanteMonetariaBaseDto.getFechaFin().equals(constanteMonetariaBase.getFechaFin()))
             constanteMonetariaBase.setFechaFin(constanteMonetariaBaseDto.getFechaFin());
 
-        if (constanteMonetariaBaseDto.getMonto() != null && !constanteMonetariaBaseDto.getMonto().equals(constanteMonetariaBase.getMonto()))
+        if (constanteMonetariaBaseDto.getMonto() != null
+                && !constanteMonetariaBaseDto.getMonto().equals(constanteMonetariaBase.getMonto()))
             constanteMonetariaBase.setMonto(constanteMonetariaBaseDto.getMonto());
 
-        /* if (constanteMonetariaBaseDto.getTipoGuardia() != null && !constanteMonetariaBaseDto.getTipoGuardia().equals(constanteMonetariaBase.getTipoGuardia()))
-            constanteMonetariaBase.setTipoGuardia(constanteMonetariaBaseDto.getTipoGuardia()); */
+        /*
+         * if (constanteMonetariaBaseDto.getTipoGuardia() != null &&
+         * !constanteMonetariaBaseDto.getTipoGuardia().equals(constanteMonetariaBase.
+         * getTipoGuardia()))
+         * constanteMonetariaBase.setTipoGuardia(constanteMonetariaBaseDto.
+         * getTipoGuardia());
+         */
 
         if (constanteMonetariaBaseDto.getFamiliaValorBase() != null)
-        constanteMonetariaBase.setFamiliaValorBase(constanteMonetariaBaseDto.getFamiliaValorBase());
-        
-        if (constanteMonetariaBaseDto.getDocumentoLegal() != null && !constanteMonetariaBaseDto.getDocumentoLegal().equals(constanteMonetariaBase.getDocumentoLegal())
-            && !constanteMonetariaBaseDto.getDocumentoLegal().isEmpty())
-        constanteMonetariaBase.setDocumentoLegal(constanteMonetariaBaseDto.getDocumentoLegal());
+            constanteMonetariaBase.setFamiliaValorBase(constanteMonetariaBaseDto.getFamiliaValorBase());
+
+        if (constanteMonetariaBaseDto.getDocumentoLegal() != null
+                && !constanteMonetariaBaseDto.getDocumentoLegal().equals(constanteMonetariaBase.getDocumentoLegal())
+                && !constanteMonetariaBaseDto.getDocumentoLegal().isEmpty())
+            constanteMonetariaBase.setDocumentoLegal(constanteMonetariaBaseDto.getDocumentoLegal());
 
         constanteMonetariaBase.setActivo(true);
         return constanteMonetariaBase;
