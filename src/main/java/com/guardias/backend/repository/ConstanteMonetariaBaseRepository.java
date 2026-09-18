@@ -13,7 +13,7 @@ import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
 
 @Repository
-public interface ConstateMonetariaBaseRepository extends JpaRepository<ConstanteMonetariaBase, Long> {
+public interface ConstanteMonetariaBaseRepository extends JpaRepository<ConstanteMonetariaBase, Long> {
 
     Optional<List<ConstanteMonetariaBase>> findByActivoTrue();
 

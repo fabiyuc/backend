@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,17 +16,21 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.constants.GruposZonalesGuardia;
 import com.guardias.backend.dto.valorGuardia.ColumnaGrillaDto;
 import com.guardias.backend.dto.valorGuardia.DetalleValoresDto;
 import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
 import com.guardias.backend.dto.valorGuardia.MontoDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaResponseDto;
+import com.guardias.backend.entity.BonoUti;
+import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
+import com.guardias.backend.repository.ConstanteMonetariaBaseRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
@@ -42,6 +47,10 @@ public class ValorGuardiaCargoYagrupService {
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
     HospitalRepository hospitalRepository;
+    @Autowired 
+    ConstanteMonetariaBaseRepository constanteMonetariaBaseRepository;
+    @Autowired
+    BonoUtiService bonoUtiService;
     /* @Autowired
     BonoUtiRepository bonoUtiRepository; */
 
@@ -810,6 +819,150 @@ public class ValorGuardiaCargoYagrupService {
             case 1: return "NIVEL 1 (PRIMER NIVEL)";
             default: return "NIVEL " + nivel;
         }
+    }
+
+    public List<ValorGuardiaCargoYagrup> generarValoresCargoAgrupacion(LocalDate fecha) {
+
+        ConstanteMonetariaBase gmi = constanteMonetariaBaseRepository
+                .getByFechaAndFamilia(fecha, FamiliaValorBaseEnum.CARGO_AGRUPACION)
+                .orElseThrow(() -> new RuntimeException(
+                        "No hay ConstanteMonetariaBase CARGO_AGRUPACION vigente para " + fecha));
+
+        BonoUti bonoUti = bonoUtiService.obtenerVigente(fecha)
+                .orElseThrow(() -> new RuntimeException("No hay BonoUti vigente para " + fecha));
+
+        BigDecimal servCriticosLav = gmi.getMonto()
+                .multiply(BigDecimal.valueOf(2))
+                .setScale(2, RoundingMode.HALF_UP);
+
+        List<ValorGuardiaCargoYagrup> generados = new ArrayList<>();
+
+        // Nivel 4 - Servicios Críticos + SAME (el "techo")
+        generados.add(construirFilaServiciosCriticos(servCriticosLav, bonoUti, gmi, fecha));
+
+        // Nivel 3, 2, 1 - nivelados hacia el techo (Decreto 1657)
+        generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.70"), 3, gmi, fecha));
+        generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.60"), 2, gmi, fecha));
+        generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.50"), 1, gmi, fecha));
+
+        // Uro y Susques - híbrido sobre Nivel 3
+        BigDecimal nivel3Lav = servCriticosLav.multiply(new BigDecimal("0.70")).setScale(2, RoundingMode.HALF_UP);
+
+        Hospital uro = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_URO)
+                .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_URO));
+        generados.add(construirFilaExcepcion(nivel3Lav, new BigDecimal("0.80"), servCriticosLav,
+                new BigDecimal("1.80"), List.of(uro), 2, gmi, fecha));
+
+        Hospital susques = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_SUSQUES)
+                .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
+        generados.add(construirFilaExcepcion(nivel3Lav, new BigDecimal("1.00"), servCriticosLav,
+                new BigDecimal("2.00"), List.of(susques), 1, gmi, fecha));
+
+        return valorGuardiaCargoYagrupRepository.saveAll(generados);
+    }
+
+    /**
+     * Nivel 4 - Servicios Críticos + SAME. Decreto 1178/1578 art.7 inc. a): 2×GMI.
+     * Decreto 1657 NO aplica (art. 5, exclusión expresa). Se le suma el Bono UTI
+     * (Decreto 1580), que sí aplica a este grupo.
+     */
+    private ValorGuardiaCargoYagrup construirFilaServiciosCriticos(BigDecimal servCriticosLav, BonoUti bonoUti,
+            ConstanteMonetariaBase gmi, LocalDate fecha) {
+
+        ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
+        fila.setNivelComplejidad(4);
+        fila.setHospitales(List.of());
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(bonoUti);
+
+        BigDecimal bonoUtiLav = bonoUti.getMonto();
+
+        fila.setDecreto1178Lav(servCriticosLav);
+        fila.setDecreto1178Sdf(servCriticosLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1657Lav(BigDecimal.ZERO);
+        fila.setDecreto1657Sdf(BigDecimal.ZERO);
+        fila.setBono1580Lav(bonoUtiLav);
+        fila.setBono1580Sdf(bonoUtiLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        BigDecimal totalLav = servCriticosLav.add(bonoUtiLav);
+        fila.setTotalLav(totalLav);
+        fila.setTotalSdf(totalLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        return fila;
+    }
+
+    /**
+     * Nivel 3, 2 y 1 (genéricos, sin hospitales). Decreto 1178/1578: el valor
+     * base es un % del techo de Servicios Críticos, y el Bono Covid (1657)
+     * completa la diferencia hasta igualar ese mismo techo (nivelación total).
+     * No lleva Bono UTI (solo aplica a Servicios Críticos).
+     */
+    private ValorGuardiaCargoYagrup construirNivelNivelado(BigDecimal servCriticosLav, BigDecimal porcentaje, int nivel, ConstanteMonetariaBase gmi, LocalDate fecha) {
+
+        ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
+        fila.setNivelComplejidad(nivel);
+        fila.setHospitales(List.of());
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(null);
+
+        BigDecimal decreto1178Lav = servCriticosLav.multiply(porcentaje).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal decreto1657Lav = servCriticosLav.subtract(decreto1178Lav);
+
+        fila.setDecreto1178Lav(decreto1178Lav);
+        fila.setDecreto1178Sdf(decreto1178Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1657Lav(decreto1657Lav);
+        fila.setDecreto1657Sdf(decreto1657Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setBono1580Lav(null);
+        fila.setBono1580Sdf(null);
+
+        fila.setTotalLav(servCriticosLav); // nivelado: siempre igual al techo
+        fila.setTotalSdf(servCriticosLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        return fila;
+    }
+
+    /**
+     * Uro y Susques. Decreto 1178/1578: su "S/Decreto 1178" sale de 2 guardias
+     * liquidadas a un % del Nivel 3 (no de Servicios Críticos). Su techo
+     * (Decreto 1657) es Servicios Críticos + un % extra (80% Uro, 100% Susques).
+     * El Bono Covid completa la diferencia entre ambos. No llevan Bono UTI.
+     */
+    private ValorGuardiaCargoYagrup construirFilaExcepcion(BigDecimal nivel3Lav, BigDecimal porcentajeDecreto1178,
+            BigDecimal servCriticosLav, BigDecimal multiplicadorTecho, List<Hospital> hospitales, int nivel,
+            ConstanteMonetariaBase gmi, LocalDate fecha) {
+
+        ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
+        fila.setNivelComplejidad(nivel);
+        fila.setHospitales(hospitales);
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(null);
+
+        BigDecimal decreto1178Lav = nivel3Lav.multiply(porcentajeDecreto1178)
+                .multiply(BigDecimal.valueOf(2))
+                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal techo = servCriticosLav.multiply(multiplicadorTecho).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal decreto1657Lav = techo.subtract(decreto1178Lav);
+
+        fila.setDecreto1178Lav(decreto1178Lav);
+        fila.setDecreto1178Sdf(decreto1178Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1657Lav(decreto1657Lav);
+        fila.setDecreto1657Sdf(decreto1657Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setBono1580Lav(null);
+        fila.setBono1580Sdf(null);
+
+        fila.setTotalLav(techo);
+        fila.setTotalSdf(techo.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        return fila;
     }
 
 }

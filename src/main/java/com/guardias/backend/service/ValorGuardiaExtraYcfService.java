@@ -1,14 +1,24 @@
 package com.guardias.backend.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.constants.GruposZonalesGuardia;
+import com.guardias.backend.entity.BonoUti;
+import com.guardias.backend.entity.ConstanteMonetariaBase;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
+import com.guardias.backend.repository.ConstanteMonetariaBaseRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -20,6 +30,10 @@ public class ValorGuardiaExtraYcfService {
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
     HospitalRepository hospitalRepository;
+    @Autowired
+    ConstanteMonetariaBaseRepository constanteMonetariaBaseRepository;
+    @Autowired
+    BonoUtiService bonoUtiService;
 
     public Optional<List<ValorGuardiaExtrayCF>> findByActivoTrue() {
         return valorGuardiaExtraYcfRepository.findByActivoTrue();
@@ -69,6 +83,79 @@ public class ValorGuardiaExtraYcfService {
 
         // 2. Buscar valor genérico (sin hospitales asignados)
         return valorGuardiaExtraYcfRepository.findByActivoTrueAndHospitalesIsEmpty();
+    }
+
+    public List<ValorGuardiaExtrayCF> generarValoresExtraCF(LocalDate fecha) {
+
+        ConstanteMonetariaBase baseExtraCf = constanteMonetariaBaseRepository
+                .getByFechaAndFamilia(fecha, FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA)
+                .orElseThrow(() -> new RuntimeException(
+                        "No hay ConstanteMonetariaBase EXTRA_CONTRAFACTURA vigente para " + fecha));
+
+        BonoUti bonoUti = bonoUtiService.obtenerVigente(fecha)
+                .orElseThrow(() -> new RuntimeException("No hay BonoUti vigente para " + fecha));
+
+        BigDecimal baseLav = baseExtraCf.getMonto();
+
+        List<ValorGuardiaExtrayCF> generados = new ArrayList<>();
+
+        // Nivel 4 (convención) - Servicios Críticos + SAME: base + Bono UTI, sin hospitales (se resuelve por Servicio.critico)
+        generados.add(construirFilaExtra(baseLav, bonoUti.getMonto(), List.of(), 4, baseExtraCf, bonoUti, fecha));
+
+        // Nivel 1 (convención) - Resto, sin premio de zona, sin hospitales
+        generados.add(construirFilaExtra(baseLav, null, List.of(), 1, baseExtraCf, null, fecha));
+
+        // Zona +20%
+        List<Hospital> zona20 = hospitalRepository.findByNombreIn(GruposZonalesGuardia.ZONA_20_EXTRA_CF);
+        if (zona20.size() != GruposZonalesGuardia.ZONA_20_EXTRA_CF.size()) {
+            throw new RuntimeException("Faltan hospitales del grupo +20%; encontrados: "
+                    + zona20.stream().map(Hospital::getNombre).toList());
+        }
+        BigDecimal zona20Lav = baseLav.multiply(new BigDecimal("1.20")).setScale(2, RoundingMode.HALF_UP);
+        generados.add(construirFilaExtra(zona20Lav, null, zona20, 1, baseExtraCf, null, fecha));
+
+        // Uro +30%
+        Hospital uro = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_URO)
+                .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_URO));
+        BigDecimal uroLav = baseLav.multiply(new BigDecimal("1.30")).setScale(2, RoundingMode.HALF_UP);
+        generados.add(construirFilaExtra(uroLav, null, List.of(uro), 2, baseExtraCf, null, fecha));
+
+        // Susques +40%
+        Hospital susques = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_SUSQUES)
+                .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
+        BigDecimal susquesLav = baseLav.multiply(new BigDecimal("1.40")).setScale(2, RoundingMode.HALF_UP);
+        generados.add(construirFilaExtra(susquesLav, null, List.of(susques), 1, baseExtraCf, null, fecha));
+
+        return valorGuardiaExtraYcfRepository.saveAll(generados);
+    }
+
+    private ValorGuardiaExtrayCF construirFilaExtra(BigDecimal montoLav, BigDecimal bonoUtiLav,
+            List<Hospital> hospitales, int nivel, ConstanteMonetariaBase baseExtraCf, BonoUti bonoUti,
+            LocalDate fecha) {
+
+        ValorGuardiaExtrayCF fila = new ValorGuardiaExtrayCF();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
+        fila.setNivelComplejidad(nivel);
+        fila.setHospitales(hospitales);
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(baseExtraCf);
+        fila.setBonoUti(bonoUti);
+
+        fila.setResolucion2575Lav(montoLav);
+        fila.setResolucion2575Sdf(montoLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        BigDecimal totalLav = montoLav;
+        if (bonoUtiLav != null) {
+            fila.setBono1580Lav(bonoUtiLav);
+            fila.setBono1580Sdf(bonoUtiLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+            totalLav = totalLav.add(bonoUtiLav);
+        }
+
+        fila.setTotalLav(totalLav);
+        fila.setTotalSdf(totalLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        return fila;
     }
 
 }
