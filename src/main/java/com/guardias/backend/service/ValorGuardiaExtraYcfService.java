@@ -100,10 +100,10 @@ public class ValorGuardiaExtraYcfService {
         List<ValorGuardiaExtrayCF> generados = new ArrayList<>();
 
         // Nivel 4 (convención) - Servicios Críticos + SAME: base + Bono UTI, sin hospitales (se resuelve por Servicio.critico)
-        generados.add(construirFilaExtra(baseLav, bonoUti.getMonto(), List.of(), 4, baseExtraCf, bonoUti, fecha));
+        generados.add(construirFilaExtra(baseLav, bonoUti.getMonto(), List.of(), true, baseExtraCf, bonoUti, fecha));
 
         // Nivel 1 (convención) - Resto, sin premio de zona, sin hospitales
-        generados.add(construirFilaExtra(baseLav, null, List.of(), 1, baseExtraCf, null, fecha));
+        generados.add(construirFilaExtra(baseLav, null, List.of(), false, baseExtraCf, null, fecha));
 
         // Zona +20%
         List<Hospital> zona20 = hospitalRepository.findByNombreIn(GruposZonalesGuardia.ZONA_20_EXTRA_CF);
@@ -112,30 +112,31 @@ public class ValorGuardiaExtraYcfService {
                     + zona20.stream().map(Hospital::getNombre).toList());
         }
         BigDecimal zona20Lav = baseLav.multiply(new BigDecimal("1.20")).setScale(2, RoundingMode.HALF_UP);
-        generados.add(construirFilaExtra(zona20Lav, null, zona20, 1, baseExtraCf, null, fecha));
+        generados.add(construirFilaExtra(zona20Lav, null, zona20, false, baseExtraCf, null, fecha));
 
         // Uro +30%
         Hospital uro = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_URO)
                 .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_URO));
         BigDecimal uroLav = baseLav.multiply(new BigDecimal("1.30")).setScale(2, RoundingMode.HALF_UP);
-        generados.add(construirFilaExtra(uroLav, null, List.of(uro), 2, baseExtraCf, null, fecha));
+        generados.add(construirFilaExtra(uroLav, null, List.of(uro), false, baseExtraCf, null, fecha));
 
         // Susques +40%
         Hospital susques = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_SUSQUES)
                 .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
         BigDecimal susquesLav = baseLav.multiply(new BigDecimal("1.40")).setScale(2, RoundingMode.HALF_UP);
-        generados.add(construirFilaExtra(susquesLav, null, List.of(susques), 1, baseExtraCf, null, fecha));
+        generados.add(construirFilaExtra(susquesLav, null, List.of(susques), false, baseExtraCf, null, fecha));
 
         return valorGuardiaExtraYcfRepository.saveAll(generados);
     }
 
     private ValorGuardiaExtrayCF construirFilaExtra(BigDecimal montoLav, BigDecimal bonoUtiLav,
-            List<Hospital> hospitales, int nivel, ConstanteMonetariaBase baseExtraCf, BonoUti bonoUti,
+            List<Hospital> hospitales, boolean esServicioCritico, ConstanteMonetariaBase baseExtraCf, BonoUti bonoUti,
             LocalDate fecha) {
 
         ValorGuardiaExtrayCF fila = new ValorGuardiaExtrayCF();
         fila.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
-        fila.setNivelComplejidad(nivel);
+        fila.setNivelComplejidad(0);  // no aplica en Extra/CF, se deja fijo   
+        fila.setEsServicioCritico(esServicioCritico);
         fila.setHospitales(hospitales);
         fila.setFechaInicio(fecha);
         fila.setActivo(true);

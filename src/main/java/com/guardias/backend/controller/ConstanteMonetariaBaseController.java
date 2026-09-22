@@ -27,7 +27,7 @@ import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 
 @RestController
-@RequestMapping("/valorGmi")
+@RequestMapping("/constanteMonetariaBase")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ConstanteMonetariaBaseController {
 
@@ -86,8 +86,8 @@ public class ConstanteMonetariaBaseController {
         if (respuestaValidaciones.getStatusCode() == HttpStatus.OK) {
 
             /*Crea/actualiza una constante monetaria con los datos del DTO */
-            ConstanteMonetariaBase valorGmi = constanteMonetariaBaseService.createUpdate(new ConstanteMonetariaBase(), constanteMonetariaBaseDto);
-            constanteMonetariaBaseService.save(valorGmi);
+            ConstanteMonetariaBase constanteMonetariaBase  = constanteMonetariaBaseService.createUpdate(new ConstanteMonetariaBase(), constanteMonetariaBaseDto);
+            constanteMonetariaBaseService.save(constanteMonetariaBase);
 
             /*Genera valores asociados */
             // Llama para crear registros de ValorGuardiaCargoYagrup vinculados a la constante monetaria recien creada

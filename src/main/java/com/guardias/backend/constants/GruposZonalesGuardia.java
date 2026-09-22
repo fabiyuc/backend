@@ -14,7 +14,7 @@ public final class GruposZonalesGuardia {
     );
 
     public static final String HOSPITAL_URO = "DR. JORGE URO";
-    public static final String HOSPITAL_SUSQUES = "HOSPITAL SUSQUES";
+    public static final String HOSPITAL_SUSQUES = "SUSQUES";
 
     private GruposZonalesGuardia() {}
     

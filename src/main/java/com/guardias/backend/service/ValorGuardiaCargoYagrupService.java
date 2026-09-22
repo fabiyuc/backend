@@ -872,6 +872,7 @@ public class ValorGuardiaCargoYagrupService {
         ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
         fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         fila.setNivelComplejidad(4);
+        fila.setEsServicioCritico(true);
         fila.setHospitales(List.of());
         fila.setFechaInicio(fecha);
         fila.setActivo(true);
@@ -905,6 +906,7 @@ public class ValorGuardiaCargoYagrupService {
         ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
         fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         fila.setNivelComplejidad(nivel);
+        fila.setEsServicioCritico(false);
         fila.setHospitales(List.of());
         fila.setFechaInicio(fecha);
         fila.setActivo(true);
@@ -940,6 +942,7 @@ public class ValorGuardiaCargoYagrupService {
         ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
         fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         fila.setNivelComplejidad(nivel);
+        fila.setEsServicioCritico(false);
         fila.setHospitales(hospitales);
         fila.setFechaInicio(fecha);
         fila.setActivo(true);

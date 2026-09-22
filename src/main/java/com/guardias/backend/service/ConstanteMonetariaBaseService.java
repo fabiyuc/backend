@@ -15,7 +15,7 @@ import com.guardias.backend.dto.ConstanteMonetariaBaseDto;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
-import com.guardias.backend.repository.ConstateMonetariaBaseRepository;
+import com.guardias.backend.repository.ConstanteMonetariaBaseRepository;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -23,7 +23,7 @@ import io.micrometer.common.util.StringUtils;
 @Transactional
 public class ConstanteMonetariaBaseService {
     @Autowired
-    ConstateMonetariaBaseRepository constanteMonetariaBaseRepository;
+    ConstanteMonetariaBaseRepository constanteMonetariaBaseRepository;
 
     public Optional<List<ConstanteMonetariaBase>> findByActivoTrue() {
         return constanteMonetariaBaseRepository.findByActivoTrue();

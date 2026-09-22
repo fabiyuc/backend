@@ -51,6 +51,9 @@ public abstract class ValorGuardiaBase {
 
     private int nivelComplejidad;
 
+    @Column(columnDefinition = "BIT DEFAULT 0")
+    private boolean esServicioCritico;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "valorguardiabase_hospital", joinColumns = @JoinColumn(name = "id_valorGuardiaBase"), inverseJoinColumns = @JoinColumn(name = "id_hospital"))
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardiaBase", "caps"  })
