@@ -25,7 +25,7 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ValorGuardiaExtraYcfService {
-    
+
     @Autowired
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
@@ -39,17 +39,19 @@ public class ValorGuardiaExtraYcfService {
         return valorGuardiaExtraYcfRepository.findByActivoTrue();
     }
 
-     public List<ValorGuardiaExtrayCF> findAll() {
+    public List<ValorGuardiaExtrayCF> findAll() {
         return valorGuardiaExtraYcfRepository.findAll();
     }
 
     public Optional<ValorGuardiaExtrayCF> findById(Long id) {
         return valorGuardiaExtraYcfRepository.findById(id);
     }
-    
-    /* public Optional<ValorGuardiaExtrayCF> buscarPorIdEfector(Long idEfector) {
-        return valorGuardiaExtraYcfRepository.buscarPorIdEfector(idEfector);
-    } */
+
+    /*
+     * public Optional<ValorGuardiaExtrayCF> buscarPorIdEfector(Long idEfector) {
+     * return valorGuardiaExtraYcfRepository.buscarPorIdEfector(idEfector);
+     * }
+     */
 
     public boolean existsById(Long id) {
         return valorGuardiaExtraYcfRepository.existsById(id);
@@ -64,26 +66,47 @@ public class ValorGuardiaExtraYcfService {
     }
 
     public boolean activo(Long id) {
-        return (valorGuardiaExtraYcfRepository.existsById(id) && valorGuardiaExtraYcfRepository.findById(id).get().isActivo());
+        return (valorGuardiaExtraYcfRepository.existsById(id)
+                && valorGuardiaExtraYcfRepository.findById(id).get().isActivo());
     }
 
-    public Optional<ValorGuardiaExtrayCF> obtenerValorGuardiaExtraPorHospital(Long idHospital) {
-        // Verificar existencia del hospital
+    public Optional<ValorGuardiaExtrayCF> obtenerValorGuardiaExtraPorHospital(Hospital hospital,
+            boolean esServicioCritico, LocalDate fecha) {
 
-        if (!hospitalRepository.existsById(idHospital))
-            return Optional.empty();
-
-        // 1. Buscar valor específico para el hospital
-        Optional<ValorGuardiaExtrayCF> valorEspecifico = valorGuardiaExtraYcfRepository
-                .findByHospitalesIdAndActivoTrue(idHospital);
-
-        if (valorEspecifico.isPresent()) {
-            return valorEspecifico;
+        if (esServicioCritico) {
+            return valorGuardiaExtraYcfRepository.findServicioCriticoVigente(fecha);
         }
 
-        // 2. Buscar valor genérico (sin hospitales asignados)
-        return valorGuardiaExtraYcfRepository.findByActivoTrueAndHospitalesIsEmpty();
+        Optional<ValorGuardiaExtrayCF> especifico = valorGuardiaExtraYcfRepository
+                .findEspecificoPorHospitalVigente(hospital.getId(), fecha);
+        if (especifico.isPresent()) {
+            return especifico;
+        }
+
+        return valorGuardiaExtraYcfRepository.findGenericoVigente(fecha);
     }
+
+    /*
+     * public Optional<ValorGuardiaExtrayCF>
+     * obtenerValorGuardiaExtraPorHospital(Long idHospital) {
+     * // Verificar existencia del hospital
+     * 
+     * if (!hospitalRepository.existsById(idHospital))
+     * return Optional.empty();
+     * 
+     * // 1. Buscar valor específico para el hospital
+     * Optional<ValorGuardiaExtrayCF> valorEspecifico =
+     * valorGuardiaExtraYcfRepository
+     * .findByHospitalesIdAndActivoTrue(idHospital);
+     * 
+     * if (valorEspecifico.isPresent()) {
+     * return valorEspecifico;
+     * }
+     * 
+     * // 2. Buscar valor genérico (sin hospitales asignados)
+     * return valorGuardiaExtraYcfRepository.findByActivoTrueAndHospitalesIsEmpty();
+     * }
+     */
 
     public List<ValorGuardiaExtrayCF> generarValoresExtraCF(LocalDate fecha) {
 
@@ -99,7 +122,8 @@ public class ValorGuardiaExtraYcfService {
 
         List<ValorGuardiaExtrayCF> generados = new ArrayList<>();
 
-        // Nivel 4 (convención) - Servicios Críticos + SAME: base + Bono UTI, sin hospitales (se resuelve por Servicio.critico)
+        // Nivel 4 (convención) - Servicios Críticos + SAME: base + Bono UTI, sin
+        // hospitales (se resuelve por Servicio.critico)
         generados.add(construirFilaExtra(baseLav, bonoUti.getMonto(), List.of(), true, baseExtraCf, bonoUti, fecha));
 
         // Nivel 1 (convención) - Resto, sin premio de zona, sin hospitales
@@ -122,7 +146,8 @@ public class ValorGuardiaExtraYcfService {
 
         // Susques +40%
         Hospital susques = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_SUSQUES)
-                .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
+                .orElseThrow(
+                        () -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
         BigDecimal susquesLav = baseLav.multiply(new BigDecimal("1.40")).setScale(2, RoundingMode.HALF_UP);
         generados.add(construirFilaExtra(susquesLav, null, List.of(susques), false, baseExtraCf, null, fecha));
 
@@ -135,7 +160,7 @@ public class ValorGuardiaExtraYcfService {
 
         ValorGuardiaExtrayCF fila = new ValorGuardiaExtrayCF();
         fila.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
-        fila.setNivelComplejidad(0);  // no aplica en Extra/CF, se deja fijo   
+        fila.setNivelComplejidad(0); // no aplica en Extra/CF, se deja fijo
         fila.setEsServicioCritico(esServicioCritico);
         fila.setHospitales(hospitales);
         fila.setFechaInicio(fecha);

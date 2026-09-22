@@ -130,9 +130,12 @@ public class RegistroActividadController {
         if (!registroActividadService.activo(id))
             return new ResponseEntity(new Mensaje("Registro de actividad no existe"), HttpStatus.NOT_FOUND);
 
-        ResponseEntity<?> registrarSalida = registroActividadService.registrarSalida(id, registroActividadDto);
-
-        return registrarSalida;
+        try {
+            return registroActividadService.registrarSalida(id, registroActividadDto);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(new Mensaje("Error al registrar salida: " + e.getMessage()),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/delete/{id}")
@@ -198,41 +201,47 @@ public class RegistroActividadController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    //toma el id de la ddjj 1ra quincena de CF
-    /* @GetMapping("/obtener-ddjjCf-primeraQ-aprobada/{idEfector}/{mes}/{anio}")
-    public ResponseEntity<List<Long>> obtenerDdjjAprobadasCf(
-            @PathVariable Long idEfector,
-            @PathVariable int mes,
-            @PathVariable int anio) {
+    // toma el id de la ddjj 1ra quincena de CF
+    /*
+     * @GetMapping("/obtener-ddjjCf-primeraQ-aprobada/{idEfector}/{mes}/{anio}")
+     * public ResponseEntity<List<Long>> obtenerDdjjAprobadasCf(
+     * 
+     * @PathVariable Long idEfector,
+     * 
+     * @PathVariable int mes,
+     * 
+     * @PathVariable int anio) {
+     * 
+     * 
+     * System.out.println("=== INICIO obtenerDdjjAprobada CF primera quincena ===");
+     * System.out.println("Parámetros recibidos - idEfector: " + idEfector +
+     * ", mes: " + mes + ", anio: " + anio);
+     * 
+     * List<Long> ddjjAprobada =
+     * registroActividadService.obtenerIdDdjjAprobadaCf(idEfector, mes, anio);
+     * 
+     * System.out.println("Resultado final: " + ddjjAprobada);
+     * System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
+     * 
+     * return new ResponseEntity<>(ddjjAprobada, HttpStatus.OK);
+     * }
+     */
 
-    
-        System.out.println("=== INICIO obtenerDdjjAprobada CF primera quincena ===");
-        System.out.println("Parámetros recibidos - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
-        
-        List<Long> ddjjAprobada = registroActividadService.obtenerIdDdjjAprobadaCf(idEfector, mes, anio);
-
-        System.out.println("Resultado final: " + ddjjAprobada);
-        System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
-        
-        return new ResponseEntity<>(ddjjAprobada, HttpStatus.OK);
-    } */
-
-     //toma los id de las ddjj de todos los tipos de guardia 
+    // toma los id de las ddjj de todos los tipos de guardia
     @GetMapping("/obtener-ddjj-aprobadas/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<Long>> obtenerDdjjAprobadas(
             @PathVariable Long idEfector,
             @PathVariable int mes,
             @PathVariable int anio) {
 
-    
         System.out.println("=== INICIO obtenerDdjjAprobadas ===");
         System.out.println("Parámetros recibidos - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
-        
+
         List<Long> ddjjAprobadas = registroActividadService.obtenerIdsDdjjAprobadas(idEfector, mes, anio);
 
         System.out.println("Resultado final: " + ddjjAprobadas);
         System.out.println("=== FIN obtenerDdjjAprobadas ===\n");
-        
+
         return new ResponseEntity<>(ddjjAprobadas, HttpStatus.OK);
     }
 
@@ -246,7 +255,6 @@ public class RegistroActividadController {
         return new ResponseEntity<>(existsCompleteSet, HttpStatus.OK);
     }
 
-   
     @GetMapping("/listAsistenciaByProfesionalEfectorMesAnio/{idAsistencial}/{idEfector}/{mes}/{anio}")
     public ResponseEntity<List<RegActivAsistenciaDto>> listAsistenciaByProfesionalEfectorMesAnio(
             @PathVariable Long idAsistencial,

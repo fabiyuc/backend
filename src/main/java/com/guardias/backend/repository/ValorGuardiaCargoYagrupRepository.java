@@ -25,19 +25,34 @@ public interface ValorGuardiaCargoYagrupRepository extends JpaRepository<ValorGu
 
     // Busca valores específicos para un hospital
     Optional<ValorGuardiaCargoYagrup> findByHospitalesIdAndActivoTrue(Long hospitalId);
-    
+
     // Busca valores genéricos (sin hospitales asignados)
     Optional<ValorGuardiaCargoYagrup> findByActivoTrueAndHospitalesIsEmpty();
 
     List<ValorGuardiaCargoYagrup> findByFamiliaValorBaseAndNivelComplejidadAndActivoTrue(
-        FamiliaValorBaseEnum familia, 
-        int nivelComplejidad
-    );
+            FamiliaValorBaseEnum familia,
+            int nivelComplejidad);
 
-    @Query("SELECT v FROM valoresGuardiasCargosYagrup v " + 
-       "LEFT JOIN FETCH v.hospitales h " + 
-       "WHERE v.activo = true " +
-       "AND v.fechaInicio <= :fecha " +
-       "AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
+    @Query("SELECT v FROM valoresGuardiasCargosYagrup v " +
+            "LEFT JOIN FETCH v.hospitales h " +
+            "WHERE v.activo = true " +
+            "AND v.fechaInicio <= :fecha " +
+            "AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
     List<ValorGuardiaCargoYagrup> buscarVigentes(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT v FROM valoresGuardiasCargosYagrup v WHERE v.esServicioCritico = true " +
+            "AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
+    Optional<ValorGuardiaCargoYagrup> findServicioCriticoVigente(@Param("fecha") LocalDate fecha);
+
+    @Query("SELECT v FROM valoresGuardiasCargosYagrup v JOIN v.hospitales h " +
+            "WHERE h.id = :idHospital " +
+            "AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
+    Optional<ValorGuardiaCargoYagrup> findEspecificoPorHospitalVigente(@Param("idHospital") Long idHospital,
+            @Param("fecha") LocalDate fecha);
+
+    @Query("SELECT v FROM valoresGuardiasCargosYagrup v WHERE v.nivelComplejidad = :nivel " +
+            "AND v.hospitales IS EMPTY AND v.esServicioCritico = false " +
+            "AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
+    Optional<ValorGuardiaCargoYagrup> findGenericoPorNivelVigente(@Param("nivel") int nivel,
+            @Param("fecha") LocalDate fecha);
 }

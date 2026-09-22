@@ -3,6 +3,7 @@ package com.guardias.backend.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.repository.HospitalRepository;
+import com.guardias.backend.service.HospitalService;
 import com.guardias.backend.service.ValorGuardiaCargoYagrupService;
 
 @RestController
@@ -32,6 +35,9 @@ public class ValorGuardiaCargoYagrupController {
     ValorGuardiaCargoYagrupService valorGuardiaCargoYagrupService;
     @Autowired
     HospitalRepository hospitalRepository;
+    @Autowired
+    HospitalService hospitalService;
+
 
     @GetMapping("/list")
     public ResponseEntity<List<ValorGuardiaCargoYagrup>> list() {
@@ -59,8 +65,13 @@ public class ValorGuardiaCargoYagrupController {
     @GetMapping("/valorByEfector/{idHospital}")
     public ResponseEntity<ValorGuardiaCargoYagrup> valorByEfector(@PathVariable("idHospital") Long idHospital) {
 
+        Optional<Hospital> hospitalOpt = hospitalService.findById(idHospital);
+        if (hospitalOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         return valorGuardiaCargoYagrupService
-                .obtenerValorGuardiaCargoPorHospital(idHospital)
+                .obtenerValorGuardiaCargoPorHospital(hospitalOpt.get(),false, LocalDate.now())
                 .map(valor -> ResponseEntity.ok(valor))
                 .orElseGet(() -> ResponseEntity.noContent().build());
     }
