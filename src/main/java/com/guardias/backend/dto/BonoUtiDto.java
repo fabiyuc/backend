@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BonoUtiDto {
 
-    private boolean activo;
-
     private String documentoLegal;
 
     private LocalDate fechaInicio;

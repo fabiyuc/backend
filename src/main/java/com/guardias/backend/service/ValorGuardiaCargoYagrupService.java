@@ -28,6 +28,7 @@ import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.enums.ColumnaGrillaEnum;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.HospitalRepository;
@@ -713,81 +714,97 @@ public class ValorGuardiaCargoYagrupService {
         List<ValorGuardiaCargoYagrup> cargos = valorGuardiaCargoYagrupRepository.buscarVigentes(fecha);
         List<ValorGuardiaExtrayCF> extras = valorGuardiaExtraYcfRepository.buscarVigentes(fecha);
 
-        // 2. Estructura temporal para agrupar:
-        // Map<Nivel (Integer), Map<KeyGrupo (String), ObjetoUnificado>>
-        Map<Integer, Map<String, DetalleValoresDto>> agrupador = new HashMap<>();
+        // --- CARGO / AGRUPACIÓN: por nivel (filas generales) o por hospital (excepciones) ---
+        ValorGuardiaCargoYagrup cargoCriticos = buscarCargoGeneral(cargos, 4);
+        ValorGuardiaCargoYagrup cargoNivel3   = buscarCargoGeneral(cargos, 3);
+        ValorGuardiaCargoYagrup cargoNivel2   = buscarCargoGeneral(cargos, 2);
+        ValorGuardiaCargoYagrup cargoNivel1   = buscarCargoGeneral(cargos, 1);
+        ValorGuardiaCargoYagrup cargoUro      = buscarCargoPorHospital(cargos, GruposZonalesGuardia.HOSPITAL_URO);
+        ValorGuardiaCargoYagrup cargoSusques  = buscarCargoPorHospital(cargos, GruposZonalesGuardia.HOSPITAL_SUSQUES);
 
-        // Map auxiliar para guardar el Título de cada columna y no perderlo
-        Map<String, String> titulosMap = new HashMap<>();
+        // --- EXTRA / CF: por servicio crítico, zona u hospital (Res. 3590, no usa nivel) ---
+        ValorGuardiaExtrayCF extraCriticos = extras.stream()
+                .filter(e -> e.isEsServicioCritico())
+                .findFirst().orElse(null);
+        ValorGuardiaExtrayCF extraResto = extras.stream()
+                .filter(e -> !e.isEsServicioCritico() && sinHospitales(e.getHospitales()))
+                .findFirst().orElse(null);
+        ValorGuardiaExtrayCF extraUro = buscarExtraPorHospital(extras, GruposZonalesGuardia.HOSPITAL_URO);
+        ValorGuardiaExtrayCF extraSusques = buscarExtraPorHospital(extras, GruposZonalesGuardia.HOSPITAL_SUSQUES);
+        ValorGuardiaExtrayCF extraZona20 = extras.stream()
+                .filter(e -> e.getHospitales() != null && e.getHospitales().stream()
+                        .anyMatch(h -> GruposZonalesGuardia.ZONA_20_EXTRA_CF.contains(h.getNombre())))
+                .findFirst().orElse(null);
 
-        // --- PROCESAR CARGOS ---
-        for (ValorGuardiaCargoYagrup c : cargos) {
-            String keyGrupo = generarKey(c.getHospitales());
-            String titulo = generarTitulo(c.getHospitales(), c.getNivelComplejidad());
-            titulosMap.put(keyGrupo, titulo);
+        // Título de zona +20% armado con los nombres reales de la BD
+        String tituloZona20 = (extraZona20 != null)
+                ? extraZona20.getHospitales().stream().map(Hospital::getNombre).collect(Collectors.joining(", "))
+                : "ZONA +20%";
 
-            // Inicializar mapas si no existen
-            agrupador.putIfAbsent(c.getNivelComplejidad(), new HashMap<>());
-            Map<String, DetalleValoresDto> nivelMap = agrupador.get(c.getNivelComplejidad());
+        // --- Armado fijo, igual al Excel de DPH ---
+        return List.of(
+            nivel(4, "SERVICIOS CRÍTICOS + SAME",
+                columna(ColumnaGrillaEnum.SERVICIOS_CRITICOS, "SERVICIOS CRÍTICOS + SAME", cargoCriticos, extraCriticos)),
+            nivel(3, "TERCER NIVEL",
+                columna(ColumnaGrillaEnum.NIVEL_3, "MATERNO, SORIA", cargoNivel3, extraResto)),
+            nivel(2, "SEGUNDO NIVEL",
+                columna(ColumnaGrillaEnum.NIVEL_2, "S. ROQUE, ORIAS, PATERSON", cargoNivel2, extraResto),
+                columna(ColumnaGrillaEnum.URO, "URO", cargoUro, extraUro)),
+            nivel(1, "PRIMER NIVEL",
+                columna(ColumnaGrillaEnum.NIVEL_1_RESTO, "RESTO PRIMER NIVEL", cargoNivel1, extraResto),
+                columna(ColumnaGrillaEnum.SUSQUES, "SUSQUES", cargoSusques, extraSusques),
+                columna(ColumnaGrillaEnum.ZONA_20, tituloZona20, cargoNivel1, extraZona20))
+        );
+    }
 
-            // Obtener o crear el detalle
-            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
+    // ---------- Helpers ----------
 
-            // Mapear y asignar CARGO
-            detalle.setCargo(mapearCargo(c));
+    private boolean sinHospitales(List<Hospital> hospitales) {
+        return hospitales == null || hospitales.isEmpty();
+    }
 
-            nivelMap.put(keyGrupo, detalle);
-        }
+    private boolean tieneHospital(List<Hospital> hospitales, String nombre) {
+        return hospitales != null && hospitales.stream().anyMatch(h -> nombre.equals(h.getNombre()));
+    }
 
-        // --- PROCESAR EXTRAS (Unimos en el mismo mapa) ---
-        for (ValorGuardiaExtrayCF e : extras) {
-            String keyGrupo = generarKey(e.getHospitales());
+    /** Fila general del nivel (sin hospitales asignados = aplica a todo el nivel). */
+    private ValorGuardiaCargoYagrup buscarCargoGeneral(List<ValorGuardiaCargoYagrup> cargos, int nivel) {
+        return cargos.stream()
+                .filter(c -> c.getNivelComplejidad() == nivel && sinHospitales(c.getHospitales()))
+                .findFirst().orElse(null);
+    }
 
-            // Si no estaba el título (porque solo hay extra y no cargo), lo generamos
-            if (!titulosMap.containsKey(keyGrupo)) {
-                titulosMap.put(keyGrupo, generarTitulo(e.getHospitales(), e.getNivelComplejidad()));
-            }
+    private ValorGuardiaCargoYagrup buscarCargoPorHospital(List<ValorGuardiaCargoYagrup> cargos, String nombre) {
+        return cargos.stream()
+                .filter(c -> tieneHospital(c.getHospitales(), nombre))
+                .findFirst().orElse(null);
+    }
 
-            agrupador.putIfAbsent(e.getNivelComplejidad(), new HashMap<>());
-            Map<String, DetalleValoresDto> nivelMap = agrupador.get(e.getNivelComplejidad());
+    private ValorGuardiaExtrayCF buscarExtraPorHospital(List<ValorGuardiaExtrayCF> extras, String nombre) {
+        return extras.stream()
+                .filter(e -> tieneHospital(e.getHospitales(), nombre))
+                .findFirst().orElse(null);
+    }
 
-            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
+    private ColumnaGrillaDto columna(ColumnaGrillaEnum clave, String titulo,
+                                     ValorGuardiaCargoYagrup cargo, ValorGuardiaExtrayCF extra) {
+        DetalleValoresDto detalle = new DetalleValoresDto();
+        detalle.setCargo(cargo != null ? mapearCargo(cargo) : null);
+        detalle.setExtra(extra != null ? mapearExtra(extra) : null);
 
-            // Mapear y asignar EXTRA
-            detalle.setExtra(mapearExtra(e));
+        ColumnaGrillaDto col = new ColumnaGrillaDto();
+        col.setClave(clave);
+        col.setTitulo(titulo);
+        col.setValores(detalle);
+        return col;
+    }
 
-            nivelMap.put(keyGrupo, detalle);
-        }
-
-        // 3. Transformar el Map a la Lista final de DTOs
-        List<GrillaValorGuardiaCompletaDto> respuestaFinal = new ArrayList<>();
-
-        for (Map.Entry<Integer, Map<String, DetalleValoresDto>> entryNivel : agrupador.entrySet()) {
-            Integer nivel = entryNivel.getKey();
-            Map<String, DetalleValoresDto> columnasDelNivel = entryNivel.getValue();
-
-            GrillaValorGuardiaCompletaDto nivelDto = new GrillaValorGuardiaCompletaDto();
-            nivelDto.setNumeroNivel(nivel);
-            nivelDto.setNombreNivel(obtenerNombreNivel(nivel)); // Ej: "NIVEL 4 (CRITICOS)"
-
-            for (Map.Entry<String, DetalleValoresDto> entryColumna : columnasDelNivel.entrySet()) {
-                ColumnaGrillaDto columna = new ColumnaGrillaDto();
-                columna.setTitulo(titulosMap.get(entryColumna.getKey())); // Recuperamos el título bonito
-                columna.setValores(entryColumna.getValue());
-
-                nivelDto.getColumnas().add(columna);
-            }
-            // Opcional: Ordenar columnas alfabéticamente por título o por ID dentro del
-            // nivel
-            // nivelDto.getColumnas().sort(Comparator.comparing(ColumnaGrillaDto::getTitulo));
-
-            respuestaFinal.add(nivelDto);
-        }
-
-        // 4. Ordenar Niveles descendente (4, 3, 2, 1) para que salga igual a la foto
-        respuestaFinal.sort((a, b) -> b.getNumeroNivel() - a.getNumeroNivel());
-
-        return respuestaFinal;
+    private GrillaValorGuardiaCompletaDto nivel(int numero, String nombre, ColumnaGrillaDto... columnas) {
+        GrillaValorGuardiaCompletaDto dto = new GrillaValorGuardiaCompletaDto();
+        dto.setNumeroNivel(numero);
+        dto.setNombreNivel(nombre);
+        dto.getColumnas().addAll(List.of(columnas));
+        return dto;
     }
 
     // --- MAPPERS (Entidad -> DTO) ---
@@ -886,7 +903,9 @@ public class ValorGuardiaCargoYagrupService {
         generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.50"), 1, gmi, fecha));
 
         // Uro y Susques - híbrido sobre Nivel 3
-        BigDecimal nivel3Lav = servCriticosLav.multiply(new BigDecimal("0.70")).setScale(2, RoundingMode.HALF_UP);
+        //BigDecimal nivel3Lav = servCriticosLav.multiply(new BigDecimal("0.70")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal nivel3Lav = servCriticosLav.multiply(new BigDecimal("0.70"));
+
 
         Hospital uro = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_URO)
                 .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_URO));
@@ -994,21 +1013,34 @@ public class ValorGuardiaCargoYagrupService {
         fila.setConstanteMonetariaBase(gmi);
         fila.setBonoUti(null);
 
-        BigDecimal decreto1178Lav = nivel3Lav.multiply(porcentajeDecreto1178)
-                .multiply(BigDecimal.valueOf(2))
-                .setScale(2, RoundingMode.HALF_UP);
-        BigDecimal techo = servCriticosLav.multiply(multiplicadorTecho).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal decreto1657Lav = techo.subtract(decreto1178Lav);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(null);
+
+        BigDecimal recargoSdf = new BigDecimal("1.10");
+
+        // Valores exactos, sin redondear (igual que el Excel)
+        BigDecimal decreto1178Exacto = nivel3Lav.multiply(porcentajeDecreto1178).multiply(BigDecimal.valueOf(2));
+        BigDecimal techoExacto = servCriticosLav.multiply(multiplicadorTecho);
+
+        // Redondeo único, al final
+        BigDecimal decreto1178Lav = decreto1178Exacto.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal decreto1178Sdf = decreto1178Exacto.multiply(recargoSdf).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalLav = techoExacto.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalSdf = techoExacto.multiply(recargoSdf).setScale(2, RoundingMode.HALF_UP);
+
+        // El Bono Covid (Decreto 1657) completa la diferencia, en L-V y en S-D-F por separado
+        BigDecimal decreto1657Lav = totalLav.subtract(decreto1178Lav);
+        BigDecimal decreto1657Sdf = totalSdf.subtract(decreto1178Sdf);
 
         fila.setDecreto1178Lav(decreto1178Lav);
-        fila.setDecreto1178Sdf(decreto1178Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1178Sdf(decreto1178Sdf);
         fila.setDecreto1657Lav(decreto1657Lav);
-        fila.setDecreto1657Sdf(decreto1657Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1657Sdf(decreto1657Sdf);
         fila.setBono1580Lav(null);
         fila.setBono1580Sdf(null);
 
-        fila.setTotalLav(techo);
-        fila.setTotalSdf(techo.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setTotalLav(totalLav);
+        fila.setTotalSdf(totalSdf);
 
         return fila;
     }

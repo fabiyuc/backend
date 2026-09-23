@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
 
 import jakarta.persistence.CascadeType;
@@ -54,9 +54,12 @@ public class ConstanteMonetariaBase {
     private List<Ddjj> ddjjs = new ArrayList<>(); */
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "constanteMonetariaBase", cascade = CascadeType.ALL )
+    @JsonIgnore 
+    private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
+    /* @OneToMany(fetch = FetchType.LAZY, mappedBy = "constanteMonetariaBase", cascade = CascadeType.ALL )
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
             "constanteMonetariaBase" ,"activo","fechaInicio","fechaFin","bonoUti","decreto1178Lav","decreto1178Sdf","decreto1657Lav","decreto1657Sdf"})
-    private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
+    private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>(); */
 
     @Override
     public boolean equals(Object obj) {

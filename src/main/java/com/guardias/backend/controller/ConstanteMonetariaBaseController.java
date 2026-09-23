@@ -61,7 +61,7 @@ public class ConstanteMonetariaBaseController {
         return new ResponseEntity(valorGmi, HttpStatus.OK);
     }
 
-    @GetMapping("/detailByFechaAndTipoGuardia/{fecha}/{tipoGuardia}")
+    /* @GetMapping("/detailByFechaAndTipoGuardia/{fecha}/{tipoGuardia}")
     public ResponseEntity<ConstanteMonetariaBase> getByFechaAndTipoGuardia(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @PathVariable("tipoGuardia") String tipoGuardia) {
@@ -69,7 +69,7 @@ public class ConstanteMonetariaBaseController {
         Optional<ConstanteMonetariaBase> valorGmi = constanteMonetariaBaseService.getByFechaAndFamilia(fecha, guardia);
         return valorGmi.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-    }
+    } */
 
     @GetMapping("/detailByFecha/{fecha}")
     public ResponseEntity<List<ConstanteMonetariaBase>> getByFecha(

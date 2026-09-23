@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ConstanteMonetariaBaseDto {
 
-    private boolean activo;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private BigDecimal monto;

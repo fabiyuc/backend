@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -41,8 +42,7 @@ public class BonoUti {
     private BigDecimal monto;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bonoUti", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler",
-            "bonoUti" })
+    @JsonIgnore 
     private List<ValorGuardiaBase> valoresGuardias = new ArrayList<>();
 
 }
