@@ -49,11 +49,11 @@ public class Ddjj {
     private BigDecimal total;
 
     /* 9/6/25 dejo ésta relacion pero no la estamos usando */
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
+    /* @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_valorGmi")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "fechaInicio", "fechaFin", "monto", "tipoGuardia",
             "ddjjs", "activo" })
-    private ValorGmi valorGmi;
+    private ConstanteMonetariaBase valorGmi; */
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_efector")

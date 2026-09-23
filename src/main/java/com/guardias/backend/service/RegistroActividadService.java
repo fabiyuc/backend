@@ -24,6 +24,7 @@ import com.guardias.backend.dto.registroActividad.RegActivMotivoDto;
 import com.guardias.backend.entity.Efector;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.RegistroActividad;
+import com.guardias.backend.entity.Servicio;
 import com.guardias.backend.entity.SumaHoras;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
@@ -194,121 +195,188 @@ public class RegistroActividadService {
     }
 
     /* Calcula horas trabajadas (LAV/SDF) y montos según el tipo de guardia */
+
+    /*
+     * private SumaHoras calcularHoras(RegistroActividad registroActividad) {
+     * 
+     * SumaHoras horas =
+     * sumaHorasService.calcularHoras(registroActividad.getFechaIngreso(),
+     * registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
+     * registroActividad.getHoraEgreso());
+     * 
+     * 
+     * 
+     * horas.setActivo(true);
+     * TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
+     * 
+     * Efector efector = registroActividad.getEfector();
+     * 
+     * Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
+     * 
+     * if (hospital == null) {
+     * throw new RuntimeException("Hospital no encontrado para ID: " +
+     * efector.getId());
+     * }
+     * 
+     * System.out.println("DEBUG 2 - Tipo de guardia: " + tipoGuardia);
+     * System.out.println("DEBUG 3 - Hospital ID: " + (hospital != null ?
+     * hospital.getId() : "null"));
+     * // B. Determinar el tipo de guardia
+     * // si es Cargo o Agrupacion
+     * if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia ==
+     * TipoGuardiaEnum.AGRUPACION) {
+     * System.out.println("DEBUG [4] - es tipo guardia cargo o agrup");
+     * 
+     * try {
+     * // Valor de la guardia segun tipoGuardia y efector
+     * 
+     * // Obtiene valores de guardia
+     * ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService
+     * .obtenerValorGuardiaCargoPorHospital(hospital.getId()).get();
+     * System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " +
+     * valorGuardiaBase);
+     * System.out.println("DEBUG 6a - Total LAV/SDF: " +
+     * valorGuardiaBase.getTotalLav() + "/"
+     * + valorGuardiaBase.getTotalSdf());
+     * 
+     * //Calcula montos para LAV/SDF (dividiendo el total entre 24hs)
+     * // LAV
+     * BigDecimal valorHoraLav =
+     * valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
+     * RoundingMode.HALF_UP);
+     * BigDecimal totalMontoLav =
+     * BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
+     * horas.setMontoLav(totalMontoLav);
+     * System.out.println("DEBUG 7 - Valor hora LAV: " + valorHoraLav);
+     * System.out.println("DEBUG 8 - Monto LAV calculado: " + totalMontoLav);
+     * 
+     * // SDF
+     * BigDecimal valorHoraSdf =
+     * valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
+     * RoundingMode.HALF_UP);
+     * BigDecimal totalMontoSdf =
+     * BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
+     * horas.setMontoSdf(totalMontoSdf);
+     * System.out.println("DEBUG 9 - Valor hora SDF: " + valorHoraSdf);
+     * System.out.println("DEBUG 10 - Monto SDF calculado: " + totalMontoSdf);
+     * 
+     * BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
+     * horas.setMontoTotal(total);
+     * System.out.println("DEBUG [11] - Monto total calculado: " + total);
+     * 
+     * } catch (Exception e) {
+     * System.out.println("Error al buscar ValorGuardiaCargoYagrup: " +
+     * e.getMessage());
+     * }
+     * } else {
+     * if (tipoGuardia == TipoGuardiaEnum.EXTRA || tipoGuardia ==
+     * TipoGuardiaEnum.CONTRAFACTURA) {
+     * // Si es Extra o CF
+     * System.out.println("DEBUG - es tipo guardia extra o cf");
+     * // Obtiene valores de guardia
+     * 
+     * ValorGuardiaExtrayCF valorGuardiaBase1 = valorGuardiaExtraYcfService
+     * 
+     * 
+     * try {
+     * 
+     * // Obtiene valores de guardia
+     * ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService
+     * .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
+     * 
+     * System.out.println("DEBUG 5 CF- ValorGuardiaBase obtenido: " +
+     * valorGuardiaBase);
+     * System.out.println("DEBUG 6c CF- Total LAV/SDF: " +
+     * valorGuardiaBase.getTotalLav() + "/"
+     * + valorGuardiaBase.getTotalSdf());
+     * // Calcula montos para LAV/SDF (dividiendo el total entre 24hs)
+     * // LAV
+     * BigDecimal valorHoraLav =
+     * valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
+     * RoundingMode.HALF_UP);
+     * System.out.println("DEBUG 6.1 CF - valor de la hora LAV: " + valorHoraLav);
+     * BigDecimal totalMontoLav =
+     * BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
+     * 
+     * horas.setMontoLav(totalMontoLav);
+     * System.out.println("DEBUG 7 CF - Valor hora LAV: " + valorHoraLav);
+     * System.out.println("DEBUG 8 CF - Monto LAV calculado: " + totalMontoLav);
+     * 
+     * // SDF
+     * BigDecimal valorHoraSdf =
+     * valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
+     * RoundingMode.HALF_UP);
+     * BigDecimal totalMontoSdf =
+     * BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
+     * horas.setMontoSdf(totalMontoSdf);
+     * System.out.println("DEBUG 9 CF- Valor hora SDF: " + valorHoraSdf);
+     * System.out.println("DEBUG 10 CF - Monto SDF calculado: " + totalMontoSdf);
+     * 
+     * BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
+     * horas.setMontoTotal(total);
+     * System.out.println("DEBUG 11 CF - Monto total calculado: " + total);
+     * 
+     * } catch (Exception e) {
+     * System.out.println("Error al buscar ValorGuardiaExtraYcf: " +
+     * e.getMessage());
+     * }
+     * }
+     * }
+     * // Retorna objeto SumaHoras con horas y montos calculados
+     * return horas;
+     * }
+     */
+
     private SumaHoras calcularHoras(RegistroActividad registroActividad) {
-        /* A. Cálculo de horas brutas */
         SumaHoras horas = sumaHorasService.calcularHoras(registroActividad.getFechaIngreso(),
                 registroActividad.getFechaEgreso(), registroActividad.getHoraIngreso(),
                 registroActividad.getHoraEgreso());
 
-        System.out.println("DEBUG [1] - Hoooras calculadas (LAV/SDF): " +
-                horas.getHorasLav() + "/" + horas.getHorasSdf());
-
         horas.setActivo(true);
         TipoGuardiaEnum tipoGuardia = registroActividad.getTipoGuardia().getNombre();
-
         Efector efector = registroActividad.getEfector();
+        Servicio servicio = registroActividad.getServicio();
+        LocalDate fechaVigencia = registroActividad.getFechaIngreso();
 
-        Hospital hospital = hospitalService.findById(efector.getId()).orElse(null);
+        Hospital hospital = hospitalService.findById(efector.getId())
+                .orElseThrow(() -> new RuntimeException("Hospital no encontrado para ID: " + efector.getId()));
 
-        if (hospital == null) {
-            throw new RuntimeException("Hospital no encontrado para ID: " + efector.getId());
-        }
+        boolean esServicioCritico = servicio != null && servicio.isCritico();
 
-        System.out.println("DEBUG 2 - Tipo de guardia: " + tipoGuardia);
-        System.out.println("DEBUG 3 - Hospital ID: " + (hospital != null ? hospital.getId() : "null"));
-        /* B. Determinar el tipo de guardia */
-        // si es Cargo o Agrupacion
         if (tipoGuardia == TipoGuardiaEnum.CARGO || tipoGuardia == TipoGuardiaEnum.AGRUPACION) {
-            System.out.println("DEBUG [4] - es tipo guardia cargo o agrup");
 
-            try {
-                // Valor de la guardia segun tipoGuardia y efector
+            ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService
+                    .obtenerValorGuardiaCargoPorHospital(hospital, esServicioCritico, fechaVigencia)
+                    .orElseThrow(() -> new RuntimeException(
+                            "No se encontró valor de guardia CARGO/AGRUPACION vigente para el hospital "
+                                    + hospital.getNombre() + " en fecha " + fechaVigencia));
 
-                /* Obtiene valores de guardia */
-                ValorGuardiaCargoYagrup valorGuardiaBase = valorGuardiaCargoYagrupService
-                        .obtenerValorGuardiaCargoPorHospital(hospital.getId()).get();
-                System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " + valorGuardiaBase);
-                System.out.println("DEBUG 6a - Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/"
-                        + valorGuardiaBase.getTotalSdf());
+            aplicarMontos(horas, valorGuardiaBase.getTotalLav(), valorGuardiaBase.getTotalSdf());
 
-                /* Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
-                /* LAV */
-                BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
-                        RoundingMode.HALF_UP);
-                BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
-                horas.setMontoLav(totalMontoLav);
-                System.out.println("DEBUG 7 - Valor hora LAV: " + valorHoraLav);
-                System.out.println("DEBUG 8 - Monto LAV calculado: " + totalMontoLav);
+        } else if (tipoGuardia == TipoGuardiaEnum.EXTRA || tipoGuardia == TipoGuardiaEnum.CONTRAFACTURA) {
 
-                /* SDF */
-                BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
-                        RoundingMode.HALF_UP);
-                BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
-                horas.setMontoSdf(totalMontoSdf);
-                System.out.println("DEBUG 9 - Valor hora SDF: " + valorHoraSdf);
-                System.out.println("DEBUG 10 - Monto SDF calculado: " + totalMontoSdf);
+            ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService
+                    .obtenerValorGuardiaExtraPorHospital(hospital, esServicioCritico, fechaVigencia)
+                    .orElseThrow(() -> new RuntimeException(
+                            "No se encontró valor de guardia EXTRA/CONTRAFACTURA vigente para el hospital "
+                                    + hospital.getNombre() + " en fecha " + fechaVigencia));
 
-                BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
-                horas.setMontoTotal(total);
-                System.out.println("DEBUG [11] - Monto total calculado: " + total);
-
-            } catch (Exception e) {
-                System.out.println("Error al buscar ValorGuardiaCargoYagrup: " + e.getMessage());
-            }
-        } else {
-            if (tipoGuardia == TipoGuardiaEnum.EXTRA || tipoGuardia == TipoGuardiaEnum.CONTRAFACTURA) {
-                /* Si es Extra o CF */
-                System.out.println("DEBUG - es tipo guardia extra o cf");
-                /* Obtiene valores de guardia */
-                /*
-                 * ValorGuardiaExtrayCF valorGuardiaBase1 = valorGuardiaExtraYcfService
-                 * .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
-                 * System.out.println("DEBUG 5 - ValorGuardiaBase obtenido: " +
-                 * valorGuardiaBase1);
-                 * System.out.println("DEBUG 6b - Total LAV/SDF: " +
-                 * valorGuardiaBase1.getTotalLav() + "/"
-                 * + valorGuardiaBase1.getTotalSdf());
-                 */
-
-                try {
-
-                    /* Obtiene valores de guardia */
-                    ValorGuardiaExtrayCF valorGuardiaBase = valorGuardiaExtraYcfService
-                            .obtenerValorGuardiaExtraPorHospital(hospital.getId()).get();
-
-                    System.out.println("DEBUG 5 CF- ValorGuardiaBase obtenido: " + valorGuardiaBase);
-                    System.out.println("DEBUG 6c CF- Total LAV/SDF: " + valorGuardiaBase.getTotalLav() + "/"
-                            + valorGuardiaBase.getTotalSdf());
-                    /* Calcula montos para LAV/SDF (dividiendo el total entre 24hs) */
-                    /* LAV */
-                    BigDecimal valorHoraLav = valorGuardiaBase.getTotalLav().divide(BigDecimal.valueOf(24), 2,
-                            RoundingMode.HALF_UP);
-                    System.out.println("DEBUG 6.1 CF - valor de la hora LAV: " + valorHoraLav);
-                    BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
-
-                    horas.setMontoLav(totalMontoLav);
-                    System.out.println("DEBUG 7 CF - Valor hora LAV: " + valorHoraLav);
-                    System.out.println("DEBUG 8 CF - Monto LAV calculado: " + totalMontoLav);
-
-                    /* SDF */
-                    BigDecimal valorHoraSdf = valorGuardiaBase.getTotalSdf().divide(BigDecimal.valueOf(24), 2,
-                            RoundingMode.HALF_UP);
-                    BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
-                    horas.setMontoSdf(totalMontoSdf);
-                    System.out.println("DEBUG 9 CF- Valor hora SDF: " + valorHoraSdf);
-                    System.out.println("DEBUG 10 CF - Monto SDF calculado: " + totalMontoSdf);
-
-                    BigDecimal total = horas.getMontoLav().add(horas.getMontoSdf());
-                    horas.setMontoTotal(total);
-                    System.out.println("DEBUG 11 CF - Monto total calculado: " + total);
-
-                } catch (Exception e) {
-                    System.out.println("Error al buscar ValorGuardiaExtraYcf: " + e.getMessage());
-                }
-            }
+            aplicarMontos(horas, valorGuardiaBase.getTotalLav(), valorGuardiaBase.getTotalSdf());
         }
-        /* Retorna objeto SumaHoras con horas y montos calculados */
+
         return horas;
+    }
+
+    private void aplicarMontos(SumaHoras horas, BigDecimal totalLav, BigDecimal totalSdf) {
+        BigDecimal valorHoraLav = totalLav.divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+        BigDecimal totalMontoLav = BigDecimal.valueOf(horas.getHorasLav()).multiply(valorHoraLav);
+        horas.setMontoLav(totalMontoLav);
+
+        BigDecimal valorHoraSdf = totalSdf.divide(BigDecimal.valueOf(24), 2, RoundingMode.HALF_UP);
+        BigDecimal totalMontoSdf = BigDecimal.valueOf(horas.getHorasSdf()).multiply(valorHoraSdf);
+        horas.setMontoSdf(totalMontoSdf);
+
+        horas.setMontoTotal(totalMontoLav.add(totalMontoSdf));
     }
 
     public ResponseEntity<?> registrarSalida(Long id, RegistroActividadDto registroActividadDto) {
@@ -344,7 +412,7 @@ public class RegistroActividadService {
         registroActividad.setServicio(servicioService.findById(registroActividadDto.getIdServicio()).get());
         registroActividad.setUsuarioEgreso(usuarioService.findById(registroActividadDto.getIdUsuarioEgreso()).get());
 
-        // Cálculo de horas solo si aplica      
+        // Cálculo de horas solo si aplica
         if (!esGuardiaCorta) {
             /* E. Cálculo de horas y montos */
             SumaHoras horas = calcularHoras(registroActividad);
@@ -356,25 +424,25 @@ public class RegistroActividadService {
             registroActividad.setHorasRealizadas(horas);
 
         } else {
-                registroActividad.setHorasRealizadas(null);
+            registroActividad.setHorasRealizadas(null);
         }
 
         // Gestión de registros pendientes (unificada, antes duplicada en cada rama)
         ResponseEntity<?> respuestaDeletePendiente = registrosPendientesService
-                        .deleteRegistroActividad(registroActividad);
+                .deleteRegistroActividad(registroActividad);
 
         if (respuestaDeletePendiente.getStatusCode() == HttpStatus.OK) {
-                registroActividad.setRegistrosPendientes(null);
+            registroActividad.setRegistrosPendientes(null);
 
-                // Acumulación mensual: sigue distinguiendo completa/incompleta
-                if (!esGuardiaCorta) {
-                        registroActividad = registroMensualService.setRegistroMensual(registroActividad);
-                } else {
-                        registroActividad = registroMensualService.setRegistroMensualSinHoras(registroActividad);
-                }
+            // Acumulación mensual: sigue distinguiendo completa/incompleta
+            if (!esGuardiaCorta) {
+                registroActividad = registroMensualService.setRegistroMensual(registroActividad);
+            } else {
+                registroActividad = registroMensualService.setRegistroMensualSinHoras(registroActividad);
+            }
 
-                // Cronograma definitivo: no le importa si es completa o incompleta
-                registroActividad = cronogramaDefinitivoService.setCronogramaDefinitivo(registroActividad);
+            // Cronograma definitivo: no le importa si es completa o incompleta
+            registroActividad = cronogramaDefinitivoService.setCronogramaDefinitivo(registroActividad);
         }
 
         save(registroActividad);
@@ -481,7 +549,8 @@ public class RegistroActividadService {
         }
 
         if (tieneContrafactura) {
-            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistente(idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
+            boolean ddjjContrafacturaAprobada = ddjjPreAprobadaExistente(idEfector, mes, anio,
+                    TipoGuardiaEnum.CONTRAFACTURA);
             System.out.println(" - DDJJ CONTRAFACTURA aprobada: " + ddjjContrafacturaAprobada);
             if (!ddjjContrafacturaAprobada) {
                 System.out.println("[SERVICE] Validación fallida: Falta DDJJ aprobada para CONTRAFACTURA");
@@ -506,56 +575,67 @@ public class RegistroActividadService {
         return exists;
     }
 
-    /* private boolean ddjjPreAprobadaExistenteCfSegunda(Long idEfector, int mes, int anio, TipoGuardiaEnum tipo, QuincenaEnum quincena) {
+    /*
+     * private boolean ddjjPreAprobadaExistenteCfSegunda(Long idEfector, int mes,
+     * int anio, TipoGuardiaEnum tipo, QuincenaEnum quincena) {
+     * 
+     * // Convertir int a MesesEnum
+     * MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+     * System.out.println("[SERVICE] Buscando DDJJ para tipo: " + tipo +
+     * ", mes: " + mesEnum + ", efector: " + idEfector);
+     * boolean exists = ddjjRepository.
+     * existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorQuincena(
+     * idEfector, mesEnum, anio, tipo, EstadoDdjjEnum.APROBADO, quincena);
+     * 
+     * System.out.println(" - Resultado búsqueda DDJJ: " + exists);
+     * return exists;
+     * }
+     */
 
-        // Convertir int a MesesEnum
-        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
-        System.out.println("[SERVICE] Buscando DDJJ para tipo: " + tipo +
-                ", mes: " + mesEnum + ", efector: " + idEfector);
-        boolean exists = ddjjRepository.existsByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorQuincena(
-                idEfector, mesEnum, anio, tipo, EstadoDdjjEnum.APROBADO, quincena);
+    /*
+     * public List<Long> obtenerIdDdjjAprobadaCf(Long idEfector, int mes, int anio)
+     * {
+     * System.out.println("=== INICIO obtenerIdDdjjAprobadaCf ===");
+     * System.out.println("Parámetros - idEfector: " + idEfector + ", mes: " + mes +
+     * ", anio: " + anio);
+     * 
+     * List<Long> idDdjjAprobada = new ArrayList<>();
+     * MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
+     * System.out.println("MesEnum convertido: " + mesEnum);
+     * 
+     * // 1. Verificar registros de actividad
+     * System.out.println("\n--- Verificando registros de actividad ---");
+     * 
+     * boolean tieneContrafactura =
+     * registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
+     * idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
+     * System.out.println("¿Tiene CONTRAFACTURA? " + tieneContrafactura);
+     * 
+     * // 2. Buscar DDJJ aprobadas por el director
+     * System.out.println("\n--- Buscando DDJJ aprobada ---");
+     * 
+     * if (tieneContrafactura) {
+     * System.out.println("Buscando DDJJ CONTRAFACTURA aprobada...");
+     * Optional<Long> idContrafactura = ddjjRepository
+     * .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorAndQuincena(
+     * idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA,
+     * EstadoDdjjEnum.APROBADO, QuincenaEnum.PRIMERA);
+     * 
+     * if (idContrafactura.isPresent()) {
+     * System.out.println("DDJJ CONTRAFACTURA encontrada - ID: " +
+     * idContrafactura.get());
+     * idDdjjAprobada.add(idContrafactura.get());
+     * } else {
+     * System.out.println("No se encontró DDJJ CONTRAFACTURA aprobada");
+     * }
+     * }
+     * 
+     * System.out.println("Lista de IDs encontrados: " + idDdjjAprobada);
+     * System.out.println("=== FIN obtenerIdsDdjjAprobadas ===\n");
+     * return idDdjjAprobada;
+     * }
+     */
 
-        System.out.println(" - Resultado búsqueda DDJJ: " + exists);
-        return exists;
-    } */
-
-    /* public List<Long> obtenerIdDdjjAprobadaCf(Long idEfector, int mes, int anio) {
-        System.out.println("=== INICIO obtenerIdDdjjAprobadaCf ===");
-        System.out.println("Parámetros - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);
-
-        List<Long> idDdjjAprobada = new ArrayList<>();
-        MesesEnum mesEnum = MesesEnum.fromNumeroMes(mes);
-        System.out.println("MesEnum convertido: " + mesEnum);
-
-        // 1. Verificar registros de actividad
-        System.out.println("\n--- Verificando registros de actividad ---");
-
-        boolean tieneContrafactura = registroActividadRepository.existsByEfectorAndMesAndAnioAndTipoGuardia(
-                idEfector, mes, anio, TipoGuardiaEnum.CONTRAFACTURA);
-        System.out.println("¿Tiene CONTRAFACTURA? " + tieneContrafactura);
-
-        // 2. Buscar DDJJ aprobadas por el director
-        System.out.println("\n--- Buscando DDJJ aprobada ---");
-
-        if (tieneContrafactura) {
-            System.out.println("Buscando DDJJ CONTRAFACTURA aprobada...");
-            Optional<Long> idContrafactura = ddjjRepository
-                    .findIdByEfectorIdAndMesAndAnioAndTipoGuardiaAndEstadoDdjjDirectorAndQuincena(
-                            idEfector, mesEnum, anio, TipoGuardiaEnum.CONTRAFACTURA, EstadoDdjjEnum.APROBADO, QuincenaEnum.PRIMERA);
-
-            if (idContrafactura.isPresent()) {
-                System.out.println("DDJJ CONTRAFACTURA encontrada - ID: " + idContrafactura.get());
-                idDdjjAprobada.add(idContrafactura.get());
-            } else {
-                System.out.println("No se encontró DDJJ CONTRAFACTURA aprobada");
-            }
-        }
-
-        System.out.println("Lista de IDs encontrados: " + idDdjjAprobada);
-        System.out.println("=== FIN obtenerIdsDdjjAprobadas ===\n");
-        return idDdjjAprobada;
-    } */
-    
     public List<Long> obtenerIdsDdjjAprobadas(Long idEfector, int mes, int anio) {
         System.out.println("=== INICIO obtenerIdsDdjjAprobadas ===");
         System.out.println("Parámetros - idEfector: " + idEfector + ", mes: " + mes + ", anio: " + anio);

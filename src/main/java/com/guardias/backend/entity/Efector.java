@@ -35,7 +35,7 @@ public abstract class Efector {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "efector_sequence")
     private Long id;
-    @Column(columnDefinition = "VARCHAR(50)")
+    @Column(columnDefinition = "VARCHAR(60)")
     private String nombre;
     @Column(columnDefinition = "VARCHAR(80)")
     private String domicilio;

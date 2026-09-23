@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import jakarta.persistence.CascadeType;
@@ -45,10 +46,13 @@ public abstract class ValorGuardiaBase {
     private boolean activo;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(20)")
-    private TipoGuardiaEnum tipoGuardia;
+    @Column(columnDefinition = "VARCHAR(30)")
+    private FamiliaValorBaseEnum familiaValorBase;
 
     private int nivelComplejidad;
+
+    @Column(columnDefinition = "BIT DEFAULT 0")
+    private boolean esServicioCritico;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "valorguardiabase_hospital", joinColumns = @JoinColumn(name = "id_valorGuardiaBase"), inverseJoinColumns = @JoinColumn(name = "id_hospital"))
@@ -60,10 +64,10 @@ public abstract class ValorGuardiaBase {
     private LocalDate fechaFin;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "id_valor_gmi")
+    @JoinColumn(name = "id_constante_monetaria_base")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "valoresGuardias", "id", "activo", "fechaInicio",
             "fechaFin", "ddjjs" })
-    private ValorGmi valorGmi;
+    private ConstanteMonetariaBase constanteMonetariaBase;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "id_bono_uti")

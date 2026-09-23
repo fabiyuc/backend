@@ -1,7 +1,9 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
+import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.service.HospitalService;
 import com.guardias.backend.service.ValorGuardiaExtraYcfService;
 
 @RestController
@@ -23,6 +27,8 @@ public class ValorGuardiaExtraYcfController {
 
     @Autowired
     ValorGuardiaExtraYcfService valorGuardiaExtraYcfService;
+    @Autowired
+    HospitalService hospitalService;
 
     @GetMapping("/list")
     public ResponseEntity<List<ValorGuardiaExtrayCF>> list() {
@@ -49,9 +55,14 @@ public class ValorGuardiaExtraYcfController {
     // Buscar el valor activo para este hospital
     @GetMapping("/valorByEfector/{idHospital}")
     public ResponseEntity<ValorGuardiaExtrayCF> valorByEfector(@PathVariable("idHospital") Long idHospital) {
+
+        Optional<Hospital> hospitalOpt = hospitalService.findById(idHospital);
+        if (hospitalOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         
         return valorGuardiaExtraYcfService
-            .obtenerValorGuardiaExtraPorHospital(idHospital)
+            .obtenerValorGuardiaExtraPorHospital(hospitalOpt.get(),false,LocalDate.now())
             .map(valor -> ResponseEntity.ok(valor))
             .orElseGet(() -> ResponseEntity.noContent().build());
     }
