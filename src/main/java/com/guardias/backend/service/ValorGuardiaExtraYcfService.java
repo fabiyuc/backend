@@ -18,7 +18,6 @@ import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
-import com.guardias.backend.repository.ConstanteMonetariaBaseRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -31,9 +30,9 @@ public class ValorGuardiaExtraYcfService {
     @Autowired
     HospitalRepository hospitalRepository;
     @Autowired
-    ConstanteMonetariaBaseRepository constanteMonetariaBaseRepository;
-    @Autowired
     BonoUtiService bonoUtiService;
+    @Autowired
+    ConstanteMonetariaBaseService constanteMonetariaBaseService;
 
     public Optional<List<ValorGuardiaExtrayCF>> findByActivoTrue() {
         return valorGuardiaExtraYcfRepository.findByActivoTrue();
@@ -110,8 +109,8 @@ public class ValorGuardiaExtraYcfService {
 
     public List<ValorGuardiaExtrayCF> generarValoresExtraCF(LocalDate fecha) {
 
-        ConstanteMonetariaBase baseExtraCf = constanteMonetariaBaseRepository
-                .getByFechaAndFamilia(fecha, FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA)
+        ConstanteMonetariaBase baseExtraCf = constanteMonetariaBaseService
+                .obtenerVigente(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA, fecha)
                 .orElseThrow(() -> new RuntimeException(
                         "No hay ConstanteMonetariaBase EXTRA_CONTRAFACTURA vigente para " + fecha));
 
@@ -151,6 +150,9 @@ public class ValorGuardiaExtraYcfService {
         BigDecimal susquesLav = baseLav.multiply(new BigDecimal("1.40")).setScale(2, RoundingMode.HALF_UP);
         generados.add(construirFilaExtra(susquesLav, null, List.of(susques), false, baseExtraCf, null, fecha));
 
+        // Cierra la grilla vigente anterior antes de guardar la nueva
+        cerrarVigenciaAnterior(fecha);
+
         return valorGuardiaExtraYcfRepository.saveAll(generados);
     }
 
@@ -182,6 +184,20 @@ public class ValorGuardiaExtraYcfService {
         fila.setTotalSdf(totalLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
 
         return fila;
+    }
+
+    private void cerrarVigenciaAnterior(LocalDate fechaNueva) {
+        List<ValorGuardiaExtrayCF> abiertos = valorGuardiaExtraYcfRepository.findByActivoTrueAndFechaFinIsNull();
+
+        for (ValorGuardiaExtrayCF v : abiertos) {
+            if (!v.getFechaInicio().isBefore(fechaNueva)) {
+                throw new RuntimeException("Ya existen valores de Extra/CF vigentes desde "
+                        + v.getFechaInicio() + ". La fecha de la nueva generación debe ser posterior.");
+            }
+        }
+
+        abiertos.forEach(v -> v.setFechaFin(fechaNueva.minusDays(1)));
+        valorGuardiaExtraYcfRepository.saveAll(abiertos);
     }
 
 }

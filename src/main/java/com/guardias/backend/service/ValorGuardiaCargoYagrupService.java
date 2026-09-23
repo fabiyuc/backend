@@ -30,7 +30,6 @@ import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
 import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
-import com.guardias.backend.repository.ConstanteMonetariaBaseRepository;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
 import com.guardias.backend.repository.ValorGuardiaExtraYcfRepository;
@@ -48,13 +47,10 @@ public class ValorGuardiaCargoYagrupService {
     @Autowired
     HospitalRepository hospitalRepository;
     @Autowired
-    ConstanteMonetariaBaseRepository constanteMonetariaBaseRepository;
-    @Autowired
     BonoUtiService bonoUtiService;
-    /*
-     * @Autowired
-     * BonoUtiRepository bonoUtiRepository;
-     */
+    @Autowired
+    ConstanteMonetariaBaseService constanteMonetariaBaseService;
+     
 
     public Optional<List<ValorGuardiaCargoYagrup>> findByActivoTrue() {
         return valorGuardiaCargoYagrupRepository.findByActivoTrue();
@@ -868,8 +864,7 @@ public class ValorGuardiaCargoYagrupService {
 
     public List<ValorGuardiaCargoYagrup> generarValoresCargoAgrupacion(LocalDate fecha) {
 
-        ConstanteMonetariaBase gmi = constanteMonetariaBaseRepository
-                .getByFechaAndFamilia(fecha, FamiliaValorBaseEnum.CARGO_AGRUPACION)
+        ConstanteMonetariaBase gmi = constanteMonetariaBaseService.obtenerVigente(FamiliaValorBaseEnum.CARGO_AGRUPACION, fecha)
                 .orElseThrow(() -> new RuntimeException(
                         "No hay ConstanteMonetariaBase CARGO_AGRUPACION vigente para " + fecha));
 
@@ -904,6 +899,9 @@ public class ValorGuardiaCargoYagrupService {
         generados.add(construirFilaExcepcion(nivel3Lav, new BigDecimal("1.00"), servCriticosLav,
                 new BigDecimal("2.00"), List.of(susques), 1, gmi, fecha));
 
+        // Cierra la grilla vigente anterior antes de guardar la nueva
+        cerrarVigenciaAnterior(fecha); 
+        
         return valorGuardiaCargoYagrupRepository.saveAll(generados);
     }
 
@@ -1014,5 +1012,20 @@ public class ValorGuardiaCargoYagrupService {
 
         return fila;
     }
+
+    private void cerrarVigenciaAnterior(LocalDate fechaNueva) {
+        List<ValorGuardiaCargoYagrup> abiertos = valorGuardiaCargoYagrupRepository.findByActivoTrueAndFechaFinIsNull();
+
+        for (ValorGuardiaCargoYagrup v : abiertos) {
+            if (!v.getFechaInicio().isBefore(fechaNueva)) {
+                throw new RuntimeException("Ya existen valores de Cargo/Agrupación vigentes desde "
+                        + v.getFechaInicio() + ". La fecha de la nueva generación debe ser posterior.");
+            }
+        }
+
+        abiertos.forEach(v -> v.setFechaFin(fechaNueva.minusDays(1)));
+        valorGuardiaCargoYagrupRepository.saveAll(abiertos);
+    }
+
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.ConstanteMonetariaBaseDto;
@@ -132,4 +133,18 @@ public class ConstanteMonetariaBaseController {
         constanteMonetariaBaseService.deleteById(id);
         return new ResponseEntity<>(new Mensaje("Valor eliminado FISICAMENTEE"), HttpStatus.OK);
     }
+
+    @GetMapping("/vigente")
+    public ResponseEntity<ConstanteMonetariaBase> vigente(
+        @RequestParam("familia") FamiliaValorBaseEnum familia,
+        @RequestParam(value = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+
+    LocalDate f = (fecha != null) ? fecha : LocalDate.now();
+    return constanteMonetariaBaseService.obtenerVigente(familia, f)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+
+
 }

@@ -55,4 +55,7 @@ public interface ValorGuardiaCargoYagrupRepository extends JpaRepository<ValorGu
             "AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
     Optional<ValorGuardiaCargoYagrup> findGenericoPorNivelVigente(@Param("nivel") int nivel,
             @Param("fecha") LocalDate fecha);
+
+List<ValorGuardiaCargoYagrup> findByActivoTrueAndFechaFinIsNull();
+
 }

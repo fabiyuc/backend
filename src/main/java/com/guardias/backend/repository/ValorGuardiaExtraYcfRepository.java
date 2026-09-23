@@ -53,4 +53,6 @@ public interface ValorGuardiaExtraYcfRepository extends JpaRepository<ValorGuard
     @Query("SELECT v FROM valoresGuardiasExtraYcf v WHERE v.hospitales IS EMPTY AND v.esServicioCritico = false " +
             "AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
     Optional<ValorGuardiaExtrayCF> findGenericoVigente(@Param("fecha") LocalDate fecha);
+
+    List<ValorGuardiaExtrayCF> findByActivoTrueAndFechaFinIsNull();
 }

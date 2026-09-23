@@ -141,4 +141,8 @@ public class ConstanteMonetariaBaseService {
         return new ResponseEntity(new Mensaje("Valor actualizado correctamente"), HttpStatus.OK);
     }
 
+    public Optional<ConstanteMonetariaBase> obtenerVigente(FamiliaValorBaseEnum familia, LocalDate fecha) {
+        return constanteMonetariaBaseRepository.getByFechaAndFamilia(fecha, familia);
+    }
+
 }

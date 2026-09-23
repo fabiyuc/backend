@@ -20,10 +20,10 @@ public interface ConstanteMonetariaBaseRepository extends JpaRepository<Constant
     Optional<List<ConstanteMonetariaBase>> findByFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(LocalDate fechaInicio,
             LocalDate fechaFin);
 
-    @Query("SELECT v FROM ConstantesMonetariasBase v WHERE v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
+    @Query("SELECT v FROM ConstantesMonetariasBase v WHERE v.activo = true AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
     Optional<List<ConstanteMonetariaBase>> getByFecha(@Param("fecha") LocalDate fecha);
 
-    @Query("SELECT v FROM ConstantesMonetariasBase v WHERE v.familiaValorBase = :familia AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
+    @Query("SELECT v FROM ConstantesMonetariasBase v WHERE v.activo = true AND v.familiaValorBase = :familia AND v.fechaInicio <= :fecha AND (v.fechaFin IS NULL OR v.fechaFin >= :fecha)")
     Optional<ConstanteMonetariaBase> getByFechaAndFamilia(@Param("fecha") LocalDate fecha,
             @Param("familia") FamiliaValorBaseEnum familia);
 
