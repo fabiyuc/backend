@@ -17,8 +17,8 @@ public class ValorGuardiaBaseController {
 
     public ResponseEntity<?> validations(ValorGuardiaBaseDto valorGuardiaBaseDto, Long id) {
 
-        if (valorGuardiaBaseDto.getTipoGuardia() == null)
-            return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST);
+        if (valorGuardiaBaseDto.getFamiliaValorBase() == null)
+            return new ResponseEntity(new Mensaje("La familia del valor de guardia es obligatoria"), HttpStatus.BAD_REQUEST);
 
         if (valorGuardiaBaseDto.getNivelComplejidad() <= 0)
             return new ResponseEntity(new Mensaje("El tipo de guardia es obligatorio"), HttpStatus.BAD_REQUEST);

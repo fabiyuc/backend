@@ -25,12 +25,10 @@ import com.guardias.backend.entity.Ddjj;
 import com.guardias.backend.entity.Legajo;
 import com.guardias.backend.enums.CondicionDdjjEnum;
 import com.guardias.backend.enums.MesesEnum;
-import com.guardias.backend.enums.QuincenaEnum;
 import com.guardias.backend.security.entity.Usuario;
 import com.guardias.backend.security.service.UsuarioService;
 import com.guardias.backend.service.DdjjService;
 import com.guardias.backend.service.LegajoService;
-import com.guardias.backend.service.ValorGmiService;
 
 import jakarta.validation.ValidationException;
 
@@ -40,9 +38,6 @@ import jakarta.validation.ValidationException;
 public class DdjjController {
     @Autowired
     DdjjService ddjjService;
-
-    @Autowired
-    ValorGmiService valorGmiService;
 
     @Autowired
     UsuarioService usuarioService;

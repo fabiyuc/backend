@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.guardias.backend.entity.Hospital;
-import com.guardias.backend.enums.TipoGuardiaEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,8 +16,9 @@ import lombok.NoArgsConstructor;
 public class ValorGuardiaBaseDto {
     
     private boolean activo;
-    private TipoGuardiaEnum tipoGuardia;
+    private String familiaValorBase;
     private int nivelComplejidad;
+    private boolean esServicioCritico;
     private List<Hospital> hospitales;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;

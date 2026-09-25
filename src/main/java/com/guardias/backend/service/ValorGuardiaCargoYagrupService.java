@@ -1,6 +1,7 @@
 package com.guardias.backend.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,15 +16,20 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.guardias.backend.constants.GruposZonalesGuardia;
 import com.guardias.backend.dto.valorGuardia.ColumnaGrillaDto;
 import com.guardias.backend.dto.valorGuardia.DetalleValoresDto;
 import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
 import com.guardias.backend.dto.valorGuardia.MontoDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaResponseDto;
+import com.guardias.backend.entity.BonoUti;
+import com.guardias.backend.entity.ConstanteMonetariaBase;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
 import com.guardias.backend.entity.ValorGuardiaExtrayCF;
+import com.guardias.backend.enums.ColumnaGrillaEnum;
+import com.guardias.backend.enums.FamiliaValorBaseEnum;
 import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.HospitalRepository;
 import com.guardias.backend.repository.ValorGuardiaCargoYagrupRepository;
@@ -41,8 +47,11 @@ public class ValorGuardiaCargoYagrupService {
     ValorGuardiaExtraYcfRepository valorGuardiaExtraYcfRepository;
     @Autowired
     HospitalRepository hospitalRepository;
-    /* @Autowired
-    BonoUtiRepository bonoUtiRepository; */
+    @Autowired
+    BonoUtiService bonoUtiService;
+    @Autowired
+    ConstanteMonetariaBaseService constanteMonetariaBaseService;
+     
 
     public Optional<List<ValorGuardiaCargoYagrup>> findByActivoTrue() {
         return valorGuardiaCargoYagrupRepository.findByActivoTrue();
@@ -79,23 +88,45 @@ public class ValorGuardiaCargoYagrupService {
                 && valorGuardiaCargoYagrupRepository.findById(id).get().isActivo());
     }
 
-    public Optional<ValorGuardiaCargoYagrup> obtenerValorGuardiaCargoPorHospital(Long idHospital) {
-        // Verificar existencia del hospital
+    public Optional<ValorGuardiaCargoYagrup> obtenerValorGuardiaCargoPorHospital(Hospital hospital,
+            boolean esServicioCritico, LocalDate fecha) {
 
-        if (!hospitalRepository.existsById(idHospital))
-            return Optional.empty();
-
-        // 1. Buscar valor específico para el hospital
-        Optional<ValorGuardiaCargoYagrup> valorEspecifico = valorGuardiaCargoYagrupRepository
-                .findByHospitalesIdAndActivoTrue(idHospital);
-
-        if (valorEspecifico.isPresent()) {
-            return valorEspecifico;
+        if (esServicioCritico) {
+            return valorGuardiaCargoYagrupRepository.findServicioCriticoVigente(fecha);
         }
 
-        // 2. Buscar valor genérico (sin hospitales asignados)
-        return valorGuardiaCargoYagrupRepository.findByActivoTrueAndHospitalesIsEmpty();
+        Optional<ValorGuardiaCargoYagrup> especifico = valorGuardiaCargoYagrupRepository
+                .findEspecificoPorHospitalVigente(hospital.getId(), fecha);
+        if (especifico.isPresent()) {
+            return especifico;
+        }
+
+        return valorGuardiaCargoYagrupRepository
+                .findGenericoPorNivelVigente(hospital.getNivelComplejidad().intValue(), fecha);
     }
+
+    /*
+     * public Optional<ValorGuardiaCargoYagrup>
+     * obtenerValorGuardiaCargoPorHospital(Long idHospital) {
+     * // Verificar existencia del hospital
+     * 
+     * if (!hospitalRepository.existsById(idHospital))
+     * return Optional.empty();
+     * 
+     * // 1. Buscar valor específico para el hospital
+     * Optional<ValorGuardiaCargoYagrup> valorEspecifico =
+     * valorGuardiaCargoYagrupRepository
+     * .findByHospitalesIdAndActivoTrue(idHospital);
+     * 
+     * if (valorEspecifico.isPresent()) {
+     * return valorEspecifico;
+     * }
+     * 
+     * // 2. Buscar valor genérico (sin hospitales asignados)
+     * return
+     * valorGuardiaCargoYagrupRepository.findByActivoTrueAndHospitalesIsEmpty();
+     * }
+     */
 
     /* Crea registros de ValorGuardiaCargoYagrup basados en el ValorGmi activo */
 
@@ -485,7 +516,7 @@ public class ValorGuardiaCargoYagrupService {
             LocalDate fechaInicio) {
 
         ValorGuardiaCargoYagrup valor = new ValorGuardiaCargoYagrup();
-        valor.setTipoGuardia(TipoGuardiaEnum.CARGO); // También aplica para AGRUPACION
+        valor.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         valor.setNivelComplejidad(nivel);
         valor.setTotalLav(totalLav);
         valor.setTotalSdf(totalSdf);
@@ -506,7 +537,7 @@ public class ValorGuardiaCargoYagrupService {
             LocalDate fechaInicio) {
 
         ValorGuardiaExtrayCF valor = new ValorGuardiaExtrayCF();
-        valor.setTipoGuardia(TipoGuardiaEnum.EXTRA); // También aplica para CONTRAFACTURA
+        valor.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
         valor.setNivelComplejidad(nivel);
         valor.setTotalLav(totalLav);
         valor.setTotalSdf(totalSdf);
@@ -526,24 +557,29 @@ public class ValorGuardiaCargoYagrupService {
 
         for (ValorGuardiaManualDto dto : listaValores) {
 
-            // 1. Resolver los hospitales nuevos (ordenados por ID para facilitar comparación)
+            // 1. Resolver los hospitales nuevos (ordenados por ID para facilitar
+            // comparación)
             List<Hospital> hospitalesNuevos = new ArrayList<>();
             if (dto.getIdsHospitales() != null && !dto.getIdsHospitales().isEmpty()) {
                 hospitalesNuevos = hospitalRepository.findAllById(dto.getIdsHospitales());
                 // Ordenamos para que la comparación de listas sea consistente
                 hospitalesNuevos.sort(Comparator.comparing(Hospital::getId));
             }
-            // Si la lista está VACÍA (el else implícito), NO se asignan hospitales específicos.
+            // Si la lista está VACÍA (el else implícito), NO se asignan hospitales
+            // específicos.
             // En base de datos, la tabla de relación quedará vacía para este registro.
 
             // 2. --- NUEVO: BUSCAR EL BONO UTI (Si viene el ID) ---
-           /*  BonoUti bonoUti = null;
-            if (dto.getIdBonoUti() != null) {
-                // Buscamos la entidad para poder relacionarla
-                bonoUti = bonoUtiRepository.findById(dto.getIdBonoUti()).orElse(null);
-            } */
+            /*
+             * BonoUti bonoUti = null;
+             * if (dto.getIdBonoUti() != null) {
+             * // Buscamos la entidad para poder relacionarla
+             * bonoUti = bonoUtiRepository.findById(dto.getIdBonoUti()).orElse(null);
+             * }
+             */
 
-            // 3. Separamos la lógica según el tipo de guardia para guardar en la tabla correcta
+            // 3. Separamos la lógica según el tipo de guardia para guardar en la tabla
+            // correcta
             if (esGuardiaCargo(dto.getTipoGuardia())) {
                 procesarGuardiaCargo(dto, hospitalesNuevos);
             } else if (esGuardiaExtra(dto.getTipoGuardia())) {
@@ -555,15 +591,18 @@ public class ValorGuardiaCargoYagrupService {
     private void procesarGuardiaCargo(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
         // A. Buscar candidatos vigentes (Activos y del mismo Nivel/Tipo)
         List<ValorGuardiaCargoYagrup> vigentes = valorGuardiaCargoYagrupRepository
-                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+                .findByFamiliaValorBaseAndNivelComplejidadAndActivoTrue(FamiliaValorBaseEnum.CARGO_AGRUPACION,
+                        dto.getNivelComplejidad());
 
         // B. Verificar si alguno coincide exactamente con los hospitales del DTO
         for (ValorGuardiaCargoYagrup viejo : vigentes) {
             if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
-                
+
                 // C. Lógica de Cierre: Si el nuevo inicia DESPUÉS, cerramos el viejo ayer.
                 if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
                     viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
+                    // viejo.setActivo(false); — el registro sigue activo=true, ahora como historial
+                    // cerrado
                     valorGuardiaCargoYagrupRepository.save(viejo);
                 }
             }
@@ -571,7 +610,7 @@ public class ValorGuardiaCargoYagrupService {
 
         // C. Guardar el NUEVO registro
         ValorGuardiaCargoYagrup nuevo = new ValorGuardiaCargoYagrup();
-        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
         nuevo.setNivelComplejidad(dto.getNivelComplejidad());
         nuevo.setTotalLav(dto.getTotalLav());
         nuevo.setTotalSdf(dto.getTotalSdf());
@@ -581,9 +620,11 @@ public class ValorGuardiaCargoYagrupService {
         if (!hospitalesNuevos.isEmpty()) {
             nuevo.setHospitales(hospitalesNuevos);
         }
-        /* if (bonoUti != null) {
-            nuevo.setBonoUti(bonoUti);
-        } */
+        /*
+         * if (bonoUti != null) {
+         * nuevo.setBonoUti(bonoUti);
+         * }
+         */
         nuevo.setBono1580Lav(dto.getBono1580Lav());
         nuevo.setBono1580Sdf(dto.getBono1580Sdf());
 
@@ -599,20 +640,23 @@ public class ValorGuardiaCargoYagrupService {
     private void procesarGuardiaExtra(ValorGuardiaManualDto dto, List<Hospital> hospitalesNuevos) {
         // Misma lógica pero con el repositorio y entidad de Extra/CF
         List<ValorGuardiaExtrayCF> vigentes = valorGuardiaExtraYcfRepository
-                .findByTipoGuardiaAndNivelComplejidadAndActivoTrue(dto.getTipoGuardia(), dto.getNivelComplejidad());
+                .findByFamiliaValorBaseAndNivelComplejidadAndActivoTrue(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA,
+                        dto.getNivelComplejidad());
 
         for (ValorGuardiaExtrayCF viejo : vigentes) {
             if (sonLosMismosHospitales(viejo.getHospitales(), hospitalesNuevos)) {
-                
+
                 if (viejo.getFechaInicio().isBefore(dto.getFechaInicio()) && viejo.getFechaFin() == null) {
                     viejo.setFechaFin(dto.getFechaInicio().minusDays(1));
+                    // viejo.setActivo(false); — el registro sigue activo=true, ahora como historial
+                    // cerrado
                     valorGuardiaExtraYcfRepository.save(viejo);
                 }
             }
         }
 
         ValorGuardiaExtrayCF nuevo = new ValorGuardiaExtrayCF();
-        nuevo.setTipoGuardia(dto.getTipoGuardia());
+        nuevo.setFamiliaValorBase(FamiliaValorBaseEnum.EXTRA_CONTRAFACTURA);
         nuevo.setNivelComplejidad(dto.getNivelComplejidad());
         nuevo.setTotalLav(dto.getTotalLav());
         nuevo.setTotalSdf(dto.getTotalSdf());
@@ -622,20 +666,21 @@ public class ValorGuardiaCargoYagrupService {
         if (!hospitalesNuevos.isEmpty()) {
             nuevo.setHospitales(hospitalesNuevos);
         }
-        /* if (bonoUti != null) {
-            nuevo.setBonoUti(bonoUti);
-        } */
+        /*
+         * if (bonoUti != null) {
+         * nuevo.setBonoUti(bonoUti);
+         * }
+         */
 
         nuevo.setBono1580Lav(dto.getBono1580Lav());
         nuevo.setBono1580Sdf(dto.getBono1580Sdf());
 
         nuevo.setResolucion2575Lav(dto.getResolucion2575Lav());
         nuevo.setResolucion2575Sdf(dto.getResolucion2575Sdf());
-        
+
         valorGuardiaExtraYcfRepository.save(nuevo);
     }
 
-   
     /**
      * Compara si dos listas de hospitales contienen exactamente los mismos IDs.
      * Maneja listas nulas o vacías.
@@ -645,7 +690,8 @@ public class ValorGuardiaCargoYagrupService {
         List<Hospital> a = (listaA == null) ? Collections.emptyList() : listaA;
         List<Hospital> b = (listaB == null) ? Collections.emptyList() : listaB;
 
-        if (a.size() != b.size()) return false;
+        if (a.size() != b.size())
+            return false;
 
         // Extraer IDs, ordenar y comparar
         List<Long> idsA = a.stream().map(Hospital::getId).sorted().collect(Collectors.toList());
@@ -663,100 +709,118 @@ public class ValorGuardiaCargoYagrupService {
     }
 
     public List<GrillaValorGuardiaCompletaDto> obtenerGrillaJerarquica(LocalDate fecha) {
-        
+
         // 1. Traer datos crudos de la BD
         List<ValorGuardiaCargoYagrup> cargos = valorGuardiaCargoYagrupRepository.buscarVigentes(fecha);
         List<ValorGuardiaExtrayCF> extras = valorGuardiaExtraYcfRepository.buscarVigentes(fecha);
 
-        // 2. Estructura temporal para agrupar:
-        // Map<Nivel (Integer), Map<KeyGrupo (String), ObjetoUnificado>>
-        Map<Integer, Map<String, DetalleValoresDto>> agrupador = new HashMap<>();
-        
-        // Map auxiliar para guardar el Título de cada columna y no perderlo
-        Map<String, String> titulosMap = new HashMap<>();
+        // --- CARGO / AGRUPACIÓN: por nivel (filas generales) o por hospital (excepciones) ---
+        ValorGuardiaCargoYagrup cargoCriticos = buscarCargoGeneral(cargos, 4);
+        ValorGuardiaCargoYagrup cargoNivel3   = buscarCargoGeneral(cargos, 3);
+        ValorGuardiaCargoYagrup cargoNivel2   = buscarCargoGeneral(cargos, 2);
+        ValorGuardiaCargoYagrup cargoNivel1   = buscarCargoGeneral(cargos, 1);
+        ValorGuardiaCargoYagrup cargoUro      = buscarCargoPorHospital(cargos, GruposZonalesGuardia.HOSPITAL_URO);
+        ValorGuardiaCargoYagrup cargoSusques  = buscarCargoPorHospital(cargos, GruposZonalesGuardia.HOSPITAL_SUSQUES);
 
-        // --- PROCESAR CARGOS ---
-        for (ValorGuardiaCargoYagrup c : cargos) {
-            String keyGrupo = generarKey(c.getHospitales());
-            String titulo = generarTitulo(c.getHospitales(), c.getNivelComplejidad());
-            titulosMap.put(keyGrupo, titulo);
+        // --- EXTRA / CF: por servicio crítico, zona u hospital (Res. 3590, no usa nivel) ---
+        ValorGuardiaExtrayCF extraCriticos = extras.stream()
+                .filter(e -> e.isEsServicioCritico())
+                .findFirst().orElse(null);
+        ValorGuardiaExtrayCF extraResto = extras.stream()
+                .filter(e -> !e.isEsServicioCritico() && sinHospitales(e.getHospitales()))
+                .findFirst().orElse(null);
+        ValorGuardiaExtrayCF extraUro = buscarExtraPorHospital(extras, GruposZonalesGuardia.HOSPITAL_URO);
+        ValorGuardiaExtrayCF extraSusques = buscarExtraPorHospital(extras, GruposZonalesGuardia.HOSPITAL_SUSQUES);
+        ValorGuardiaExtrayCF extraZona20 = extras.stream()
+                .filter(e -> e.getHospitales() != null && e.getHospitales().stream()
+                        .anyMatch(h -> GruposZonalesGuardia.ZONA_20_EXTRA_CF.contains(h.getNombre())))
+                .findFirst().orElse(null);
 
-            // Inicializar mapas si no existen
-            agrupador.putIfAbsent(c.getNivelComplejidad(), new HashMap<>());
-            Map<String, DetalleValoresDto> nivelMap = agrupador.get(c.getNivelComplejidad());
-            
-            // Obtener o crear el detalle
-            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
-            
-            // Mapear y asignar CARGO
-            detalle.setCargo(mapearCargo(c));
-            
-            nivelMap.put(keyGrupo, detalle);
-        }
+        // Título de zona +20% armado con los nombres reales de la BD
+        String tituloZona20 = (extraZona20 != null)
+                ? extraZona20.getHospitales().stream().map(Hospital::getNombre).collect(Collectors.joining(", "))
+                : "ZONA +20%";
 
-        // --- PROCESAR EXTRAS (Unimos en el mismo mapa) ---
-        for (ValorGuardiaExtrayCF e : extras) {
-            String keyGrupo = generarKey(e.getHospitales());
-            
-            // Si no estaba el título (porque solo hay extra y no cargo), lo generamos
-            if (!titulosMap.containsKey(keyGrupo)) {
-                titulosMap.put(keyGrupo, generarTitulo(e.getHospitales(), e.getNivelComplejidad()));
-            }
+        // --- Armado fijo, igual al Excel de DPH ---
+        return List.of(
+            nivel(4, "SERVICIOS CRÍTICOS + SAME",
+                columna(ColumnaGrillaEnum.SERVICIOS_CRITICOS, "SERVICIOS CRÍTICOS + SAME", cargoCriticos, extraCriticos)),
+            nivel(3, "TERCER NIVEL",
+                columna(ColumnaGrillaEnum.NIVEL_3, "MATERNO, SORIA", cargoNivel3, extraResto)),
+            nivel(2, "SEGUNDO NIVEL",
+                columna(ColumnaGrillaEnum.NIVEL_2, "S. ROQUE, ORIAS, PATERSON", cargoNivel2, extraResto),
+                columna(ColumnaGrillaEnum.URO, "URO", cargoUro, extraUro)),
+            nivel(1, "PRIMER NIVEL",
+                columna(ColumnaGrillaEnum.NIVEL_1_RESTO, "RESTO PRIMER NIVEL", cargoNivel1, extraResto),
+                columna(ColumnaGrillaEnum.SUSQUES, "SUSQUES", cargoSusques, extraSusques),
+                columna(ColumnaGrillaEnum.ZONA_20, tituloZona20, cargoNivel1, extraZona20))
+        );
+    }
 
-            agrupador.putIfAbsent(e.getNivelComplejidad(), new HashMap<>());
-            Map<String, DetalleValoresDto> nivelMap = agrupador.get(e.getNivelComplejidad());
-            
-            DetalleValoresDto detalle = nivelMap.getOrDefault(keyGrupo, new DetalleValoresDto());
-            
-            // Mapear y asignar EXTRA
-            detalle.setExtra(mapearExtra(e));
-            
-            nivelMap.put(keyGrupo, detalle);
-        }
+    // ---------- Helpers ----------
 
-        // 3. Transformar el Map a la Lista final de DTOs
-        List<GrillaValorGuardiaCompletaDto> respuestaFinal = new ArrayList<>();
+    private boolean sinHospitales(List<Hospital> hospitales) {
+        return hospitales == null || hospitales.isEmpty();
+    }
 
-        for (Map.Entry<Integer, Map<String, DetalleValoresDto>> entryNivel : agrupador.entrySet()) {
-            Integer nivel = entryNivel.getKey();
-            Map<String, DetalleValoresDto> columnasDelNivel = entryNivel.getValue();
+    private boolean tieneHospital(List<Hospital> hospitales, String nombre) {
+        return hospitales != null && hospitales.stream().anyMatch(h -> nombre.equals(h.getNombre()));
+    }
 
-            GrillaValorGuardiaCompletaDto nivelDto = new GrillaValorGuardiaCompletaDto();
-            nivelDto.setNumeroNivel(nivel);
-            nivelDto.setNombreNivel(obtenerNombreNivel(nivel)); // Ej: "NIVEL 4 (CRITICOS)"
+    /** Fila general del nivel (sin hospitales asignados = aplica a todo el nivel). */
+    private ValorGuardiaCargoYagrup buscarCargoGeneral(List<ValorGuardiaCargoYagrup> cargos, int nivel) {
+        return cargos.stream()
+                .filter(c -> c.getNivelComplejidad() == nivel && sinHospitales(c.getHospitales()))
+                .findFirst().orElse(null);
+    }
 
-            for (Map.Entry<String, DetalleValoresDto> entryColumna : columnasDelNivel.entrySet()) {
-                ColumnaGrillaDto columna = new ColumnaGrillaDto();
-                columna.setTitulo(titulosMap.get(entryColumna.getKey())); // Recuperamos el título bonito
-                columna.setValores(entryColumna.getValue());
-                
-                nivelDto.getColumnas().add(columna);
-            }
-            // Opcional: Ordenar columnas alfabéticamente por título o por ID dentro del nivel
-            // nivelDto.getColumnas().sort(Comparator.comparing(ColumnaGrillaDto::getTitulo));
-            
-            respuestaFinal.add(nivelDto);
-        }
+    private ValorGuardiaCargoYagrup buscarCargoPorHospital(List<ValorGuardiaCargoYagrup> cargos, String nombre) {
+        return cargos.stream()
+                .filter(c -> tieneHospital(c.getHospitales(), nombre))
+                .findFirst().orElse(null);
+    }
 
-        // 4. Ordenar Niveles descendente (4, 3, 2, 1) para que salga igual a la foto
-        respuestaFinal.sort((a, b) -> b.getNumeroNivel() - a.getNumeroNivel());
+    private ValorGuardiaExtrayCF buscarExtraPorHospital(List<ValorGuardiaExtrayCF> extras, String nombre) {
+        return extras.stream()
+                .filter(e -> tieneHospital(e.getHospitales(), nombre))
+                .findFirst().orElse(null);
+    }
 
-        return respuestaFinal;
+    private ColumnaGrillaDto columna(ColumnaGrillaEnum clave, String titulo,
+                                     ValorGuardiaCargoYagrup cargo, ValorGuardiaExtrayCF extra) {
+        DetalleValoresDto detalle = new DetalleValoresDto();
+        detalle.setCargo(cargo != null ? mapearCargo(cargo) : null);
+        detalle.setExtra(extra != null ? mapearExtra(extra) : null);
+
+        ColumnaGrillaDto col = new ColumnaGrillaDto();
+        col.setClave(clave);
+        col.setTitulo(titulo);
+        col.setValores(detalle);
+        return col;
+    }
+
+    private GrillaValorGuardiaCompletaDto nivel(int numero, String nombre, ColumnaGrillaDto... columnas) {
+        GrillaValorGuardiaCompletaDto dto = new GrillaValorGuardiaCompletaDto();
+        dto.setNumeroNivel(numero);
+        dto.setNombreNivel(nombre);
+        dto.getColumnas().addAll(List.of(columnas));
+        return dto;
     }
 
     // --- MAPPERS (Entidad -> DTO) ---
 
     private ValorGuardiaResponseDto mapearCargo(ValorGuardiaCargoYagrup entidad) {
         ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
-        
+
         dto.setDecreto1178(new MontoDto(entidad.getDecreto1178Lav(), entidad.getDecreto1178Sdf()));
         dto.setDecreto1657(new MontoDto(entidad.getDecreto1657Lav(), entidad.getDecreto1657Sdf()));
-        
-        // Mapeamos el bono1580 usando los campos de la entidad (que en BD se llaman valorBonoUti...)
+
+        // Mapeamos el bono1580 usando los campos de la entidad (que en BD se llaman
+        // valorBonoUti...)
         dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
-        
+
         dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
-        
+
         // Campos de Extra nulos
         dto.setResolucion2575(null);
         return dto;
@@ -764,14 +828,14 @@ public class ValorGuardiaCargoYagrupService {
 
     private ValorGuardiaResponseDto mapearExtra(ValorGuardiaExtrayCF entidad) {
         ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
-        
+
         dto.setResolucion2575(new MontoDto(entidad.getResolucion2575Lav(), entidad.getResolucion2575Sdf()));
-        
+
         // Mapeamos el bono1580
         dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
-        
+
         dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
-        
+
         // Campos de Cargo nulos
         dto.setDecreto1178(null);
         dto.setDecreto1657(null);
@@ -781,7 +845,8 @@ public class ValorGuardiaCargoYagrupService {
     // --- HELPERS (Utilidades) ---
 
     private String generarKey(List<Hospital> hospitales) {
-        if (hospitales == null || hospitales.isEmpty()) return "RESTO";
+        if (hospitales == null || hospitales.isEmpty())
+            return "RESTO";
         // Genera un ID único ordenando los IDs de hospitales: "96-97-98"
         return hospitales.stream()
                 .map(h -> h.getId().toString())
@@ -795,18 +860,204 @@ public class ValorGuardiaCargoYagrupService {
         }
         // Genera: "MATERNO, SORIA"
         return hospitales.stream()
-                .map(Hospital::getNombre) 
+                .map(Hospital::getNombre)
                 .collect(Collectors.joining(", "));
     }
 
     private String obtenerNombreNivel(int nivel) {
         switch (nivel) {
-            case 4: return "NIVEL 4 (SERVICIOS CRÍTICOS + SAME)";
-            case 3: return "NIVEL 3 (TERCER NIVEL)";
-            case 2: return "NIVEL 2 (SEGUNDO NIVEL)";
-            case 1: return "NIVEL 1 (PRIMER NIVEL)";
-            default: return "NIVEL " + nivel;
+            case 4:
+                return "NIVEL 4 (SERVICIOS CRÍTICOS + SAME)";
+            case 3:
+                return "NIVEL 3 (TERCER NIVEL)";
+            case 2:
+                return "NIVEL 2 (SEGUNDO NIVEL)";
+            case 1:
+                return "NIVEL 1 (PRIMER NIVEL)";
+            default:
+                return "NIVEL " + nivel;
         }
     }
+
+    public List<ValorGuardiaCargoYagrup> generarValoresCargoAgrupacion(LocalDate fecha) {
+
+        ConstanteMonetariaBase gmi = constanteMonetariaBaseService.obtenerVigente(FamiliaValorBaseEnum.CARGO_AGRUPACION, fecha)
+                .orElseThrow(() -> new RuntimeException(
+                        "No hay ConstanteMonetariaBase CARGO_AGRUPACION vigente para " + fecha));
+
+        BonoUti bonoUti = bonoUtiService.obtenerVigente(fecha)
+                .orElseThrow(() -> new RuntimeException("No hay BonoUti vigente para " + fecha));
+
+        BigDecimal servCriticosLav = gmi.getMonto()
+                .multiply(BigDecimal.valueOf(2))
+                .setScale(2, RoundingMode.HALF_UP);
+
+        List<ValorGuardiaCargoYagrup> generados = new ArrayList<>();
+
+        // Nivel 4 - Servicios Críticos + SAME (el "techo")
+        generados.add(construirFilaServiciosCriticos(servCriticosLav, bonoUti, gmi, fecha));
+
+        // Nivel 3, 2, 1 - nivelados hacia el techo (Decreto 1657)
+        generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.70"), 3, gmi, fecha));
+        generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.60"), 2, gmi, fecha));
+        generados.add(construirNivelNivelado(servCriticosLav, new BigDecimal("0.50"), 1, gmi, fecha));
+
+        // Uro y Susques - híbrido sobre Nivel 3
+        //BigDecimal nivel3Lav = servCriticosLav.multiply(new BigDecimal("0.70")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal nivel3Lav = servCriticosLav.multiply(new BigDecimal("0.70"));
+
+
+        Hospital uro = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_URO)
+                .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_URO));
+        generados.add(construirFilaExcepcion(nivel3Lav, new BigDecimal("0.80"), servCriticosLav,
+                new BigDecimal("1.80"), List.of(uro), 2, gmi, fecha));
+
+        Hospital susques = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_SUSQUES)
+                .orElseThrow(
+                        () -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
+        generados.add(construirFilaExcepcion(nivel3Lav, new BigDecimal("1.00"), servCriticosLav,
+                new BigDecimal("2.00"), List.of(susques), 1, gmi, fecha));
+
+        // Cierra la grilla vigente anterior antes de guardar la nueva
+        cerrarVigenciaAnterior(fecha); 
+        
+        return valorGuardiaCargoYagrupRepository.saveAll(generados);
+    }
+
+    /**
+     * Nivel 4 - Servicios Críticos + SAME. Decreto 1178/1578 art.7 inc. a): 2×GMI.
+     * Decreto 1657 NO aplica (art. 5, exclusión expresa). Se le suma el Bono UTI
+     * (Decreto 1580), que sí aplica a este grupo.
+     */
+    private ValorGuardiaCargoYagrup construirFilaServiciosCriticos(BigDecimal servCriticosLav, BonoUti bonoUti,
+            ConstanteMonetariaBase gmi, LocalDate fecha) {
+
+        ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
+        fila.setNivelComplejidad(4);
+        fila.setEsServicioCritico(true);
+        fila.setHospitales(List.of());
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(bonoUti);
+
+        BigDecimal bonoUtiLav = bonoUti.getMonto();
+
+        fila.setDecreto1178Lav(servCriticosLav);
+        fila.setDecreto1178Sdf(servCriticosLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1657Lav(BigDecimal.ZERO);
+        fila.setDecreto1657Sdf(BigDecimal.ZERO);
+        fila.setBono1580Lav(bonoUtiLav);
+        fila.setBono1580Sdf(bonoUtiLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        BigDecimal totalLav = servCriticosLav.add(bonoUtiLav);
+        fila.setTotalLav(totalLav);
+        fila.setTotalSdf(totalLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        return fila;
+    }
+
+    /**
+     * Nivel 3, 2 y 1 (genéricos, sin hospitales). Decreto 1178/1578: el valor
+     * base es un % del techo de Servicios Críticos, y el Bono Covid (1657)
+     * completa la diferencia hasta igualar ese mismo techo (nivelación total).
+     * No lleva Bono UTI (solo aplica a Servicios Críticos).
+     */
+    private ValorGuardiaCargoYagrup construirNivelNivelado(BigDecimal servCriticosLav, BigDecimal porcentaje, int nivel,
+            ConstanteMonetariaBase gmi, LocalDate fecha) {
+
+        ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
+        fila.setNivelComplejidad(nivel);
+        fila.setEsServicioCritico(false);
+        fila.setHospitales(List.of());
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(null);
+
+        BigDecimal decreto1178Lav = servCriticosLav.multiply(porcentaje).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal decreto1657Lav = servCriticosLav.subtract(decreto1178Lav);
+
+        fila.setDecreto1178Lav(decreto1178Lav);
+        fila.setDecreto1178Sdf(decreto1178Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setDecreto1657Lav(decreto1657Lav);
+        fila.setDecreto1657Sdf(decreto1657Lav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setBono1580Lav(null);
+        fila.setBono1580Sdf(null);
+
+        fila.setTotalLav(servCriticosLav); // nivelado: siempre igual al techo
+        fila.setTotalSdf(servCriticosLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+
+        return fila;
+    }
+
+    /**
+     * Uro y Susques. Decreto 1178/1578: su "S/Decreto 1178" sale de 2 guardias
+     * liquidadas a un % del Nivel 3 (no de Servicios Críticos). Su techo
+     * (Decreto 1657) es Servicios Críticos + un % extra (80% Uro, 100% Susques).
+     * El Bono Covid completa la diferencia entre ambos. No llevan Bono UTI.
+     */
+    private ValorGuardiaCargoYagrup construirFilaExcepcion(BigDecimal nivel3Lav, BigDecimal porcentajeDecreto1178,
+            BigDecimal servCriticosLav, BigDecimal multiplicadorTecho, List<Hospital> hospitales, int nivel,
+            ConstanteMonetariaBase gmi, LocalDate fecha) {
+
+        ValorGuardiaCargoYagrup fila = new ValorGuardiaCargoYagrup();
+        fila.setFamiliaValorBase(FamiliaValorBaseEnum.CARGO_AGRUPACION);
+        fila.setNivelComplejidad(nivel);
+        fila.setEsServicioCritico(false);
+        fila.setHospitales(hospitales);
+        fila.setFechaInicio(fecha);
+        fila.setActivo(true);
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(null);
+
+        fila.setConstanteMonetariaBase(gmi);
+        fila.setBonoUti(null);
+
+        BigDecimal recargoSdf = new BigDecimal("1.10");
+
+        // Valores exactos, sin redondear (igual que el Excel)
+        BigDecimal decreto1178Exacto = nivel3Lav.multiply(porcentajeDecreto1178).multiply(BigDecimal.valueOf(2));
+        BigDecimal techoExacto = servCriticosLav.multiply(multiplicadorTecho);
+
+        // Redondeo único, al final
+        BigDecimal decreto1178Lav = decreto1178Exacto.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal decreto1178Sdf = decreto1178Exacto.multiply(recargoSdf).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalLav = techoExacto.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalSdf = techoExacto.multiply(recargoSdf).setScale(2, RoundingMode.HALF_UP);
+
+        // El Bono Covid (Decreto 1657) completa la diferencia, en L-V y en S-D-F por separado
+        BigDecimal decreto1657Lav = totalLav.subtract(decreto1178Lav);
+        BigDecimal decreto1657Sdf = totalSdf.subtract(decreto1178Sdf);
+
+        fila.setDecreto1178Lav(decreto1178Lav);
+        fila.setDecreto1178Sdf(decreto1178Sdf);
+        fila.setDecreto1657Lav(decreto1657Lav);
+        fila.setDecreto1657Sdf(decreto1657Sdf);
+        fila.setBono1580Lav(null);
+        fila.setBono1580Sdf(null);
+
+        fila.setTotalLav(totalLav);
+        fila.setTotalSdf(totalSdf);
+
+        return fila;
+    }
+
+    private void cerrarVigenciaAnterior(LocalDate fechaNueva) {
+        List<ValorGuardiaCargoYagrup> abiertos = valorGuardiaCargoYagrupRepository.findByActivoTrueAndFechaFinIsNull();
+
+        for (ValorGuardiaCargoYagrup v : abiertos) {
+            if (!v.getFechaInicio().isBefore(fechaNueva)) {
+                throw new RuntimeException("Ya existen valores de Cargo/Agrupación vigentes desde "
+                        + v.getFechaInicio() + ". La fecha de la nueva generación debe ser posterior.");
+            }
+        }
+
+        abiertos.forEach(v -> v.setFechaFin(fechaNueva.minusDays(1)));
+        valorGuardiaCargoYagrupRepository.saveAll(abiertos);
+    }
+
 
 }
