@@ -812,14 +812,15 @@ public class ValorGuardiaCargoYagrupService {
     private ValorGuardiaResponseDto mapearCargo(ValorGuardiaCargoYagrup entidad) {
         ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
 
-        dto.setDecreto1178(new MontoDto(entidad.getDecreto1178Lav(), entidad.getDecreto1178Sdf()));
-        dto.setDecreto1657(new MontoDto(entidad.getDecreto1657Lav(), entidad.getDecreto1657Sdf()));
+        dto.setDecreto1178(monto(entidad.getDecreto1178Lav(), entidad.getDecreto1178Sdf()));
+        dto.setDecreto1657(monto(entidad.getDecreto1657Lav(), entidad.getDecreto1657Sdf()));
 
         // Mapeamos el bono1580 usando los campos de la entidad (que en BD se llaman
         // valorBonoUti...)
-        dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
+        dto.setBono1580(monto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
 
-        dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        dto.setTotal(monto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        dto.setSubtotal(calcularSubtotal(dto.getTotal(), dto.getBono1580()));
 
         // Campos de Extra nulos
         dto.setResolucion2575(null);
@@ -829,12 +830,12 @@ public class ValorGuardiaCargoYagrupService {
     private ValorGuardiaResponseDto mapearExtra(ValorGuardiaExtrayCF entidad) {
         ValorGuardiaResponseDto dto = new ValorGuardiaResponseDto();
 
-        dto.setResolucion2575(new MontoDto(entidad.getResolucion2575Lav(), entidad.getResolucion2575Sdf()));
+        dto.setResolucion2575(monto(entidad.getResolucion2575Lav(), entidad.getResolucion2575Sdf()));
 
         // Mapeamos el bono1580
-        dto.setBono1580(new MontoDto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
-
-        dto.setTotal(new MontoDto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        dto.setBono1580(monto(entidad.getBono1580Lav(), entidad.getBono1580Sdf()));
+        dto.setTotal(monto(entidad.getTotalLav(), entidad.getTotalSdf()));
+        dto.setSubtotal(calcularSubtotal(dto.getTotal(), dto.getBono1580()));
 
         // Campos de Cargo nulos
         dto.setDecreto1178(null);
@@ -842,6 +843,28 @@ public class ValorGuardiaCargoYagrupService {
         return dto;
     }
 
+    /** null si el concepto no aplica (ambos valores vacíos). */
+    private MontoDto monto(BigDecimal lav, BigDecimal sdf) {
+        return (lav == null && sdf == null) ? null : new MontoDto(lav, sdf);
+    }
+
+    /** SUB TOTAL = TOTAL − Bono 1580. Si no hay bono, es igual al total. */
+    private MontoDto calcularSubtotal(MontoDto total, MontoDto bono1580) {
+        if (total == null) {
+            return null;
+        }
+        BigDecimal bonoLav = (bono1580 != null) ? bono1580.getLav() : null;
+        BigDecimal bonoSdf = (bono1580 != null) ? bono1580.getSdf() : null;
+        return new MontoDto(restar(total.getLav(), bonoLav), restar(total.getSdf(), bonoSdf));
+    }
+
+    private BigDecimal restar(BigDecimal a, BigDecimal b) {
+        if (a == null) {
+            return null;
+        }
+        return (b == null) ? a : a.subtract(b);
+    }
+    
     // --- HELPERS (Utilidades) ---
 
     private String generarKey(List<Hospital> hospitales) {
