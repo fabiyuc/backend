@@ -38,4 +38,5 @@ public class ValorGuardiaGeneracionController {
     public ResponseEntity<List<LocalDate>> vigenciasPendientes() {
         return ResponseEntity.ok(valorGuardiaGeneracionService.obtenerVigenciasPendientes());
     }
+    
 }
