@@ -1,9 +1,13 @@
 package com.guardias.backend.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +32,10 @@ public class ValorGuardiaGeneracionController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(new Mensaje("Error al generar valores: " + e.getMessage()), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/vigencias-pendientes")
+    public ResponseEntity<List<LocalDate>> vigenciasPendientes() {
+        return ResponseEntity.ok(valorGuardiaGeneracionService.obtenerVigenciasPendientes());
     }
 }
