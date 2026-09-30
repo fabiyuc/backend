@@ -121,6 +121,15 @@ public class LegajoService {
             return new ResponseEntity<Mensaje>(new Mensaje("indicar la persona"),
                     HttpStatus.BAD_REQUEST);
 
+        // Una persona puede tener 1 legajo de autoridad activo y 1 general activo, nunca 2 del mismo tipo
+        if (legajoRepository.existsByPersonaIdAndEsAutoridadAndActivoTrueAndIdNot(
+                legajoDto.getIdPersona(), legajoDto.getEsAutoridad(), id == null ? 0L : id)) {
+            return new ResponseEntity<>(new Mensaje(legajoDto.getEsAutoridad()
+                    ? "La persona ya tiene un legajo de autoridad activo. Debe darlo de baja antes de crear uno nuevo"
+                    : "La persona ya tiene un legajo general activo. Debe darlo de baja antes de crear uno nuevo"),
+                    HttpStatus.BAD_REQUEST);
+        }
+        
         // Nueva validación para tipoUdo y idUdo
         try {
             if (legajoDto.getTipoUdo() != null) {
@@ -294,21 +303,28 @@ public class LegajoService {
             }
         }
 
+        if (StringUtils.isNotBlank(legajoDto.getMatriculaProvincial())
+                && legajoRepository.existsByMatriculaProvincialAndActivoTrueAndPersonaIdNot(
+                        legajoDto.getMatriculaProvincial(), legajoDto.getIdPersona())) {
+            return new ResponseEntity<>(new Mensaje("La matricula provincial ya está registrada para otra persona"),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         if (esAsistencial && legajoDto.getEsAutoridad() == false) {
 
-            if (legajoDto.getMatriculaProvincial() == null)
+            if (StringUtils.isBlank(legajoDto.getMatriculaProvincial()))
                 return new ResponseEntity<Mensaje>(new Mensaje("la matricula provincial es obligatoria"),
                         HttpStatus.BAD_REQUEST);
 
-            if (legajoRepository.existsByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial())) {
+            /* if (legajoRepository.existsByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial())) {
                 Legajo existingLegajo = legajoRepository
                         .findByMatriculaProvincialAndActivoTrue(legajoDto.getMatriculaProvincial()).get();
                 if (!existingLegajo.getId().equals(id)) {
                     return new ResponseEntity<>(new Mensaje("La matricula provincial ya existe"),
                             HttpStatus.BAD_REQUEST);
                 }
-            }
-
+            } */
+            
             if (legajoDto.getIdProfesion() == null)
                 return new ResponseEntity<Mensaje>(new Mensaje("indicar la profesion"),
                         HttpStatus.BAD_REQUEST);
@@ -855,17 +871,5 @@ public class LegajoService {
         return legajoRepository.findAllByPersonaId(idPersona);
     }
 
-    /*
-     * public List<Legajo> findInactivosBypersonaAndEfector(Long idPersona, Long
-     * idEfector) {
-     * if (idPersona == null) {
-     * throw new IllegalArgumentException("El idPersona no puede ser nulo");
-     * }
-     * if (idEfector == null) {
-     * throw new IllegalArgumentException("El idEfector no puede ser nulo");
-     * }
-     * return legajoRepository.findInactivosBypersonaAndEfector(idPersona,
-     * idEfector);
-     * }
-     */
+
 }

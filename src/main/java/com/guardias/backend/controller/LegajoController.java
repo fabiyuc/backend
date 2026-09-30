@@ -82,19 +82,6 @@ public class LegajoController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    /*
-     * @GetMapping("/listInactivosBypersonaAndEfector/{idPersona}/{idEfector}")
-     * public ResponseEntity<List<Legajo>> listInactivosBypersonaAndEfector(
-     * 
-     * @PathVariable("idPersona") Long idPersona,
-     * 
-     * @PathVariable("idEfector") Long idEfector) {
-     * List<Legajo> list = legajoService.findInactivosBypersonaAndEfector(idPersona,
-     * idEfector);
-     * return new ResponseEntity<>(list, HttpStatus.OK);
-     * }
-     */
-
     @GetMapping("/listAllByPerson/{idPersona}")
     public ResponseEntity<List<Legajo>> listAllByPerson(
             @PathVariable("idPersona") Long idPersona,

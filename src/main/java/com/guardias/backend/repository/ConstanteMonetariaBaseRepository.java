@@ -31,4 +31,8 @@ public interface ConstanteMonetariaBaseRepository extends JpaRepository<Constant
 
     boolean existsById(Long id);
 
+    //las fechas de inicio desde hoy
+    @Query("SELECT DISTINCT c.fechaInicio FROM ConstantesMonetariasBase c WHERE c.activo = true AND c.fechaInicio >= :desde")
+    List<LocalDate> fechasInicioDesde(@Param("desde") LocalDate desde);
+
 }
