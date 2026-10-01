@@ -26,6 +26,7 @@ import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.PeriodoCargaEnum;
 import com.guardias.backend.enums.QuincenaEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.FacturaRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -43,6 +44,10 @@ public class FacturaService {
     RegistroMensualService registroMensualService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    FechaLimiteDdjjService fechaLimiteDdjjService;
+    @Autowired
+    FechaSistemaService fechaSistemaService;
 
     FacturaService(AsistencialService asistencialService) {
         this.asistencialService = asistencialService;
@@ -124,7 +129,7 @@ public class FacturaService {
         RegistroMensual registro = registroMensualService.findById(idRegistro)
                 .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
 
-        LocalDate fechaSistema = LocalDate.now();
+        LocalDate fechaSistema = fechaSistemaService.hoy();
         // QuincenaEnum quincenaRegistro = registro.getQuincena();
         int mesRegistro = convertirMesANumero(registro.getMes());
         int anioRegistro = registro.getAnio();
@@ -166,12 +171,13 @@ public class FacturaService {
     }
 
     private boolean estaEnTermino(LocalDate fechaSistema, int mesRegistro, int anioRegistro) {
-        // Rango en término: desde primer día del mes registro hasta día 5 del mes
-        // siguiente
+        // Rango en término: desde primer día del mes registro hasta la fecha límite
+        // vigente (cargada por DPH o, por defecto, lunes de la 2.ª semana del mes siguiente)
         LocalDate inicioTermino = LocalDate.of(anioRegistro, mesRegistro, 1);
-        LocalDate finTermino = LocalDate.of(anioRegistro, mesRegistro, 1)
+        /* LocalDate finTermino = LocalDate.of(anioRegistro, mesRegistro, 1)
                 .plusMonths(1)
-                .withDayOfMonth(5);
+                .withDayOfMonth(5); */
+        LocalDate finTermino = obtenerFechaLimiteContrafactura(MesesEnum.fromNumeroMes(mesRegistro), anioRegistro);
 
         System.out.println("Rango en término: " + inicioTermino + " a " + finTermino);
 
@@ -504,15 +510,21 @@ public class FacturaService {
      */
 
     /**
-     * Calcula la fecha límite (día 5 del mes siguiente al registro) para determinar
+     * Calcula la fecha límite vigente del mes del registro para determinar
      * si una regularización de facturas ocurre dentro o fuera de término.
      */
     private LocalDate calcularFechaLimite(RegistroMensual registro) {
-        int numeroMes = convertirMesANumero(registro.getMes());
+        /* int numeroMes = convertirMesANumero(registro.getMes());
         int anio = registro.getAnio();
 
         LocalDate fechaBase = LocalDate.of(anio, numeroMes, 1);
-        return fechaBase.plusMonths(1).withDayOfMonth(5);
+        return fechaBase.plusMonths(1).withDayOfMonth(5); */
+        return obtenerFechaLimiteContrafactura(registro.getMes(), registro.getAnio());
+    }
+
+    /** Las facturas son solo de guardias CONTRAFACTURA. */
+    private LocalDate obtenerFechaLimiteContrafactura(MesesEnum mes, int anio) {
+        return fechaLimiteDdjjService.obtenerFechaLimite(mes, anio, TipoGuardiaEnum.CONTRAFACTURA).getFechaLimite();
     }
 
     /**
@@ -654,7 +666,7 @@ public class FacturaService {
     public void actualizarEstadoFacturasDespuesDeEliminar(List<RegistroMensual> registrosAfectados) {
 
         // Obtener la fecha actual para determinar si estamos dentro o fuera de término
-        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaActual = fechaSistemaService.hoy();
 
         for (RegistroMensual registro : registrosAfectados) {
             BigDecimal montoTotalEsperado = registro.getTotalHoras().getMontoTotal();
