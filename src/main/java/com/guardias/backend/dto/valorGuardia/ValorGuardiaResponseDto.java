@@ -21,6 +21,9 @@ public class ValorGuardiaResponseDto {
     // Es el valor monetario calculado (lo que guardamos como valorBonoUtiLav/Sdf)
     private MontoDto bono1580; 
 
+    // Fila "SUB TOTAL": total sin el Bono 1580. No se guarda en BD, se calcula al mapear
+    private MontoDto subtotal;  
+
     // Fila "TOTAL":
     // El valor final que ya tienes en base de datos
     private MontoDto total;

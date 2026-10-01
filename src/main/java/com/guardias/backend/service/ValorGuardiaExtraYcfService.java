@@ -134,20 +134,20 @@ public class ValorGuardiaExtraYcfService {
             throw new RuntimeException("Faltan hospitales del grupo +20%; encontrados: "
                     + zona20.stream().map(Hospital::getNombre).toList());
         }
-        BigDecimal zona20Lav = baseLav.multiply(new BigDecimal("1.20")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal zona20Lav = baseLav.multiply(new BigDecimal("1.20"));
         generados.add(construirFilaExtra(zona20Lav, null, zona20, false, baseExtraCf, null, fecha));
 
         // Uro +30%
         Hospital uro = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_URO)
                 .orElseThrow(() -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_URO));
-        BigDecimal uroLav = baseLav.multiply(new BigDecimal("1.30")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal uroLav = baseLav.multiply(new BigDecimal("1.30"));
         generados.add(construirFilaExtra(uroLav, null, List.of(uro), false, baseExtraCf, null, fecha));
 
         // Susques +40%
         Hospital susques = hospitalRepository.findByNombre(GruposZonalesGuardia.HOSPITAL_SUSQUES)
                 .orElseThrow(
                         () -> new RuntimeException("Falta cargar hospital: " + GruposZonalesGuardia.HOSPITAL_SUSQUES));
-        BigDecimal susquesLav = baseLav.multiply(new BigDecimal("1.40")).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal susquesLav = baseLav.multiply(new BigDecimal("1.40"));
         generados.add(construirFilaExtra(susquesLav, null, List.of(susques), false, baseExtraCf, null, fecha));
 
         // Cierra la grilla vigente anterior antes de guardar la nueva
@@ -170,18 +170,32 @@ public class ValorGuardiaExtraYcfService {
         fila.setConstanteMonetariaBase(baseExtraCf);
         fila.setBonoUti(bonoUti);
 
-        fila.setResolucion2575Lav(montoLav);
-        fila.setResolucion2575Sdf(montoLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+       fila.setConstanteMonetariaBase(baseExtraCf);
+        fila.setBonoUti(bonoUti);
 
-        BigDecimal totalLav = montoLav;
+        BigDecimal recargoSdf = new BigDecimal("1.10");
+
+        // Redondeo único, al final, a partir del valor exacto
+        BigDecimal resolucionLav = montoLav.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal resolucionSdf = montoLav.multiply(recargoSdf).setScale(2, RoundingMode.HALF_UP);
+        fila.setResolucion2575Lav(resolucionLav);
+        fila.setResolucion2575Sdf(resolucionSdf);
+
+        // El TOTAL es la suma de las filas mostradas, para que la tabla siempre cierre
+        BigDecimal totalLav = resolucionLav;
+        BigDecimal totalSdf = resolucionSdf;
+
         if (bonoUtiLav != null) {
-            fila.setBono1580Lav(bonoUtiLav);
-            fila.setBono1580Sdf(bonoUtiLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
-            totalLav = totalLav.add(bonoUtiLav);
+            BigDecimal bonoLav = bonoUtiLav.setScale(2, RoundingMode.HALF_UP);
+            BigDecimal bonoSdf = bonoUtiLav.multiply(recargoSdf).setScale(2, RoundingMode.HALF_UP);
+            fila.setBono1580Lav(bonoLav);
+            fila.setBono1580Sdf(bonoSdf);
+            totalLav = totalLav.add(bonoLav);
+            totalSdf = totalSdf.add(bonoSdf);
         }
 
         fila.setTotalLav(totalLav);
-        fila.setTotalSdf(totalLav.multiply(new BigDecimal("1.10")).setScale(2, RoundingMode.HALF_UP));
+        fila.setTotalSdf(totalSdf);
 
         return fila;
     }

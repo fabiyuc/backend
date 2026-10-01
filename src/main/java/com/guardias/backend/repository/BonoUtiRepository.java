@@ -23,4 +23,8 @@ public interface BonoUtiRepository extends JpaRepository<BonoUti, Long> {
     @Query("SELECT b FROM BonosUti b WHERE b.activo = true AND b.fechaInicio <= :fecha AND (b.fechaFin IS NULL OR b.fechaFin >= :fecha)")
     Optional<BonoUti> obtenerVigente(@Param("fecha") LocalDate fecha);
 
+    //las fechas de inicio desde hoy
+    @Query("SELECT DISTINCT b.fechaInicio FROM BonosUti b WHERE b.activo = true AND b.fechaInicio >= :desde")
+    List<LocalDate> fechasInicioDesde(@Param("desde") LocalDate desde);
+
 }
