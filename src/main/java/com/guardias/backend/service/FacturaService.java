@@ -26,6 +26,7 @@ import com.guardias.backend.enums.EstadoFacturacionEnum;
 import com.guardias.backend.enums.MesesEnum;
 import com.guardias.backend.enums.PeriodoCargaEnum;
 import com.guardias.backend.enums.QuincenaEnum;
+import com.guardias.backend.enums.TipoGuardiaEnum;
 import com.guardias.backend.repository.FacturaRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -35,6 +36,10 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class FacturaService {
 
+    // Máximo de facturas por profesional, efector, mes y año.
+    // Pueden ser parciales, pero entre todas deben sumar el total del registro mensual.
+    public static final int MAX_FACTURAS_POR_PERIODO = 3;
+
     private final AsistencialService asistencialService;
 
     @Autowired
@@ -43,6 +48,10 @@ public class FacturaService {
     RegistroMensualService registroMensualService;
     @Autowired
     EfectorService efectorService;
+    @Autowired
+    FechaLimiteDdjjService fechaLimiteDdjjService;
+    @Autowired
+    FechaSistemaService fechaSistemaService;
 
     FacturaService(AsistencialService asistencialService) {
         this.asistencialService = asistencialService;
@@ -124,7 +133,7 @@ public class FacturaService {
         RegistroMensual registro = registroMensualService.findById(idRegistro)
                 .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
 
-        LocalDate fechaSistema = LocalDate.now();
+        LocalDate fechaSistema = fechaSistemaService.hoy();
         // QuincenaEnum quincenaRegistro = registro.getQuincena();
         int mesRegistro = convertirMesANumero(registro.getMes());
         int anioRegistro = registro.getAnio();
@@ -166,12 +175,13 @@ public class FacturaService {
     }
 
     private boolean estaEnTermino(LocalDate fechaSistema, int mesRegistro, int anioRegistro) {
-        // Rango en término: desde primer día del mes registro hasta día 5 del mes
-        // siguiente
+        // Rango en término: desde primer día del mes registro hasta la fecha límite
+        // vigente (cargada por DPH o, por defecto, lunes de la 2.ª semana del mes siguiente)
         LocalDate inicioTermino = LocalDate.of(anioRegistro, mesRegistro, 1);
-        LocalDate finTermino = LocalDate.of(anioRegistro, mesRegistro, 1)
+        /* LocalDate finTermino = LocalDate.of(anioRegistro, mesRegistro, 1)
                 .plusMonths(1)
-                .withDayOfMonth(5);
+                .withDayOfMonth(5); */
+        LocalDate finTermino = obtenerFechaLimiteContrafactura(MesesEnum.fromNumeroMes(mesRegistro), anioRegistro);
 
         System.out.println("Rango en término: " + inicioTermino + " a " + finTermino);
 
@@ -187,31 +197,18 @@ public class FacturaService {
             RegistroMensual registro = registroMensualService.findById(idRegistro)
                     .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
 
-            int cantidadFacturas;
-
-            if (periodoCarga == PeriodoCargaEnum.EN_TERMINO) {
-                cantidadFacturas = facturaRepository.countFacturasPorPeriodo(
-                        registro.getEfector().getId(),
-                        registro.getAsistencial().getId(),
-                        registro.getMes(),
-                        registro.getAnio());
-            } else {
-                cantidadFacturas = facturaRepository.countFacturasParaRegistrosPendientes(
-                        registro.getEfector().getId(),
-                        registro.getAsistencial().getId(),
-                        registro.getMes(),
-                        registro.getAnio(),
-                        EstadoFacturacionEnum.PENDIENTE);
-            }
+            int cantidadFacturas = contarFacturas(registro, periodoCarga);
 
             System.out.println("=== DEBUG CANTIDAD FACTURAS ===");
             System.out.println("Periodo carga: " + periodoCarga);
             System.out.println("Cantidad facturas existentes: " + cantidadFacturas);
 
-            if (cantidadFacturas >= 4) {
+            /* if (cantidadFacturas >= 4) { */
+            if (cantidadFacturas >= MAX_FACTURAS_POR_PERIODO) {
                 return new ResponseEntity(
                         new Mensaje("Ya existen " + cantidadFacturas + " facturas para " +
-                                registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga + ")"),
+                                registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga
+                                + "). El máximo es " + MAX_FACTURAS_POR_PERIODO + "."),
                         HttpStatus.BAD_REQUEST);
             }
 
@@ -288,13 +285,32 @@ public class FacturaService {
             System.out.println("Diferencia absoluta: " + diferenciaAbsoluta);
             System.out.println("Margen permitido: " + margenPermitido);
 
-            // Validar si la diferencia absoluta es mayor al margen permitido (0.10)
-            if (diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
+            // Antes cada factura debía completar el total (no permitía facturas parciales)
+            /* if (diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
                 String mensajeError = String.format(
                         "Monto fuera del rango permitido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s, Diferencia: %s (Margen permitido: ±%s)",
                         periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal,
                         diferencia, margenPermitido);
                 return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
+            } */
+
+            // Ahora se permiten facturas parciales (hasta MAX_FACTURAS_POR_PERIODO):
+            // la suma no puede superar el total (+0.10); el estado pasa a COMPLETADO/REGULARIZADO al alcanzarlo
+            if (sumaTotal.compareTo(montoRegistro.add(margenPermitido)) > 0) {
+                String mensajeError = String.format(
+                        "El monto supera el total a facturar. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Disponible: %s",
+                        montoRegistro, montoFacturasExistentes, facturaDto.getMonto(),
+                        montoRegistro.subtract(montoFacturasExistentes));
+                return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
+            }
+
+            // La última factura posible debe completar el total (si no, el registro quedaría PENDIENTE sin poder cargar más)
+            int cantidadExistentes = contarFacturas(registro, periodoCarga);
+            if (cantidadExistentes + 1 >= MAX_FACTURAS_POR_PERIODO && diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
+                return new ResponseEntity(new Mensaje(String.format(
+                        "Esta es la factura %d de %d: debe completar el total. Disponible: %s",
+                        cantidadExistentes + 1, MAX_FACTURAS_POR_PERIODO,
+                        montoRegistro.subtract(montoFacturasExistentes))), HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity(new Mensaje("Validación montos OK"), HttpStatus.OK);
@@ -504,15 +520,21 @@ public class FacturaService {
      */
 
     /**
-     * Calcula la fecha límite (día 5 del mes siguiente al registro) para determinar
+     * Calcula la fecha límite vigente del mes del registro para determinar
      * si una regularización de facturas ocurre dentro o fuera de término.
      */
     private LocalDate calcularFechaLimite(RegistroMensual registro) {
-        int numeroMes = convertirMesANumero(registro.getMes());
+        /* int numeroMes = convertirMesANumero(registro.getMes());
         int anio = registro.getAnio();
 
         LocalDate fechaBase = LocalDate.of(anio, numeroMes, 1);
-        return fechaBase.plusMonths(1).withDayOfMonth(5);
+        return fechaBase.plusMonths(1).withDayOfMonth(5); */
+        return obtenerFechaLimiteContrafactura(registro.getMes(), registro.getAnio());
+    }
+
+    /** Las facturas son solo de guardias CONTRAFACTURA. */
+    private LocalDate obtenerFechaLimiteContrafactura(MesesEnum mes, int anio) {
+        return fechaLimiteDdjjService.obtenerFechaLimite(mes, anio, TipoGuardiaEnum.CONTRAFACTURA).getFechaLimite();
     }
 
     /**
@@ -651,10 +673,37 @@ public class FacturaService {
         return cantidadFacturas == 2;
     }
 
+    /** true si ya se cargó el máximo de facturas (MAX_FACTURAS_POR_PERIODO) para el período. */
+    public boolean maximoFacturasAlcanzado(Long idAsistencial, Long idEfector, int anio, MesesEnum mes) {
+        long cantidadFacturas = facturaRepository.countByAsistencialAndEfectorAndPeriodoSinQuincena(
+                idAsistencial, idEfector, anio, mes);
+        return cantidadFacturas >= MAX_FACTURAS_POR_PERIODO;
+    }
+
+    /**
+     * Facturas ya cargadas que cuentan para el tope: en término, todas las del período;
+     * fuera de término, solo las de registros PENDIENTE.
+     */
+    private int contarFacturas(RegistroMensual registro, PeriodoCargaEnum periodoCarga) {
+        if (periodoCarga == PeriodoCargaEnum.EN_TERMINO) {
+            return facturaRepository.countFacturasPorPeriodo(
+                    registro.getEfector().getId(),
+                    registro.getAsistencial().getId(),
+                    registro.getMes(),
+                    registro.getAnio());
+        }
+        return facturaRepository.countFacturasParaRegistrosPendientes(
+                registro.getEfector().getId(),
+                registro.getAsistencial().getId(),
+                registro.getMes(),
+                registro.getAnio(),
+                EstadoFacturacionEnum.PENDIENTE);
+    }
+
     public void actualizarEstadoFacturasDespuesDeEliminar(List<RegistroMensual> registrosAfectados) {
 
         // Obtener la fecha actual para determinar si estamos dentro o fuera de término
-        LocalDate fechaActual = LocalDate.now();
+        LocalDate fechaActual = fechaSistemaService.hoy();
 
         for (RegistroMensual registro : registrosAfectados) {
             BigDecimal montoTotalEsperado = registro.getTotalHoras().getMontoTotal();
