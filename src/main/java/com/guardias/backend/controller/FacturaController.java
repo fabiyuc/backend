@@ -479,6 +479,21 @@ public class FacturaController {
         }
     }
 
+    // true si ya se cargó el máximo de facturas permitido para el período (reemplaza a existenDosFacturasSinQuincena)
+    @GetMapping("/maximoFacturasAlcanzado/{idAsistencial}/{idEfector}/{anio}/{mes}")
+    public ResponseEntity<?> maximoFacturasAlcanzado(
+            @PathVariable Long idAsistencial,
+            @PathVariable Long idEfector,
+            @PathVariable int anio,
+            @PathVariable String mes) {
+        try {
+            MesesEnum mesEnum = MesesEnum.valueOf(mes.toUpperCase());
+            return ResponseEntity.ok(facturaService.maximoFacturasAlcanzado(idAsistencial, idEfector, anio, mesEnum));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new Mensaje("Parámetro no válido: " + e.getMessage()));
+        }
+    }
+
     @PostMapping("/uploadPdf/{facturaId}")
     public ResponseEntity<?> uploadPdf(@PathVariable("facturaId") Long facturaId,
             @RequestParam("pdf") MultipartFile file) {

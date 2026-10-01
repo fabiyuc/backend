@@ -20,6 +20,7 @@ import com.guardias.backend.constants.GruposZonalesGuardia;
 import com.guardias.backend.dto.valorGuardia.ColumnaGrillaDto;
 import com.guardias.backend.dto.valorGuardia.DetalleValoresDto;
 import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
+import com.guardias.backend.dto.valorGuardia.GrillaVigenteDto;
 import com.guardias.backend.dto.valorGuardia.MontoDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaResponseDto;
@@ -708,7 +709,7 @@ public class ValorGuardiaCargoYagrupService {
         return tipo == TipoGuardiaEnum.EXTRA || tipo == TipoGuardiaEnum.CONTRAFACTURA;
     }
 
-    public List<GrillaValorGuardiaCompletaDto> obtenerGrillaJerarquica(LocalDate fecha) {
+    public GrillaVigenteDto obtenerGrillaJerarquica(LocalDate fecha) {
 
         // 1. Traer datos crudos de la BD
         List<ValorGuardiaCargoYagrup> cargos = valorGuardiaCargoYagrupRepository.buscarVigentes(fecha);
@@ -742,7 +743,7 @@ public class ValorGuardiaCargoYagrupService {
                 : "ZONA +20%";
 
         // --- Armado fijo, igual al Excel de DPH ---
-        return List.of(
+        List<GrillaValorGuardiaCompletaDto> niveles = List.of(  
             nivel(4, "SERVICIOS CRÍTICOS + SAME",
                 columna(ColumnaGrillaEnum.SERVICIOS_CRITICOS, "SERVICIOS CRÍTICOS + SAME", cargoCriticos, extraCriticos)),
             nivel(3, "TERCER NIVEL",
@@ -755,6 +756,13 @@ public class ValorGuardiaCargoYagrupService {
                 columna(ColumnaGrillaEnum.SUSQUES, "SUSQUES", cargoSusques, extraSusques),
                 columna(ColumnaGrillaEnum.ZONA_20, tituloZona20, cargoNivel1, extraZona20))
         );
+        // Fecha desde la que rige la grilla (todas las filas vigentes comparten la misma)
+        LocalDate fechaInicio = cargos.stream()
+                .map(ValorGuardiaCargoYagrup::getFechaInicio)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+
+        return new GrillaVigenteDto(fechaInicio, niveles);
     }
 
     // ---------- Helpers ----------

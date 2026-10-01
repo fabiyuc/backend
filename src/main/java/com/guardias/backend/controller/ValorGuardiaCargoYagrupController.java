@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.guardias.backend.dto.Mensaje;
 import com.guardias.backend.dto.valorGuardia.GrillaValorGuardiaCompletaDto;
+import com.guardias.backend.dto.valorGuardia.GrillaVigenteDto;
 import com.guardias.backend.dto.valorGuardia.ValorGuardiaManualDto;
 import com.guardias.backend.entity.Hospital;
 import com.guardias.backend.entity.ValorGuardiaCargoYagrup;
@@ -89,9 +90,9 @@ public class ValorGuardiaCargoYagrupController {
     }
 
     @GetMapping("/grilla-completa/{fecha}")
-    public ResponseEntity<List<GrillaValorGuardiaCompletaDto>> getGrillaCompleta(@PathVariable("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+    public ResponseEntity <GrillaVigenteDto> getGrillaCompleta(@PathVariable("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
     
-        List<GrillaValorGuardiaCompletaDto> grilla = valorGuardiaCargoYagrupService.obtenerGrillaJerarquica(fecha);
+        GrillaVigenteDto grilla = valorGuardiaCargoYagrupService.obtenerGrillaJerarquica(fecha);
         return ResponseEntity.ok(grilla);
     }
 
