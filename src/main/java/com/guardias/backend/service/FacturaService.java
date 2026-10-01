@@ -36,6 +36,10 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class FacturaService {
 
+    // Máximo de facturas por profesional, efector, mes y año.
+    // Pueden ser parciales, pero entre todas deben sumar el total del registro mensual.
+    public static final int MAX_FACTURAS_POR_PERIODO = 3;
+
     private final AsistencialService asistencialService;
 
     @Autowired
@@ -193,31 +197,18 @@ public class FacturaService {
             RegistroMensual registro = registroMensualService.findById(idRegistro)
                     .orElseThrow(() -> new RuntimeException("Registro mensual no encontrado"));
 
-            int cantidadFacturas;
-
-            if (periodoCarga == PeriodoCargaEnum.EN_TERMINO) {
-                cantidadFacturas = facturaRepository.countFacturasPorPeriodo(
-                        registro.getEfector().getId(),
-                        registro.getAsistencial().getId(),
-                        registro.getMes(),
-                        registro.getAnio());
-            } else {
-                cantidadFacturas = facturaRepository.countFacturasParaRegistrosPendientes(
-                        registro.getEfector().getId(),
-                        registro.getAsistencial().getId(),
-                        registro.getMes(),
-                        registro.getAnio(),
-                        EstadoFacturacionEnum.PENDIENTE);
-            }
+            int cantidadFacturas = contarFacturas(registro, periodoCarga);
 
             System.out.println("=== DEBUG CANTIDAD FACTURAS ===");
             System.out.println("Periodo carga: " + periodoCarga);
             System.out.println("Cantidad facturas existentes: " + cantidadFacturas);
 
-            if (cantidadFacturas >= 4) {
+            /* if (cantidadFacturas >= 4) { */
+            if (cantidadFacturas >= MAX_FACTURAS_POR_PERIODO) {
                 return new ResponseEntity(
                         new Mensaje("Ya existen " + cantidadFacturas + " facturas para " +
-                                registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga + ")"),
+                                registro.getMes() + " " + registro.getAnio() + " (" + periodoCarga
+                                + "). El máximo es " + MAX_FACTURAS_POR_PERIODO + "."),
                         HttpStatus.BAD_REQUEST);
             }
 
@@ -294,13 +285,32 @@ public class FacturaService {
             System.out.println("Diferencia absoluta: " + diferenciaAbsoluta);
             System.out.println("Margen permitido: " + margenPermitido);
 
-            // Validar si la diferencia absoluta es mayor al margen permitido (0.10)
-            if (diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
+            // Antes cada factura debía completar el total (no permitía facturas parciales)
+            /* if (diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
                 String mensajeError = String.format(
                         "Monto fuera del rango permitido para %s. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Suma total: %s, Diferencia: %s (Margen permitido: ±%s)",
                         periodoCarga, montoRegistro, montoFacturasExistentes, facturaDto.getMonto(), sumaTotal,
                         diferencia, margenPermitido);
                 return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
+            } */
+
+            // Ahora se permiten facturas parciales (hasta MAX_FACTURAS_POR_PERIODO):
+            // la suma no puede superar el total (+0.10); el estado pasa a COMPLETADO/REGULARIZADO al alcanzarlo
+            if (sumaTotal.compareTo(montoRegistro.add(margenPermitido)) > 0) {
+                String mensajeError = String.format(
+                        "El monto supera el total a facturar. Total registros: %s, Facturas existentes: %s, Nueva factura: %s, Disponible: %s",
+                        montoRegistro, montoFacturasExistentes, facturaDto.getMonto(),
+                        montoRegistro.subtract(montoFacturasExistentes));
+                return new ResponseEntity(new Mensaje(mensajeError), HttpStatus.BAD_REQUEST);
+            }
+
+            // La última factura posible debe completar el total (si no, el registro quedaría PENDIENTE sin poder cargar más)
+            int cantidadExistentes = contarFacturas(registro, periodoCarga);
+            if (cantidadExistentes + 1 >= MAX_FACTURAS_POR_PERIODO && diferenciaAbsoluta.compareTo(margenPermitido) > 0) {
+                return new ResponseEntity(new Mensaje(String.format(
+                        "Esta es la factura %d de %d: debe completar el total. Disponible: %s",
+                        cantidadExistentes + 1, MAX_FACTURAS_POR_PERIODO,
+                        montoRegistro.subtract(montoFacturasExistentes))), HttpStatus.BAD_REQUEST);
             }
 
             return new ResponseEntity(new Mensaje("Validación montos OK"), HttpStatus.OK);
@@ -661,6 +671,33 @@ public class FacturaService {
 
         // Devolver true si hay exactamente 2 facturas
         return cantidadFacturas == 2;
+    }
+
+    /** true si ya se cargó el máximo de facturas (MAX_FACTURAS_POR_PERIODO) para el período. */
+    public boolean maximoFacturasAlcanzado(Long idAsistencial, Long idEfector, int anio, MesesEnum mes) {
+        long cantidadFacturas = facturaRepository.countByAsistencialAndEfectorAndPeriodoSinQuincena(
+                idAsistencial, idEfector, anio, mes);
+        return cantidadFacturas >= MAX_FACTURAS_POR_PERIODO;
+    }
+
+    /**
+     * Facturas ya cargadas que cuentan para el tope: en término, todas las del período;
+     * fuera de término, solo las de registros PENDIENTE.
+     */
+    private int contarFacturas(RegistroMensual registro, PeriodoCargaEnum periodoCarga) {
+        if (periodoCarga == PeriodoCargaEnum.EN_TERMINO) {
+            return facturaRepository.countFacturasPorPeriodo(
+                    registro.getEfector().getId(),
+                    registro.getAsistencial().getId(),
+                    registro.getMes(),
+                    registro.getAnio());
+        }
+        return facturaRepository.countFacturasParaRegistrosPendientes(
+                registro.getEfector().getId(),
+                registro.getAsistencial().getId(),
+                registro.getMes(),
+                registro.getAnio(),
+                EstadoFacturacionEnum.PENDIENTE);
     }
 
     public void actualizarEstadoFacturasDespuesDeEliminar(List<RegistroMensual> registrosAfectados) {
